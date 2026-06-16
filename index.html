@@ -417,7 +417,7 @@
 
 <script>
 const IMAGE_LIBRARY = {
-  contact_sidetopspin: ['images/contact_sidetopspin/001.jpg'],
+  contact_sidetopspin: ['images/contact_sidetopspin/001.mp4'],
   contact_backspin:    ['images/contact_backspin/001.jpg'],
   contact_sidespin:    ['images/contact_sidespin/001.jpg'],
   contact_nospin:      ['images/contact_nospin/001.jpg'],
@@ -429,6 +429,15 @@ const IMAGE_LIBRARY = {
 function getImg(key) {
   const arr = IMAGE_LIBRARY[key];
   return arr[Math.floor(Math.random() * arr.length)];
+}
+
+// Render media: supports both jpg and mp4
+function renderMedia(src, style) {
+  const ext = src.split('.').pop().toLowerCase();
+  if (ext === 'mp4' || ext === 'webm' || ext === 'mov') {
+    return `<video src="${src}" style="${style}" autoplay loop muted playsinline></video>`;
+  }
+  return `<img src="${src}" style="${style}" />`;
 }
 
 const IMAGES = new Proxy({}, { get: (_, key) => getImg(key) });
@@ -706,11 +715,11 @@ function renderQuestion() {
         <div class="sit-label" style="margin-bottom:0;">發球情境｜<span style="color:${sc.color};font-weight:700;">${sc.spin}</span></div>
         <div style="text-align:center;">
           <div style="font-size:9px;color:var(--muted);margin-bottom:3px;letter-spacing:0.08em;">引拍</div>
-          <img src="${backswingImg}" style="width:100%;border-radius:6px;border:1px solid var(--border);" />
+          ${renderMedia(backswingImg, "width:100%;border-radius:6px;border:1px solid var(--border);")}
         </div>
         <div style="text-align:center;">
           <div style="font-size:9px;color:var(--muted);margin-bottom:3px;letter-spacing:0.08em;">觸球瞬間</div>
-          <img src="${contactImg}" style="width:100%;border-radius:6px;border:1px solid var(--border);" />
+          ${renderMedia(contactImg, "width:100%;border-radius:6px;border:1px solid var(--border);")}
         </div>
         <div style="font-size:10px;color:var(--muted);line-height:1.5;">${sc.hint}</div>
       </div>
