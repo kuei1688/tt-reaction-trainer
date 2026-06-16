@@ -653,18 +653,38 @@ const TECH_FEEDBACK = {
 // ═══ TABLE SVG ═══
 function tableSVG(side) {
   const arrowId = 'arr_' + side + '_' + Math.random().toString(36).slice(2,6);
-  const ax = side === 'fh' ? 148 : 142;
-  const ex = side === 'fh' ? 190 : 50;
-  const ey = 68;
-  return `<svg width="100%" viewBox="0 0 240 88" role="img">
+  // 直向球桌：上下是長度方向(274)，左右是寬度方向(152.5)
+  // SVG viewBox: 160寬 x 290高
+  // 球桌: x:20~140(寬120)，y:20~236(高216)，比例120:216≈1:1.8
+  // 球網: y:128
+  // 對方站位 & 落點: 右邊三分之一 x=60，靠近對方端線 y=32
+  // 你的站位: 左邊三分之一 x=60，桌外下方 y=248
+  // 箭頭終點: 正手(右邊) x=125,y=215 / 反手(左邊) x=28,y=215
+  const ballX = 100, ballY = 32;
+  const ax = ballX + (side === 'fh' ? 4 : -4);
+  const ex = side === 'fh' ? 125 : 28;
+  const ey = 215;
+  return `<svg width="100%" viewBox="0 0 160 290" role="img">
   <defs><marker id="${arrowId}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
-  <rect x="10" y="8" width="220" height="64" rx="3" fill="none" stroke="#555" stroke-width="1.5"/>
-  <rect x="10" y="36" width="220" height="3" rx="1" fill="#555"/>
-  <line x1="120" y1="8" x2="120" y2="72" stroke="#777" stroke-width="1" stroke-dasharray="3,3"/>
-  <circle cx="145" cy="20" r="6" fill="#e6edf3" opacity="0.9"/>
-  <line x1="${ax}" y1="25" x2="${ex}" y2="${ey}" stroke="#e6edf3" stroke-width="2.5" marker-end="url(#${arrowId})" opacity="0.9"/>
-  <text x="35" y="83" text-anchor="middle" font-size="9" fill="#666" font-family="sans-serif">反手</text>
-  <text x="200" y="83" text-anchor="middle" font-size="9" fill="#666" font-family="sans-serif">正手</text>
+  <!-- 球桌外框 -->
+  <rect x="20" y="20" width="120" height="216" rx="3" fill="rgba(0,80,140,0.10)" stroke="#558" stroke-width="1.8"/>
+  <!-- 球網（橫向中線） -->
+  <rect x="20" y="126" width="120" height="4" rx="1" fill="#558"/>
+  <!-- 左右中線（虛線，雙打用，這裡當參考線） -->
+  <line x1="80" y1="20" x2="80" y2="236" stroke="#667" stroke-width="1" stroke-dasharray="4,3"/>
+  <!-- 對方站位（右邊三分之一，桌外上方） -->
+  <circle cx="${ballX}" cy="12" r="4" fill="#888"/>
+  <text x="${ballX}" y="9" text-anchor="middle" font-size="8" fill="#888" font-family="sans-serif">對方</text>
+  <!-- 球第一落點（靠近對方端線） -->
+  <circle cx="${ballX}" cy="${ballY}" r="7" fill="#e6edf3" opacity="0.9"/>
+  <!-- 箭頭往你這側飛 -->
+  <line x1="${ax}" y1="${ballY + 8}" x2="${ex}" y2="${ey}" stroke="#e6edf3" stroke-width="2.5" marker-end="url(#${arrowId})" opacity="0.9"/>
+  <!-- 你的站位（左邊三分之一，桌外下方） -->
+  <circle cx="60" cy="248" r="4" fill="#888"/>
+  <text x="60" y="260" text-anchor="middle" font-size="8" fill="#888" font-family="sans-serif">你</text>
+  <!-- 反手/正手標示 -->
+  <text x="30" y="278" text-anchor="middle" font-size="9" fill="#666" font-family="sans-serif">反手</text>
+  <text x="130" y="278" text-anchor="middle" font-size="9" fill="#666" font-family="sans-serif">正手</text>
 </svg>`;
 }
 
