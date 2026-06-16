@@ -811,8 +811,8 @@ function renderTech(sc, landing) {
 
   const correctTech = sc.techMap[landing];
   const wrongTechs = landing === 'fh'
-    ? ['切球', '平推', '撥球'].filter(t => t !== correctTech)
-    : ['拉球', '攻球', '撥球'].filter(t => t !== correctTech);
+    ? ['切球', '拉球', '撥球'].filter(t => t !== correctTech)
+    : ['切球', '平推', '撥球'].filter(t => t !== correctTech);
   const allTechs = [correctTech, wrongTechs[0], wrongTechs[1]].sort(() => Math.random() - 0.5);
   const correctIdx = allTechs.indexOf(correctTech);
 
