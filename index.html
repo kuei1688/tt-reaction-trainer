@@ -797,12 +797,12 @@ function renderLanding(sc) {
     </div>
     <div style="display:flex;gap:3px;align-items:stretch;flex:1;">
       <button class="opt" onclick="answerLanding('bh')" style="padding:6px 4px;display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;border-radius:10px;">
-        \${side === 'bh' ? bhLeftSVG : fhLeftSVG}
-        <span style="font-size:10px;font-weight:700;color:\${side === 'bh' ? '#58a6ff' : 'var(--text)'};">反手位</span>
+        ${side === 'bh' ? bhLeftSVG : fhLeftSVG}
+        <span style="font-size:10px;font-weight:700;color:${side === 'bh' ? '#58a6ff' : 'var(--text)'};">反手位</span>
       </button>
       <button class="opt" onclick="answerLanding('fh')" style="padding:6px 4px;display:flex;flex-direction:column;align-items:center;gap:4px;flex:2;border-radius:10px;">
-        \${side === 'bh' ? bhRightSVG : fhRightSVG}
-        <span style="font-size:10px;font-weight:700;color:\${side === 'fh' ? '#3fb950' : 'var(--text)'};">正手位</span>
+        ${side === 'bh' ? bhRightSVG : fhRightSVG}
+        <span style="font-size:10px;font-weight:700;color:${side === 'fh' ? '#3fb950' : 'var(--text)'};">正手位</span>
       </button>
     </div>
   `;
