@@ -128,6 +128,169 @@
   .p-text { font-size: 13px; line-height: 1.6; color: var(--text); }
   .p-text strong { color: var(--green); font-weight: 700; }
 
+  /* ── TUTORIAL SCREEN ── */
+  #tutorialScreen { padding-top: 16px; }
+
+  .tut-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .tut-logo {
+    width: 44px; height: 44px;
+    background: var(--green);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; flex-shrink: 0;
+  }
+  .tut-title { font-size: 20px; font-weight: 900; }
+  .tut-sub   { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  .tut-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 18px;
+    margin-bottom: 12px;
+  }
+  .tut-section-title {
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+  .tut-section p {
+    font-size: 14px;
+    line-height: 1.75;
+    color: var(--text);
+  }
+  .tut-section p + p { margin-top: 8px; }
+
+  .tut-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+  .tut-row:last-child { margin-bottom: 0; }
+  .tut-icon {
+    font-size: 18px;
+    width: 28px;
+    flex-shrink: 0;
+    text-align: center;
+    margin-top: 1px;
+  }
+  .tut-row-text {
+    font-size: 14px;
+    line-height: 1.65;
+    color: var(--text);
+  }
+  .tut-row-text strong { color: var(--green); }
+
+  .spin-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin-top: 4px;
+  }
+  .spin-table th {
+    text-align: left;
+    color: var(--muted);
+    font-weight: 500;
+    padding: 4px 8px 8px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .spin-table td {
+    padding: 8px 8px 8px 0;
+    border-bottom: 1px solid var(--surface2);
+    vertical-align: top;
+    line-height: 1.5;
+  }
+  .spin-table tr:last-child td { border-bottom: none; }
+  .spin-tag {
+    display: inline-block;
+    padding: 2px 9px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .tag-back  { background: #1a2535; color: var(--blue); }
+  .tag-side  { background: #251a35; color: var(--purple); }
+  .tag-sideback { background: #1a2530; color: #7dd3fc; }
+  .tag-no    { background: #1a2520; color: var(--green); }
+
+  .preset-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 13px;
+    margin: 3px 4px 3px 0;
+  }
+
+  .tut-op-step {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--surface2);
+    font-size: 14px;
+  }
+  .tut-op-step:last-child { border-bottom: none; padding-bottom: 0; }
+  .op-num {
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700; color: var(--muted);
+    flex-shrink: 0;
+  }
+
+  .tut-custom {
+    background: var(--surface2);
+    border-left: 3px solid var(--yellow);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    padding: 12px 16px;
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.65;
+    margin-top: 4px;
+  }
+  .tut-custom strong { color: var(--yellow); }
+
+  .tut-start-btn {
+    width: 100%;
+    background: var(--green);
+    color: #0d1117;
+    border: none;
+    border-radius: var(--radius);
+    padding: 16px;
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 16px;
+    font-weight: 900;
+    cursor: pointer;
+    margin-top: 16px;
+    transition: opacity 0.15s;
+  }
+  .tut-start-btn:hover { opacity: 0.88; }
+
+  .tut-help-link {
+    display: inline-block;
+    font-size: 12px;
+    color: var(--muted);
+    cursor: pointer;
+    margin-top: 10px;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .tut-help-link:hover { color: var(--text); }
+
   .start-btn {
     background: var(--green);
     border: none; border-radius: var(--radius);
@@ -346,6 +509,106 @@
 <body>
 
 <!-- ════ START SCREEN ════ -->
+<!-- ════ TUTORIAL SCREEN ════ -->
+<div class="screen hidden" id="tutorialScreen">
+
+  <div class="tut-header">
+    <div class="tut-logo">🏓</div>
+    <div>
+      <div class="tut-title">接發球判斷訓練</div>
+      <div class="tut-sub">玩法說明</div>
+    </div>
+  </div>
+
+  <div class="tut-section">
+    <div class="tut-section-title">這在練什麼</div>
+    <p>接發球是桌球最關鍵的一拍。這個訓練幫你建立「<strong style="color:var(--green)">看動作 → 判斷旋轉 → 決定接法</strong>」的反射習慣。</p>
+    <p style="margin-top:8px;color:var(--muted);font-size:13px;">每題給你一個發球動作，你要判斷旋轉類型、球的落點，然後選出正確的接球技術。</p>
+  </div>
+
+  <div class="tut-section">
+    <div class="tut-section-title">預設玩家設定</div>
+    <div style="margin-bottom:10px;">
+      <span class="preset-chip">✋ 右撇子</span>
+      <span class="preset-chip">🏓 橫拍</span>
+      <span class="preset-chip">⚫ 正常球面</span>
+    </div>
+    <p style="font-size:13px;color:var(--muted);">技術選項與判斷邏輯依此設定。有不同需求可以討論客製化版本。</p>
+  </div>
+
+  <div class="tut-section">
+    <div class="tut-section-title">三層判斷流程</div>
+    <div class="tut-row">
+      <div class="tut-icon">①</div>
+      <div class="tut-row-text"><strong>旋轉類型</strong>　看引拍高低預判，再看觸球瞬間拍面確認</div>
+    </div>
+    <div class="tut-row">
+      <div class="tut-icon">②</div>
+      <div class="tut-row-text"><strong>落點</strong>　判斷球落到你的正手位還是反手位</div>
+    </div>
+    <div class="tut-row">
+      <div class="tut-icon">③</div>
+      <div class="tut-row-text"><strong>技術選擇</strong>　根據旋轉與落點，選出最佳接法</div>
+    </div>
+  </div>
+
+  <div class="tut-section">
+    <div class="tut-section-title">旋轉與接法對應</div>
+    <table class="spin-table">
+      <thead>
+        <tr><th>旋轉</th><th>接法原則</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="spin-tag tag-back">下旋</span></td>
+          <td>切球，用拍面往下帶，對抗下旋</td>
+        </tr>
+        <tr>
+          <td><span class="spin-tag tag-side">側旋</span></td>
+          <td>調整拍面方向對準對方拍面，旋轉抵消後攻球</td>
+        </tr>
+        <tr>
+          <td><span class="spin-tag tag-sideback">側下旋</span></td>
+          <td>切球或側切，同時對抗側向與下旋</td>
+        </tr>
+        <tr>
+          <td><span class="spin-tag tag-no">不轉</span></td>
+          <td>直接攻球或平推，不需對抗旋轉</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="tut-section">
+    <div class="tut-section-title">答案邏輯</div>
+    <p>每題的正確答案是<strong style="color:var(--yellow)">條件理想時的最佳接法</strong>。訓練目的是讓判斷變成反射——實戰中就算時間不夠，至少知道目標動作是什麼。</p>
+  </div>
+
+  <div class="tut-section">
+    <div class="tut-section-title">怎麼操作</div>
+    <div class="tut-op-step">
+      <div class="op-num">1</div>
+      <div>看影片或圖片，觀察發球動作</div>
+    </div>
+    <div class="tut-op-step">
+      <div class="op-num">2</div>
+      <div>依序判斷：旋轉 → 落點 → 技術</div>
+    </div>
+    <div class="tut-op-step">
+      <div class="op-num">3</div>
+      <div>答對自動進下一題；答錯顯示正確答案與提示，按「下一球」繼續</div>
+    </div>
+  </div>
+
+  <div class="tut-custom">
+    <strong>關於客製化</strong>　目前版本針對反手發球情境設計。如有個人需求，可以討論調整。
+  </div>
+
+  <button class="tut-start-btn" id="tutStartBtn">開始訓練</button>
+
+</div>
+
+<!-- ════ START SCREEN ════ -->
 <div class="screen" id="startScreen">
   <div class="logo-mark">🏓</div>
   <div class="start-title">接發球判斷訓練</div>
@@ -368,6 +631,9 @@
   </div>
 
   <button class="start-btn" id="startBtn" type="button">開始訓練</button>
+  <div style="text-align:center;">
+    <span class="tut-help-link" id="showTutBtn">？ 玩法說明</span>
+  </div>
 </div>
 
 <!-- ════ GAME SCREEN ════ -->
@@ -1085,13 +1351,38 @@ window.addEventListener('error', function (event) {
 });
 
 document.addEventListener('DOMContentLoaded', function () {
-  const startBtn = document.getElementById('startBtn');
-  const restartBtn = document.getElementById('restartBtn');
-  const floatNextBtn = document.getElementById('floatNext');
+  const startBtn    = document.getElementById('startBtn');
+  const restartBtn  = document.getElementById('restartBtn');
+  const floatNextBtn= document.getElementById('floatNext');
+  const tutStartBtn = document.getElementById('tutStartBtn');
+  const showTutBtn  = document.getElementById('showTutBtn');
 
-  if (startBtn) startBtn.addEventListener('click', function (e) { e.preventDefault(); startGame(); });
-  if (restartBtn) restartBtn.addEventListener('click', function (e) { e.preventDefault(); restartGame(); });
-  if (floatNextBtn) floatNextBtn.addEventListener('click', function (e) { e.preventDefault(); nextQuestion(); });
+  function showScreen(id) {
+    ['tutorialScreen','startScreen','gameScreen','endScreen'].forEach(s => {
+      document.getElementById(s).classList.add('hidden');
+    });
+    document.getElementById(id).classList.remove('hidden');
+  }
+
+  // 第一次進入自動顯示說明
+  if (!localStorage.getItem('tt_tutorial_seen')) {
+    showScreen('tutorialScreen');
+  }
+
+  // 說明頁「開始訓練」
+  if (tutStartBtn) tutStartBtn.addEventListener('click', function () {
+    localStorage.setItem('tt_tutorial_seen', '1');
+    showScreen('startScreen');
+  });
+
+  // 開始畫面「？玩法說明」
+  if (showTutBtn) showTutBtn.addEventListener('click', function () {
+    showScreen('tutorialScreen');
+  });
+
+  if (startBtn)     startBtn.addEventListener('click',    function (e) { e.preventDefault(); startGame(); });
+  if (restartBtn)   restartBtn.addEventListener('click',  function (e) { e.preventDefault(); restartGame(); });
+  if (floatNextBtn) floatNextBtn.addEventListener('click',function (e) { e.preventDefault(); nextQuestion(); });
 });
 
 </script>
