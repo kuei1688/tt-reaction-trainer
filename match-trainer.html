@@ -645,8 +645,13 @@ const TIMER_MS=5000, TICK=60;
 const RALLY_MAX=6;
 
 function isMyServe(){
-  // 每2分輪換，從0分開始對方先發
-  return Math.floor(M.totalPoints/2)%2===1;
+  const points=M.myScore+M.oppScore;
+  if(M.myScore>=10 && M.oppScore>=10){
+    // 10:10 後每 1 分輪換；0 分時仍由何爸先發。
+    return points%2===1;
+  }
+  // 正常每 2 分輪換。
+  return Math.floor(points/2)%2===1;
 }
 
 // ══════════════════════════════════════
@@ -695,23 +700,24 @@ function showMyServe(){
         <div class="my-serve-card">
           <div class="my-serve-icon">🏓</div>
           <div class="my-serve-title">你來發球</div>
-          <div class="my-serve-sub">這球你發球，雙方各得1分</div>
+          <div class="my-serve-sub">這球你發球，60% 你得分、40% 何爸得分</div>
           <div class="score-update">
             <div class="score-update-item">
-              <div class="val" style="color:var(--red)">何爸 +1</div>
+              <div class="val" style="color:var(--red)">何爸 40%</div>
             </div>
             <div class="score-update-item">
-              <div class="val" style="color:var(--green)">我 +1</div>
+              <div class="val" style="color:var(--green)">我 60%</div>
             </div>
           </div>
         </div>
       </div>
     </div>`;
   setTimeout(()=>{
-    M.myScore++;M.oppScore++;M.totalPoints++;
+    if(Math.random()<0.6) M.myScore++;
+    else M.oppScore++;
+    M.totalPoints++;
     updateScoreboard();
     if(checkMatchEnd()) return;
-    M.totalPoints++;
     nextPoint();
   },2000);
 }
@@ -819,7 +825,7 @@ function getReceiveTech(spinType, landing, length) {
     return landing==='fh'?'fh-atk':'bh-push';
   }
   if(isBackspin){
-    if(landing==='fh') return SETUP.fhChopLoop?'fh-chop-loop':'fh-atk';
+    if(landing==='fh') return SETUP.fhChopLoop?'fh-chop-loop':'cut';
     return SETUP.bhChopLoop?'bh-chop-loop':'cut';
   } else {
     if(landing==='fh') return SETUP.fhLoop?'fh-loop':'fh-atk';
@@ -1085,7 +1091,6 @@ function winPoint(){
   M.myScore++;M.totalPoints++;
   updateScoreboard();
   if(checkMatchEnd()) return;
-  M.totalPoints++;
   nextPoint();
 }
 
