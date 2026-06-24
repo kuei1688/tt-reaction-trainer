@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Match Trainer｜說明</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#080b10;--surface:#0f1318;--surface2:#161b22;
+  --border:#21262d;--green:#3fb950;--yellow:#d29922;
+  --red:#f85149;--blue:#58a6ff;--text:#e6edf3;--muted:#7d8590;
+  --radius:10px;
+}
+body{
+  background:var(--bg);color:var(--text);
+  font-family:'Noto Sans TC',sans-serif;
+  min-height:100vh;display:flex;flex-direction:column;
+  align-items:center;padding:40px 20px 60px;
+}
+.wrap{width:100%;max-width:480px;}
+
+h1{
+  font-size:11px;letter-spacing:0.22em;
+  text-transform:uppercase;color:var(--muted);
+  text-align:center;margin-bottom:28px;
+}
+
+.section{margin-bottom:28px;}
+
+.card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:20px;
+}
+
+.section-label{
+  font-size:10px;letter-spacing:0.16em;
+  text-transform:uppercase;color:var(--muted);
+  margin-bottom:12px;
+}
+
+p{font-size:15px;line-height:1.85;color:#c8c2b6;}
+p+p{margin-top:12px;}
+
+.punch{
+  font-size:18px;font-weight:900;
+  color:var(--text);line-height:1.5;
+  margin-bottom:8px;
+}
+.sub-punch{
+  font-size:14px;color:var(--yellow);
+  font-weight:700;margin-bottom:16px;
+  line-height:1.5;
+}
+
+hr{border:none;border-top:1px solid var(--border);margin:16px 0;}
+
+/* 流程步驟 */
+.steps{display:flex;flex-direction:column;gap:12px;}
+.step{display:flex;gap:14px;align-items:flex-start;}
+.step-num{
+  width:26px;height:26px;border-radius:50%;
+  background:var(--surface2);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:700;color:var(--green);
+  flex-shrink:0;margin-top:2px;
+}
+.step-body{flex:1;}
+.step-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:3px;}
+.step-desc{font-size:13px;color:var(--muted);line-height:1.6;}
+
+/* 壓力區塊 */
+.pressure-box{
+  background:rgba(248,81,73,0.06);
+  border:1px solid rgba(248,81,73,0.2);
+  border-radius:8px;padding:14px 16px;
+  margin-top:12px;
+}
+.pressure-box p{font-size:13px;color:#fca5a5;line-height:1.7;}
+
+/* 觀察提示 */
+.observe-box{
+  background:rgba(88,166,255,0.06);
+  border-left:3px solid var(--blue);
+  border-radius:0 8px 8px 0;
+  padding:12px 16px;margin-top:12px;
+}
+.observe-box p{font-size:13px;color:var(--blue);line-height:1.7;}
+
+/* 結尾 */
+.finale{
+  text-align:center;padding:24px 0 8px;
+}
+.finale-main{
+  font-size:20px;font-weight:900;
+  color:var(--text);margin-bottom:8px;
+}
+.finale-arrow{
+  font-size:15px;color:var(--green);
+  font-weight:700;letter-spacing:0.05em;
+}
+
+/* 按鈕 */
+.btn-start{
+  display:block;width:100%;
+  background:var(--green);color:#080b10;
+  border:none;border-radius:var(--radius);
+  padding:16px;font-family:'Noto Sans TC',sans-serif;
+  font-size:16px;font-weight:900;
+  cursor:pointer;text-align:center;
+  text-decoration:none;margin-top:28px;
+  transition:opacity 0.13s;
+}
+.btn-start:hover{opacity:0.88;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Match Trainer</h1>
+
+  <!-- 開頭 punch -->
+  <div class="section">
+    <div class="card">
+      <div class="punch">接發球判斷得出來，顆粒節奏也懂了——但比賽裡還差一件事：<span style="color:var(--red)">比分。</span></div>
+      <div class="sub-punch">8:8 的時候，你還能判斷得一樣準嗎？</div>
+      <p>這個模式把前兩個遊戲串起來，模擬一場對何爸的完整比賽。不是新的技術，是讓你在壓力下，仍然做出正確判斷。</p>
+    </div>
+  </div>
+
+  <!-- 流程 -->
+  <div class="section">
+    <div class="section-label">比賽流程</div>
+    <div class="card">
+      <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">開始前先選擇球種情境和你目前會的技術，系統會依此調整題目內容。比賽採 11 分制，對方固定先發，每 2 分輪換發球權。</p>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <div class="step-title">看發球，判斷旋轉</div>
+            <div class="step-desc">看影片，選出旋轉種類。答對才能進入對打。</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <div class="step-title">選接球技術</div>
+            <div class="step-desc">系統隨機決定落點和長短，你選出正確的接球方式。這個動作帶進對打。</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <div class="step-title">對打，持續判斷</div>
+            <div class="step-desc">判斷對方拍面、落點、長短，選技術。答對才能繼續這一分。答錯或超時，直接失分。</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <div class="step-title">自己發球</div>
+            <div class="step-desc">輪到你發球時，雙方各得一分，跳過繼續。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 比分壓力 -->
+  <div class="section">
+    <div class="section-label">比分壓力是真實的</div>
+    <div class="card">
+      <p>前兩個遊戲練的是技術判斷。這個模式多的是：<strong style="color:var(--text)">你在落後時還能不能冷靜？</strong></p>
+      <div class="pressure-box">
+        <p>真正要觀察的不只是對不對，而是壓力來了之後——判斷會不會跑掉、節奏會不會亂、明明知道答案卻按錯。</p>
+      </div>
+      <div class="observe-box">
+        <p>特別注意：你是落後時容易急，還是平手時容易緊？觀察自己的模式，比贏更重要。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 目標 -->
+  <div class="section">
+    <div class="section-label">目標</div>
+    <div class="card">
+      <p>不是每次都贏。</p>
+      <p>是慢慢練到：</p>
+      <div class="finale">
+        <div class="finale-main">看見 → 判斷 → 出手</div>
+        <div class="finale-arrow">中間沒有多餘猶豫</div>
+      </div>
+    </div>
+  </div>
+
+  <a class="btn-start" href="match-trainer.html">開始對決 →</a>
+</div>
+</body>
+</html>
