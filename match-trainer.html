@@ -363,6 +363,9 @@ body{
   </div>
 
   <button class="btn-primary" onclick="startMatch()">開始對決 →</button>
+  <div style="text-align:center;margin-top:12px;">
+    <span class="hint-text" style="cursor:pointer;" onclick="goToSettings()">⚙️ 發球設定</span>
+  </div>
 </div>
 
 <!-- ══ MATCH ══ -->
@@ -450,6 +453,26 @@ const SCENARIOS = [
 // ══════════════════════════════════════
 //  顆粒對打邏輯（遊戲二）
 // ══════════════════════════════════════
+function goToSettings(){
+  localStorage.setItem('tt_serve_return', window.location.pathname.split('/').pop() || 'match-trainer.html');
+  window.location.href='serve-settings.html';
+}
+
+function getWeightedSpin(){
+  let settings;
+  try{
+    settings=JSON.parse(localStorage.getItem('tt_serve_settings'));
+  }catch(e){}
+  if(!settings) settings={sidespin:25,nospin:25,sidetopspin:25,backspin:25};
+
+  const pool=[];
+  Object.entries(settings).forEach(([key,weight])=>{
+    const n=Math.max(0,Number(weight)||0);
+    for(let i=0;i<n;i++) pool.push(key);
+  });
+  const spinType=pool.length?pool[Math.floor(Math.random()*pool.length)]:null;
+  return SCENARIOS.find(s=>s.spinType===spinType)||SCENARIOS[Math.floor(Math.random()*SCENARIOS.length)];
+}
 const SP={B:'back',N:'no'}, LN={S:'short',L:'long',H:'high'}, SD={F:'fh',B:'bh'};
 const OPPONENT={name:'何爸',firstRedProb:2/3,stayRedProb:0.8,stayBlackProb:0.5};
 
@@ -695,7 +718,7 @@ function showMyServe(){
 function startServePhase(){
   M.phase='serve';
   M.phase1Done=false;
-  const sc=SCENARIOS[Math.floor(Math.random()*SCENARIOS.length)];
+  const sc=getWeightedSpin();
   M.currentSc=sc;
   M.stats.serveTotal++;
   setPhasebar(0,2);

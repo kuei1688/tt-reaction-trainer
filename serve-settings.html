@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>發球設定</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&family=Roboto+Mono:wght@400;700&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#0d1117;--surface:#161b22;--surface2:#21262d;
+  --border:#30363d;--green:#3fb950;--yellow:#d29922;
+  --red:#f85149;--blue:#58a6ff;--text:#e6edf3;--muted:#7d8590;
+  --radius:10px;
+}
+body{
+  background:var(--bg);color:var(--text);
+  font-family:'Noto Sans TC',sans-serif;
+  min-height:100vh;display:flex;flex-direction:column;
+  align-items:center;padding:32px 16px 60px;
+}
+.wrap{width:100%;max-width:480px;}
+
+h1{
+  font-size:11px;letter-spacing:0.22em;
+  text-transform:uppercase;color:var(--muted);
+  text-align:center;margin-bottom:8px;
+}
+.page-title{
+  font-size:24px;font-weight:900;text-align:center;
+  margin-bottom:4px;
+}
+.page-sub{
+  font-size:13px;color:var(--muted);text-align:center;
+  margin-bottom:28px;line-height:1.6;
+}
+
+/* 預設模式 */
+.section-title{
+  font-size:10px;letter-spacing:0.16em;
+  text-transform:uppercase;color:var(--muted);
+  margin-bottom:12px;
+}
+.preset-grid{
+  display:grid;grid-template-columns:1fr 1fr 1fr;
+  gap:10px;margin-bottom:24px;
+}
+.preset-btn{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:14px 8px;
+  cursor:pointer;text-align:center;
+  transition:border-color 0.12s,background 0.12s;
+}
+.preset-btn:hover{border-color:var(--green);}
+.preset-btn.active{
+  border-color:var(--green);
+  background:rgba(63,185,80,0.08);
+}
+.preset-icon{font-size:22px;margin-bottom:6px;}
+.preset-name{font-size:13px;font-weight:700;color:var(--text);}
+.preset-sub{font-size:11px;color:var(--muted);margin-top:3px;line-height:1.4;}
+
+/* 比例設定 */
+.spin-settings{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:18px;margin-bottom:20px;
+}
+.spin-row{
+  display:flex;align-items:center;gap:12px;
+  padding:10px 0;
+  border-bottom:1px solid var(--surface2);
+}
+.spin-row:last-child{border-bottom:none;}
+.spin-label{
+  width:60px;font-size:13px;font-weight:600;
+  flex-shrink:0;
+}
+.spin-bar-wrap{
+  flex:1;height:6px;background:var(--surface2);
+  border-radius:3px;overflow:hidden;
+}
+.spin-bar{height:100%;border-radius:3px;transition:width 0.3s;}
+.spin-val{
+  width:38px;text-align:right;
+  font-family:'Roboto Mono',monospace;
+  font-size:13px;font-weight:700;color:var(--text);
+  flex-shrink:0;
+}
+.spin-controls{
+  display:flex;gap:4px;flex-shrink:0;
+}
+.spin-btn{
+  width:26px;height:26px;
+  background:var(--surface2);
+  border:1px solid var(--border);
+  border-radius:6px;
+  color:var(--text);font-size:14px;
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:border-color 0.12s;
+}
+.spin-btn:hover{border-color:var(--green);color:var(--green);}
+.spin-btn:disabled{opacity:0.3;cursor:default;}
+
+/* 總計提示 */
+.total-bar{
+  display:flex;justify-content:space-between;
+  align-items:center;
+  padding:10px 14px;
+  border-radius:8px;
+  margin-bottom:20px;
+  font-size:13px;
+}
+.total-bar.ok{background:rgba(63,185,80,0.08);border:1px solid rgba(63,185,80,0.2);}
+.total-bar.warn{background:rgba(248,81,73,0.08);border:1px solid rgba(248,81,73,0.2);}
+.total-num{
+  font-family:'Roboto Mono',monospace;
+  font-weight:700;font-size:15px;
+}
+.total-bar.ok .total-num{color:var(--green);}
+.total-bar.warn .total-num{color:var(--red);}
+
+/* 視覺分布 */
+.dist-bar{
+  display:flex;height:12px;border-radius:6px;
+  overflow:hidden;margin-bottom:24px;gap:2px;
+}
+.dist-seg{height:100%;border-radius:3px;transition:flex 0.3s;}
+
+/* 儲存按鈕 */
+.btn-save{
+  width:100%;background:var(--green);color:#0d1117;
+  border:none;border-radius:var(--radius);
+  padding:16px;font-family:'Noto Sans TC',sans-serif;
+  font-size:16px;font-weight:900;cursor:pointer;
+  transition:opacity 0.15s;margin-bottom:12px;
+}
+.btn-save:hover{opacity:0.88;}
+.btn-save:disabled{opacity:0.4;cursor:default;}
+
+.btn-back{
+  width:100%;background:transparent;color:var(--muted);
+  border:1px solid var(--border);border-radius:var(--radius);
+  padding:13px;font-family:'Noto Sans TC',sans-serif;
+  font-size:14px;cursor:pointer;
+  transition:border-color 0.15s,color 0.15s;
+}
+.btn-back:hover{border-color:var(--text);color:var(--text);}
+
+.saved-notice{
+  text-align:center;font-size:12px;color:var(--green);
+  margin-top:10px;height:16px;
+  transition:opacity 0.3s;
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>桌球訓練系統</h1>
+  <div class="page-title">發球設定</div>
+  <div class="page-sub">設定訓練時會出現的發球種類與比例</div>
+
+  <!-- 預設模式 -->
+  <div class="section-title">快速套用</div>
+  <div class="preset-grid">
+    <div class="preset-btn" id="preset-heba" onclick="applyPreset('heba')">
+      <div class="preset-icon">🏓</div>
+      <div class="preset-name">何爸模式</div>
+      <div class="preset-sub">側下旋為主<br>混入不轉側旋</div>
+    </div>
+    <div class="preset-btn" id="preset-balanced" onclick="applyPreset('balanced')">
+      <div class="preset-icon">⚖️</div>
+      <div class="preset-name">均衡模式</div>
+      <div class="preset-sub">四種旋轉<br>平均分配</div>
+    </div>
+    <div class="preset-btn" id="preset-custom" onclick="applyPreset('custom')">
+      <div class="preset-icon">🎛️</div>
+      <div class="preset-name">自訂模式</div>
+      <div class="preset-sub">手動調整<br>各種比例</div>
+    </div>
+  </div>
+
+  <!-- 比例設定 -->
+  <div class="section-title">各旋轉比例</div>
+  <div class="spin-settings" id="spinSettings">
+    <!-- 動態生成 -->
+  </div>
+
+  <!-- 總計 -->
+  <div class="total-bar ok" id="totalBar">
+    <span>總計</span>
+    <span class="total-num" id="totalNum">100%</span>
+  </div>
+
+  <!-- 視覺分布條 -->
+  <div class="dist-bar" id="distBar"></div>
+
+  <button class="btn-save" id="btnSave" onclick="saveSettings()">儲存設定</button>
+  <button class="btn-back" onclick="goBack()">← 返回</button>
+  <div class="saved-notice" id="savedNotice"></div>
+</div>
+
+<script>
+const SPINS = [
+  { key:'sidespin',    label:'側旋',   color:'#bc8cff' },
+  { key:'nospin',      label:'不轉',   color:'#3fb950' },
+  { key:'sidetopspin', label:'側下旋', color:'#d29922' },
+  { key:'backspin',    label:'下旋',   color:'#58a6ff' },
+];
+
+const PRESETS = {
+  heba:     { sidespin:30, nospin:25, sidetopspin:35, backspin:10 },
+  balanced: { sidespin:25, nospin:25, sidetopspin:25, backspin:25 },
+};
+
+const STORAGE_KEY = 'tt_serve_settings';
+const RETURN_KEY  = 'tt_serve_return';
+
+// 載入設定
+function loadSettings(){
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if(saved) return JSON.parse(saved);
+  } catch(e){}
+  return {...PRESETS.balanced};
+}
+
+let weights = loadSettings();
+let currentPreset = detectPreset(weights);
+
+function detectPreset(w){
+  for(const [key, preset] of Object.entries(PRESETS)){
+    if(Object.keys(preset).every(k => preset[k]===w[k])) return key;
+  }
+  return 'custom';
+}
+
+function applyPreset(name){
+  if(name==='custom'){
+    currentPreset='custom';
+    updatePresetUI();
+    enableControls(true);
+    return;
+  }
+  weights = {...PRESETS[name]};
+  currentPreset = name;
+  updateAll();
+  enableControls(name==='custom');
+}
+
+function enableControls(enabled){
+  document.querySelectorAll('.spin-btn').forEach(b=>{
+    b.disabled = !enabled;
+  });
+}
+
+function adjust(key, delta){
+  const newVal = weights[key] + delta;
+  if(newVal < 0 || newVal > 100) return;
+  const total = Object.values(weights).reduce((a,b)=>a+b,0);
+  if(delta>0 && total>=100) return;
+  weights[key] = newVal;
+  currentPreset = 'custom';
+  updateAll();
+}
+
+function getTotal(){ return Object.values(weights).reduce((a,b)=>a+b,0); }
+
+function updateAll(){
+  updateSpinRows();
+  updatePresetUI();
+  updateTotalBar();
+  updateDistBar();
+  updateSaveBtn();
+}
+
+function updateSpinRows(){
+  SPINS.forEach(s=>{
+    const bar = document.getElementById('bar-'+s.key);
+    const val = document.getElementById('val-'+s.key);
+    if(bar) bar.style.width = weights[s.key]+'%';
+    if(val) val.textContent = weights[s.key]+'%';
+  });
+}
+
+function updatePresetUI(){
+  ['heba','balanced','custom'].forEach(p=>{
+    const el = document.getElementById('preset-'+p);
+    if(el) el.classList.toggle('active', currentPreset===p);
+  });
+}
+
+function updateTotalBar(){
+  const total = getTotal();
+  const bar = document.getElementById('totalBar');
+  const num = document.getElementById('totalNum');
+  num.textContent = total+'%';
+  bar.className = 'total-bar '+(total===100?'ok':'warn');
+}
+
+function updateDistBar(){
+  const total = getTotal();
+  const db = document.getElementById('distBar');
+  if(total===0){ db.innerHTML=''; return; }
+  db.innerHTML = SPINS.map(s=>`
+    <div class="dist-seg" style="flex:${weights[s.key]};background:${s.color};" title="${s.label} ${weights[s.key]}%"></div>
+  `).join('');
+}
+
+function updateSaveBtn(){
+  document.getElementById('btnSave').disabled = getTotal()!==100;
+}
+
+function renderSpinRows(){
+  const wrap = document.getElementById('spinSettings');
+  wrap.innerHTML = SPINS.map(s=>`
+    <div class="spin-row">
+      <div class="spin-label" style="color:${s.color};">${s.label}</div>
+      <div class="spin-bar-wrap">
+        <div class="spin-bar" id="bar-${s.key}" style="width:${weights[s.key]}%;background:${s.color};"></div>
+      </div>
+      <div class="spin-val" id="val-${s.key}">${weights[s.key]}%</div>
+      <div class="spin-controls">
+        <button class="spin-btn" onclick="adjust('${s.key}',-5)">−</button>
+        <button class="spin-btn" onclick="adjust('${s.key}',+5)">＋</button>
+      </div>
+    </div>
+  `).join('');
+  enableControls(currentPreset==='custom');
+}
+
+function saveSettings(){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(weights));
+  const notice = document.getElementById('savedNotice');
+  notice.textContent = '✓ 已儲存';
+  notice.style.opacity='1';
+  setTimeout(()=>notice.style.opacity='0', 2000);
+}
+
+function goBack(){
+  const returnTo = localStorage.getItem(RETURN_KEY) || 'index.html';
+  window.location.href = returnTo;
+}
+
+// 初始化
+renderSpinRows();
+updateAll();
+</script>
+</body>
+</html>

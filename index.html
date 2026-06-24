@@ -674,6 +674,9 @@
 
   <button class="start-btn" id="setupDoneBtn" type="button">確認，開始訓練</button>
   <div style="text-align:center;">
+    <span class="tut-help-link" onclick="goToSettings()">⚙️ 發球設定</span>
+  </div>
+  <div style="text-align:center;">
     <span class="tut-help-link" id="showTutBtn2">？ 玩法說明</span>
   </div>
 </div>
@@ -701,6 +704,9 @@
   </div>
 
   <button class="start-btn" id="startBtn" type="button">開始訓練</button>
+  <div style="text-align:center;">
+    <span class="tut-help-link" onclick="goToSettings()">⚙️ 發球設定</span>
+  </div>
   <div style="text-align:center;">
     <span class="tut-help-link" id="showTutBtn">？ 玩法說明</span>
   </div>
@@ -965,6 +971,27 @@ const SCENARIOS = [
   }
 ];
 
+function goToSettings() {
+  localStorage.setItem('tt_serve_return', window.location.pathname.split('/').pop() || 'index.html');
+  window.location.href = 'serve-settings.html';
+}
+
+function getWeightedSpin() {
+  let settings;
+  try {
+    settings = JSON.parse(localStorage.getItem('tt_serve_settings'));
+  } catch(e) {}
+  if (!settings) settings = { sidespin:25, nospin:25, sidetopspin:25, backspin:25 };
+
+  const pool = [];
+  Object.entries(settings).forEach(([key, weight]) => {
+    const n = Math.max(0, Number(weight) || 0);
+    for (let i = 0; i < n; i++) pool.push(key);
+  });
+  const spinType = pool.length ? pool[Math.floor(Math.random() * pool.length)] : null;
+  return SCENARIOS.find(s => s.spinType === spinType) || SCENARIOS[Math.floor(Math.random() * SCENARIOS.length)];
+}
+
 // ═══ TECH FEEDBACK ═══
 const TECH_FEEDBACK = {
   sidespin: {
@@ -1084,8 +1111,8 @@ function buildQueue() {
   if (SETUP.short) lengths.push('short');
   if (lengths.length === 0) lengths.push('long'); // 防呆
 
-  const q = [...SCENARIOS, ...SCENARIOS].map(sc => ({
-    ...sc,
+  const q = Array.from({ length: SCENARIOS.length * 2 }, () => ({
+    ...getWeightedSpin(),
     length: lengths[Math.floor(Math.random() * lengths.length)]
   }));
   for (let i = q.length - 1; i > 0; i--) {
