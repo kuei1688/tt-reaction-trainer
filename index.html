@@ -291,6 +291,32 @@
   }
   .tut-help-link:hover { color: var(--text); }
 
+  /* ── SETUP SKILLS ── */
+  .skill-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    cursor: pointer;
+    transition: border-color 0.12s;
+  }
+  .skill-item:hover { border-color: var(--green); }
+  .skill-item.checked { border-color: var(--green); background: rgba(63,185,80,0.08); }
+  .skill-check {
+    width: 16px; height: 16px;
+    border: 1.5px solid var(--border);
+    border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    font-size: 11px;
+    color: var(--green);
+  }
+  .skill-item.checked .skill-check { border-color: var(--green); }
+  .skill-text { font-size: 13px; color: var(--text); }
+
   .start-btn {
     background: var(--green);
     border: none; border-radius: var(--radius);
@@ -604,8 +630,56 @@
 
 </div>
 
+<!-- ════ SETUP SCREEN ════ -->
+<div class="screen" id="setupScreen">
+  <div class="logo-mark">🏓</div>
+  <div class="start-title" style="margin-bottom:6px;">接發球判斷訓練</div>
+  <div class="start-sub">開始前，設定你的訓練內容</div>
+
+  <div class="principle-box" style="margin-bottom:16px;">
+    <h3>球種情境</h3>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <div class="skill-item checked" id="sk-long" onclick="toggleSetup('long',this)">
+        <div class="skill-check" id="sk-long-check">✓</div>
+        <span class="skill-text">長球</span>
+      </div>
+      <div class="skill-item" id="sk-short" onclick="toggleSetup('short',this)">
+        <div class="skill-check" id="sk-short-check"></div>
+        <span class="skill-text">短球</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="principle-box" style="margin-bottom:24px;">
+    <h3>我會的技術（勾選後會影響正確答案）</h3>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <div class="skill-item" id="sk-fhLoop" onclick="toggleSetup('fhLoop',this)">
+        <div class="skill-check" id="sk-fhLoop-check"></div>
+        <span class="skill-text">正手上旋拉球</span>
+      </div>
+      <div class="skill-item" id="sk-bhLoop" onclick="toggleSetup('bhLoop',this)">
+        <div class="skill-check" id="sk-bhLoop-check"></div>
+        <span class="skill-text">反手上旋拉球</span>
+      </div>
+      <div class="skill-item" id="sk-fhChopLoop" onclick="toggleSetup('fhChopLoop',this)">
+        <div class="skill-check" id="sk-fhChopLoop-check"></div>
+        <span class="skill-text">正手下旋拉球</span>
+      </div>
+      <div class="skill-item" id="sk-bhChopLoop" onclick="toggleSetup('bhChopLoop',this)">
+        <div class="skill-check" id="sk-bhChopLoop-check"></div>
+        <span class="skill-text">反手下旋拉球</span>
+      </div>
+    </div>
+  </div>
+
+  <button class="start-btn" id="setupDoneBtn" type="button">確認，開始訓練</button>
+  <div style="text-align:center;">
+    <span class="tut-help-link" id="showTutBtn2">？ 玩法說明</span>
+  </div>
+</div>
+
 <!-- ════ START SCREEN ════ -->
-<div class="screen" id="startScreen">
+<div class="screen hidden" id="startScreen">
   <div class="logo-mark">🏓</div>
   <div class="start-title">接發球判斷訓練</div>
   <div class="start-sub">反手發球情境 · 第一版</div>
@@ -648,7 +722,6 @@
     <div class="ph" id="ph1"></div>
     <div class="ph" id="ph2"></div>
     <div class="ph" id="ph3"></div>
-    <div class="ph" id="ph4"></div>
   </div>
 
   <div class="timer-wrap"><div class="timer-bar" id="timerBar"></div></div>
@@ -950,20 +1023,71 @@ function tableSVG(side) {
 </svg>`;
 }
 
+// ═══ SETUP STATE ═══
+const SETUP = {
+  long: true,
+  short: false,
+  fhLoop: false,
+  bhLoop: false,
+  fhChopLoop: false,
+  bhChopLoop: false,
+};
+
+function toggleSetup(key, el) {
+  SETUP[key] = !SETUP[key];
+  el.classList.toggle('checked', SETUP[key]);
+  document.getElementById('sk-' + key + '-check').textContent = SETUP[key] ? '✓' : '';
+}
+
+// 根據情境、落點、技術設定決定正確技術
+function getCorrectTech(spinType, landing, length) {
+  const isBackspin = (spinType === 'backspin' || spinType === 'sidetopspin');
+  if (length === 'short') {
+    // 短球：不管旋轉，切球或攻球/平推，不用拉球
+    if (isBackspin) return '切球';
+    return landing === 'fh' ? '攻球' : '平推';
+  }
+  // 長球
+  if (isBackspin) {
+    if (landing === 'fh') return SETUP.fhChopLoop ? '正手下旋拉球' : '拉球';
+    return SETUP.bhChopLoop ? '反手下旋拉球' : '切球';
+  } else {
+    if (landing === 'fh') return SETUP.fhLoop ? '正手上旋拉球' : '攻球';
+    return SETUP.bhLoop ? '反手上旋拉球' : '平推';
+  }
+}
+
+// 取干擾選項
+function getDistractors(correct, spinType, landing, length) {
+  const isBackspin = (spinType === 'backspin' || spinType === 'sidetopspin');
+  const pool = landing === 'fh'
+    ? ['切球', '拉球', '攻球', '撥球', '正手下旋拉球', '正手上旋拉球']
+    : ['切球', '平推', '撥球', '反手下旋拉球', '反手上旋拉球'];
+  return pool.filter(t => t !== correct).slice(0, 2);
+}
+
 // ═══ STATE ═══
 let queue = [];
 let qIndex = 0;
 let score = 0;
 let streak = 0;
 let timerInterval = null;
-let gamePhase = 'spin'; // 'spin' | 'landing' | 'tech'
+let gamePhase = 'spin'; // 'spin' | 'tech'
 let selectedSpin = null;
 let selectedLanding = null;
 const TIMER_MS = 5000;
 const TICK = 60;
 
 function buildQueue() {
-  const q = [...SCENARIOS, ...SCENARIOS]; // each scenario appears twice
+  const lengths = [];
+  if (SETUP.long) lengths.push('long');
+  if (SETUP.short) lengths.push('short');
+  if (lengths.length === 0) lengths.push('long'); // 防呆
+
+  const q = [...SCENARIOS, ...SCENARIOS].map(sc => ({
+    ...sc,
+    length: lengths[Math.floor(Math.random() * lengths.length)]
+  }));
   for (let i = q.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [q[i], q[j]] = [q[j], q[i]];
@@ -979,7 +1103,7 @@ function renderQuestion() {
   selectedLanding = null;
 
   // phase bar: phase 1 active
-  ['ph1','ph2','ph3','ph4'].forEach((id, i) => {
+  ['ph1','ph2','ph3'].forEach((id, i) => {
     const el = document.getElementById(id);
     el.className = 'ph' + (i === 0 ? ' active' : '');
   });
@@ -1042,7 +1166,7 @@ function renderLanding(sc) {
   window._currentLandingSide = sides[Math.floor(Math.random() * 2)];
   const side = window._currentLandingSide;
 
-  ['ph1','ph2','ph3','ph4'].forEach((id, i) => {
+  ['ph1','ph2','ph3'].forEach((id, i) => {
     const el = document.getElementById(id);
     el.className = 'ph' + (i === 0 ? ' done' : i === 1 ? ' active' : '');
   });
@@ -1071,37 +1195,103 @@ function renderLanding(sc) {
   startTimer();
 }
 
+// 軌跡圖 canvas（從顆粒訓練移植）
+const TBL2 = { x1:60, x2:180, y1:10, xb1:10, xb2:230, y2:140 };
+function toTrajPx2(gx, gy, W, H) {
+  const t = Math.max(-0.3, Math.min(1.35, gy/10));
+  const left  = TBL2.x1 + (TBL2.xb1-TBL2.x1)*t;
+  const right = TBL2.x2 + (TBL2.xb2-TBL2.x2)*t;
+  return [left+(gx/10)*(right-left), TBL2.y1+t*(TBL2.y2-TBL2.y1)];
+}
+function drawTrajCanvas2(canvas, landing, length) {
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0,0,W,H);
+  // 桌面
+  ctx.strokeStyle='#558'; ctx.lineWidth=1.5;
+  ctx.beginPath();
+  const corners = [[0,0],[10,0],[10,10],[0,10]].map(([gx,gy])=>toTrajPx2(gx,gy,W,H));
+  ctx.moveTo(...corners[0]); corners.forEach(c=>ctx.lineTo(...c)); ctx.closePath(); ctx.stroke();
+  // 縱中線
+  const [tmx,tmy]=toTrajPx2(5,0,W,H),[bmx,bmy]=toTrajPx2(5,10,W,H);
+  ctx.beginPath(); ctx.moveTo(tmx,tmy); ctx.lineTo(bmx,bmy); ctx.stroke();
+  // 球網
+  const [nl,nly]=toTrajPx2(0,5,W,H),[nr,nry]=toTrajPx2(10,5,W,H);
+  ctx.strokeStyle='#22c55e'; ctx.lineWidth=3;
+  ctx.beginPath(); ctx.moveTo(nl,nly); ctx.lineTo(nr,nry); ctx.stroke();
+
+  // 軌跡參數
+  const isFH = landing === 'fh';
+  let p1,p2,p3,bulge,color;
+  if(length==='short'){
+    color = '#f87171';
+    if(isFH){ p1=[3,3];p2=[6,6];p3=[8,8]; bulge=-45; }
+    else     { p1=[3,3];p2=[2,7];p3=[1,9]; bulge=45; }
+  } else {
+    color = '#7dd3fc';
+    if(isFH){ p1=[3,-2];p2=[8,8];p3=[10,12]; bulge=-55; }
+    else     { p1=[3,-2];p2=[2,8];p3=[1,10.5]; bulge=55; }
+  }
+  // 畫弧
+  function arc(x1,y1,x2,y2,b,c){
+    const mx=(x1+x2)/2,my=(y1+y2)/2;
+    const dx=x2-x1,dy=y2-y1,len=Math.sqrt(dx*dx+dy*dy);
+    const cx=mx+(-dy/len)*b, cy=my+(dx/len)*b;
+    ctx.beginPath(); ctx.moveTo(x1,y1);
+    ctx.quadraticCurveTo(cx,cy,x2,y2);
+    ctx.strokeStyle=c; ctx.lineWidth=2.5; ctx.stroke();
+  }
+  const [x1,y1]=toTrajPx2(...p1,W,H),[x2,y2]=toTrajPx2(...p2,W,H),[x3,y3]=toTrajPx2(...p3,W,H);
+  arc(x1,y1,x2,y2,bulge,color);
+  arc(x2,y2,x3,y3,bulge*0.85,color);
+  ctx.beginPath(); ctx.arc(x3,y3,8,0,Math.PI*2); ctx.fillStyle=color; ctx.fill();
+  // 標籤
+  const lx=isFH?8:2, ly=6;
+  const [lbx,lby]=toTrajPx2(lx,ly,W,H);
+  ctx.fillStyle=color; ctx.font='bold 14px sans-serif';
+  ctx.textAlign='center'; ctx.fillText(length==='short'?'短球':'長球',lbx,lby);
+}
+
 function renderTech(sc, landing) {
   gamePhase = 'tech';
 
-  ['ph1','ph2','ph3','ph4'].forEach((id, i) => {
+  ['ph1','ph2','ph3'].forEach((id, i) => {
     const el = document.getElementById(id);
-    el.className = 'ph' + (i < 2 ? ' done' : i === 2 ? ' active' : '');
+    el.className = 'ph' + (i < 1 ? ' done' : i === 1 ? ' active' : '');
   });
 
-  const correctTech = sc.techMap[landing];
-  const wrongTechs = landing === 'fh'
-    ? ['切球', '拉球', '撥球'].filter(t => t !== correctTech)
-    : ['切球', '平推', '撥球'].filter(t => t !== correctTech);
-  const allTechs = [correctTech, wrongTechs[0], wrongTechs[1]].sort(() => Math.random() - 0.5);
+  const length = sc.length || 'long';
+  const correctTech = getCorrectTech(sc.spinType, landing, length);
+  const distractors = getDistractors(correctTech, sc.spinType, landing, length);
+  const allTechs = [correctTech, ...distractors].sort(() => Math.random() - 0.5);
   const correctIdx = allTechs.indexOf(correctTech);
 
-  // Store for answer checking
   window._currentTechs = allTechs;
   window._correctTechIdx = correctIdx;
+  window._currentLength = length;
 
+  const canvasId = 'trajCanvas_' + Date.now();
   document.getElementById('answerArea').innerHTML = `
-    <div class="cue-box blue" style="margin-bottom:10px;">
+    <div class="cue-box blue" style="margin-bottom:8px;">
       <div class="cue-dot" style="background:var(--blue);animation:none;opacity:1;"></div>
       <div class="cue-text" style="color:var(--blue)">選擇技術</div>
     </div>
-    <div class="q-label" style="margin-bottom:8px;">技術是？</div>
+    <div style="display:flex;gap:8px;margin-bottom:6px;">
+      <span style="padding:4px 12px;border-radius:20px;font-size:13px;font-weight:600;background:${landing==='fh'?'#1a2535':'#251a35'};color:${landing==='fh'?'#7dd3fc':'#c4b5fd'};border:1px solid ${landing==='fh'?'#1e40af':'#5b21b6'};">${landing==='fh'?'落我正手位':'落我反手位'}</span>
+      <span style="padding:4px 12px;border-radius:20px;font-size:13px;font-weight:600;background:${length==='short'?'#0f2a1a':'#0f1e2a'};color:${length==='short'?'#86efac':'#93c5fd'};border:1px solid ${length==='short'?'#166534':'#1d4ed8'};">${length==='short'?'短球':'長球'}</span>
+    </div>
+    <canvas id="${canvasId}" width="240" height="150" style="width:100%;border-radius:6px;background:#000;margin-bottom:8px;"></canvas>
     <div style="display:flex;flex-direction:column;gap:8px;" id="techArea">
       ${allTechs.map((t, i) =>
         `<button class="opt" onclick="answerTech(${i})" style="width:100%;">${t}</button>`
       ).join('')}
     </div>
   `;
+
+  // 畫軌跡圖
+  const canvas = document.getElementById(canvasId);
+  if(canvas) drawTrajCanvas2(canvas, landing, length);
+
   startTimer();
 }
 
@@ -1155,8 +1345,18 @@ function answerSpin(idx) {
   }
 
   selectedSpin = sc.spinChoices[idx];
-  // Proceed to landing after short delay
-  setTimeout(() => renderLanding(sc), 400);
+  // 隨機決定落點和長短，直接跳技術
+  const sides = ['fh', 'bh'];
+  const lengths = [];
+  if (SETUP.long) lengths.push('long');
+  if (SETUP.short) lengths.push('short');
+  if (lengths.length === 0) lengths.push('long');
+  const autoLanding = sides[Math.floor(Math.random() * 2)];
+  const autoLength  = lengths[Math.floor(Math.random() * lengths.length)];
+  sc.length = autoLength;
+  window._currentLandingSide = autoLanding;
+  selectedLanding = autoLanding;
+  setTimeout(() => renderTech(sc, autoLanding), 400);
 }
 
 function answerLanding(side) {
@@ -1207,8 +1407,8 @@ function answerTech(idx) {
   document.getElementById('scoreNum').textContent = score;
   document.getElementById('streakNum').textContent = streak;
 
-  ['ph1','ph2','ph3','ph4'].forEach((id, i) => {
-    document.getElementById(id).className = 'ph' + (i < 3 ? ' done' : i === 3 ? ' active' : '');
+  ['ph1','ph2','ph3'].forEach((id, i) => {
+    document.getElementById(id).className = 'ph' + (i < 2 ? ' done' : i === 2 ? ' active' : '');
   });
 
   showTechFeedback(sc, selectedLanding, correct);
@@ -1241,16 +1441,32 @@ function showSpinFeedback(sc, correct, timedOut) {
   showNextControls();
 }
 
+function getTechTip(spinType, landing, length) {
+  const isBackspin = (spinType === 'backspin' || spinType === 'sidetopspin');
+  const correct = getCorrectTech(spinType, landing, length);
+  if (length === 'short') {
+    if (isBackspin) return '短球帶旋轉，切球穩定過渡。';
+    return landing === 'fh' ? '短球不轉正手位，攻球進攻。' : '短球不轉反手位，平推過渡。';
+  }
+  if (isBackspin) {
+    if (landing === 'fh') return correct.includes('拉') ? '長球下旋正手位，條件好用拉球進攻。' : '長球下旋正手位，拉球進攻。';
+    return correct.includes('拉') ? '長球下旋反手位，反手下旋拉球。' : '長球下旋反手位，切球過渡。';
+  } else {
+    if (landing === 'fh') return correct.includes('拉') ? '長球不轉正手位，上旋拉球進攻。' : '長球不轉正手位，攻球進攻。';
+    return correct.includes('拉') ? '長球不轉反手位，反手上旋拉球。' : '長球不轉反手位，平推過渡。';
+  }
+}
+
 function showTechFeedback(sc, landing, correct) {
-  const fb = TECH_FEEDBACK[sc.spinType][landing];
+  const length = sc.length || window._currentLength || 'long';
+  const tip = getTechTip(sc.spinType, landing, length);
   const area = document.getElementById('feedbackArea');
   document.getElementById('fbIcon').textContent = correct ? '✓' : '✗';
   document.getElementById('fbTitle').className = 'fb-title ' + (correct ? 'ok' : 'bad');
   document.getElementById('fbTitle').textContent = correct ? '正確，下一球' : '不對';
-  document.getElementById('fbTip').textContent = '💡 ' + fb.tip;
+  document.getElementById('fbTip').textContent = '💡 ' + tip;
   area.className = 'feedback show';
 
-  // 手機版節奏：答對自動進下一題；答錯才停下來顯示大按鈕。
   if (correct) autoNextQuestion(900);
   else showNextControls();
 }
@@ -1294,6 +1510,8 @@ function startGame() {
   document.getElementById('scoreNum').textContent = 0;
   document.getElementById('streakNum').textContent = 0;
   hideNextControls();
+  document.getElementById('tutorialScreen').classList.add('hidden');
+  document.getElementById('setupScreen').classList.add('hidden');
   document.getElementById('startScreen').classList.add('hidden');
   document.getElementById('endScreen').classList.add('hidden');
   document.getElementById('gameScreen').classList.remove('hidden');
@@ -1347,37 +1565,52 @@ window.addEventListener('error', function (event) {
 });
 
 document.addEventListener('DOMContentLoaded', function () {
-  const startBtn    = document.getElementById('startBtn');
-  const restartBtn  = document.getElementById('restartBtn');
-  const floatNextBtn= document.getElementById('floatNext');
-  const tutStartBtn = document.getElementById('tutStartBtn');
-  const showTutBtn  = document.getElementById('showTutBtn');
+  const startBtn     = document.getElementById('startBtn');
+  const restartBtn   = document.getElementById('restartBtn');
+  const floatNextBtn = document.getElementById('floatNext');
+  const tutStartBtn  = document.getElementById('tutStartBtn');
+  const showTutBtn   = document.getElementById('showTutBtn');
+  const showTutBtn2  = document.getElementById('showTutBtn2');
+  const setupDoneBtn = document.getElementById('setupDoneBtn');
 
   function showScreen(id) {
-    ['tutorialScreen','startScreen','gameScreen','endScreen'].forEach(s => {
+    ['tutorialScreen','setupScreen','startScreen','gameScreen','endScreen'].forEach(s => {
       document.getElementById(s).classList.add('hidden');
     });
     document.getElementById(id).classList.remove('hidden');
   }
 
-  // 第一次進入自動顯示說明
+  // 第一次進入自動顯示說明，之後直接進設定畫面
   if (!localStorage.getItem('tt_tutorial_seen')) {
     showScreen('tutorialScreen');
+  } else {
+    showScreen('setupScreen');
   }
 
-  // 說明頁「開始訓練」
+  // 說明頁「開始訓練」→ 設定畫面
   if (tutStartBtn) tutStartBtn.addEventListener('click', function () {
     localStorage.setItem('tt_tutorial_seen', '1');
-    showScreen('startScreen');
+    showScreen('setupScreen');
   });
 
-  // 開始畫面「？玩法說明」
+  // 設定畫面「玩法說明」
+  if (showTutBtn2) showTutBtn2.addEventListener('click', function () {
+    showScreen('tutorialScreen');
+  });
+
+  // 舊開始畫面「玩法說明」
   if (showTutBtn) showTutBtn.addEventListener('click', function () {
     showScreen('tutorialScreen');
   });
 
+  // 設定完成 → 開始遊戲
+  if (setupDoneBtn) setupDoneBtn.addEventListener('click', function (e) {
+    e.preventDefault();
+    startGame();
+  });
+
   if (startBtn)     startBtn.addEventListener('click',    function (e) { e.preventDefault(); startGame(); });
-  if (restartBtn)   restartBtn.addEventListener('click',  function (e) { e.preventDefault(); restartGame(); });
+  if (restartBtn)   restartBtn.addEventListener('click',  function (e) { e.preventDefault(); showScreen('setupScreen'); });
   if (floatNextBtn) floatNextBtn.addEventListener('click',function (e) { e.preventDefault(); nextQuestion(); });
 });
 
