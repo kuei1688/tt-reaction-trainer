@@ -359,6 +359,33 @@ body{
     </div>
   </div>
 
+  <div class="setup-section" style="margin-bottom:14px;">
+    <h3>難度模式</h3>
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      <div class="skill-item" id="diff-beginner" onclick="setDifficulty('beginner')">
+        <div class="skill-check" id="diff-beginner-check"></div>
+        <div>
+          <div class="skill-text">新手模式</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px;">影片循環，自己按準備好才計時（15秒）</div>
+        </div>
+      </div>
+      <div class="skill-item checked" id="diff-practice" onclick="setDifficulty('practice')">
+        <div class="skill-check" id="diff-practice-check">✓</div>
+        <div>
+          <div class="skill-text">練習模式</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px;">影片循環，從影片開始計時（7秒）</div>
+        </div>
+      </div>
+      <div class="skill-item" id="diff-match" onclick="setDifficulty('match')">
+        <div class="skill-check" id="diff-match-check"></div>
+        <div>
+          <div class="skill-text">比賽模式</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px;">影片播完一次，選項同時出現，計時2秒</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <button class="btn-primary" onclick="startMatch()">開始對決 →</button>
   <div style="margin-top:16px;text-align:center;">
     <span class="hint-text" style="cursor:pointer;" onclick="goToSettings()">⚙️ 發球設定</span>
@@ -427,7 +454,14 @@ const IMAGE_LIBRARY = {
   backswing_mid:       ['images/backswing_mid/001.jpg'],
   backswing_high:      ['images/backswing_high/001.jpg'],
 };
-function getMedia(key){ const a=IMAGE_LIBRARY[key]; return a[Math.floor(Math.random()*a.length)]; }
+function getMedia(key){
+  const a=IMAGE_LIBRARY[key];
+  if(key.startsWith('contact_')){
+    const videos=a.filter(src=>src.endsWith('.mp4')||src.endsWith('.webm'));
+    if(videos.length) return videos[Math.floor(Math.random()*videos.length)];
+  }
+  return a[Math.floor(Math.random()*a.length)];
+}
 function renderMedia(src,style){
   const ext=src.split('.').pop().toLowerCase();
   if(ext==='mp4'||ext==='webm') return `<video src="${src}" style="${style}" autoplay loop muted playsinline></video>`;
@@ -436,6 +470,20 @@ function renderMedia(src,style){
 
 // ══════════════════════════════════════
 //  發球情境（遊戲一）
+// ══════════════════════════════════════
+const SCENARIOS = [
+  { id:'sidespin',    spin:'側旋',   spinType:'sidespin',    backswingKey:'high', hint:'高引拍，拍面立起往左側切',
+    spinChoices:['側旋','下旋','側下旋','不轉'], correctSpin:0 },
+  { id:'backspin',    spin:'下旋',   spinType:'backspin',    backswingKey:'low',  hint:'低引拍，拍面水平往下切球底部',
+    spinChoices:['下旋','側旋','側下旋','不轉'], correctSpin:0 },
+  { id:'sidetopspin', spin:'側下旋', spinType:'sidetopspin', backswingKey:'mid',  hint:'中引拍，拍面約45度斜，往左下方切',
+    spinChoices:['側下旋','純下旋','側旋','不轉'], correctSpin:0 },
+  { id:'nospin',      spin:'不轉',   spinType:'nospin',      backswingKey:'low',  hint:'低引拍，動作像下旋，但出手輕',
+    spinChoices:['不轉','下旋','側下旋','側旋'], correctSpin:0 },
+];
+
+// ══════════════════════════════════════
+//  顆粒對打邏輯（遊戲二）
 // ══════════════════════════════════════
 function goToSettings(){
   localStorage.setItem('tt_serve_return', window.location.pathname.split('/').pop() || 'match-trainer.html');
@@ -457,20 +505,7 @@ function getWeightedSpin(){
   const spinType=pool.length?pool[Math.floor(Math.random()*pool.length)]:null;
   return SCENARIOS.find(s=>s.spinType===spinType)||SCENARIOS[Math.floor(Math.random()*SCENARIOS.length)];
 }
-const SCENARIOS = [
-  { id:'sidespin',    spin:'側旋',   spinType:'sidespin',    backswingKey:'high', hint:'高引拍，拍面立起往左側切',
-    spinChoices:['側旋','下旋','側下旋','不轉'], correctSpin:0 },
-  { id:'backspin',    spin:'下旋',   spinType:'backspin',    backswingKey:'low',  hint:'低引拍，拍面水平往下切球底部',
-    spinChoices:['下旋','側旋','側下旋','不轉'], correctSpin:0 },
-  { id:'sidetopspin', spin:'側下旋', spinType:'sidetopspin', backswingKey:'mid',  hint:'中引拍，拍面約45度斜，往左下方切',
-    spinChoices:['側下旋','純下旋','側旋','不轉'], correctSpin:0 },
-  { id:'nospin',      spin:'不轉',   spinType:'nospin',      backswingKey:'low',  hint:'低引拍，動作像下旋，但出手輕',
-    spinChoices:['不轉','下旋','側下旋','側旋'], correctSpin:0 },
-];
 
-// ══════════════════════════════════════
-//  顆粒對打邏輯（遊戲二）
-// ══════════════════════════════════════
 const SP={B:'back',N:'no'}, LN={S:'short',L:'long',H:'high'}, SD={F:'fh',B:'bh'};
 const OPPONENT={name:'何爸',firstRedProb:2/3,stayRedProb:0.8,stayBlackProb:0.5};
 
@@ -609,7 +644,23 @@ function drawPaddle(canvas,face){
 // ══════════════════════════════════════
 //  SETUP 狀態
 // ══════════════════════════════════════
-const SETUP={long:true,short:false,fhLoop:false,bhLoop:false,fhChopLoop:false,bhChopLoop:false};
+const SETUP={long:true,short:false,fhLoop:false,bhLoop:false,fhChopLoop:false,bhChopLoop:false,difficulty:'practice'};
+
+const DIFFICULTY={
+  beginner:{ serveTimer:15,  rallyTimer:10, videoLoop:true,  serveTimerStart:'ready',  videoStop:false },
+  practice:{ serveTimer:7,   rallyTimer:5,  videoLoop:true,  serveTimerStart:'video',   videoStop:false },
+  match:   { serveTimer:2,   rallyTimer:3,  videoLoop:false, serveTimerStart:'videoend',videoStop:true  },
+};
+function setDifficulty(level){
+  SETUP.difficulty = level;
+  ['beginner','practice','match'].forEach(d=>{
+    const el=document.getElementById('diff-'+d);
+    const check=document.getElementById('diff-'+d+'-check');
+    if(el) el.classList.toggle('checked', d===level);
+    if(check) check.textContent = d===level?'✓':'';
+  });
+}
+
 function toggleSetup(key,el){
   SETUP[key]=!SETUP[key];
   el.classList.toggle('checked',SETUP[key]);
@@ -641,13 +692,12 @@ const TIMER_MS=5000, TICK=60;
 const RALLY_MAX=6;
 
 function isMyServe(){
-  const points=M.myScore+M.oppScore;
   if(M.myScore>=10 && M.oppScore>=10){
-    // 10:10 後每 1 分輪換；0 分時仍由何爸先發。
-    return points%2===1;
+    // 10:10後每1分輪換
+    return M.totalPoints%2===1;
   }
-  // 正常每 2 分輪換。
-  return Math.floor(points/2)%2===1;
+  // 正常每2分輪換
+  return Math.floor(M.totalPoints/2)%2===1;
 }
 
 // ══════════════════════════════════════
@@ -727,43 +777,48 @@ function startServePhase(){
   M.currentSc=sc;
   M.stats.serveTotal++;
   setPhasebar(0,2);
-  renderServePhase1(sc);
-  startTimer(()=>onServeTimeout());
+  const diff=DIFFICULTY[SETUP.difficulty];
+  renderServePhase1(sc, diff);
 }
 
-function renderServePhase1(sc){
+function renderServePhase1(sc, diff){
   const contactImg=getMedia('contact_'+sc.spinType);
   const backswingImg=getMedia('backswing_'+sc.backswingKey);
   const isVideo=contactImg.endsWith('.mp4');
+  const isMatch=SETUP.difficulty==='match';
+  const isBeginner=SETUP.difficulty==='beginner';
+
+  // 比賽模式：選項和影片同時出現；新手模式：先只顯示影片，等按準備好
+  const rightPanel = isBeginner
+    ? `<div style="padding:14px 14px 18px 12px;display:flex;flex-direction:column;gap:10px;align-items:center;justify-content:center;">
+        <div style="font-size:13px;color:var(--muted);text-align:center;margin-bottom:12px;">看清楚後再作答</div>
+        <button onclick="onReadyClick()" style="background:var(--green);color:#080b10;border:none;border-radius:8px;padding:12px 20px;font-size:14px;font-weight:700;cursor:pointer;">準備好了 →</button>
+       </div>`
+    : `<div style="padding:14px 14px 18px 12px;display:flex;flex-direction:column;gap:10px;">
+        <div style="font-size:10px;letter-spacing:0.12em;color:var(--muted);text-transform:uppercase;">旋轉是？</div>
+        <div style="display:flex;flex-direction:column;gap:8px;flex:1;" id="spinOptions">
+          ${sc.spinChoices.map((opt,i)=>`<button class="opt" onclick="answerSpin(${i})" style="text-align:center;justify-content:center;font-size:13px;">${opt}</button>`).join('')}
+        </div>
+       </div>`;
+
   document.getElementById('cardArea').innerHTML=`
     <div class="card">
       <div class="card-body" style="padding:0;">
-        <div style="display:grid;grid-template-columns:1fr 1fr;min-height:360px;">
-          <!-- 左：影片 -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;min-height:340px;">
           <div style="padding:14px 10px 14px 14px;border-right:1px solid var(--border);display:flex;flex-direction:column;gap:8px;">
             <div class="sit-label" style="margin-bottom:0;">發球｜<span style="color:var(--yellow);font-weight:700;">${sc.spin}</span></div>
             ${isVideo
-              ? `<div class="media-wrap" style="flex:1;">${renderMedia(contactImg,'width:100%;height:100%;object-fit:cover;')}</div>`
+              ? `<div class="media-wrap" style="flex:1;" id="videoWrap">${renderMedia(contactImg,'width:100%;height:100%;object-fit:cover;')}</div>`
               : `<div style="display:flex;flex-direction:column;gap:6px;flex:1;">
-                  <div>
-                    <div style="font-size:9px;color:var(--muted);margin-bottom:3px;">引拍</div>
-                    <div class="media-wrap">${renderMedia(backswingImg,'width:100%;')}</div>
-                  </div>
-                  <div>
-                    <div style="font-size:9px;color:var(--muted);margin-bottom:3px;">觸球</div>
-                    <div class="media-wrap">${renderMedia(contactImg,'width:100%;')}</div>
-                  </div>
+                  <div><div style="font-size:9px;color:var(--muted);margin-bottom:3px;">引拍</div>
+                    <div class="media-wrap">${renderMedia(backswingImg,'width:100%;')}</div></div>
+                  <div><div style="font-size:9px;color:var(--muted);margin-bottom:3px;">觸球</div>
+                    <div class="media-wrap">${renderMedia(contactImg,'width:100%;')}</div></div>
                 </div>`
             }
             <div class="hint-text" style="margin-bottom:0;">${sc.hint}</div>
           </div>
-          <!-- 右：選項 -->
-          <div style="padding:14px 14px 18px 12px;display:flex;flex-direction:column;gap:10px;">
-            <div style="font-size:10px;letter-spacing:0.12em;color:var(--muted);text-transform:uppercase;">旋轉是？</div>
-            <div style="display:flex;flex-direction:column;gap:8px;flex:1;" id="spinOptions">
-              ${sc.spinChoices.map((opt,i)=>`<button class="opt" onclick="answerSpin(${i})" style="text-align:center;justify-content:center;font-size:13px;">${opt}</button>`).join('')}
-            </div>
-          </div>
+          ${rightPanel}
         </div>
       </div>
       <div class="feedback" id="feedback">
@@ -772,6 +827,39 @@ function renderServePhase1(sc){
         <button class="btn-continue" id="btnContinue" onclick="afterServeError()">看懂了，繼續 →</button>
       </div>
     </div>`;
+
+  // 計時啟動邏輯
+  if(SETUP.difficulty==='practice'){
+    // 練習：從影片開始計時
+    startTimer(()=>onServeTimeout(), diff.serveTimer);
+  } else if(SETUP.difficulty==='match'){
+    // 比賽：影片播完一次後計時
+    const vid=document.querySelector('#videoWrap video');
+    if(vid){
+      vid.loop=false;
+      vid.onended=()=>startTimer(()=>onServeTimeout(), diff.serveTimer);
+    } else {
+      startTimer(()=>onServeTimeout(), diff.serveTimer);
+    }
+  }
+  // 新手模式：不計時，等按準備好
+}
+
+function onReadyClick(){
+  // 新手模式：按準備好後顯示選項並開始計時
+  const diff=DIFFICULTY[SETUP.difficulty];
+  const sc=M.currentSc;
+  const rightArea=document.querySelector('#cardArea .card-body > div > div:last-child');
+  if(rightArea){
+    rightArea.innerHTML=`
+      <div style="padding:14px 14px 18px 12px;display:flex;flex-direction:column;gap:10px;">
+        <div style="font-size:10px;letter-spacing:0.12em;color:var(--muted);text-transform:uppercase;">旋轉是？</div>
+        <div style="display:flex;flex-direction:column;gap:8px;flex:1;" id="spinOptions">
+          ${sc.spinChoices.map((opt,i)=>`<button class="opt" onclick="answerSpin(${i})" style="text-align:center;justify-content:center;font-size:13px;">${opt}</button>`).join('')}
+        </div>
+      </div>`;
+  }
+  startTimer(()=>onServeTimeout(), diff.serveTimer);
 }
 
 function answerSpin(idx){
@@ -880,7 +968,7 @@ function renderReceiveTech(sc, landing, length){
     document.querySelectorAll('#receiveOptions .opt').forEach(b=>b.disabled=true);
     showFeedback(false,'時間到','');
     losePoint();
-  });
+  }, DIFFICULTY[SETUP.difficulty].rallyTimer);
 }
 
 function answerReceive(idx, correctIdx, shotResult){
@@ -1027,7 +1115,7 @@ function showRallyOptions(){
     <div class="fb-tip" id="fbTip"></div>
     <button class="btn-continue" id="btnContinue" onclick="afterRallyError()">看懂了，繼續 →</button>`;
   document.querySelector('.card').appendChild(fb);
-  startTimer(()=>onRallyTimeout());
+  startTimer(()=>onRallyTimeout(), DIFFICULTY[SETUP.difficulty].rallyTimer);
 }
 
 function answerRally(ans,btn){
@@ -1163,14 +1251,15 @@ function setPhasebar(done,total){
   }
 }
 
-function startTimer(onEnd){
+function startTimer(onEnd, seconds){
+  const ms = (seconds || DIFFICULTY[SETUP.difficulty].rallyTimer) * 1000;
   let elapsed=0;
   const bar=document.getElementById('timerBar');
   bar.style.width='100%';bar.className='timer-bar';
   clearInterval(timerInterval);
   timerInterval=setInterval(()=>{
     elapsed+=TICK;
-    const pct=Math.max(0,100-(elapsed/TIMER_MS)*100);
+    const pct=Math.max(0,100-(elapsed/ms)*100);
     bar.style.width=pct+'%';
     if(pct<25) bar.className='timer-bar urgent';
     else if(pct<55) bar.className='timer-bar warn';
