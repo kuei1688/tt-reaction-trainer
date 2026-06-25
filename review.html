@@ -43,7 +43,7 @@ button{cursor:pointer}
 </div>
 
 <script>
-const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwDBfVdP2BqIcKAzeTiKF7LQeAtAgBozahlYuq73Ku-rNJx-RLZ92nWJZ8wROI9SbYF/exec';
+const REVIEW_SUBMIT_URL = 'https://script.google.com/macros/s/AKfycbwDBfVdP2BqIcKAzeTiKF7LQeAtAgBozahlYuq73Ku-rNJx-RLZ92nWJZ8wROI9SbYF/exec';
 const LABELS = {
   contact_sidetopspin:'側上旋',
   contact_sidespin:'側旋',
@@ -101,8 +101,8 @@ async function submitReview(status){
     status
   };
   try{
-    if(GOOGLE_SCRIPT_URL === 'GOOGLE_SCRIPT_URL') throw new Error('尚未設定 GOOGLE_SCRIPT_URL');
-    await fetch(GOOGLE_SCRIPT_URL,{
+    if(REVIEW_SUBMIT_URL === 'REVIEW_SUBMIT_URL') throw new Error('尚未設定 REVIEW_SUBMIT_URL');
+    await fetch(REVIEW_SUBMIT_URL,{
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify(payload)

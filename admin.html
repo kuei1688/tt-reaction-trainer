@@ -62,7 +62,7 @@ textarea{width:100%;min-height:180px;background:#080b10;color:var(--text);border
 </div>
 
 <script>
-const GOOGLE_SHEET_READ_URL = 'https://script.google.com/macros/s/AKfycbwDBfVdP2BqIcKAzeTiKF7LQeAtAgBozahlYuq73Ku-rNJx-RLZ92nWJZ8wROI9SbYF/exec';
+const REVIEW_READ_URL = 'https://script.google.com/macros/s/AKfycbwDBfVdP2BqIcKAzeTiKF7LQeAtAgBozahlYuq73Ku-rNJx-RLZ92nWJZ8wROI9SbYF/exec';
 const LABELS = {
   contact_sidetopspin:'側上旋',
   contact_sidespin:'側旋',
@@ -117,7 +117,7 @@ function normalizeReviews(raw){
 function renderReviews(){
   const host = document.getElementById('results');
   if(!reviews.length){
-    host.textContent = '目前沒有審核結果，或 GOOGLE_SHEET_READ_URL 尚未設定。';
+    host.textContent = '目前沒有審核結果，或 REVIEW_READ_URL 尚未設定。';
     return;
   }
   host.innerHTML = reviews.map(r=>`
@@ -129,8 +129,8 @@ function renderReviews(){
 }
 async function loadReviews(){
   try{
-    if(GOOGLE_SHEET_READ_URL === 'GOOGLE_SHEET_READ_URL') throw new Error('尚未設定 GOOGLE_SHEET_READ_URL');
-    const res = await fetch(GOOGLE_SHEET_READ_URL + (GOOGLE_SHEET_READ_URL.includes('?') ? '&' : '?') + 'v=' + Date.now(), {cache:'no-store'});
+    if(REVIEW_READ_URL === 'REVIEW_READ_URL') throw new Error('尚未設定 REVIEW_READ_URL');
+    const res = await fetch(REVIEW_READ_URL + (REVIEW_READ_URL.includes('?') ? '&' : '?') + 'v=' + Date.now(), {cache:'no-store'});
     if(!res.ok) throw new Error('HTTP ' + res.status);
     reviews = normalizeReviews(await res.json());
   }catch(err){
