@@ -365,7 +365,7 @@ body{
       <div class="skill-item" id="diff-beginner" onclick="setDifficulty('beginner')">
         <div class="skill-check" id="diff-beginner-check"></div>
         <div>
-          <div class="skill-text">新手模式</div>
+          <div class="skill-text">友善模式</div>
           <div style="font-size:11px;color:var(--muted);margin-top:2px;">影片循環，自己按準備好才計時（15秒）</div>
         </div>
       </div>
@@ -1152,7 +1152,7 @@ function renderServePhase1(sc, diff){
   const isMatch=SETUP.difficulty==='match';
   const isBeginner=SETUP.difficulty==='beginner';
 
-  // 比賽模式：選項和影片同時出現；新手模式：先只顯示影片，等按準備好
+  // 比賽模式：選項和影片同時出現；友善模式：先只顯示影片，等按準備好
   const rightPanel = isBeginner
     ? `<div style="padding:14px 14px 18px 12px;display:flex;flex-direction:column;gap:10px;align-items:center;justify-content:center;">
         <div style="font-size:13px;color:var(--muted);text-align:center;margin-bottom:12px;">看清楚後再作答</div>
@@ -1206,11 +1206,11 @@ function renderServePhase1(sc, diff){
       startTimer(()=>onServeTimeout(), diff.serveTimer);
     }
   }
-  // 新手模式：不計時，等按準備好
+  // 友善模式：不計時，等按準備好
 }
 
 function onReadyClick(){
-  // 新手模式：按準備好後顯示選項並開始計時
+  // 友善模式：按準備好後顯示選項並開始計時
   const diff=DIFFICULTY[SETUP.difficulty];
   const sc=M.currentSc;
   const rightArea=document.querySelector('#cardArea .card-body > div > div:last-child');
