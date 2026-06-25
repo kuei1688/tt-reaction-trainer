@@ -783,6 +783,7 @@
 
 
 <script>
+// DEPRECATED: fallback only. Primary media metadata lives in videos.json.
 const IMAGE_LIBRARY = {
   contact_sidetopspin: ['images/contact_sidetopspin/001.jpg', 'images/contact_sidetopspin/001.mp4', 'images/contact_sidetopspin/002.mp4', 'images/contact_sidetopspin/003.mp4', 'images/contact_sidetopspin/004.mp4', 'images/contact_sidetopspin/005.mp4', 'images/contact_sidetopspin/006.mp4', 'images/contact_sidetopspin/007.mp4', 'images/contact_sidetopspin/008.mp4', 'images/contact_sidetopspin/009.mp4', 'images/contact_sidetopspin/010.mp4', 'images/contact_sidetopspin/011.mp4', 'images/contact_sidetopspin/012.mp4', 'images/contact_sidetopspin/013.mp4', 'images/contact_sidetopspin/014.mp4'],
   contact_backspin:    ['images/contact_backspin/001.jpg', 'images/contact_backspin/001.mp4', 'images/contact_backspin/002.mp4', 'images/contact_backspin/003.mp4', 'images/contact_backspin/004.mp4', 'images/contact_backspin/005.mp4', 'images/contact_backspin/006.mp4', 'images/contact_backspin/007.mp4', 'images/contact_backspin/008.mp4', 'images/contact_backspin/009.mp4', 'images/contact_backspin/010.mp4'],
@@ -793,9 +794,58 @@ const IMAGE_LIBRARY = {
   backswing_high:      ['images/backswing_high/001.jpg'],
 };
 
-function getImg(key) {
-  const arr = IMAGE_LIBRARY[key];
-  return arr[Math.floor(Math.random() * arr.length)];
+let VIDEO_DATA = [];
+let videoDataLoaded = false;
+let videoDataError = '';
+
+async function loadVideoData() {
+  try {
+    const res = await fetch('videos.json?v=' + Date.now(), { cache: 'no-store' });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    VIDEO_DATA = await res.json();
+    videoDataLoaded = true;
+  } catch (err) {
+    videoDataError = 'videos.json 載入失敗，暫時使用內建媒體清單。';
+    console.warn(videoDataError, err);
+  }
+}
+
+function showMediaLoadNotice() {
+  if (!videoDataError || document.getElementById('mediaLoadNotice')) return;
+  const host = document.getElementById('gameScreen') || document.body;
+  const box = document.createElement('div');
+  box.id = 'mediaLoadNotice';
+  box.style.cssText = 'margin:0 0 12px;padding:10px 12px;border:1px solid var(--yellow);border-radius:8px;color:var(--yellow);font-size:12px;line-height:1.5;background:rgba(210,153,34,0.08);';
+  box.textContent = videoDataError;
+  host.prepend(box);
+}
+
+function getImg(key, kind) {
+  const preferred = VIDEO_DATA.filter(item =>
+    item.spinType === key &&
+    (!kind || item.kind === kind) &&
+    item.reviewStatus !== 'rejected'
+  );
+  if (preferred.length) {
+    const total = preferred.reduce((sum, item) => sum + (Number(item.weight) || 1), 0);
+    let pick = Math.random() * total;
+    for (const item of preferred) {
+      pick -= Number(item.weight) || 1;
+      if (pick <= 0) return item.src;
+    }
+    return preferred[preferred.length - 1].src;
+  }
+
+  if (videoDataError) showMediaLoadNotice();
+  const arr = IMAGE_LIBRARY[key] || [];
+  const fallback = kind
+    ? arr.filter(src => {
+        const ext = src.split('.').pop().toLowerCase();
+        return kind === 'video' ? ['mp4','webm'].includes(ext) : ['jpg','jpeg','png'].includes(ext);
+      })
+    : arr;
+  const pool = fallback.length ? fallback : arr;
+  return pool[Math.floor(Math.random() * pool.length)];
 }
 
 // Render media: supports both jpg and mp4
@@ -807,7 +857,9 @@ function renderMedia(src, style, videoAttrs = 'autoplay loop muted playsinline')
   return `<img src="${src}" style="${style}" />`;
 }
 
-const IMAGES = new Proxy({}, { get: (_, key) => getImg(key) });
+const IMAGES = new Proxy({}, {
+  get: (_, key) => String(key).startsWith('contact_') ? getImg(key, 'video') : getImg(key, 'image')
+});
 
 const TABLE_SVG = {
   fh: `<svg width="100%" viewBox="0 0 240 210" role="img">
@@ -1954,6 +2006,7 @@ window.addEventListener('error', function (event) {
 });
 
 document.addEventListener('DOMContentLoaded', function () {
+  loadVideoData();
   const startBtn     = document.getElementById('startBtn');
   const restartBtn   = document.getElementById('restartBtn');
   const floatNextBtn = document.getElementById('floatNext');
@@ -1993,12 +2046,13 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   // 設定完成 → 開始遊戲
-  if (setupDoneBtn) setupDoneBtn.addEventListener('click', function (e) {
+  if (setupDoneBtn) setupDoneBtn.addEventListener('click', async function (e) {
     e.preventDefault();
+    if (!videoDataLoaded && !videoDataError) await loadVideoData();
     startGame();
   });
 
-  if (startBtn)     startBtn.addEventListener('click',    function (e) { e.preventDefault(); startGame(); });
+  if (startBtn)     startBtn.addEventListener('click',    async function (e) { e.preventDefault(); if (!videoDataLoaded && !videoDataError) await loadVideoData(); startGame(); });
   if (restartBtn)   restartBtn.addEventListener('click',  function (e) { e.preventDefault(); showScreen('setupScreen'); });
   if (floatNextBtn) floatNextBtn.addEventListener('click',function (e) { e.preventDefault(); nextQuestion(); });
 });

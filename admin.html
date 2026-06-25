@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>發球影片管理</title>
+<style>
+:root{
+  --bg:#0d1117;--surface:#161b22;--surface2:#21262d;--border:#30363d;
+  --green:#3fb950;--yellow:#d29922;--red:#f85149;--blue:#58a6ff;
+  --text:#e6edf3;--muted:#8b949e;--radius:12px;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","Segoe UI",sans-serif;padding:18px}
+h1{margin:0 0 16px;font-size:26px;font-weight:900}
+.layout{display:grid;grid-template-columns:minmax(280px,380px) 1fr;gap:16px;align-items:start}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.panel h2{font-size:15px;margin:0;padding:12px 14px;border-bottom:1px solid var(--border);color:var(--yellow)}
+.list{max-height:76vh;overflow:auto;padding:10px}
+.group{margin-bottom:12px}
+.group-title{font-size:13px;color:var(--muted);font-weight:800;margin:8px 0}
+.item{width:100%;text-align:left;background:var(--surface2);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:9px 10px;margin-bottom:6px;cursor:pointer;font-size:12px}
+.item:hover,.item.active{border-color:var(--blue)}
+.right{display:grid;gap:16px}
+.preview{padding:14px}
+video{width:100%;max-height:360px;background:#000;border-radius:10px}
+.meta{font-size:13px;color:var(--muted);line-height:1.6;margin-top:10px}
+.results{padding:14px;max-height:240px;overflow:auto}
+.result-row{border-bottom:1px solid var(--border);padding:9px 0;font-size:13px;line-height:1.5}
+.result-row:last-child{border-bottom:0}
+button{border:1px solid var(--blue);background:var(--blue);color:#06111f;border-radius:10px;padding:12px 14px;font-weight:900;cursor:pointer}
+textarea{width:100%;min-height:180px;background:#080b10;color:var(--text);border:1px solid var(--border);border-radius:10px;padding:12px;font-family:ui-monospace,Consolas,monospace;font-size:13px;line-height:1.5}
+.error{border:1px solid var(--red);color:var(--red);background:rgba(248,81,73,.08);padding:12px;border-radius:10px;margin:0 0 12px;font-size:13px;line-height:1.5}
+@media (max-width: 860px){.layout{grid-template-columns:1fr}.list{max-height:360px}}
+</style>
+</head>
+<body>
+<h1>發球影片管理</h1>
+<div id="message"></div>
+<div class="layout">
+  <section class="panel">
+    <h2>影片清單</h2>
+    <div class="list" id="videoList">載入中...</div>
+  </section>
+  <section class="right">
+    <div class="panel">
+      <h2>預覽</h2>
+      <div class="preview" id="preview">請從左側選一支影片。</div>
+    </div>
+    <div class="panel">
+      <h2>Google Sheet 審核結果</h2>
+      <div class="results" id="results">載入中...</div>
+    </div>
+    <div class="panel">
+      <h2>Codex 指令</h2>
+      <div class="preview">
+        <button onclick="generatePrompt()">產生 Codex 指令</button>
+        <textarea id="prompt" readonly style="margin-top:12px;"></textarea>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+const GOOGLE_SHEET_READ_URL = 'GOOGLE_SHEET_READ_URL';
+const LABELS = {
+  contact_sidetopspin:'側上旋',
+  contact_sidespin:'側旋',
+  contact_backspin:'下旋',
+  contact_nospin:'不轉',
+  backswing_low:'低手備擺',
+  backswing_mid:'中手備擺',
+  backswing_high:'高手備擺'
+};
+let videos = [];
+let reviews = [];
+
+function showError(text){
+  document.getElementById('message').innerHTML = `<div class="error">${text}</div>`;
+}
+function groupBySpin(items){
+  return items.reduce((acc,item)=>{
+    (acc[item.spinType] ||= []).push(item);
+    return acc;
+  },{});
+}
+function renderList(){
+  const grouped = groupBySpin(videos);
+  document.getElementById('videoList').innerHTML = Object.entries(grouped).map(([spinType,items])=>`
+    <div class="group">
+      <div class="group-title">${LABELS[spinType] || spinType} (${items.length})</div>
+      ${items.map(item=>`<button class="item" onclick="preview('${item.id}')">${item.id}<br>${item.src}</button>`).join('')}
+    </div>
+  `).join('');
+}
+function preview(id){
+  document.querySelectorAll('.item').forEach(btn=>btn.classList.remove('active'));
+  const item = videos.find(v=>v.id===id);
+  if(!item) return;
+  document.getElementById('preview').innerHTML = `
+    <video src="${item.src}" controls autoplay muted loop playsinline></video>
+    <div class="meta">
+      <strong>${LABELS[item.spinType] || item.spinType}</strong><br>
+      ${item.id}<br>${item.src}<br>
+      reviewStatus: ${item.reviewStatus}
+    </div>`;
+}
+function normalizeReviews(raw){
+  if(Array.isArray(raw)) return raw;
+  if(Array.isArray(raw.data)) return raw.data;
+  if(Array.isArray(raw.values)){
+    const [header,...rows] = raw.values;
+    return rows.map(row=>Object.fromEntries(header.map((key,i)=>[key,row[i]])));
+  }
+  return [];
+}
+function renderReviews(){
+  const host = document.getElementById('results');
+  if(!reviews.length){
+    host.textContent = '目前沒有審核結果，或 GOOGLE_SHEET_READ_URL 尚未設定。';
+    return;
+  }
+  host.innerHTML = reviews.map(r=>`
+    <div class="result-row">
+      <strong>${r.status || ''}</strong> ${r.src || ''}<br>
+      ${r.currentSpinType || ''} → ${r.suggestedSpinType || ''}
+    </div>
+  `).join('');
+}
+async function loadReviews(){
+  try{
+    if(GOOGLE_SHEET_READ_URL === 'GOOGLE_SHEET_READ_URL') throw new Error('尚未設定 GOOGLE_SHEET_READ_URL');
+    const res = await fetch(GOOGLE_SHEET_READ_URL + (GOOGLE_SHEET_READ_URL.includes('?') ? '&' : '?') + 'v=' + Date.now(), {cache:'no-store'});
+    if(!res.ok) throw new Error('HTTP ' + res.status);
+    reviews = normalizeReviews(await res.json());
+  }catch(err){
+    showError('Google Sheet 審核結果載入失敗：' + err.message);
+    reviews = [];
+  }
+  renderReviews();
+}
+function generatePrompt(){
+  const changes = reviews.filter(r =>
+    r.suggestedSpinType &&
+    r.currentSpinType &&
+    r.suggestedSpinType !== r.currentSpinType &&
+    ['reclassify','approved_reclassify','change'].includes(String(r.status || 'reclassify'))
+  );
+  const lines = changes.map(r=>`- ${r.src}：${r.currentSpinType} → ${r.suggestedSpinType}`);
+  document.getElementById('prompt').value = lines.length
+    ? '請修改 videos.json，將以下影片重新分類：\n' + lines.join('\n')
+    : '目前沒有需要重新分類的審核結果。';
+}
+async function init(){
+  try{
+    const res = await fetch('videos.json?v=' + Date.now(), {cache:'no-store'});
+    if(!res.ok) throw new Error('HTTP ' + res.status);
+    const all = await res.json();
+    videos = all.filter(item=>item.kind === 'video');
+    renderList();
+  }catch(err){
+    showError('videos.json 載入失敗：' + err.message);
+    document.getElementById('videoList').textContent = '載入失敗';
+  }
+  loadReviews();
+}
+init();
+</script>
+</body>
+</html>

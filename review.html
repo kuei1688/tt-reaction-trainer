@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>發球影片審核</title>
+<style>
+:root{
+  --bg:#0d1117;--surface:#161b22;--surface2:#21262d;--border:#30363d;
+  --green:#3fb950;--yellow:#d29922;--red:#f85149;--blue:#58a6ff;
+  --text:#e6edf3;--muted:#8b949e;--radius:12px;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","Segoe UI",sans-serif;padding:14px}
+.wrap{max-width:560px;margin:0 auto}
+.top{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:14px}
+h1{font-size:22px;margin:0;font-weight:900}
+.progress{font-size:13px;color:var(--muted)}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+video{width:100%;display:block;background:#000}
+.body{padding:14px}
+.label{font-size:12px;color:var(--muted);margin-bottom:5px}
+.spin{font-size:20px;font-weight:900;color:var(--yellow);margin-bottom:14px}
+.row{display:grid;gap:10px}
+button,select{width:100%;border:1px solid var(--border);border-radius:10px;padding:14px 12px;font-size:16px;font-weight:800;background:var(--surface2);color:var(--text)}
+button{cursor:pointer}
+.ok{background:rgba(63,185,80,.16);border-color:var(--green)}
+.warn{background:rgba(210,153,34,.14);border-color:var(--yellow)}
+.submit{background:var(--blue);border-color:var(--blue);color:#06111f}
+.muted{font-size:12px;color:var(--muted);line-height:1.5;margin-top:12px}
+.error{border:1px solid var(--red);color:var(--red);background:rgba(248,81,73,.08);padding:12px;border-radius:10px;margin-bottom:12px;font-size:13px;line-height:1.5}
+.done{text-align:center;padding:34px 16px;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <h1>發球影片審核</h1>
+    <div class="progress" id="progress">載入中...</div>
+  </div>
+  <div id="message"></div>
+  <div id="review"></div>
+</div>
+
+<script>
+const GOOGLE_SCRIPT_URL = 'GOOGLE_SCRIPT_URL';
+const LABELS = {
+  contact_sidetopspin:'側上旋',
+  contact_sidespin:'側旋',
+  contact_backspin:'下旋',
+  contact_nospin:'不轉',
+  backswing_low:'低手備擺',
+  backswing_mid:'中手備擺',
+  backswing_high:'高手備擺'
+};
+let allItems = [];
+let pending = [];
+let index = 0;
+let reviewed = 0;
+
+function showError(text){
+  document.getElementById('message').innerHTML = `<div class="error">${text}</div>`;
+}
+function spinOptions(current){
+  return Object.keys(LABELS).map(key=>`<option value="${key}" ${key===current?'selected':''}>${LABELS[key]} (${key})</option>`).join('');
+}
+function currentItem(){ return pending[index]; }
+function render(){
+  document.getElementById('progress').textContent = `已審 ${reviewed} / 共 ${pending.length}`;
+  const item = currentItem();
+  const host = document.getElementById('review');
+  if(!item){
+    host.innerHTML = '<div class="card done">目前沒有待審影片了。</div>';
+    return;
+  }
+  host.innerHTML = `
+    <div class="card">
+      <video src="${item.src}" autoplay muted loop playsinline controls></video>
+      <div class="body">
+        <div class="label">目前分類</div>
+        <div class="spin">${LABELS[item.spinType] || item.spinType}</div>
+        <div class="row">
+          <button class="ok" onclick="submitReview('approved')">✅ 分類正確</button>
+          <select id="suggestedSpin">${spinOptions(item.spinType)}</select>
+          <button class="submit" onclick="submitReview('reclassify')">🔄 建議改為 →</button>
+          <button class="warn" onclick="submitReview('discuss')">⚠️ 標記待討論</button>
+        </div>
+        <div class="muted">${item.id}<br>${item.src}</div>
+      </div>
+    </div>`;
+}
+async function submitReview(status){
+  const item = currentItem();
+  if(!item) return;
+  const suggestedSpinType = document.getElementById('suggestedSpin')?.value || item.spinType;
+  const payload = {
+    id:item.id,
+    src:item.src,
+    currentSpinType:item.spinType,
+    suggestedSpinType,
+    status
+  };
+  try{
+    if(GOOGLE_SCRIPT_URL === 'GOOGLE_SCRIPT_URL') throw new Error('尚未設定 GOOGLE_SCRIPT_URL');
+    await fetch(GOOGLE_SCRIPT_URL,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(payload)
+    });
+  }catch(err){
+    showError('審核結果尚未送到 Google Apps Script：' + err.message + '。畫面會先跳下一支，正式 URL 設定後即可送出。');
+  }
+  reviewed++;
+  index++;
+  render();
+}
+async function init(){
+  try{
+    const res = await fetch('videos.json?v=' + Date.now(), {cache:'no-store'});
+    if(!res.ok) throw new Error('HTTP ' + res.status);
+    allItems = await res.json();
+    pending = allItems.filter(item => item.kind === 'video' && item.reviewStatus === 'pending');
+    render();
+  }catch(err){
+    document.getElementById('progress').textContent = '載入失敗';
+    showError('videos.json 載入失敗：' + err.message);
+  }
+}
+init();
+</script>
+</body>
+</html>

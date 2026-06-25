@@ -741,6 +741,7 @@ class TrajAnimator {
 // ══════════════════════════════════════
 //  影片題庫（遊戲一）
 // ══════════════════════════════════════
+// DEPRECATED: fallback only. Primary media metadata lives in videos.json.
 const IMAGE_LIBRARY = {
   contact_sidetopspin: ['images/contact_sidetopspin/001.jpg','images/contact_sidetopspin/001.mp4','images/contact_sidetopspin/002.mp4','images/contact_sidetopspin/003.mp4','images/contact_sidetopspin/004.mp4','images/contact_sidetopspin/005.mp4'],
   contact_backspin:    ['images/contact_backspin/001.jpg','images/contact_backspin/001.mp4','images/contact_backspin/002.mp4','images/contact_backspin/003.mp4','images/contact_backspin/004.mp4','images/contact_backspin/005.mp4'],
@@ -750,13 +751,51 @@ const IMAGE_LIBRARY = {
   backswing_mid:       ['images/backswing_mid/001.jpg'],
   backswing_high:      ['images/backswing_high/001.jpg'],
 };
-function getMedia(key){
-  const a=IMAGE_LIBRARY[key];
-  if(key.startsWith('contact_')){
-    const videos=a.filter(src=>src.endsWith('.mp4')||src.endsWith('.webm'));
-    if(videos.length) return videos[Math.floor(Math.random()*videos.length)];
+let VIDEO_DATA = [];
+let videoDataLoaded = false;
+let videoDataError = '';
+
+async function loadVideoData(){
+  try{
+    const res=await fetch('videos.json?v='+Date.now(),{cache:'no-store'});
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    VIDEO_DATA=await res.json();
+    videoDataLoaded=true;
+  }catch(err){
+    videoDataError='videos.json 載入失敗，暫時使用內建媒體清單。';
+    console.warn(videoDataError,err);
   }
-  return a[Math.floor(Math.random()*a.length)];
+}
+
+function showMediaLoadNotice(){
+  if(!videoDataError||document.getElementById('mediaLoadNotice')) return;
+  const host=document.getElementById('matchScreen')||document.body;
+  const box=document.createElement('div');
+  box.id='mediaLoadNotice';
+  box.style.cssText='margin:0 0 12px;padding:10px 12px;border:1px solid var(--yellow);border-radius:8px;color:var(--yellow);font-size:12px;line-height:1.5;background:rgba(210,153,34,0.08);';
+  box.textContent=videoDataError;
+  host.prepend(box);
+}
+
+function getMedia(key,kind){
+  const preferred=VIDEO_DATA.filter(item=>item.spinType===key&&(!kind||item.kind===kind)&&item.reviewStatus!=='rejected');
+  if(preferred.length){
+    const total=preferred.reduce((sum,item)=>sum+(Number(item.weight)||1),0);
+    let pick=Math.random()*total;
+    for(const item of preferred){
+      pick-=Number(item.weight)||1;
+      if(pick<=0) return item.src;
+    }
+    return preferred[preferred.length-1].src;
+  }
+  if(videoDataError) showMediaLoadNotice();
+  const a=IMAGE_LIBRARY[key]||[];
+  const fallback=kind?a.filter(src=>{
+    const ext=src.split('.').pop().toLowerCase();
+    return kind==='video'?['mp4','webm'].includes(ext):['jpg','jpeg','png'].includes(ext);
+  }):a;
+  const pool=fallback.length?fallback:a;
+  return pool[Math.floor(Math.random()*pool.length)];
 }
 function renderMedia(src,style){
   const ext=src.split('.').pop().toLowerCase();
@@ -1026,7 +1065,8 @@ function updateScoreboard(){
 // ══════════════════════════════════════
 //  流程
 // ══════════════════════════════════════
-function startMatch(){
+async function startMatch(){
+  if(!videoDataLoaded&&!videoDataError) await loadVideoData();
   M={myScore:0,oppScore:0,totalPoints:0,isMyServe:false,
     rallyBall:0,rallyMyShot:'serve',rallyLastFace:null,
     rallySit:null,rallyStep:1,rallyAnswered:false,
@@ -1093,8 +1133,8 @@ function startServePhase(){
 }
 
 function renderServePhase1(sc, diff){
-  const contactImg=getMedia('contact_'+sc.spinType);
-  const backswingImg=getMedia('backswing_'+sc.backswingKey);
+  const contactImg=getMedia('contact_'+sc.spinType,'video');
+  const backswingImg=getMedia('backswing_'+sc.backswingKey,'image');
   const isVideo=contactImg.endsWith('.mp4');
   const isMatch=SETUP.difficulty==='match';
   const isBeginner=SETUP.difficulty==='beginner';
@@ -1603,6 +1643,7 @@ document.addEventListener('keydown',e=>{
     if(btns[i]&&!btns[i].disabled) btns[i].click();
   }
 });
+loadVideoData();
 </script>
 </body>
 </html>
