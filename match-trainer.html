@@ -930,8 +930,8 @@ function getTrajKey(oppFace, myPos, len){
     if(isFH) return len===LN.S?'short_fh':'long_fh';
     else     return len===LN.S?'short_bh':'long_bh';
   } else {
-    if(isFH) return len===LN.S?'short_fh_mirror':'long_fh_mirror';
-    else     return len===LN.S?'short_bh_mirror':'long_bh_mirror';
+    if(isFH) return len===LN.S?'short_bh_mirror':'long_bh_mirror';
+    else     return len===LN.S?'short_fh_mirror':'long_fh_mirror';
   }
 }
 
