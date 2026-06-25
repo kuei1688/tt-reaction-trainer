@@ -89,6 +89,35 @@ function render(){
       </div>
     </div>`;
 }
+function postReviewPayload(payload){
+  const body = JSON.stringify(payload);
+  if(navigator.sendBeacon){
+    const blob = new Blob([body], {type:'text/plain;charset=utf-8'});
+    if(navigator.sendBeacon(REVIEW_SUBMIT_URL, blob)) return true;
+  }
+  const frameName = 'reviewSubmitFrame';
+  let frame = document.querySelector(`iframe[name="${frameName}"]`);
+  if(!frame){
+    frame = document.createElement('iframe');
+    frame.name = frameName;
+    frame.style.display = 'none';
+    document.body.appendChild(frame);
+  }
+  const form = document.createElement('form');
+  form.method = 'POST';
+  form.action = REVIEW_SUBMIT_URL;
+  form.target = frameName;
+  form.enctype = 'text/plain';
+  form.style.display = 'none';
+  const input = document.createElement('input');
+  input.name = 'payload';
+  input.value = body;
+  form.appendChild(input);
+  document.body.appendChild(form);
+  form.submit();
+  form.remove();
+  return true;
+}
 async function submitReview(status){
   const item = currentItem();
   if(!item) return;
@@ -102,12 +131,7 @@ async function submitReview(status){
   };
   try{
     if(REVIEW_SUBMIT_URL === 'REVIEW_SUBMIT_URL') throw new Error('尚未設定 REVIEW_SUBMIT_URL');
-    await fetch(REVIEW_SUBMIT_URL,{
-      method:'POST',
-      mode:'no-cors',
-      headers:{'Content-Type':'text/plain;charset=utf-8'},
-      body:JSON.stringify(payload)
-    });
+    postReviewPayload(payload);
   }catch(err){
     showError('審核結果尚未送到 Google Apps Script：' + err.message + '。畫面會先跳下一支，正式 URL 設定後即可送出。');
   }
