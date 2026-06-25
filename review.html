@@ -44,6 +44,7 @@ button{cursor:pointer}
 
 <script>
 const REVIEW_SUBMIT_URL = 'https://script.google.com/macros/s/AKfycbwDBfVdP2BqIcKAzeTiKF7LQeAtAgBozahlYuq73Ku-rNJx-RLZ92nWJZ8wROI9SbYF/exec';
+const REVIEW_READ_URL = REVIEW_SUBMIT_URL;
 const LABELS = {
   contact_sidebackspin:'側下旋',
   contact_sidespin:'側旋',
@@ -55,6 +56,7 @@ const LABELS = {
 };
 let allItems = [];
 let pending = [];
+let reviewRecords = [];
 let index = 0;
 let reviewed = 0;
 
@@ -63,6 +65,85 @@ function showError(text){
 }
 function spinOptions(current){
   return Object.keys(LABELS).map(key=>`<option value="${key}" ${key===current?'selected':''}>${LABELS[key]} (${key})</option>`).join('');
+}
+function reviewStatus(row){
+  const status = String(row?.status || '').trim();
+  return status === 'discuss' ? 'needs_discussion' : status;
+}
+function normalizeSpinKey(value){
+  return String(value || '')
+    .replaceAll('contact_sidetopspin', 'contact_sidebackspin')
+    .replaceAll('sidetopspin', 'sidebackspin');
+}
+function normalizeReviewRow(row){
+  return {
+    ...row,
+    currentSpinType: normalizeSpinKey(row.currentSpinType),
+    suggestedSpinType: normalizeSpinKey(row.suggestedSpinType)
+  };
+}
+function normalizeReviews(raw){
+  let rows = [];
+  if(Array.isArray(raw)) rows = raw;
+  else if(Array.isArray(raw.data)) rows = raw.data;
+  else if(Array.isArray(raw.values)){
+    const [header,...values] = raw.values;
+    rows = values.map(row=>Object.fromEntries(header.map((key,i)=>[key,row[i]])));
+  }
+  return rows.map(normalizeReviewRow);
+}
+function withQuery(url, params){
+  const separator = url.includes('?') ? '&' : '?';
+  return url + separator + new URLSearchParams(params).toString();
+}
+function loadReviewsJsonp(){
+  return new Promise((resolve, reject)=>{
+    const callbackName = '__reviewQueue_' + Date.now() + '_' + Math.random().toString(36).slice(2);
+    const script = document.createElement('script');
+    const timeout = setTimeout(()=>{
+      cleanup();
+      reject(new Error('JSONP 載入逾時'));
+    }, 10000);
+    function cleanup(){
+      clearTimeout(timeout);
+      delete window[callbackName];
+      script.remove();
+    }
+    window[callbackName] = raw=>{
+      cleanup();
+      resolve(raw);
+    };
+    script.onerror = ()=>{
+      cleanup();
+      reject(new Error('JSONP script 載入失敗'));
+    };
+    script.src = withQuery(REVIEW_READ_URL, {
+      callback: callbackName,
+      v: Date.now()
+    });
+    document.body.appendChild(script);
+  });
+}
+async function loadReviewRecords(){
+  try{
+    return normalizeReviews(await loadReviewsJsonp());
+  }catch(err){
+    showError('Google Sheet 已確認清單載入失敗：' + err.message + '。目前先只使用 videos.json 的待審狀態。');
+    return [];
+  }
+}
+function latestReviewMap(rows){
+  const map = new Map();
+  rows.forEach(row=>{
+    if(row.id) map.set(row.id, row);
+    if(row.src) map.set(row.src, row);
+  });
+  return map;
+}
+function shouldShowInQueue(item, latestReviews){
+  if(item.kind !== 'video' || item.reviewStatus !== 'pending') return false;
+  const latest = latestReviews.get(item.id) || latestReviews.get(item.src);
+  return reviewStatus(latest) !== 'approved';
 }
 function currentItem(){ return pending[index]; }
 function render(){
@@ -144,7 +225,9 @@ async function init(){
     const res = await fetch('videos.json?v=' + Date.now(), {cache:'no-store'});
     if(!res.ok) throw new Error('HTTP ' + res.status);
     allItems = await res.json();
-    pending = allItems.filter(item => item.kind === 'video' && item.reviewStatus === 'pending');
+    reviewRecords = await loadReviewRecords();
+    const latestReviews = latestReviewMap(reviewRecords);
+    pending = allItems.filter(item => shouldShowInQueue(item, latestReviews));
     render();
   }catch(err){
     document.getElementById('progress').textContent = '載入失敗';

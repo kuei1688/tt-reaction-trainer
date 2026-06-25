@@ -395,12 +395,41 @@ function getPromptChanges(){
     return true;
   });
 }
+function getPromptApprovals(){
+  const {discussion, approved} = getReviewBuckets();
+  const mobileApprovals = discussion
+    .map(r => {
+      const decision = getMobileDecision(getReviewKey(r));
+      return {
+        ...r,
+        status: decision.status,
+        suggestedSpinType: decision.suggestedSpinType
+      };
+    })
+    .filter(r => r.status === 'approved');
+  const seen = new Set();
+  return [...approved, ...mobileApprovals].filter(r => {
+    const key = getReviewKey(r);
+    if(seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
 function generatePrompt(){
   const changes = getPromptChanges();
-  const lines = changes.map(r=>`- ${r.src}: ${r.currentSpinType} -> ${r.suggestedSpinType}`);
-  const text = lines.length
-    ? '請修改 videos.json，將以下影片重新分類：\n' + lines.join('\n')
-    : '目前沒有需要重新分類的審核結果。';
+  const approvals = getPromptApprovals();
+  const sections = [];
+  const changeLines = changes.map(r=>`- ${r.src}: ${r.currentSpinType} -> ${r.suggestedSpinType}`);
+  const approvalLines = approvals.map(r=>`- ${r.src}: reviewStatus -> approved`);
+  if(changeLines.length){
+    sections.push('將以下影片重新分類：\n' + changeLines.join('\n'));
+  }
+  if(approvalLines.length){
+    sections.push('將以下影片標記為已確認，不要再出現在審核清單：\n' + approvalLines.join('\n'));
+  }
+  const text = sections.length
+    ? '請修改 videos.json：\n\n' + sections.join('\n\n')
+    : '目前沒有需要重新分類或標記已確認的審核結果。';
   const prompt = document.getElementById('prompt');
   if(prompt) prompt.value = text;
   return text;
