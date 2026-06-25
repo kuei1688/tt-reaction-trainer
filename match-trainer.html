@@ -442,6 +442,302 @@ body{
 </div>
 
 <script>
+// ══ TrajAnimator ══
+/**
+ * traj-animator.js
+ * 使用方式：
+ *   const anim = new TrajAnimator(canvas, 'short_bh');
+ *   anim.start();
+ *   anim.stop();
+ *   anim.switchKey('long_fh');
+ */
+
+class TrajAnimator {
+  constructor(canvas, key) {
+    this.canvas = canvas;
+    this.ctx = canvas.getContext('2d');
+    this.W = canvas.width;
+    this.H = canvas.height;
+    this.key = key;
+    this.rafId = null;
+
+    // 常數
+    this.SPEED = 1.8;
+    this.BOUNCE_PAUSE = 3;
+    this.END_PAUSE = 40;
+    this.BALL_R = 8;
+    this.TRAIL_LEN = 12;
+
+    // 桌面梯形
+    this.TABLE = {
+      far:  { left: this.W*0.28, right: this.W*0.72, y: this.H*0.08 },
+      near: { left: this.W*0.06, right: this.W*0.94, y: this.H*0.88 },
+    };
+
+    // 軌跡定義
+    this.TRAJS = {
+      // ── 正手出發（左側 x≈3）──
+      short_bh: {
+        label:'短球', color:'#f87171',
+        segs:[
+          { p:()=>this._para(3,2, 2,6,  55) },
+          { p:()=>this._para(2,6, 1,9,  50) },
+        ]
+      },
+      short_fh: {
+        label:'短球', color:'#f87171',
+        segs:[
+          { p:()=>this._para(3,2, 6,6, -45) },
+          { p:()=>this._para(6,6, 8,9, -42) },
+        ]
+      },
+      long_bh: {
+        label:'長球', color:'#7dd3fc',
+        segs:[
+          { p:()=>this._para(3,1, 2,8,  55) },
+          { p:()=>this._para(2,8, 1,11, 45) },
+        ]
+      },
+      long_fh: {
+        label:'長球', color:'#7dd3fc',
+        segs:[
+          { p:()=>this._para(3,1, 8,8,  -55) },
+          { p:()=>this._para(8,8,10,11, -50) },
+        ]
+      },
+      // ── 反手出發（右側 x≈7，鏡像）──
+      short_bh_mirror: {
+        label:'短球', color:'#f87171',
+        segs:[
+          { p:()=>this._para(7,2, 8,6, -55) },
+          { p:()=>this._para(8,6, 9,9, -50) },
+        ]
+      },
+      short_fh_mirror: {
+        label:'短球', color:'#f87171',
+        segs:[
+          { p:()=>this._para(7,2, 4,6,  45) },
+          { p:()=>this._para(4,6, 2,9,  42) },
+        ]
+      },
+      long_bh_mirror: {
+        label:'長球', color:'#7dd3fc',
+        segs:[
+          { p:()=>this._para(7,1, 8,8, -55) },
+          { p:()=>this._para(8,8, 9,11,-45) },
+        ]
+      },
+      long_fh_mirror: {
+        label:'長球', color:'#7dd3fc',
+        segs:[
+          { p:()=>this._para(7,1, 2,8,  55) },
+          { p:()=>this._para(2,8, 0,11, 50) },
+        ]
+      },
+    };
+
+    this._initState();
+  }
+
+  // ── 公開方法 ──
+  start() {
+    this._initState();
+    this._loop();
+  }
+
+  stop() {
+    if (this.rafId) cancelAnimationFrame(this.rafId);
+    this.rafId = null;
+  }
+
+  switchKey(key) {
+    this.stop();
+    this.key = key;
+    this.start();
+  }
+
+  // ── 內部 ──
+  _toPixel(gx, gy) {
+    const t = Math.max(-0.3, Math.min(1.35, gy / 10));
+    const { far, near } = this.TABLE;
+    const left  = far.left  + (near.left  - far.left)  * t;
+    const right = far.right + (near.right - far.right) * t;
+    return [left + (gx/10)*(right-left), far.y + t*(near.y - far.y)];
+  }
+
+  _para(gx1, gy1, gx2, gy2, bulge, steps=60) {
+    const [x1,y1] = this._toPixel(gx1, gy1);
+    const [x2,y2] = this._toPixel(gx2, gy2);
+    const mx=(x1+x2)/2, my=(y1+y2)/2;
+    const dx=x2-x1, dy=y2-y1, len=Math.sqrt(dx*dx+dy*dy);
+    const cx=mx+(-dy/len)*bulge, cy=my+(dx/len)*bulge;
+    const pts=[];
+    for(let i=0;i<=steps;i++){
+      const t=i/steps;
+      pts.push([
+        (1-t)*(1-t)*x1+2*(1-t)*t*cx+t*t*x2,
+        (1-t)*(1-t)*y1+2*(1-t)*t*cy+t*t*y2,
+      ]);
+    }
+    return pts;
+  }
+
+  _initState() {
+    const traj = this.TRAJS[this.key];
+    const s1 = traj.segs[0].p();
+    const s2 = traj.segs[1].p();
+    this.state = {
+      phase:0, t:0, bounceT:0, waitT:0,
+      seg1:s1, seg2:s2,
+      bouncePos: s1[s1.length-1],
+      endPos:    s2[s2.length-1],
+    };
+  }
+
+  _drawTable() {
+    const ctx=this.ctx, {W,H}=this;
+    const {far,near}=this.TABLE;
+
+    // 桌面
+    ctx.beginPath();
+    ctx.moveTo(far.left,far.y); ctx.lineTo(far.right,far.y);
+    ctx.lineTo(near.right,near.y); ctx.lineTo(near.left,near.y);
+    ctx.closePath();
+    ctx.fillStyle='#0a1520'; ctx.fill();
+    ctx.strokeStyle='#2a3a4a'; ctx.lineWidth=1.5; ctx.stroke();
+
+    // 縱中線
+    const[tmx,tmy]=this._toPixel(5,0),[bmx,bmy]=this._toPixel(5,10);
+    ctx.beginPath(); ctx.moveTo(tmx,tmy); ctx.lineTo(bmx,bmy);
+    ctx.strokeStyle='#2a3a4a'; ctx.lineWidth=1; ctx.stroke();
+
+    // 球網（往上挪製造透視感）
+    const[nl,nly]=this._toPixel(0,4.2),[nr,nry]=this._toPixel(10,4.2);
+    ctx.beginPath(); ctx.moveTo(nl,nly); ctx.lineTo(nr,nry);
+    ctx.strokeStyle='#22c55e'; ctx.lineWidth=3.5; ctx.lineCap='round'; ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(nl,nly+2); ctx.lineTo(nr,nry+2);
+    ctx.strokeStyle='rgba(34,197,94,0.2)'; ctx.lineWidth=5; ctx.stroke();
+  }
+
+  _drawGhost(pts, color) {
+    if(pts.length<2) return;
+    const ctx=this.ctx;
+    ctx.beginPath();
+    ctx.moveTo(pts[0][0],pts[0][1]);
+    for(let i=1;i<pts.length;i++) ctx.lineTo(pts[i][0],pts[i][1]);
+    ctx.strokeStyle=color+'30'; ctx.lineWidth=1.5;
+    ctx.setLineDash([4,4]); ctx.stroke(); ctx.setLineDash([]);
+  }
+
+  _drawPassed(pts, progress, color) {
+    const ctx=this.ctx;
+    const end=Math.floor(pts.length*progress);
+    if(end<2) return;
+    for(let i=1;i<end;i++){
+      const alpha=0.2+0.6*(i/end);
+      ctx.beginPath(); ctx.moveTo(pts[i-1][0],pts[i-1][1]); ctx.lineTo(pts[i][0],pts[i][1]);
+      ctx.strokeStyle=color; ctx.globalAlpha=alpha; ctx.lineWidth=2; ctx.stroke();
+    }
+    ctx.globalAlpha=1;
+  }
+
+  _drawTrail(pts, idx, color) {
+    const ctx=this.ctx;
+    const start=Math.max(0,idx-this.TRAIL_LEN);
+    for(let i=start;i<idx;i++){
+      const alpha=(i-start)/this.TRAIL_LEN*0.7;
+      const r=this.BALL_R*0.4*((i-start)/this.TRAIL_LEN);
+      ctx.beginPath(); ctx.arc(pts[i][0],pts[i][1],r,0,Math.PI*2);
+      ctx.fillStyle=color; ctx.globalAlpha=alpha; ctx.fill();
+    }
+    ctx.globalAlpha=1;
+  }
+
+  _drawBall(x, y, scale=1) {
+    const ctx=this.ctx, r=this.BALL_R*scale;
+    ctx.beginPath(); ctx.ellipse(x,y+r*0.5,r*0.8,r*0.3,0,0,Math.PI*2);
+    ctx.fillStyle='rgba(0,0,0,0.3)'; ctx.fill();
+    ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2);
+    ctx.fillStyle='#e8e8e8'; ctx.fill();
+  }
+
+  _drawRipple(x, y, t, color) {
+    const ctx=this.ctx;
+    const r=20*(t/this.BOUNCE_PAUSE);
+    const alpha=1-t/this.BOUNCE_PAUSE;
+    ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2);
+    ctx.strokeStyle=color; ctx.globalAlpha=alpha*0.6; ctx.lineWidth=2; ctx.stroke();
+    ctx.globalAlpha=1;
+  }
+
+  _drawEndMark(x, y, color) {
+    const ctx=this.ctx;
+    ctx.beginPath(); ctx.arc(x,y,this.BALL_R*1.3,0,Math.PI*2);
+    ctx.strokeStyle=color; ctx.lineWidth=2; ctx.globalAlpha=0.5; ctx.stroke();
+    ctx.globalAlpha=1;
+  }
+
+  _draw() {
+    const ctx=this.ctx, {W,H}=this;
+    ctx.clearRect(0,0,W,H);
+    this._drawTable();
+
+    const traj=this.TRAJS[this.key];
+    const color=traj.color;
+    const {phase,t,bounceT,seg1,seg2,bouncePos,endPos}=this.state;
+
+    this._drawGhost(seg1,color);
+    this._drawGhost(seg2,color);
+
+    if(phase===0){
+      const idx=Math.min(Math.floor(t),seg1.length-1);
+      this._drawPassed(seg1,t/seg1.length,color);
+      this._drawTrail(seg1,idx,color);
+      this._drawBall(seg1[idx][0],seg1[idx][1]);
+    } else if(phase===1){
+      this._drawPassed(seg1,1,color);
+      this._drawRipple(bouncePos[0],bouncePos[1],bounceT,color);
+      this._drawBall(bouncePos[0],bouncePos[1],1+0.15*Math.sin(bounceT/this.BOUNCE_PAUSE*Math.PI));
+    } else if(phase===2){
+      this._drawPassed(seg1,1,color);
+      const idx=Math.min(Math.floor(t),seg2.length-1);
+      this._drawPassed(seg2,t/seg2.length,color);
+      this._drawTrail(seg2,idx,color);
+      this._drawBall(seg2[idx][0],seg2[idx][1]);
+    } else if(phase===3){
+      this._drawPassed(seg1,1,color);
+      this._drawPassed(seg2,1,color);
+      this._drawEndMark(endPos[0],endPos[1],color);
+      this._drawBall(endPos[0],endPos[1]);
+    }
+  }
+
+  _update() {
+    const s=this.state;
+    if(s.phase===0){
+      s.t+=this.SPEED;
+      if(s.t>=s.seg1.length){ s.phase=1; s.bounceT=0; }
+    } else if(s.phase===1){
+      s.bounceT++;
+      if(s.bounceT>=this.BOUNCE_PAUSE){ s.phase=2; s.t=0; }
+    } else if(s.phase===2){
+      s.t+=this.SPEED;
+      if(s.t>=s.seg2.length){ s.phase=3; s.waitT=0; }
+    } else if(s.phase===3){
+      s.waitT++;
+      if(s.waitT>=this.END_PAUSE){ s.phase=0; s.t=0; }
+    }
+  }
+
+  _loop() {
+    this._update();
+    this._draw();
+    this.rafId=requestAnimationFrame(()=>this._loop());
+  }
+}
+
+// ══ end TrajAnimator ══
+
 // ══════════════════════════════════════
 //  影片題庫（遊戲一）
 // ══════════════════════════════════════
@@ -626,6 +922,19 @@ function drawTraj(canvas,myPos,len,oppFace){
   ctx.textAlign='center';ctx.fillText(label,lbx,lby);
 }
 
+function getTrajKey(oppFace, myPos, len){
+  const isRed = oppFace==='red';
+  const isFH  = myPos===SD.F;
+  if(len===LN.H) return null;
+  if(!isRed){
+    if(isFH) return len===LN.S?'short_fh':'long_fh';
+    else     return len===LN.S?'short_bh':'long_bh';
+  } else {
+    if(isFH) return len===LN.S?'short_fh_mirror':'long_fh_mirror';
+    else     return len===LN.S?'short_bh_mirror':'long_bh_mirror';
+  }
+}
+
 // 球拍
 function drawPaddle(canvas,face){
   const ctx=canvas.getContext('2d');
@@ -635,7 +944,7 @@ function drawPaddle(canvas,face){
   ctx.beginPath();ctx.ellipse(cx,cy,34,22,0,0,Math.PI*2);
   ctx.fillStyle=isRed?'#b91c1c':'#3a3f50';ctx.fill();
   ctx.strokeStyle=isRed?'#7f1d1d':'#6b7280';ctx.lineWidth=2;ctx.stroke();
-  const hw=28,hh=10;
+  const hw=72,hh=10;
   const hx=isRed?cx-34-hw+4:cx+34-4,hy=cy-hh/2;
   ctx.beginPath();ctx.roundRect(hx,hy,hw,hh,3);
   ctx.fillStyle='#7c4a1e';ctx.fill();
@@ -688,6 +997,7 @@ let M={
   phase1Done:false,
 };
 let timerInterval=null;
+let trajAnim=null;
 const TIMER_MS=5000, TICK=60;
 const RALLY_MAX=6;
 
@@ -724,6 +1034,7 @@ function startMatch(){
       spinErrors:{sidespin:0,backspin:0,sidetopspin:0,nospin:0},
       rallyErrors:{long:0,short:0,high:0,fh:0,bh:0}},
     currentSc:null,phase:'serve',phase1Done:false};
+  if(trajAnim){trajAnim.stop();trajAnim=null;}
   show('matchScreen');hide('setupScreen');hide('endScreen');
   document.getElementById('float-score').style.display='flex';
   updateScoreboard();
@@ -962,7 +1273,9 @@ function renderReceiveTech(sc, landing, length){
   }
 
   const canvas=document.getElementById('receiveTrajCanvas');
-  drawTraj(canvas, landing==='fh'?SD.F:SD.B, length==='short'?LN.S:LN.L, firstOppFace);
+  if(trajAnim){trajAnim.stop();trajAnim=null;}
+  const rKey=getTrajKey(firstOppFace, landing==='fh'?SD.F:SD.B, length==='short'?LN.S:LN.L);
+  if(rKey){ trajAnim=new TrajAnimator(canvas,rKey); trajAnim.start(); }
 
   startTimer(()=>{
     document.querySelectorAll('#receiveOptions .opt').forEach(b=>b.disabled=true);
@@ -1031,8 +1344,10 @@ function renderRallyPhase1(){
     <div class="card">
       <div class="card-body">
         <div class="rally-info">
-          <div class="my-last"><span>我上一拍</span>
-            <span class="my-last-badge">${shotLabel[s.myShot]||s.myShot}</span></div>
+          <div style="display:flex;align-items:baseline;gap:8px;padding:2px 0;">
+            <span style="font-size:20px;font-weight:700;color:var(--yellow);">${shotLabel[s.myShot]||s.myShot}</span>
+            <span style="font-size:11px;color:var(--muted);">（我的上一拍）</span>
+          </div>
           <div class="paddle-row" id="paddleRow" style="flex-direction:${isRed?'row-reverse':'row'}">
             <canvas id="paddleCanvas" width="90" height="54"></canvas>
             <div class="paddle-info">
@@ -1075,9 +1390,18 @@ function showRallyLenAndTraj(){
   tags.appendChild(lenTag);
   // 加軌跡圖
   const canvasWrap=document.createElement('canvas');
-  canvasWrap.className='traj-canvas';canvasWrap.width=360;canvasWrap.height=160;
+  canvasWrap.className='traj-canvas';canvasWrap.width=360;canvasWrap.height=200;
   document.querySelector('.rally-info').appendChild(canvasWrap);
-  drawTraj(canvasWrap,s.myPos,s.len,s.oppFace);
+  if(trajAnim){trajAnim.stop();trajAnim=null;}
+  if(s.len===LN.H){
+    const ctx=canvasWrap.getContext('2d');
+    ctx.clearRect(0,0,360,200);
+    ctx.fillStyle='#fbbf24';ctx.font='bold 28px sans-serif';
+    ctx.textAlign='center';ctx.fillText('球冒高了!!',180,100);
+  } else {
+    const key=getTrajKey(s.oppFace,s.myPos,s.len);
+    if(key){ trajAnim=new TrajAnimator(canvasWrap,key); trajAnim.start(); }
+  }
   // 0.5秒後顯示選項+計時
   setTimeout(()=>showRallyOptions(),500);
 }
