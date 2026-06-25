@@ -83,7 +83,7 @@ function render(){
           <button class="ok" onclick="submitReview('approved')">✅ 分類正確</button>
           <select id="suggestedSpin">${spinOptions(item.spinType)}</select>
           <button class="submit" onclick="submitReview('reclassify')">🔄 建議改為 →</button>
-          <button class="warn" onclick="submitReview('discuss')">⚠️ 標記待討論</button>
+          <button class="warn" onclick="submitReview('needs_discussion')">⚠️ 標記待討論</button>
         </div>
         <div class="muted">${item.id}<br>${item.src}</div>
       </div>
