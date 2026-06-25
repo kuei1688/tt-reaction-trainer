@@ -464,7 +464,6 @@ class TrajAnimator {
     // 常數
     this.SPEED = 1.8;
     this.BOUNCE_PAUSE = 3;
-    this.END_PAUSE = 40;
     this.BALL_R = 8;
     this.TRAIL_LEN = 12;
 
@@ -587,7 +586,7 @@ class TrajAnimator {
     const s1 = traj.segs[0].p();
     const s2 = traj.segs[1].p();
     this.state = {
-      phase:0, t:0, bounceT:0, waitT:0,
+      phase:0, t:0, bounceT:0,
       seg1:s1, seg2:s2,
       bouncePos: s1[s1.length-1],
       endPos:    s2[s2.length-1],
@@ -722,17 +721,18 @@ class TrajAnimator {
       if(s.bounceT>=this.BOUNCE_PAUSE){ s.phase=2; s.t=0; }
     } else if(s.phase===2){
       s.t+=this.SPEED;
-      if(s.t>=s.seg2.length){ s.phase=3; s.waitT=0; }
-    } else if(s.phase===3){
-      s.waitT++;
-      if(s.waitT>=this.END_PAUSE){ s.phase=0; s.t=0; }
+      if(s.t>=s.seg2.length){ s.phase=3; }
     }
   }
 
   _loop() {
     this._update();
     this._draw();
-    this.rafId=requestAnimationFrame(()=>this._loop());
+    if(this.state.phase!==3){
+      this.rafId=requestAnimationFrame(()=>this._loop());
+    } else {
+      this.rafId=null;
+    }
   }
 }
 
