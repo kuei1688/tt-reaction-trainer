@@ -671,6 +671,32 @@
       </div>
     </div>
   </div>
+  <div class="principle-box" style="margin-bottom:24px;">
+    <h3>訓練模式</h3>
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      <div class="skill-item" id="diff-beginner" onclick="setDifficulty('beginner')">
+        <div class="skill-check" id="diff-beginner-check"></div>
+        <div>
+          <div class="skill-text">新手模式</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px;">影片循環，自己按準備好了後開始答題；發球15秒、技術10秒</div>
+        </div>
+      </div>
+      <div class="skill-item checked" id="diff-practice" onclick="setDifficulty('practice')">
+        <div class="skill-check" id="diff-practice-check">✓</div>
+        <div>
+          <div class="skill-text">練習模式</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px;">影片循環，影片開始同時計時；發球7秒、技術5秒</div>
+        </div>
+      </div>
+      <div class="skill-item" id="diff-match" onclick="setDifficulty('match')">
+        <div class="skill-check" id="diff-match-check"></div>
+        <div>
+          <div class="skill-text">比賽模式</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px;">影片播一次停住，選項先出現，影片播完後只給2秒；技術3秒</div>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <button class="start-btn" id="setupDoneBtn" type="button">確認，開始訓練</button>
   <div style="text-align:center;">
@@ -773,10 +799,10 @@ function getImg(key) {
 }
 
 // Render media: supports both jpg and mp4
-function renderMedia(src, style) {
+function renderMedia(src, style, videoAttrs = 'autoplay loop muted playsinline') {
   const ext = src.split('.').pop().toLowerCase();
   if (ext === 'mp4' || ext === 'webm' || ext === 'mov') {
-    return `<video src="${src}" style="${style}" autoplay loop muted playsinline></video>`;
+    return `<video src="${src}" style="${style}" ${videoAttrs}></video>`;
   }
   return `<img src="${src}" style="${style}" />`;
 }
@@ -1311,12 +1337,30 @@ const SETUP = {
   bhLoop: false,
   fhChopLoop: false,
   bhChopLoop: false,
+  difficulty: 'practice',
+};
+
+const DIFFICULTY = {
+  beginner: { serveTimer: 15, techTimer: 10, videoLoop: true,  serveTimerStart: 'ready' },
+  practice: { serveTimer: 7,  techTimer: 5,  videoLoop: true,  serveTimerStart: 'video' },
+  match:    { serveTimer: 2,  techTimer: 3,  videoLoop: false, serveTimerStart: 'videoend' },
 };
 
 function toggleSetup(key, el) {
   SETUP[key] = !SETUP[key];
   el.classList.toggle('checked', SETUP[key]);
   document.getElementById('sk-' + key + '-check').textContent = SETUP[key] ? '✓' : '';
+}
+
+function setDifficulty(level) {
+  SETUP.difficulty = level;
+  ['beginner','practice','match'].forEach(key => {
+    const item = document.getElementById('diff-' + key);
+    const check = document.getElementById('diff-' + key + '-check');
+    if (!item || !check) return;
+    item.classList.toggle('checked', key === level);
+    check.textContent = key === level ? '✓' : '';
+  });
 }
 
 // 根據情境、落點、技術設定決定正確技術
@@ -1399,6 +1443,8 @@ function renderQuestion() {
   const contactImg = IMAGES['contact_' + sc.spinType];
   const backswingImg = IMAGES['backswing_' + sc.backswingKey];
   const isVideo = contactImg && (contactImg.endsWith('.mp4') || contactImg.endsWith('.webm'));
+  const diff = DIFFICULTY[SETUP.difficulty];
+  const questionNo = qIndex;
 
   document.getElementById('cardBody').innerHTML = `
     <div style="display:grid;grid-template-columns:3fr 2fr;gap:0;min-height:400px;">
@@ -1440,7 +1486,42 @@ function renderQuestion() {
 
   document.getElementById('feedbackArea').className = 'feedback';
   hideNextControls();
-  startTimer();
+
+  const video = document.querySelector('#cardBody video');
+  if (video && SETUP.difficulty === 'match') {
+    video.loop = false;
+    video.onended = () => {
+      if (gamePhase === 'spin' && qIndex === questionNo) startTimer(diff.serveTimer);
+    };
+  }
+
+  if (SETUP.difficulty === 'beginner') {
+    const opts = document.getElementById('optionsArea');
+    if (opts) opts.style.display = 'none';
+    const answerArea = document.getElementById('answerArea');
+    const ready = document.createElement('button');
+    ready.id = 'readyServeBtn';
+    ready.type = 'button';
+    ready.className = 'opt';
+    ready.style.width = '100%';
+    ready.style.marginBottom = '10px';
+    ready.textContent = '準備好了 →';
+    ready.onclick = onReadyClick;
+    answerArea.insertBefore(ready, opts);
+    stopTimer();
+  } else if (SETUP.difficulty === 'match' && isVideo) {
+    stopTimer();
+  } else {
+    startTimer(diff.serveTimer);
+  }
+}
+
+function onReadyClick() {
+  const ready = document.getElementById('readyServeBtn');
+  if (ready) ready.remove();
+  const opts = document.getElementById('optionsArea');
+  if (opts) opts.style.display = 'flex';
+  startTimer(DIFFICULTY[SETUP.difficulty].serveTimer);
 }
 
 function renderLanding(sc) {
@@ -1477,7 +1558,7 @@ function renderLanding(sc) {
       </button>
     </div>
   `;
-  startTimer();
+  startTimer(DIFFICULTY[SETUP.difficulty].techTimer);
 }
 
 // 軌跡圖 canvas（從顆粒訓練移植）
@@ -1597,7 +1678,7 @@ function renderTech(sc, landing) {
     trajAnim.start();
   }
 
-  startTimer();
+  startTimer(DIFFICULTY[SETUP.difficulty].techTimer);
 }
 
 
@@ -1777,7 +1858,10 @@ function showTechFeedback(sc, landing, correct) {
 }
 
 // ═══ TIMER ═══
-function startTimer() {
+function startTimer(seconds) {
+  const duration = (seconds || (gamePhase === 'tech'
+    ? DIFFICULTY[SETUP.difficulty].techTimer
+    : DIFFICULTY[SETUP.difficulty].serveTimer)) * 1000;
   let elapsed = 0;
   const bar = document.getElementById('timerBar');
   bar.style.width = '100%';
@@ -1786,7 +1870,7 @@ function startTimer() {
 
   timerInterval = setInterval(() => {
     elapsed += TICK;
-    const pct = Math.max(0, 100 - (elapsed / TIMER_MS) * 100);
+    const pct = Math.max(0, 100 - (elapsed / duration) * 100);
     bar.style.width = pct + '%';
     if (pct < 25) bar.className = 'timer-bar urgent';
     else if (pct < 55) bar.className = 'timer-bar warn';
