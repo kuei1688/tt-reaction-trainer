@@ -208,25 +208,38 @@ h1{
 const SPINS = [
   { key:'sidespin',    label:'側旋',   color:'#bc8cff' },
   { key:'nospin',      label:'不轉',   color:'#3fb950' },
-  { key:'sidetopspin', label:'側下旋', color:'#d29922' },
+  { key:'sidebackspin', label:'側下旋', color:'#d29922' },
   { key:'backspin',    label:'下旋',   color:'#58a6ff' },
 ];
 
 const PRESETS = {
-  heba:     { sidespin:30, nospin:25, sidetopspin:35, backspin:10 },
-  balanced: { sidespin:25, nospin:25, sidetopspin:25, backspin:25 },
+  heba:     { sidespin:30, nospin:25, sidebackspin:35, backspin:10 },
+  balanced: { sidespin:25, nospin:25, sidebackspin:25, backspin:25 },
 };
 
 const STORAGE_KEY = 'tt_serve_settings';
 const RETURN_KEY  = 'tt_serve_return';
 
+function normalizeServeSettings(settings){
+  const normalized = {...PRESETS.balanced};
+  if(settings && typeof settings === 'object'){
+    SPINS.forEach(spin=>{
+      if(settings[spin.key] !== undefined) normalized[spin.key] = settings[spin.key];
+    });
+    if(settings.sidetopspin !== undefined && settings.sidebackspin === undefined){
+      normalized.sidebackspin = settings.sidetopspin;
+    }
+  }
+  return normalized;
+}
+
 // 載入設定
 function loadSettings(){
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
-    if(saved) return JSON.parse(saved);
+    if(saved) return normalizeServeSettings(JSON.parse(saved));
   } catch(e){}
-  return {...PRESETS.balanced};
+  return normalizeServeSettings();
 }
 
 let weights = loadSettings();

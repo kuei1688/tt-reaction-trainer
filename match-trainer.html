@@ -743,7 +743,7 @@ class TrajAnimator {
 // ══════════════════════════════════════
 // DEPRECATED: fallback only. Primary media metadata lives in videos.json.
 const IMAGE_LIBRARY = {
-  contact_sidetopspin: ['images/contact_sidetopspin/001.jpg','images/contact_sidetopspin/001.mp4','images/contact_sidetopspin/002.mp4','images/contact_sidetopspin/003.mp4','images/contact_sidetopspin/004.mp4','images/contact_sidetopspin/005.mp4'],
+  contact_sidebackspin: ['images/contact_sidebackspin/001.jpg','images/contact_sidebackspin/001.mp4','images/contact_sidebackspin/002.mp4','images/contact_sidebackspin/003.mp4','images/contact_sidebackspin/004.mp4','images/contact_sidebackspin/005.mp4'],
   contact_backspin:    ['images/contact_backspin/001.jpg','images/contact_backspin/001.mp4','images/contact_backspin/002.mp4','images/contact_backspin/003.mp4','images/contact_backspin/004.mp4','images/contact_backspin/005.mp4'],
   contact_sidespin:    ['images/contact_sidespin/001.jpg','images/contact_sidespin/001.mp4','images/contact_sidespin/002.mp4','images/contact_sidespin/003.mp4','images/contact_sidespin/004.mp4','images/contact_sidespin/005.mp4'],
   contact_nospin:      ['images/contact_nospin/001.jpg','images/contact_nospin/001.mp4','images/contact_nospin/002.mp4','images/contact_nospin/003.mp4'],
@@ -811,7 +811,7 @@ const SCENARIOS = [
     spinChoices:['側旋','下旋','側下旋','不轉'], correctSpin:0 },
   { id:'backspin',    spin:'下旋',   spinType:'backspin',    backswingKey:'low',  hint:'低引拍，拍面水平往下切球底部',
     spinChoices:['下旋','側旋','側下旋','不轉'], correctSpin:0 },
-  { id:'sidetopspin', spin:'側下旋', spinType:'sidetopspin', backswingKey:'mid',  hint:'中引拍，拍面約45度斜，往左下方切',
+  { id:'sidebackspin', spin:'側下旋', spinType:'sidebackspin', backswingKey:'mid',  hint:'中引拍，拍面約45度斜，往左下方切',
     spinChoices:['側下旋','純下旋','側旋','不轉'], correctSpin:0 },
   { id:'nospin',      spin:'不轉',   spinType:'nospin',      backswingKey:'low',  hint:'低引拍，動作像下旋，但出手輕',
     spinChoices:['不轉','下旋','側下旋','側旋'], correctSpin:0 },
@@ -825,12 +825,25 @@ function goToSettings(){
   window.location.href='serve-settings.html';
 }
 
+function normalizeServeSettings(settings,fallback){
+  const normalized={...fallback};
+  if(settings&&typeof settings==='object'){
+    Object.keys(normalized).forEach(key=>{
+      if(settings[key]!==undefined) normalized[key]=settings[key];
+    });
+    if(settings.sidetopspin!==undefined&&settings.sidebackspin===undefined){
+      normalized.sidebackspin=settings.sidetopspin;
+    }
+  }
+  return normalized;
+}
+
 function getWeightedSpin(){
   let settings;
   try{
     settings=JSON.parse(localStorage.getItem('tt_serve_settings'));
   }catch(e){}
-  if(!settings) settings={sidespin:45,nospin:25,sidetopspin:25,backspin:5};
+  settings=normalizeServeSettings(settings,{sidespin:45,nospin:25,sidebackspin:25,backspin:5});
 
   const pool=[];
   Object.entries(settings).forEach(([key,weight])=>{
@@ -1028,7 +1041,7 @@ let M={
   // 統計
   stats:{
     serveTotal:0,serveOk:0,
-    spinErrors:{sidespin:0,backspin:0,sidetopspin:0,nospin:0},
+    spinErrors:{sidespin:0,backspin:0,sidebackspin:0,nospin:0},
     rallyErrors:{long:0,short:0,high:0,fh:0,bh:0},
   },
   currentSc:null, // 當前發球情境
@@ -1071,7 +1084,7 @@ async function startMatch(){
     rallyBall:0,rallyMyShot:'serve',rallyLastFace:null,
     rallySit:null,rallyStep:1,rallyAnswered:false,
     stats:{serveTotal:0,serveOk:0,
-      spinErrors:{sidespin:0,backspin:0,sidetopspin:0,nospin:0},
+      spinErrors:{sidespin:0,backspin:0,sidebackspin:0,nospin:0},
       rallyErrors:{long:0,short:0,high:0,fh:0,bh:0}},
     currentSc:null,phase:'serve',phase1Done:false};
   if(trajAnim){trajAnim.stop();trajAnim=null;}
@@ -1255,7 +1268,7 @@ function afterServeError(){
 
 // ── 接球技術選擇（發球判斷對了之後）──
 function getReceiveTech(spinType, landing, length) {
-  const isBackspin = (spinType==='backspin'||spinType==='sidetopspin');
+  const isBackspin = (spinType==='backspin'||spinType==='sidebackspin');
   if(length==='short'){
     // 短球：帶旋轉切球，不轉/側旋依落點攻球或平推
     if(isBackspin) return 'cut';
@@ -1279,7 +1292,7 @@ function renderReceiveTech(sc, landing, length){
   M.rallyLastFace = firstOppFace; // 存起來讓 makeRallySit 繼續接
   const correct = getReceiveTech(sc.spinType, landing, length);
   // 干擾選項
-  const isBackspin = (sc.spinType==='backspin'||sc.spinType==='sidetopspin');
+  const isBackspin = (sc.spinType==='backspin'||sc.spinType==='sidebackspin');
   let distractor;
   if(correct==='cut') distractor=landing==='fh'?'fh-atk':'bh-push';
   else if(correct==='fh-atk'||correct==='fh-loop'||correct==='fh-chop-loop') distractor='cut';
@@ -1571,7 +1584,7 @@ function showEnd(){
   document.getElementById('endTitle').textContent=won?'贏了！':'輸了';
   document.getElementById('finalScore').textContent=`${M.myScore} : ${M.oppScore}`;
 
-  const spinNames={sidespin:'側旋',backspin:'下旋',sidetopspin:'側下旋',nospin:'不轉'};
+  const spinNames={sidespin:'側旋',backspin:'下旋',sidebackspin:'側下旋',nospin:'不轉'};
   const serveEl=document.getElementById('statsServe');
   serveEl.innerHTML=`
     <div class="stat-row"><span>答對率</span><span class="val">${M.stats.serveTotal?Math.round(M.stats.serveOk/M.stats.serveTotal*100)+'%':'—'}</span></div>

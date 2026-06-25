@@ -51,7 +51,7 @@
 
 | 情境 | 資料夾名稱 | 說明 |
 |------|-----------|------|
-| 正手側下旋 觸球 | `contact_fh_sidetopspin` | 正手鐘擺，拍面斜45度往右下切 |
+| 正手側下旋 觸球 | `contact_fh_sidebackspin` | 正手鐘擺，拍面斜45度往右下切 |
 | 正手側下旋 引拍 | `backswing_fh_mid` | 正手引拍，中等高度 |
 | 正手側上旋 觸球 | `contact_fh_sidetopspin_up` | 正手，拍面斜45度往右上切 |
 | 正手側上旋 引拍 | `backswing_fh_high` | 正手引拍，高位置 |

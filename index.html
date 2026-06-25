@@ -785,7 +785,7 @@
 <script>
 // DEPRECATED: fallback only. Primary media metadata lives in videos.json.
 const IMAGE_LIBRARY = {
-  contact_sidetopspin: ['images/contact_sidetopspin/001.jpg', 'images/contact_sidetopspin/001.mp4', 'images/contact_sidetopspin/002.mp4', 'images/contact_sidetopspin/003.mp4', 'images/contact_sidetopspin/004.mp4', 'images/contact_sidetopspin/005.mp4', 'images/contact_sidetopspin/006.mp4', 'images/contact_sidetopspin/007.mp4', 'images/contact_sidetopspin/008.mp4', 'images/contact_sidetopspin/009.mp4', 'images/contact_sidetopspin/010.mp4', 'images/contact_sidetopspin/011.mp4', 'images/contact_sidetopspin/012.mp4', 'images/contact_sidetopspin/013.mp4', 'images/contact_sidetopspin/014.mp4'],
+  contact_sidebackspin: ['images/contact_sidebackspin/001.jpg', 'images/contact_sidebackspin/001.mp4', 'images/contact_sidebackspin/002.mp4', 'images/contact_sidebackspin/003.mp4', 'images/contact_sidebackspin/004.mp4', 'images/contact_sidebackspin/005.mp4', 'images/contact_sidebackspin/006.mp4', 'images/contact_sidebackspin/007.mp4', 'images/contact_sidebackspin/008.mp4', 'images/contact_sidebackspin/009.mp4', 'images/contact_sidebackspin/010.mp4', 'images/contact_sidebackspin/011.mp4', 'images/contact_sidebackspin/012.mp4', 'images/contact_sidebackspin/013.mp4', 'images/contact_sidebackspin/014.mp4'],
   contact_backspin:    ['images/contact_backspin/001.jpg', 'images/contact_backspin/001.mp4', 'images/contact_backspin/002.mp4', 'images/contact_backspin/003.mp4', 'images/contact_backspin/004.mp4', 'images/contact_backspin/005.mp4', 'images/contact_backspin/006.mp4', 'images/contact_backspin/007.mp4', 'images/contact_backspin/008.mp4', 'images/contact_backspin/009.mp4', 'images/contact_backspin/010.mp4'],
   contact_sidespin:    ['images/contact_sidespin/001.jpg', 'images/contact_sidespin/001.mp4', 'images/contact_sidespin/002.mp4', 'images/contact_sidespin/003.mp4', 'images/contact_sidespin/004.mp4', 'images/contact_sidespin/005.mp4', 'images/contact_sidespin/006.mp4', 'images/contact_sidespin/007.mp4', 'images/contact_sidespin/008.mp4', 'images/contact_sidespin/009.mp4', 'images/contact_sidespin/010.mp4', 'images/contact_sidespin/011.mp4', 'images/contact_sidespin/012.mp4', 'images/contact_sidespin/013.mp4', 'images/contact_sidespin/014.mp4', 'images/contact_sidespin/015.mp4', 'images/contact_sidespin/016.mp4', 'images/contact_sidespin/017.mp4', 'images/contact_sidespin/018.mp4', 'images/contact_sidespin/019.mp4', 'images/contact_sidespin/020.mp4', 'images/contact_sidespin/021.mp4', 'images/contact_sidespin/022.mp4', 'images/contact_sidespin/023.mp4'],
   contact_nospin:      ['images/contact_nospin/001.jpg', 'images/contact_nospin/001.mp4', 'images/contact_nospin/002.mp4', 'images/contact_nospin/003.mp4'],
@@ -1156,7 +1156,7 @@ class TrajAnimator {
 // ═══ SERVE SCENE SVG ═══
 // 正視角：對方面對你，右手在你視角右側
 // 反手發球：右手在身體右側，拍頭朝右，往左前方揮出
-// spinType: 'backspin' | 'sidespin' | 'sidetopspin' | 'nospin'
+// spinType: 'backspin' | 'sidespin' | 'sidebackspin' | 'nospin'
 function serveSceneSVG(spinType, color) {
 
   // 手腕位置（反手：右手在身體右側）
@@ -1191,7 +1191,7 @@ function serveSceneSVG(spinType, color) {
         <line x1="3" y1="-8" x2="-22" y2="-12" stroke="${color}" stroke-width="1.4" stroke-dasharray="3,2" opacity="0.6"/>
         <polygon points="-22,-9.5 -22,-14.5 -27,-12" fill="${color}" opacity="0.8"/>
       </g>`;
-  } else if (spinType === 'sidetopspin') {
+  } else if (spinType === 'sidebackspin') {
     // 側下旋：拍面約45度，拍頭朝右偏低，往左下切
     bsLabel = '中引拍'; bsColor = '#d29922';
     motionHint = '斜向左下切';
@@ -1269,10 +1269,10 @@ const SCENARIOS = [
     techMap: { fh: '拉球', bh: '切球' }
   },
   {
-    id: 'sidetopspin',
+    id: 'sidebackspin',
     spin: '側下旋',
     color: '#f85149',
-    spinType: 'sidetopspin',
+    spinType: 'sidebackspin',
     backswingKey: 'mid',
     hint: '中引拍，拍面約45度斜，往左下方切',
     spinChoices: ['側下旋', '純下旋', '側旋', '不轉'],
@@ -1307,12 +1307,25 @@ function goToSettings() {
   window.location.href = 'serve-settings.html';
 }
 
+function normalizeServeSettings(settings, fallback) {
+  const normalized = {...fallback};
+  if (settings && typeof settings === 'object') {
+    Object.keys(normalized).forEach(key => {
+      if (settings[key] !== undefined) normalized[key] = settings[key];
+    });
+    if (settings.sidetopspin !== undefined && settings.sidebackspin === undefined) {
+      normalized.sidebackspin = settings.sidetopspin;
+    }
+  }
+  return normalized;
+}
+
 function getWeightedSpin() {
   let settings;
   try {
     settings = JSON.parse(localStorage.getItem('tt_serve_settings'));
   } catch(e) {}
-  if (!settings) settings = { sidespin:25, nospin:25, sidetopspin:25, backspin:25 };
+  settings = normalizeServeSettings(settings, { sidespin:25, nospin:25, sidebackspin:25, backspin:25 });
 
   const pool = [];
   Object.entries(settings).forEach(([key, weight]) => {
@@ -1333,7 +1346,7 @@ const TECH_FEEDBACK = {
     fh: { ok: '正確。下旋正手位，拉球進攻。拍面向上從底部往上刷。', tip: '正手拉下旋：感覺是「撈球」不是「打球」。預設長球，確認短球再換撥球。' },
     bh: { ok: '正確。帶旋轉反手位優先切球，不能直接平推。', tip: '反手切球是過渡技術，保持來回不失分。看到短球再換反手撥球。' }
   },
-  sidetopspin: {
+  sidebackspin: {
     fh: { ok: '正確。側下旋正手位，拉球。同時處理側向偏移和下旋。', tip: '接側下旋：①拍面往右調（對抗側旋）②往上刷（對抗下旋）。兩個動作同時。' },
     bh: { ok: '正確。帶旋轉反手位優先切球。', tip: '反手切球過渡，保持來回。等條件好了再轉攻。' }
   },
@@ -1417,7 +1430,7 @@ function setDifficulty(level) {
 
 // 根據情境、落點、技術設定決定正確技術
 function getCorrectTech(spinType, landing, length) {
-  const isBackspin = (spinType === 'backspin' || spinType === 'sidetopspin');
+  const isBackspin = (spinType === 'backspin' || spinType === 'sidebackspin');
   if (length === 'short') {
     // 短球：不管旋轉，切球或攻球/平推，不用拉球
     if (isBackspin) return '切球';
@@ -1435,7 +1448,7 @@ function getCorrectTech(spinType, landing, length) {
 
 // 取干擾選項
 function getDistractors(correct, spinType, landing, length) {
-  const isBackspin = (spinType === 'backspin' || spinType === 'sidetopspin');
+  const isBackspin = (spinType === 'backspin' || spinType === 'sidebackspin');
   const pool = landing === 'fh'
     ? ['切球', '拉球', '攻球', '撥球', '正手下旋拉球', '正手上旋拉球']
     : ['切球', '平推', '撥球', '反手下旋拉球', '反手上旋拉球'];
@@ -1880,7 +1893,7 @@ function showSpinFeedback(sc, correct, timedOut) {
 }
 
 function getTechTip(spinType, landing, length) {
-  const isBackspin = (spinType === 'backspin' || spinType === 'sidetopspin');
+  const isBackspin = (spinType === 'backspin' || spinType === 'sidebackspin');
   const correct = getCorrectTech(spinType, landing, length);
   if (length === 'short') {
     if (isBackspin) return '短球帶旋轉，切球穩定過渡。';
@@ -1947,7 +1960,7 @@ function nextQuestion() {
 function startGame() {
   queue = buildQueue();
   qIndex = 0; score = 0; streak = 0;
-  window._errors = { sidespin: 0, backspin: 0, sidetopspin: 0, nospin: 0 };
+  window._errors = { sidespin: 0, backspin: 0, sidebackspin: 0, nospin: 0 };
   document.getElementById('scoreNum').textContent = 0;
   document.getElementById('streakNum').textContent = 0;
   hideNextControls();
@@ -1971,7 +1984,7 @@ function endGame() {
   document.getElementById('finalScore').textContent = score + ' / ' + queue.length;
   document.getElementById('finalPct').textContent = pct + '%';
 
-  const spinNames = { sidespin: '側旋', backspin: '下旋', sidetopspin: '側下旋', nospin: '不轉' };
+  const spinNames = { sidespin: '側旋', backspin: '下旋', sidebackspin: '側下旋', nospin: '不轉' };
   const errors = window._errors || {};
   const weakList = Object.entries(errors)
     .filter(([k, v]) => v > 0)

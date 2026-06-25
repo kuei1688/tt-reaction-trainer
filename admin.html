@@ -64,7 +64,7 @@ textarea{width:100%;min-height:180px;background:#080b10;color:var(--text);border
 <script>
 const REVIEW_READ_URL = 'https://script.google.com/macros/s/AKfycbwDBfVdP2BqIcKAzeTiKF7LQeAtAgBozahlYuq73Ku-rNJx-RLZ92nWJZ8wROI9SbYF/exec';
 const LABELS = {
-  contact_sidetopspin:'側下旋',
+  contact_sidebackspin:'側下旋',
   contact_sidespin:'側旋',
   contact_backspin:'下旋',
   contact_nospin:'不轉',
@@ -105,14 +105,27 @@ function preview(id){
       reviewStatus: ${item.reviewStatus}
     </div>`;
 }
+function normalizeSpinKey(value){
+  return String(value || '')
+    .replaceAll('contact_sidetopspin', 'contact_sidebackspin')
+    .replaceAll('sidetopspin', 'sidebackspin');
+}
+function normalizeReviewRow(row){
+  return {
+    ...row,
+    currentSpinType: normalizeSpinKey(row.currentSpinType),
+    suggestedSpinType: normalizeSpinKey(row.suggestedSpinType)
+  };
+}
 function normalizeReviews(raw){
-  if(Array.isArray(raw)) return raw;
-  if(Array.isArray(raw.data)) return raw.data;
-  if(Array.isArray(raw.values)){
-    const [header,...rows] = raw.values;
-    return rows.map(row=>Object.fromEntries(header.map((key,i)=>[key,row[i]])));
+  let rows = [];
+  if(Array.isArray(raw)) rows = raw;
+  else if(Array.isArray(raw.data)) rows = raw.data;
+  else if(Array.isArray(raw.values)){
+    const [header,...values] = raw.values;
+    rows = values.map(row=>Object.fromEntries(header.map((key,i)=>[key,row[i]])));
   }
-  return [];
+  return rows.map(normalizeReviewRow);
 }
 function renderReviews(){
   const host = document.getElementById('results');
