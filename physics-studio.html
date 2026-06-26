@@ -145,7 +145,7 @@ const TABLE = { length: 2.74, width: 1.525, height: 0.76, top: 0.781, net: 0.152
 const BALL_RADIUS = 0.02;
 const BALL_RENDER_RADIUS = 0.034;
 const STORAGE_KEY = 'tt-physics-studio-presets-v1';
-const PLAY_POINTS_PER_SECOND = 150;
+const PLAY_MIN_DURATION_MS = 3000;
 const ids = ['startX','startY','startZ','targetX','targetY','targetZ','flightTime','gravity','varX','varY','varZ','topspin','sidespin','bounce','presetName'];
 let animation = null;
 let playStart = 0;
@@ -211,6 +211,7 @@ function simulate(state, variant){
   const bounces = [];
   let netY = null;
   let firstLanding = null;
+  let groundLanding = null;
   let crossedNet = false;
   for(let i=0;i<360;i++){
     const dt = 1/120;
@@ -233,10 +234,20 @@ function simulate(state, variant){
       vel.z = (vel.z + spin.topspin * 0.55) * 0.86;
       vel.x = (vel.x + spin.sidespin * 0.42) * 0.86;
     }
+    if(pos.y <= BALL_RADIUS && prev.y > BALL_RADIUS){
+      const ratio = (BALL_RADIUS - prev.y) / (pos.y - prev.y || 1);
+      groundLanding = {
+        x: prev.x + (pos.x - prev.x) * ratio,
+        y: BALL_RADIUS,
+        z: prev.z + (pos.z - prev.z) * ratio
+      };
+      points.push(groundLanding);
+      break;
+    }
     points.push(cloneVec(pos));
-    if(pos.y < 0 || Math.abs(pos.x) > 3 || Math.abs(pos.z) > 4) break;
+    if(Math.abs(pos.x) > 3 || Math.abs(pos.z) > 4) break;
   }
-  return {points, baseVel, velocity, netY, firstLanding, bounces};
+  return {points, baseVel, velocity, netY, firstLanding, groundLanding, bounces};
 }
 
 function buildScene(){
@@ -355,7 +366,9 @@ function analyze(base, variant){
   setValue('baseVz', base.baseVel.z.toFixed(3));
   const netClearance = variant.netY == null ? null : variant.netY - (TABLE.height + TABLE.net);
   const landing = variant.firstLanding;
+  const ground = variant.groundLanding || variant.points[variant.points.length - 1];
   const landingText = landing ? `${landing.x.toFixed(2)}, ${landing.z.toFixed(2)}` : '未落桌';
+  const groundText = ground ? `${ground.x.toFixed(2)}, ${ground.z.toFixed(2)}` : '未落地';
   const ok = landing && Math.abs(landing.x) <= TABLE.width/2 && Math.abs(landing.z) <= TABLE.length/2 && (netClearance == null || netClearance > 0);
   const reason = !landing ? '未落桌' : netClearance != null && netClearance < 0 ? '掛網風險' : ok ? '有效落桌' : '出界';
   document.getElementById('status').innerHTML = `
@@ -363,6 +376,7 @@ function analyze(base, variant){
     <div>變因後：<strong class="mono">${variant.velocity.x.toFixed(2)}, ${variant.velocity.y.toFixed(2)}, ${variant.velocity.z.toFixed(2)}</strong></div>
     <div>過網高度：<strong class="${netClearance == null || netClearance >= 0 ? 'ok' : 'bad'}">${netClearance == null ? '未過網' : netClearance.toFixed(3) + ' m'}</strong></div>
     <div>第一落點：<strong>${landingText}</strong></div>
+    <div>落地終點：<strong>${groundText}</strong></div>
     <div>判定：<strong class="${ok ? 'ok' : 'bad'}">${reason}</strong></div>
   `;
 }
@@ -416,9 +430,11 @@ function play(){
   playStart = performance.now();
   function tick(now){
     if(!isPlaying || !currentPath.length) return;
-    const i = Math.min(currentPath.length - 1, Math.floor((now - playStart) / 1000 * PLAY_POINTS_PER_SECOND));
+    const elapsed = now - playStart;
+    const progress = Math.min(1, elapsed / PLAY_MIN_DURATION_MS);
+    const i = Math.min(currentPath.length - 1, Math.floor(progress * (currentPath.length - 1)));
     setBallAtPathIndex(i);
-    if(i < currentPath.length - 1){
+    if(progress < 1){
       animation = requestAnimationFrame(tick);
     }else{
       stopPlayback();
