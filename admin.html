@@ -407,7 +407,7 @@ function getPromptChanges(){
     return true;
   });
 }
-function getPromptApprovals(){
+function getPromptApprovals(extraItems = []){
   const {discussion, approved} = getReviewBuckets();
   const mobileApprovals = discussion
     .map(r => {
@@ -420,7 +420,7 @@ function getPromptApprovals(){
     })
     .filter(r => r.status === 'approved');
   const seen = new Set();
-  return [...approved, ...mobileApprovals].filter(r => {
+  return [...approved, ...mobileApprovals, ...extraItems].filter(r => {
     const key = getReviewKey(r);
     if(seen.has(key)) return false;
     seen.add(key);
@@ -449,7 +449,7 @@ function getPromptDeletes(){
 }
 function generatePrompt(){
   const changes = getPromptChanges();
-  const approvals = getPromptApprovals();
+  const approvals = getPromptApprovals(changes);
   const deletes = getPromptDeletes();
   const sections = [];
   const changeLines = changes.map(r=>`- ${r.src}: ${r.currentSpinType} -> ${r.suggestedSpinType}`);
