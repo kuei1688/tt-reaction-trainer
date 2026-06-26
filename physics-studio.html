@@ -15,8 +15,8 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,B
 header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;border-bottom:1px solid var(--border);background:#0b1016}
 h1{font-size:20px;margin:0;font-weight:900}
 .badge{font-size:12px;color:var(--yellow);font-weight:800}
-.stage{display:grid;grid-template-columns:1fr 420px;min-height:calc(100vh - 54px)}
-.views{display:grid;grid-template-rows:1fr 1fr;gap:8px;padding:8px;min-height:560px}
+.stage{display:grid;grid-template-columns:1fr 420px;height:calc(100vh - 54px);overflow:hidden}
+.views{display:grid;grid-template-rows:minmax(240px,1.08fr) minmax(220px,.92fr);gap:8px;padding:8px;min-height:0}
 .view{position:relative;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;background:#05070a}
 .view-label{position:absolute;left:10px;top:8px;z-index:2;font-size:12px;color:var(--muted);font-weight:800}
 canvas{display:block;width:100%;height:100%}
@@ -43,6 +43,7 @@ button.warn{background:rgba(210,153,34,.12);color:var(--yellow);border-color:var
 .preset-row{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:end}
 @media (max-width: 900px){
   .stage{grid-template-columns:1fr}
+  .stage{height:auto;overflow:visible}
   .panel{border-left:0;border-top:1px solid var(--border);max-height:none}
   .views{height:58vh;min-height:420px}
   .grid{grid-template-columns:repeat(2,1fr)}
@@ -58,12 +59,12 @@ button.warn{background:rgba(210,153,34,.12);color:var(--yellow);border-color:var
 <main class="stage">
   <section class="views">
     <div class="view">
-      <div class="view-label">我方視角</div>
-      <canvas id="frontView"></canvas>
-    </div>
-    <div class="view">
       <div class="view-label">側面視角</div>
       <canvas id="sideView"></canvas>
+    </div>
+    <div class="view">
+      <div class="view-label">我方視角</div>
+      <canvas id="frontView"></canvas>
     </div>
   </section>
 
@@ -267,16 +268,16 @@ function buildScene(){
 }
 
 const scenes = [buildScene(), buildScene()];
-const canvases = [document.getElementById('frontView'), document.getElementById('sideView')];
+const canvases = [document.getElementById('sideView'), document.getElementById('frontView')];
 const renderers = canvases.map(canvas => new THREE.WebGLRenderer({canvas, antialias:true}));
 const cameras = [
-  new THREE.PerspectiveCamera(58, 1, 0.01, 30),
-  new THREE.PerspectiveCamera(55, 1, 0.01, 30)
+  new THREE.PerspectiveCamera(55, 1, 0.01, 30),
+  new THREE.PerspectiveCamera(62, 1, 0.01, 30)
 ];
-cameras[0].position.set(0, 1.02, 2.15);
-cameras[0].lookAt(0, TABLE.top, -0.45);
-cameras[1].position.set(-2.25, 1.12, 0);
-cameras[1].lookAt(0, TABLE.top, 0);
+cameras[0].position.set(-2.25, 1.12, 0);
+cameras[0].lookAt(0, TABLE.top, 0);
+cameras[1].position.set(0, 1.42, 2.08);
+cameras[1].lookAt(0, TABLE.top, -0.25);
 
 function makeBall(scene){
   const ball = new THREE.Mesh(
