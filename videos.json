@@ -158,7 +158,7 @@
     "kind": "video",
     "spinType": "contact_backspin",
     "weight": 1,
-    "reviewStatus": "pending",
+    "reviewStatus": "approved",
     "reviewNote": ""
   },
   {
@@ -167,7 +167,7 @@
     "kind": "video",
     "spinType": "contact_backspin",
     "weight": 1,
-    "reviewStatus": "pending",
+    "reviewStatus": "approved",
     "reviewNote": ""
   },
   {
@@ -455,7 +455,7 @@
     "kind": "video",
     "spinType": "contact_nospin",
     "weight": 1,
-    "reviewStatus": "pending",
+    "reviewStatus": "approved",
     "reviewNote": ""
   },
   {
@@ -464,7 +464,7 @@
     "kind": "video",
     "spinType": "contact_nospin",
     "weight": 1,
-    "reviewStatus": "pending",
+    "reviewStatus": "approved",
     "reviewNote": ""
   },
   {
@@ -473,7 +473,7 @@
     "kind": "video",
     "spinType": "contact_nospin",
     "weight": 1,
-    "reviewStatus": "pending",
+    "reviewStatus": "approved",
     "reviewNote": ""
   },
   {

@@ -70,6 +70,7 @@ function reviewStatus(row){
   const status = String(row?.status || '').trim();
   if(status === 'discuss') return 'needs_discussion';
   if(['delete', 'remove', 'deleted', 'needs_delete'].includes(status)) return 'delete';
+  if(status === 'reclassify' && row.suggestedSpinType === row.currentSpinType) return 'approved';
   return status;
 }
 function normalizeSpinKey(value){

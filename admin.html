@@ -156,6 +156,7 @@ function reviewStatus(row){
   const status = String(row.status || '').trim();
   if(status === 'discuss') return 'needs_discussion';
   if(['delete', 'remove', 'deleted', 'needs_delete'].includes(status)) return 'delete';
+  if(status === 'reclassify' && row.suggestedSpinType === row.currentSpinType) return 'approved';
   return status;
 }
 function showError(text){
@@ -221,10 +222,22 @@ function normalizeReviews(raw){
     const [header,...values] = raw.values;
     rows = values.map(row=>Object.fromEntries(header.map((key,i)=>[key,row[i]])));
   }
-  return rows.map(normalizeReviewRow);
+  return latestReviewRows(rows.map(normalizeReviewRow));
+}
+function latestReviewRows(rows){
+  const latest = new Map();
+  rows.forEach(row=>{
+    const key = getReviewKey(row);
+    if(key) latest.set(key, row);
+  });
+  return [...latest.values()];
 }
 function getReviewKey(row){
   return row.id || row.src || '';
+}
+function hasVideo(row){
+  const src = row.src || '';
+  return videos.some(v => v.src === src || v.id === row.id);
 }
 function getReviewVideo(row){
   const src = row.src || '';
@@ -251,15 +264,16 @@ function setMobileDecision(key, status, suggestedSpinType){
   renderReviews();
 }
 function getReviewBuckets(){
-  const discussion = reviews.filter(r => reviewStatus(r) === 'needs_discussion');
-  const reclassify = reviews.filter(r =>
+  const activeReviews = reviews.filter(hasVideo);
+  const discussion = activeReviews.filter(r => reviewStatus(r) === 'needs_discussion');
+  const reclassify = activeReviews.filter(r =>
     reviewStatus(r) === 'reclassify' &&
     r.suggestedSpinType &&
     r.currentSpinType &&
     r.suggestedSpinType !== r.currentSpinType
   );
-  const approved = reviews.filter(r => reviewStatus(r) === 'approved');
-  const deleteItems = reviews.filter(r => reviewStatus(r) === 'delete');
+  const approved = activeReviews.filter(r => reviewStatus(r) === 'approved');
+  const deleteItems = activeReviews.filter(r => reviewStatus(r) === 'delete');
   return {discussion, reclassify, deleteItems, approved};
 }
 function renderReviewRows(items, mode){
