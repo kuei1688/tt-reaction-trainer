@@ -73,13 +73,23 @@ button.warn{background:rgba(210,153,34,.12);color:var(--yellow);border-color:var
   <aside class="panel">
     <div class="section">
       <h2>作弊反推</h2>
+      <div class="grid two" style="margin-bottom:8px">
+        <div class="field">
+          <label>反推模式</label>
+          <select id="solveTarget">
+            <option value="first_bounce">指定第一落點</option>
+            <option value="second_bounce">指定第二落點</option>
+          </select>
+        </div>
+        <div class="field"><label>目標說明</label><input id="targetHint" readonly value="目標 = 第一跳"></div>
+      </div>
       <div class="grid">
         <div class="field"><label>起點 X</label><input id="startX" type="number" step="0.01" value="0.28"></div>
         <div class="field"><label>起點 Y</label><input id="startY" type="number" step="0.01" value="1.03"></div>
         <div class="field"><label>起點 Z</label><input id="startZ" type="number" step="0.01" value="-1.24"></div>
-        <div class="field"><label>落點 X</label><input id="targetX" type="number" step="0.01" value="-0.46"></div>
-        <div class="field"><label>落點 Y</label><input id="targetY" type="number" step="0.01" value="0.78"></div>
-        <div class="field"><label>落點 Z</label><input id="targetZ" type="number" step="0.01" value="0.88"></div>
+        <div class="field"><label>目標 X</label><input id="targetX" type="number" step="0.01" value="-0.46"></div>
+        <div class="field"><label>目標 Y</label><input id="targetY" type="number" step="0.01" value="0.78"></div>
+        <div class="field"><label>目標 Z</label><input id="targetZ" type="number" step="0.01" value="0.88"></div>
       </div>
       <div class="grid two" style="margin-top:8px">
         <div class="field"><label>飛行時間</label><input id="flightTime" type="number" step="0.01" value="0.78"></div>
@@ -146,7 +156,7 @@ const BALL_RADIUS = 0.02;
 const BALL_RENDER_RADIUS = 0.034;
 const STORAGE_KEY = 'tt-physics-studio-presets-v1';
 const PLAY_MIN_DURATION_MS = 3000;
-const ids = ['startX','startY','startZ','targetX','targetY','targetZ','flightTime','gravity','varX','varY','varZ','topspin','sidespin','bounce','presetName'];
+const ids = ['solveTarget','startX','startY','startZ','targetX','targetY','targetZ','flightTime','gravity','varX','varY','varZ','topspin','sidespin','bounce','presetName'];
 let animation = null;
 let playStart = 0;
 let isPlaying = false;
@@ -165,7 +175,7 @@ function readState(){
     mode: 'cheat_solve',
     start,
     target,
-    solve: {flightTime:num('flightTime'), gravity:num('gravity')},
+    solve: {targetMode:document.getElementById('solveTarget').value, flightTime:num('flightTime'), gravity:num('gravity')},
     variation: {
       velocity: {x:num('varX'), y:num('varY'), z:num('varZ')},
       spin: {topspin:num('topspin'), sidespin:num('sidespin')},
@@ -181,6 +191,7 @@ function applyState(state){
   });
   setValue('flightTime', state.solve?.flightTime ?? 0.78);
   setValue('gravity', state.solve?.gravity ?? -4.2);
+  document.getElementById('solveTarget').value = state.solve?.targetMode || state.solve?.target || 'first_bounce';
   setValue('varX', state.variation?.velocity?.x ?? 0);
   setValue('varY', state.variation?.velocity?.y ?? 0);
   setValue('varZ', state.variation?.velocity?.z ?? 0);
@@ -199,8 +210,82 @@ function solveVelocity(start, target, time, gravity){
 function addVec(a,b){ return {x:a.x+b.x, y:a.y+b.y, z:a.z+b.z}; }
 function cloneVec(v){ return {x:v.x, y:v.y, z:v.z}; }
 
+function solveBaseVelocity(state){
+  if(state.solve.targetMode === 'second_bounce'){
+    return solveSecondBounceVelocity(state);
+  }
+  return solveVelocity(state.start, state.target, state.solve.flightTime, state.solve.gravity);
+}
+function solveSecondBounceVelocity(state){
+  const target = state.target;
+  let best = findSecondBounceSeed(state);
+  let bestScore = secondBounceScore(state, best);
+  let steps = {x:0.35, y:0.25, z:0.35};
+  for(let round=0; round<18; round++){
+    let improved = false;
+    for(const axis of ['x','y','z']){
+      for(const dir of [-1,1]){
+        const trial = {...best, [axis]: best[axis] + steps[axis] * dir};
+        const score = secondBounceScore(state, trial);
+        if(score < bestScore){
+          best = trial;
+          bestScore = score;
+          improved = true;
+        }
+      }
+    }
+    if(!improved){
+      steps.x *= 0.58;
+      steps.y *= 0.58;
+      steps.z *= 0.58;
+    }
+  }
+  return best;
+}
+function findSecondBounceSeed(state){
+  const target = state.target;
+  const fallbackTime = Math.max(1.05, state.solve.flightTime);
+  let best = solveVelocity(state.start, target, fallbackTime, state.solve.gravity);
+  let bestScore = secondBounceScore(state, best);
+  const times = [0.95, 1.1, 1.25, 1.4, 1.6, 1.85, 2.1];
+  const ySpeeds = [0.18, 0.35, 0.55, 0.8, 1.05, 1.35, 1.7, 2.1];
+  const xOffsets = [-0.8, -0.4, 0, 0.4, 0.8];
+  const zOffsets = [-1.0, -0.5, 0, 0.5, 1.0];
+  for(const time of times){
+    const baseX = (target.x - state.start.x) / time;
+    const baseZ = (target.z - state.start.z) / time;
+    for(const y of ySpeeds){
+      for(const xOffset of xOffsets){
+        for(const zOffset of zOffsets){
+          const candidate = {x:baseX + xOffset, y, z:baseZ + zOffset};
+          const score = secondBounceScore(state, candidate);
+          if(score < bestScore){
+            best = candidate;
+            bestScore = score;
+          }
+        }
+      }
+    }
+  }
+  return best;
+}
+function secondBounceScore(state, baseVel){
+  const result = simulateWithBaseVelocity(state, baseVel, {x:0,y:0,z:0});
+  const target = state.target;
+  const second = result.bounces[1];
+  const fallback = result.bounces[0] || result.groundLanding || result.points[result.points.length - 1] || state.start;
+  const point = second || fallback;
+  const dx = point.x - target.x;
+  const dz = point.z - target.z;
+  const dt = second?.t == null ? 1.5 : second.t - state.solve.flightTime;
+  const missPenalty = second ? 0 : 4;
+  return dx*dx + dz*dz + dt*dt*0.35 + missPenalty;
+}
 function simulate(state, variant){
-  const baseVel = solveVelocity(state.start, state.target, state.solve.flightTime, state.solve.gravity);
+  const baseVel = solveBaseVelocity(state);
+  return simulateWithBaseVelocity(state, baseVel, variant || {x:0,y:0,z:0});
+}
+function simulateWithBaseVelocity(state, baseVel, variant){
   const velocity = addVec(baseVel, variant || {x:0,y:0,z:0});
   const spin = state.variation.spin;
   const bounce = state.variation.bounce;
@@ -215,6 +300,7 @@ function simulate(state, variant){
   let crossedNet = false;
   for(let i=0;i<360;i++){
     const dt = 1/120;
+    const t = (i + 1) * dt;
     const prev = cloneVec(pos);
     vel.y += gravity * dt;
     pos.x += vel.x * dt;
@@ -228,8 +314,9 @@ function simulate(state, variant){
     const onTable = Math.abs(pos.x) <= TABLE.width/2 && Math.abs(pos.z) <= TABLE.length/2;
     if(pos.y <= TABLE.top && vel.y < 0 && onTable && bounces.length < 2){
       pos.y = TABLE.top;
-      if(!firstLanding) firstLanding = cloneVec(pos);
-      bounces.push(cloneVec(pos));
+      const bouncePoint = {...cloneVec(pos), t};
+      if(!firstLanding) firstLanding = bouncePoint;
+      bounces.push(bouncePoint);
       vel.y = Math.abs(vel.y) * bounce;
       vel.z = (vel.z + spin.topspin * 0.55) * 0.86;
       vel.x = (vel.x + spin.sidespin * 0.42) * 0.86;
@@ -239,7 +326,8 @@ function simulate(state, variant){
       groundLanding = {
         x: prev.x + (pos.x - prev.x) * ratio,
         y: BALL_RADIUS,
-        z: prev.z + (pos.z - prev.z) * ratio
+        z: prev.z + (pos.z - prev.z) * ratio,
+        t: t - dt + dt * ratio
       };
       points.push(groundLanding);
       break;
@@ -366,8 +454,10 @@ function analyze(base, variant){
   setValue('baseVz', base.baseVel.z.toFixed(3));
   const netClearance = variant.netY == null ? null : variant.netY - (TABLE.height + TABLE.net);
   const landing = variant.firstLanding;
+  const secondLanding = variant.bounces[1];
   const ground = variant.groundLanding || variant.points[variant.points.length - 1];
   const landingText = landing ? `${landing.x.toFixed(2)}, ${landing.z.toFixed(2)}` : '未落桌';
+  const secondText = secondLanding ? `${secondLanding.x.toFixed(2)}, ${secondLanding.z.toFixed(2)}` : '未達第二跳';
   const groundText = ground ? `${ground.x.toFixed(2)}, ${ground.z.toFixed(2)}` : '未落地';
   const ok = landing && Math.abs(landing.x) <= TABLE.width/2 && Math.abs(landing.z) <= TABLE.length/2 && (netClearance == null || netClearance > 0);
   const reason = !landing ? '未落桌' : netClearance != null && netClearance < 0 ? '掛網風險' : ok ? '有效落桌' : '出界';
@@ -376,6 +466,7 @@ function analyze(base, variant){
     <div>變因後：<strong class="mono">${variant.velocity.x.toFixed(2)}, ${variant.velocity.y.toFixed(2)}, ${variant.velocity.z.toFixed(2)}</strong></div>
     <div>過網高度：<strong class="${netClearance == null || netClearance >= 0 ? 'ok' : 'bad'}">${netClearance == null ? '未過網' : netClearance.toFixed(3) + ' m'}</strong></div>
     <div>第一落點：<strong>${landingText}</strong></div>
+    <div>第二落點：<strong>${secondText}</strong></div>
     <div>落地終點：<strong>${groundText}</strong></div>
     <div>判定：<strong class="${ok ? 'ok' : 'bad'}">${reason}</strong></div>
   `;
@@ -389,6 +480,7 @@ function updateExport(state){
 }
 function updateStudio(){
   const state = readState();
+  document.getElementById('targetHint').value = state.solve.targetMode === 'second_bounce' ? '目標 = 第二跳' : '目標 = 第一跳';
   const base = simulate({...state, variation:{...state.variation, spin:{topspin:0,sidespin:0}, bounce:state.variation.bounce}}, {x:0,y:0,z:0});
   const variant = simulate(state, state.variation.velocity);
   currentPath = variant.points;
