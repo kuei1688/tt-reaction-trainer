@@ -21,7 +21,7 @@
     "id": "contact_sidebackspin_003",
     "src": "images/contact_sidebackspin/002.mp4",
     "kind": "video",
-    "spinType": "contact_sidebackspin",
+    "spinType": "contact_sidespin",
     "weight": 1,
     "reviewStatus": "pending",
     "reviewNote": ""
@@ -216,15 +216,6 @@
     "reviewNote": ""
   },
   {
-    "id": "contact_backspin_010",
-    "src": "images/contact_backspin/009.mp4",
-    "kind": "video",
-    "spinType": "contact_backspin",
-    "weight": 1,
-    "reviewStatus": "pending",
-    "reviewNote": ""
-  },
-  {
     "id": "contact_backspin_011",
     "src": "images/contact_backspin/010.mp4",
     "kind": "video",
@@ -309,7 +300,7 @@
     "id": "contact_sidespin_009",
     "src": "images/contact_sidespin/008.mp4",
     "kind": "video",
-    "spinType": "contact_sidespin",
+    "spinType": "contact_sidebackspin",
     "weight": 1,
     "reviewStatus": "pending",
     "reviewNote": ""
@@ -336,7 +327,7 @@
     "id": "contact_sidespin_012",
     "src": "images/contact_sidespin/011.mp4",
     "kind": "video",
-    "spinType": "contact_sidespin",
+    "spinType": "contact_sidebackspin",
     "weight": 1,
     "reviewStatus": "pending",
     "reviewNote": ""
@@ -435,7 +426,7 @@
     "id": "contact_sidespin_023",
     "src": "images/contact_sidespin/022.mp4",
     "kind": "video",
-    "spinType": "contact_sidespin",
+    "spinType": "contact_backspin",
     "weight": 1,
     "reviewStatus": "pending",
     "reviewNote": ""
