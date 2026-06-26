@@ -30,6 +30,7 @@ canvas{display:block;width:100%;height:100%}
 label{font-size:11px;color:var(--muted);font-weight:800}
 input,select,textarea,button{font:inherit}
 input,select,textarea{width:100%;background:#080b10;color:var(--text);border:1px solid var(--border);border-radius:8px;padding:8px}
+input[readonly]{color:var(--yellow);background:#111720}
 input[type=range]{padding:0}
 textarea{min-height:116px;font-family:ui-monospace,Consolas,monospace;font-size:12px;line-height:1.45}
 button{border:1px solid var(--blue);background:var(--blue);color:#06111f;border-radius:8px;padding:9px 10px;font-weight:900;cursor:pointer}
@@ -46,7 +47,7 @@ button.warn{background:rgba(210,153,34,.12);color:var(--yellow);border-color:var
   .stage{grid-template-columns:1fr}
   .stage{height:auto;overflow:visible}
   .panel{border-left:0;border-top:1px solid var(--border);max-height:none}
-  .views{height:58vh;min-height:420px}
+  .views{position:sticky;top:0;z-index:5;height:54vh;min-height:380px;background:var(--bg)}
   .grid{grid-template-columns:repeat(2,1fr)}
 }
 </style>
@@ -84,6 +85,12 @@ button.warn{background:rgba(210,153,34,.12);color:var(--yellow);border-color:var
         <div class="field"><label>飛行時間</label><input id="flightTime" type="number" step="0.01" value="0.78"></div>
         <div class="field"><label>重力</label><input id="gravity" type="number" step="0.1" value="-4.2"></div>
       </div>
+      <div class="grid" style="margin-top:8px">
+        <div class="field"><label>反推 VX</label><input id="baseVx" readonly value="0"></div>
+        <div class="field"><label>反推 VY</label><input id="baseVy" readonly value="0"></div>
+        <div class="field"><label>反推 VZ</label><input id="baseVz" readonly value="0"></div>
+      </div>
+      <div class="status" style="margin-top:8px">球桌為真實 2.74m x 1.525m；球的物理直徑為 40mm，畫面中放大顯示方便調參。</div>
     </div>
 
     <div class="section">
@@ -136,6 +143,7 @@ button.warn{background:rgba(210,153,34,.12);color:var(--yellow);border-color:var
 <script>
 const TABLE = { length: 2.74, width: 1.525, height: 0.76, top: 0.781, net: 0.1525 };
 const BALL_RADIUS = 0.02;
+const BALL_RENDER_RADIUS = 0.034;
 const STORAGE_KEY = 'tt-physics-studio-presets-v1';
 const PLAY_POINTS_PER_SECOND = 150;
 const ids = ['startX','startY','startZ','targetX','targetY','targetZ','flightTime','gravity','varX','varY','varZ','topspin','sidespin','bounce','presetName'];
@@ -274,13 +282,13 @@ const scenes = [buildScene(), buildScene()];
 const canvases = [document.getElementById('sideView'), document.getElementById('frontView')];
 const renderers = canvases.map(canvas => new THREE.WebGLRenderer({canvas, antialias:true}));
 const cameras = [
-  new THREE.PerspectiveCamera(55, 1, 0.01, 30),
-  new THREE.PerspectiveCamera(62, 1, 0.01, 30)
+  new THREE.PerspectiveCamera(58, 1, 0.01, 30),
+  new THREE.PerspectiveCamera(66, 1, 0.01, 30)
 ];
-cameras[0].position.set(-2.25, 1.12, 0);
-cameras[0].lookAt(0, TABLE.top, 0);
-cameras[1].position.set(0, 1.42, 2.08);
-cameras[1].lookAt(0, TABLE.top, -0.25);
+cameras[0].position.set(-2.75, 1.16, 0.04);
+cameras[0].lookAt(0, TABLE.top, 0.12);
+cameras[1].position.set(0, 1.55, 2.42);
+cameras[1].lookAt(0, TABLE.top, -0.08);
 
 function makeBall(scene){
   const ball = new THREE.Mesh(
@@ -288,6 +296,7 @@ function makeBall(scene){
     new THREE.MeshPhongMaterial({color:0xffd84d, shininess:100})
   );
   scene.add(ball);
+  ball.scale.setScalar(BALL_RENDER_RADIUS / BALL_RADIUS);
   return ball;
 }
 const balls = scenes.map(makeBall);
@@ -341,6 +350,9 @@ function resize(){
 window.addEventListener('resize', resize);
 
 function analyze(base, variant){
+  setValue('baseVx', base.baseVel.x.toFixed(3));
+  setValue('baseVy', base.baseVel.y.toFixed(3));
+  setValue('baseVz', base.baseVel.z.toFixed(3));
   const netClearance = variant.netY == null ? null : variant.netY - (TABLE.height + TABLE.net);
   const landing = variant.firstLanding;
   const landingText = landing ? `${landing.x.toFixed(2)}, ${landing.z.toFixed(2)}` : '未落桌';
