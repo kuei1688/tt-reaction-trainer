@@ -101,10 +101,10 @@ button.warn{background:rgba(210,153,34,.12);color:var(--yellow);border-color:var
     <div class="section">
       <h2>操作</h2>
       <div class="actions">
-        <button id="playBtn">播放</button>
-        <button id="resetBtn" class="secondary">重播</button>
-        <button id="randomBtn" class="warn">產生散布</button>
-        <button id="copyBtn" class="secondary">複製指令</button>
+        <button id="playBtn" type="button">播放</button>
+        <button id="resetBtn" type="button" class="secondary">重播</button>
+        <button id="randomBtn" type="button" class="warn">產生散布</button>
+        <button id="copyBtn" type="button" class="secondary">複製指令</button>
       </div>
     </div>
 
@@ -117,11 +117,11 @@ button.warn{background:rgba(210,153,34,.12);color:var(--yellow);border-color:var
       <h2>Preset</h2>
       <div class="preset-row">
         <div class="field"><label>名稱</label><input id="presetName" value="側下長球到反手"></div>
-        <button id="saveBtn">儲存</button>
+        <button id="saveBtn" type="button">儲存</button>
       </div>
       <div class="preset-row" style="margin-top:8px">
         <div class="field"><label>已存參數</label><select id="presetSelect"></select></div>
-        <button id="loadBtn" class="secondary">載入</button>
+        <button id="loadBtn" type="button" class="secondary">載入</button>
       </div>
     </div>
 
@@ -137,9 +137,11 @@ button.warn{background:rgba(210,153,34,.12);color:var(--yellow);border-color:var
 const TABLE = { length: 2.74, width: 1.525, height: 0.76, top: 0.781, net: 0.1525 };
 const BALL_RADIUS = 0.02;
 const STORAGE_KEY = 'tt-physics-studio-presets-v1';
+const PLAY_POINTS_PER_SECOND = 150;
 const ids = ['startX','startY','startZ','targetX','targetY','targetZ','flightTime','gravity','varX','varY','varZ','topspin','sidespin','bounce','presetName'];
 let animation = null;
 let playStart = 0;
+let isPlaying = false;
 let currentPath = [];
 let scatterLines = [];
 
@@ -379,19 +381,44 @@ function updateStudio(){
 function renderAll(){
   renderers.forEach((renderer,index)=>renderer.render(scenes[index], cameras[index]));
 }
-function play(){
+function setBallAtPathIndex(index){
+  if(!currentPath.length) return;
+  const safeIndex = Math.max(0, Math.min(currentPath.length - 1, index));
+  const p = currentPath[safeIndex];
+  balls.forEach(ball=>ball.position.set(p.x,p.y,p.z));
+  renderAll();
+}
+function stopPlayback(){
   if(animation) cancelAnimationFrame(animation);
+  animation = null;
+  isPlaying = false;
+  document.getElementById('playBtn').textContent = '播放';
+}
+function play(){
+  stopPlayback();
+  updateStudio();
+  if(!currentPath.length) return;
+  isPlaying = true;
+  document.getElementById('playBtn').textContent = '播放中';
+  setBallAtPathIndex(0);
   playStart = performance.now();
   function tick(now){
-    if(currentPath.length){
-      const i = Math.min(currentPath.length - 1, Math.floor((now - playStart) / 1000 * 90));
-      const p = currentPath[i];
-      balls.forEach(ball=>ball.position.set(p.x,p.y,p.z));
-      renderAll();
-      if(i < currentPath.length - 1) animation = requestAnimationFrame(tick);
+    if(!isPlaying || !currentPath.length) return;
+    const i = Math.min(currentPath.length - 1, Math.floor((now - playStart) / 1000 * PLAY_POINTS_PER_SECOND));
+    setBallAtPathIndex(i);
+    if(i < currentPath.length - 1){
+      animation = requestAnimationFrame(tick);
+    }else{
+      stopPlayback();
     }
   }
   animation = requestAnimationFrame(tick);
+}
+function replay(){
+  stopPlayback();
+  updateStudio();
+  setBallAtPathIndex(0);
+  play();
 }
 function makeScatter(){
   const state = readState();
@@ -455,7 +482,7 @@ ids.forEach(id=>{
   if(el) el.addEventListener('input', updateStudio);
 });
 document.getElementById('playBtn').addEventListener('click', play);
-document.getElementById('resetBtn').addEventListener('click', ()=>{ updateStudio(); play(); });
+document.getElementById('resetBtn').addEventListener('click', replay);
 document.getElementById('randomBtn').addEventListener('click', makeScatter);
 document.getElementById('saveBtn').addEventListener('click', saveCurrent);
 document.getElementById('loadBtn').addEventListener('click', loadSelected);
