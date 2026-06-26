@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>桌球物理攝影棚</title>
+<style>
+:root{
+  --bg:#0d1117;--surface:#161b22;--surface2:#21262d;--border:#30363d;
+  --green:#3fb950;--yellow:#d29922;--red:#f85149;--blue:#58a6ff;
+  --text:#e6edf3;--muted:#8b949e;--radius:10px;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","Segoe UI",sans-serif}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;border-bottom:1px solid var(--border);background:#0b1016}
+h1{font-size:20px;margin:0;font-weight:900}
+.badge{font-size:12px;color:var(--yellow);font-weight:800}
+.stage{display:grid;grid-template-columns:1fr 420px;min-height:calc(100vh - 54px)}
+.views{display:grid;grid-template-rows:1fr 1fr;gap:8px;padding:8px;min-height:560px}
+.view{position:relative;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;background:#05070a}
+.view-label{position:absolute;left:10px;top:8px;z-index:2;font-size:12px;color:var(--muted);font-weight:800}
+canvas{display:block;width:100%;height:100%}
+.panel{border-left:1px solid var(--border);background:var(--surface);overflow:auto;max-height:calc(100vh - 54px)}
+.section{padding:12px 14px;border-bottom:1px solid var(--border)}
+.section h2{font-size:13px;margin:0 0 10px;color:var(--yellow)}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.grid.two{grid-template-columns:repeat(2,1fr)}
+.field{display:grid;gap:4px}
+label{font-size:11px;color:var(--muted);font-weight:800}
+input,select,textarea,button{font:inherit}
+input,select,textarea{width:100%;background:#080b10;color:var(--text);border:1px solid var(--border);border-radius:8px;padding:8px}
+input[type=range]{padding:0}
+textarea{min-height:116px;font-family:ui-monospace,Consolas,monospace;font-size:12px;line-height:1.45}
+button{border:1px solid var(--blue);background:var(--blue);color:#06111f;border-radius:8px;padding:9px 10px;font-weight:900;cursor:pointer}
+button.secondary{background:var(--surface2);color:var(--text);border-color:var(--border)}
+button.warn{background:rgba(210,153,34,.12);color:var(--yellow);border-color:var(--yellow)}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.status{display:grid;gap:6px;font-size:12px;color:var(--muted);line-height:1.45}
+.status strong{color:var(--text)}
+.ok{color:var(--green)}
+.bad{color:var(--red)}
+.mono{font-family:ui-monospace,Consolas,monospace}
+.preset-row{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:end}
+@media (max-width: 900px){
+  .stage{grid-template-columns:1fr}
+  .panel{border-left:0;border-top:1px solid var(--border);max-height:none}
+  .views{height:58vh;min-height:420px}
+  .grid{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>桌球物理攝影棚</h1>
+  <div class="badge">Game 4 Studio v0</div>
+</header>
+
+<main class="stage">
+  <section class="views">
+    <div class="view">
+      <div class="view-label">我方視角</div>
+      <canvas id="frontView"></canvas>
+    </div>
+    <div class="view">
+      <div class="view-label">側面視角</div>
+      <canvas id="sideView"></canvas>
+    </div>
+  </section>
+
+  <aside class="panel">
+    <div class="section">
+      <h2>作弊反推</h2>
+      <div class="grid">
+        <div class="field"><label>起點 X</label><input id="startX" type="number" step="0.01" value="0.28"></div>
+        <div class="field"><label>起點 Y</label><input id="startY" type="number" step="0.01" value="1.03"></div>
+        <div class="field"><label>起點 Z</label><input id="startZ" type="number" step="0.01" value="-1.24"></div>
+        <div class="field"><label>落點 X</label><input id="targetX" type="number" step="0.01" value="-0.46"></div>
+        <div class="field"><label>落點 Y</label><input id="targetY" type="number" step="0.01" value="0.78"></div>
+        <div class="field"><label>落點 Z</label><input id="targetZ" type="number" step="0.01" value="0.88"></div>
+      </div>
+      <div class="grid two" style="margin-top:8px">
+        <div class="field"><label>飛行時間</label><input id="flightTime" type="number" step="0.01" value="0.78"></div>
+        <div class="field"><label>重力</label><input id="gravity" type="number" step="0.1" value="-4.2"></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>變因向量</h2>
+      <div class="grid">
+        <div class="field"><label>ΔX 速度</label><input id="varX" type="number" step="0.01" value="0.00"></div>
+        <div class="field"><label>ΔY 速度</label><input id="varY" type="number" step="0.01" value="0.00"></div>
+        <div class="field"><label>ΔZ 速度</label><input id="varZ" type="number" step="0.01" value="0.00"></div>
+        <div class="field"><label>前後旋</label><input id="topspin" type="number" step="0.05" value="-0.35"></div>
+        <div class="field"><label>側旋</label><input id="sidespin" type="number" step="0.05" value="-0.18"></div>
+        <div class="field"><label>彈跳</label><input id="bounce" type="number" step="0.01" value="0.84"></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>操作</h2>
+      <div class="actions">
+        <button id="playBtn">播放</button>
+        <button id="resetBtn" class="secondary">重播</button>
+        <button id="randomBtn" class="warn">產生散布</button>
+        <button id="copyBtn" class="secondary">複製指令</button>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>分析</h2>
+      <div class="status" id="status"></div>
+    </div>
+
+    <div class="section">
+      <h2>Preset</h2>
+      <div class="preset-row">
+        <div class="field"><label>名稱</label><input id="presetName" value="側下長球到反手"></div>
+        <button id="saveBtn">儲存</button>
+      </div>
+      <div class="preset-row" style="margin-top:8px">
+        <div class="field"><label>已存參數</label><select id="presetSelect"></select></div>
+        <button id="loadBtn" class="secondary">載入</button>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>匯出</h2>
+      <textarea id="exportText" readonly></textarea>
+    </div>
+  </aside>
+</main>
+
+<script src="vendor/three.r128.min.js"></script>
+<script>
+const TABLE = { length: 2.74, width: 1.525, height: 0.76, top: 0.781, net: 0.1525 };
+const BALL_RADIUS = 0.02;
+const STORAGE_KEY = 'tt-physics-studio-presets-v1';
+const ids = ['startX','startY','startZ','targetX','targetY','targetZ','flightTime','gravity','varX','varY','varZ','topspin','sidespin','bounce','presetName'];
+let animation = null;
+let playStart = 0;
+let currentPath = [];
+let scatterLines = [];
+
+function num(id){ return parseFloat(document.getElementById(id).value); }
+function setValue(id, value){ document.getElementById(id).value = value; }
+function readState(){
+  const start = {x:num('startX'), y:num('startY'), z:num('startZ')};
+  const target = {x:num('targetX'), y:num('targetY'), z:num('targetZ')};
+  return {
+    id: document.getElementById('presetName').value.trim() || 'untitled',
+    label: document.getElementById('presetName').value.trim() || '未命名',
+    type: 'serve',
+    mode: 'cheat_solve',
+    start,
+    target,
+    solve: {flightTime:num('flightTime'), gravity:num('gravity')},
+    variation: {
+      velocity: {x:num('varX'), y:num('varY'), z:num('varZ')},
+      spin: {topspin:num('topspin'), sidespin:num('sidespin')},
+      bounce: num('bounce')
+    }
+  };
+}
+function applyState(state){
+  setValue('presetName', state.label || state.id || '未命名');
+  ['x','y','z'].forEach(axis=>{
+    setValue('start' + axis.toUpperCase(), state.start?.[axis] ?? 0);
+    setValue('target' + axis.toUpperCase(), state.target?.[axis] ?? 0);
+  });
+  setValue('flightTime', state.solve?.flightTime ?? 0.78);
+  setValue('gravity', state.solve?.gravity ?? -4.2);
+  setValue('varX', state.variation?.velocity?.x ?? 0);
+  setValue('varY', state.variation?.velocity?.y ?? 0);
+  setValue('varZ', state.variation?.velocity?.z ?? 0);
+  setValue('topspin', state.variation?.spin?.topspin ?? 0);
+  setValue('sidespin', state.variation?.spin?.sidespin ?? 0);
+  setValue('bounce', state.variation?.bounce ?? 0.84);
+  updateStudio();
+}
+function solveVelocity(start, target, time, gravity){
+  return {
+    x: (target.x - start.x) / time,
+    y: (target.y - start.y - 0.5 * gravity * time * time) / time,
+    z: (target.z - start.z) / time
+  };
+}
+function addVec(a,b){ return {x:a.x+b.x, y:a.y+b.y, z:a.z+b.z}; }
+function cloneVec(v){ return {x:v.x, y:v.y, z:v.z}; }
+
+function simulate(state, variant){
+  const baseVel = solveVelocity(state.start, state.target, state.solve.flightTime, state.solve.gravity);
+  const velocity = addVec(baseVel, variant || {x:0,y:0,z:0});
+  const spin = state.variation.spin;
+  const bounce = state.variation.bounce;
+  const gravity = state.solve.gravity;
+  const pos = cloneVec(state.start);
+  const vel = cloneVec(velocity);
+  const points = [];
+  const bounces = [];
+  let netY = null;
+  let firstLanding = null;
+  let crossedNet = false;
+  for(let i=0;i<360;i++){
+    const dt = 1/120;
+    const prev = cloneVec(pos);
+    vel.y += gravity * dt;
+    pos.x += vel.x * dt;
+    pos.y += vel.y * dt;
+    pos.z += vel.z * dt;
+    if(!crossedNet && prev.z < 0 && pos.z >= 0){
+      const ratio = (0 - prev.z) / (pos.z - prev.z || 1);
+      netY = prev.y + (pos.y - prev.y) * ratio;
+      crossedNet = true;
+    }
+    const onTable = Math.abs(pos.x) <= TABLE.width/2 && Math.abs(pos.z) <= TABLE.length/2;
+    if(pos.y <= TABLE.top && vel.y < 0 && onTable && bounces.length < 2){
+      pos.y = TABLE.top;
+      if(!firstLanding) firstLanding = cloneVec(pos);
+      bounces.push(cloneVec(pos));
+      vel.y = Math.abs(vel.y) * bounce;
+      vel.z = (vel.z + spin.topspin * 0.55) * 0.86;
+      vel.x = (vel.x + spin.sidespin * 0.42) * 0.86;
+    }
+    points.push(cloneVec(pos));
+    if(pos.y < 0 || Math.abs(pos.x) > 3 || Math.abs(pos.z) > 4) break;
+  }
+  return {points, baseVel, velocity, netY, firstLanding, bounces};
+}
+
+function buildScene(){
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x05070a);
+  scene.fog = new THREE.Fog(0x05070a, 8, 18);
+  scene.add(new THREE.AmbientLight(0xffffff, 0.5));
+  const light = new THREE.DirectionalLight(0xffffff, 0.85);
+  light.position.set(2,5,3);
+  scene.add(light);
+
+  const table = new THREE.Mesh(
+    new THREE.BoxGeometry(TABLE.width, 0.04, TABLE.length),
+    new THREE.MeshLambertMaterial({color:0x155c35})
+  );
+  table.position.set(0, TABLE.height, 0);
+  scene.add(table);
+  const edge = new THREE.LineSegments(
+    new THREE.EdgesGeometry(new THREE.BoxGeometry(TABLE.width, 0.041, TABLE.length)),
+    new THREE.LineBasicMaterial({color:0xffffff, transparent:true, opacity:0.6})
+  );
+  edge.position.set(0, TABLE.height, 0);
+  scene.add(edge);
+  const net = new THREE.Mesh(
+    new THREE.BoxGeometry(TABLE.width, TABLE.net, 0.012),
+    new THREE.MeshLambertMaterial({color:0xd9dee6, transparent:true, opacity:0.55})
+  );
+  net.position.set(0, TABLE.height + TABLE.net/2, 0);
+  scene.add(net);
+  const floor = new THREE.Mesh(
+    new THREE.PlaneGeometry(8,8),
+    new THREE.MeshLambertMaterial({color:0x11151c})
+  );
+  floor.rotation.x = -Math.PI/2;
+  scene.add(floor);
+  const axes = new THREE.AxesHelper(0.45);
+  axes.position.set(-1.05, TABLE.top + 0.02, 1.55);
+  scene.add(axes);
+  return scene;
+}
+
+const scenes = [buildScene(), buildScene()];
+const canvases = [document.getElementById('frontView'), document.getElementById('sideView')];
+const renderers = canvases.map(canvas => new THREE.WebGLRenderer({canvas, antialias:true}));
+const cameras = [
+  new THREE.PerspectiveCamera(58, 1, 0.01, 30),
+  new THREE.PerspectiveCamera(55, 1, 0.01, 30)
+];
+cameras[0].position.set(0, 1.02, 2.15);
+cameras[0].lookAt(0, TABLE.top, -0.45);
+cameras[1].position.set(-2.25, 1.12, 0);
+cameras[1].lookAt(0, TABLE.top, 0);
+
+function makeBall(scene){
+  const ball = new THREE.Mesh(
+    new THREE.SphereGeometry(BALL_RADIUS, 24, 24),
+    new THREE.MeshPhongMaterial({color:0xffd84d, shininess:100})
+  );
+  scene.add(ball);
+  return ball;
+}
+const balls = scenes.map(makeBall);
+const markers = scenes.map(scene=>{
+  const start = new THREE.Mesh(new THREE.SphereGeometry(0.035,16,16), new THREE.MeshBasicMaterial({color:0x58a6ff}));
+  const target = new THREE.Mesh(new THREE.SphereGeometry(0.035,16,16), new THREE.MeshBasicMaterial({color:0x3fb950}));
+  scene.add(start, target);
+  return {start,target};
+});
+
+function makeLine(scene, color, opacity){
+  const geo = new THREE.BufferGeometry();
+  const mat = new THREE.LineDashedMaterial({color, transparent:true, opacity, dashSize:0.04, gapSize:0.025});
+  const line = new THREE.Line(geo, mat);
+  scene.add(line);
+  return line;
+}
+const baseLines = scenes.map(scene=>makeLine(scene, 0x58a6ff, 0.55));
+const variantLines = scenes.map(scene=>makeLine(scene, 0xffd84d, 0.9));
+
+function setLine(line, points){
+  const vecs = points.map(p=>new THREE.Vector3(p.x,p.y,p.z));
+  line.geometry.dispose();
+  line.geometry = new THREE.BufferGeometry().setFromPoints(vecs);
+  line.computeLineDistances();
+}
+function clearScatter(){
+  scatterLines.forEach(line=>line.parent?.remove(line));
+  scatterLines = [];
+}
+function addScatter(paths){
+  clearScatter();
+  scenes.forEach(scene=>{
+    paths.forEach(path=>{
+      const line = makeLine(scene, 0xf85149, 0.28);
+      setLine(line, path.points);
+      scatterLines.push(line);
+    });
+  });
+}
+
+function resize(){
+  canvases.forEach((canvas,index)=>{
+    const box = canvas.parentElement.getBoundingClientRect();
+    renderers[index].setSize(box.width, box.height, false);
+    cameras[index].aspect = box.width / box.height;
+    cameras[index].updateProjectionMatrix();
+  });
+  renderAll();
+}
+window.addEventListener('resize', resize);
+
+function analyze(base, variant){
+  const netClearance = variant.netY == null ? null : variant.netY - (TABLE.height + TABLE.net);
+  const landing = variant.firstLanding;
+  const landingText = landing ? `${landing.x.toFixed(2)}, ${landing.z.toFixed(2)}` : '未落桌';
+  const ok = landing && Math.abs(landing.x) <= TABLE.width/2 && Math.abs(landing.z) <= TABLE.length/2 && (netClearance == null || netClearance > 0);
+  const reason = !landing ? '未落桌' : netClearance != null && netClearance < 0 ? '掛網風險' : ok ? '有效落桌' : '出界';
+  document.getElementById('status').innerHTML = `
+    <div>基礎速度：<strong class="mono">${base.baseVel.x.toFixed(2)}, ${base.baseVel.y.toFixed(2)}, ${base.baseVel.z.toFixed(2)}</strong></div>
+    <div>變因後：<strong class="mono">${variant.velocity.x.toFixed(2)}, ${variant.velocity.y.toFixed(2)}, ${variant.velocity.z.toFixed(2)}</strong></div>
+    <div>過網高度：<strong class="${netClearance == null || netClearance >= 0 ? 'ok' : 'bad'}">${netClearance == null ? '未過網' : netClearance.toFixed(3) + ' m'}</strong></div>
+    <div>第一落點：<strong>${landingText}</strong></div>
+    <div>判定：<strong class="${ok ? 'ok' : 'bad'}">${reason}</strong></div>
+  `;
+}
+function exportPrompt(state){
+  const payload = JSON.stringify(state, null, 2);
+  return `請更新 physics-presets.json，加入或修改以下攝影棚參數：\n\n${payload}`;
+}
+function updateExport(state){
+  document.getElementById('exportText').value = exportPrompt(state);
+}
+function updateStudio(){
+  const state = readState();
+  const base = simulate({...state, variation:{...state.variation, spin:{topspin:0,sidespin:0}, bounce:state.variation.bounce}}, {x:0,y:0,z:0});
+  const variant = simulate(state, state.variation.velocity);
+  currentPath = variant.points;
+  scenes.forEach((scene,index)=>{
+    setLine(baseLines[index], base.points);
+    setLine(variantLines[index], variant.points);
+    markers[index].start.position.set(state.start.x, state.start.y, state.start.z);
+    markers[index].target.position.set(state.target.x, state.target.y, state.target.z);
+    const first = variant.points[0] || state.start;
+    balls[index].position.set(first.x, first.y, first.z);
+  });
+  analyze(base, variant);
+  updateExport(state);
+  renderAll();
+}
+function renderAll(){
+  renderers.forEach((renderer,index)=>renderer.render(scenes[index], cameras[index]));
+}
+function play(){
+  if(animation) cancelAnimationFrame(animation);
+  playStart = performance.now();
+  function tick(now){
+    if(currentPath.length){
+      const i = Math.min(currentPath.length - 1, Math.floor((now - playStart) / 1000 * 90));
+      const p = currentPath[i];
+      balls.forEach(ball=>ball.position.set(p.x,p.y,p.z));
+      renderAll();
+      if(i < currentPath.length - 1) animation = requestAnimationFrame(tick);
+    }
+  }
+  animation = requestAnimationFrame(tick);
+}
+function makeScatter(){
+  const state = readState();
+  const paths = [];
+  for(let i=0;i<12;i++){
+    const jitter = {
+      x: state.variation.velocity.x + (Math.random() - 0.5) * 0.28,
+      y: state.variation.velocity.y + (Math.random() - 0.5) * 0.16,
+      z: state.variation.velocity.z + (Math.random() - 0.5) * 0.24
+    };
+    paths.push(simulate(state, jitter));
+  }
+  addScatter(paths);
+  renderAll();
+}
+function loadPresets(){
+  try{ return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }
+  catch(err){ return []; }
+}
+function savePresets(list){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+}
+function renderPresetOptions(){
+  const select = document.getElementById('presetSelect');
+  const list = loadPresets();
+  select.innerHTML = list.length
+    ? list.map((p,i)=>`<option value="${i}">${p.label || p.id}</option>`).join('')
+    : '<option value="-1">尚未儲存</option>';
+}
+function saveCurrent(){
+  const list = loadPresets();
+  const state = readState();
+  state.id = state.label.replace(/\s+/g, '_').toLowerCase();
+  const index = list.findIndex(p=>p.id === state.id);
+  if(index >= 0) list[index] = state;
+  else list.push(state);
+  savePresets(list);
+  renderPresetOptions();
+}
+function loadSelected(){
+  const list = loadPresets();
+  const index = parseInt(document.getElementById('presetSelect').value, 10);
+  if(list[index]) applyState(list[index]);
+}
+async function copyPrompt(){
+  const text = document.getElementById('exportText').value;
+  try{ await navigator.clipboard.writeText(text); }
+  catch(err){
+    const area = document.getElementById('exportText');
+    area.select();
+    document.execCommand('copy');
+  }
+  const btn = document.getElementById('copyBtn');
+  const old = btn.textContent;
+  btn.textContent = '已複製';
+  setTimeout(()=>btn.textContent = old, 1300);
+}
+
+ids.forEach(id=>{
+  const el = document.getElementById(id);
+  if(el) el.addEventListener('input', updateStudio);
+});
+document.getElementById('playBtn').addEventListener('click', play);
+document.getElementById('resetBtn').addEventListener('click', ()=>{ updateStudio(); play(); });
+document.getElementById('randomBtn').addEventListener('click', makeScatter);
+document.getElementById('saveBtn').addEventListener('click', saveCurrent);
+document.getElementById('loadBtn').addEventListener('click', loadSelected);
+document.getElementById('copyBtn').addEventListener('click', copyPrompt);
+
+renderPresetOptions();
+resize();
+updateStudio();
+</script>
+</body>
+</html>
