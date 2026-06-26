@@ -30,6 +30,7 @@ video{width:100%;max-height:360px;background:#000;border-radius:10px}
 .review-title{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0;padding:10px 12px;font-size:14px;font-weight:900;border-bottom:1px solid var(--border)}
 .review-title.warning{color:var(--red);background:rgba(248,81,73,.08)}
 .review-title.change{color:var(--yellow);background:rgba(210,153,34,.08)}
+.review-title.delete{color:var(--red);background:rgba(248,81,73,.11)}
 .review-title.approved{color:var(--green);background:rgba(63,185,80,.08);cursor:pointer}
 .review-count{color:var(--muted);font-size:12px;font-weight:800}
 .review-body{padding:4px 12px}
@@ -45,6 +46,7 @@ details.review-section summary::-webkit-details-marker{display:none}
 .mobile-action,.copy-action{min-height:48px;font-size:15px}
 .mobile-action.ok{background:var(--green);border-color:var(--green);color:#04130a}
 .mobile-action.change{background:var(--yellow);border-color:var(--yellow);color:#171003}
+.mobile-action.delete{background:rgba(248,81,73,.22);border-color:var(--red);color:var(--text)}
 .mobile-spin-select{min-height:48px;min-width:120px;background:#080b10;color:var(--text);border:1px solid var(--border);border-radius:10px;padding:0 10px;font-weight:800}
 .decision-note{font-size:12px;color:var(--muted);min-height:16px}
 .decision-note.active{color:var(--green)}
@@ -68,7 +70,7 @@ textarea{width:100%;min-height:180px;background:#080b10;color:var(--text);border
   .right>.panel{border-radius:10px}
   .codex-panel{display:none}
   .results{max-height:none;overflow:visible;padding:10px}
-  .review-section.change-section,.review-section.approved-section{display:none}
+  .review-section.change-section,.review-section.delete-section,.review-section.approved-section{display:none}
   .desktop-review-row{display:none}
   .mobile-review-card{display:block;border-bottom:1px solid var(--border);padding:8px 0}
   .mobile-review-card:last-child{border-bottom:0}
@@ -152,7 +154,9 @@ function safeDomId(value){
 }
 function reviewStatus(row){
   const status = String(row.status || '').trim();
-  return status === 'discuss' ? 'needs_discussion' : status;
+  if(status === 'discuss') return 'needs_discussion';
+  if(['delete', 'remove', 'deleted', 'needs_delete'].includes(status)) return 'delete';
+  return status;
 }
 function showError(text){
   document.getElementById('message').innerHTML = `<div class="error">${text}</div>`;
@@ -255,7 +259,8 @@ function getReviewBuckets(){
     r.suggestedSpinType !== r.currentSpinType
   );
   const approved = reviews.filter(r => reviewStatus(r) === 'approved');
-  return {discussion, reclassify, approved};
+  const deleteItems = reviews.filter(r => reviewStatus(r) === 'delete');
+  return {discussion, reclassify, deleteItems, approved};
 }
 function renderReviewRows(items, mode){
   if(!items.length) return '<div class="result-row"><span class="result-spin">目前沒有項目</span></div>';
@@ -277,7 +282,9 @@ function renderReviewRows(items, mode){
         ? '已標記：分類正確'
         : decision.status === 'reclassify'
           ? `已標記：改為 ${LABELS[decision.suggestedSpinType] || decision.suggestedSpinType}`
-          : '尚未標記';
+          : decision.status === 'delete'
+            ? '已標記：建議刪除'
+            : '尚未標記';
       return `
         <div class="result-row desktop-review-row">
           <div class="result-src">${src}</div>
@@ -293,6 +300,7 @@ function renderReviewRows(items, mode){
               <button class="mobile-action change" type="button" onclick="setMobileDecision('${escapedKey}','reclassify',document.getElementById('spin-${domId}').value)">🔄 改為</button>
               <select class="mobile-spin-select" id="spin-${domId}">${contactSpinOptions(selected)}</select>
             </div>
+            <button class="mobile-action delete" type="button" onclick="setMobileDecision('${escapedKey}','delete','${escapeHtml(jsString(currentKey))}')">🗑️ 建議刪除</button>
             <div class="decision-note ${decision.status ? 'active' : ''}">${escapeHtml(decisionText)}</div>
           </div>
         </details>
@@ -312,7 +320,7 @@ function renderReviews(){
     host.textContent = '目前沒有審核結果，或 REVIEW_READ_URL 尚未設定。';
     return;
   }
-  const {discussion, reclassify, approved} = getReviewBuckets();
+  const {discussion, reclassify, deleteItems, approved} = getReviewBuckets();
   host.innerHTML = `
     <section class="review-section discussion-section">
       <h3 class="review-title warning"><span>⚠️ 待討論</span><span class="review-count">${discussion.length}</span></h3>
@@ -321,6 +329,10 @@ function renderReviews(){
     <section class="review-section change-section">
       <h3 class="review-title change"><span>🔄 需要重新分類</span><span class="review-count">${reclassify.length}</span></h3>
       <div class="review-body">${renderReviewRows(reclassify, 'reclassify')}</div>
+    </section>
+    <section class="review-section delete-section">
+      <h3 class="review-title delete"><span>🗑️ 建議刪除</span><span class="review-count">${deleteItems.length}</span></h3>
+      <div class="review-body">${renderReviewRows(deleteItems, 'delete')}</div>
     </section>
     <details class="review-section approved-section">
       <summary class="review-title approved"><span>✅ 已確認</span><span class="review-count">${approved.length}</span></summary>
@@ -415,21 +427,46 @@ function getPromptApprovals(){
     return true;
   });
 }
+function getPromptDeletes(){
+  const {discussion, deleteItems} = getReviewBuckets();
+  const mobileDeletes = discussion
+    .map(r => {
+      const decision = getMobileDecision(getReviewKey(r));
+      return {
+        ...r,
+        status: decision.status,
+        suggestedSpinType: decision.suggestedSpinType
+      };
+    })
+    .filter(r => r.status === 'delete');
+  const seen = new Set();
+  return [...deleteItems, ...mobileDeletes].filter(r => {
+    const key = getReviewKey(r);
+    if(seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
 function generatePrompt(){
   const changes = getPromptChanges();
   const approvals = getPromptApprovals();
+  const deletes = getPromptDeletes();
   const sections = [];
   const changeLines = changes.map(r=>`- ${r.src}: ${r.currentSpinType} -> ${r.suggestedSpinType}`);
   const approvalLines = approvals.map(r=>`- ${r.src}: reviewStatus -> approved`);
+  const deleteLines = deletes.map(r=>`- ${r.src}: delete from videos.json`);
   if(changeLines.length){
     sections.push('將以下影片重新分類：\n' + changeLines.join('\n'));
   }
   if(approvalLines.length){
     sections.push('將以下影片標記為已確認，不要再出現在審核清單：\n' + approvalLines.join('\n'));
   }
+  if(deleteLines.length){
+    sections.push('刪除以下影片資料，因為它們無法提供有效訓練判斷：\n' + deleteLines.join('\n'));
+  }
   const text = sections.length
     ? '請修改 videos.json：\n\n' + sections.join('\n\n')
-    : '目前沒有需要重新分類或標記已確認的審核結果。';
+    : '目前沒有需要重新分類、標記已確認或刪除的審核結果。';
   const prompt = document.getElementById('prompt');
   if(prompt) prompt.value = text;
   return text;
