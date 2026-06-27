@@ -819,22 +819,34 @@ function switchMobileView(target){
 function setupMobileSteppers(){
   const panel = document.getElementById('stepperPanel');
   const title = document.getElementById('stepperTitle');
+  const isMobileStepper = () => window.matchMedia('(max-width: 900px)').matches;
+  const activateStepperInput = input => {
+    activeStepperInput = input;
+    const label = input.closest('.field')?.querySelector('label')?.textContent || input.id;
+    title.textContent = label;
+    panel.classList.add('active');
+  };
   document.querySelectorAll('input[type="number"]:not([readonly])').forEach(input=>{
-    input.addEventListener('focus', ()=>{
-      activeStepperInput = input;
-      const label = input.closest('.field')?.querySelector('label')?.textContent || input.id;
-      title.textContent = label;
-      panel.classList.add('active');
+    input.addEventListener('pointerdown', event=>{
+      if(!isMobileStepper()) return;
+      event.preventDefault();
+      activateStepperInput(input);
+      input.blur();
+    });
+    input.addEventListener('focus', event=>{
+      activateStepperInput(input);
+      if(isMobileStepper()) event.target.blur();
     });
   });
   document.querySelectorAll('[data-step-delta]').forEach(button=>{
+    button.addEventListener('pointerdown', event=>event.preventDefault());
     button.addEventListener('click', ()=>{
       if(!activeStepperInput) return;
       const delta = parseFloat(button.dataset.stepDelta);
       const current = parseFloat(activeStepperInput.value || '0') || 0;
       activeStepperInput.value = (current + delta).toFixed(2);
       activeStepperInput.dispatchEvent(new Event('input', {bubbles:true}));
-      activeStepperInput.focus({preventScroll:true});
+      if(!isMobileStepper()) activeStepperInput.focus({preventScroll:true});
     });
   });
 }
