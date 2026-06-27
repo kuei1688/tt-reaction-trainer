@@ -95,8 +95,9 @@ button.warn{background:rgba(210,153,34,.12);color:var(--yellow);border-color:var
         <div class="field"><label>第二跳 Y</label><input id="targetY" type="number" step="0.01" value="0.78"></div>
         <div class="field"><label>第二跳 Z</label><input id="targetZ" type="number" step="0.01" value="0.88"></div>
       </div>
-      <div class="grid two" style="margin-top:8px">
-        <div class="field"><label>飛行時間</label><input id="flightTime" type="number" step="0.01" value="0.78"></div>
+      <div class="grid" style="margin-top:8px">
+        <div class="field"><label>第二段時間</label><input id="flightTime" type="number" step="0.01" value="0.74"></div>
+        <div class="field"><label>目標過網高度</label><input id="netClearance" type="number" step="0.01" value="0.03"></div>
         <div class="field"><label>重力</label><input id="gravity" type="number" step="0.1" value="-4.2"></div>
       </div>
       <div class="grid" style="margin-top:8px">
@@ -115,7 +116,7 @@ button.warn{background:rgba(210,153,34,.12);color:var(--yellow);border-color:var
         <div class="field"><label>ΔZ 速度</label><input id="varZ" type="number" step="0.01" value="0.00"></div>
         <div class="field"><label>前後旋</label><input id="topspin" type="number" step="0.05" value="-0.35"></div>
         <div class="field"><label>側旋</label><input id="sidespin" type="number" step="0.05" value="-0.18"></div>
-        <div class="field"><label>彈跳</label><input id="bounce" type="number" step="0.01" value="0.84"></div>
+        <div class="field"><label>彈跳</label><input id="bounce" type="number" step="0.01" value="0.95"></div>
       </div>
     </div>
 
@@ -160,7 +161,7 @@ const BALL_RADIUS = 0.02;
 const BALL_RENDER_RADIUS = 0.034;
 const STORAGE_KEY = 'tt-physics-studio-presets-v1';
 const PLAY_MIN_DURATION_MS = 3000;
-const ids = ['solveTarget','startX','startY','startZ','firstX','firstY','firstZ','targetX','targetY','targetZ','flightTime','gravity','varX','varY','varZ','topspin','sidespin','bounce','presetName'];
+const ids = ['solveTarget','startX','startY','startZ','firstX','firstY','firstZ','targetX','targetY','targetZ','flightTime','netClearance','gravity','varX','varY','varZ','topspin','sidespin','bounce','presetName'];
 let animation = null;
 let playStart = 0;
 let isPlaying = false;
@@ -182,7 +183,13 @@ function readState(){
     firstBounce,
     secondBounce: target,
     target,
-    solve: {targetMode:document.getElementById('solveTarget').value, flightTime:num('flightTime'), gravity:num('gravity')},
+    solve: {
+      targetMode:document.getElementById('solveTarget').value,
+      flightTime:num('flightTime'),
+      secondLegTime:num('flightTime'),
+      netClearance:num('netClearance'),
+      gravity:num('gravity')
+    },
     variation: {
       velocity: {x:num('varX'), y:num('varY'), z:num('varZ')},
       spin: {topspin:num('topspin'), sidespin:num('sidespin')},
@@ -199,7 +206,8 @@ function applyState(state){
     setValue('first' + axis.toUpperCase(), firstBounce[axis] ?? 0);
     setValue('target' + axis.toUpperCase(), secondBounce[axis] ?? 0);
   });
-  setValue('flightTime', state.solve?.flightTime ?? 0.78);
+  setValue('flightTime', state.solve?.secondLegTime ?? state.solve?.flightTime ?? 0.74);
+  setValue('netClearance', state.solve?.netClearance ?? 0.03);
   setValue('gravity', state.solve?.gravity ?? -4.2);
   document.getElementById('solveTarget').value = state.solve?.targetMode || state.solve?.target || 'serve_bounces';
   setValue('varX', state.variation?.velocity?.x ?? 0);
@@ -207,7 +215,7 @@ function applyState(state){
   setValue('varZ', state.variation?.velocity?.z ?? 0);
   setValue('topspin', state.variation?.spin?.topspin ?? 0);
   setValue('sidespin', state.variation?.spin?.sidespin ?? 0);
-  setValue('bounce', state.variation?.bounce ?? 0.84);
+  setValue('bounce', state.variation?.bounce ?? 0.95);
   updateStudio();
 }
 function solveVelocity(start, target, time, gravity){
@@ -292,12 +300,19 @@ function serveBounceScore(state, baseVel){
   const firstDz = firstPoint.z - firstTarget.z;
   const secondDx = secondPoint.x - secondTarget.x;
   const secondDz = secondPoint.z - secondTarget.z;
+  const netClearance = result.netY == null ? null : result.netY - (TABLE.height + TABLE.net);
+  const targetNetClearance = state.solve.netClearance ?? 0.03;
+  const secondLegTime = first && second ? second.t - first.t : null;
+  const targetSecondLegTime = state.solve.secondLegTime ?? state.solve.flightTime ?? 0.74;
   const upwardPenalty = Math.max(0, baseVel.y) * 18;
   const noFirstPenalty = first ? 0 : 8;
   const noSecondPenalty = second ? 0 : 12;
   const wrongSidePenalty = result.bounces.some((bounce, index)=>index > 0 && bounce.z < 0) ? 3 : 0;
-  const netPenalty = result.netY == null ? 1.5 : Math.max(0, TABLE.height + TABLE.net - result.netY) * 10;
-  return firstDx*firstDx*3.6 + firstDz*firstDz*3.6 + secondDx*secondDx + secondDz*secondDz + upwardPenalty + noFirstPenalty + noSecondPenalty + wrongSidePenalty + netPenalty;
+  const netPenalty = netClearance == null
+    ? 1.5
+    : Math.max(0, -netClearance) * 10 + Math.pow(netClearance - targetNetClearance, 2) * 18;
+  const timePenalty = secondLegTime == null ? 1.5 : Math.pow(secondLegTime - targetSecondLegTime, 2) * 18;
+  return firstDx*firstDx*3.6 + firstDz*firstDz*3.6 + secondDx*secondDx + secondDz*secondDz + upwardPenalty + noFirstPenalty + noSecondPenalty + wrongSidePenalty + netPenalty + timePenalty;
 }
 function getServeBounces(result){
   const first = result.bounces.find(bounce=>bounce.z < 0) || null;
@@ -563,6 +578,9 @@ function analyze(base, variant, state){
   const secondTarget = state.target;
   const firstError = landing ? Math.hypot(landing.x - firstTarget.x, landing.z - firstTarget.z) : null;
   const secondError = secondLanding ? Math.hypot(secondLanding.x - secondTarget.x, secondLanding.z - secondTarget.z) : null;
+  const secondLegTime = landing && secondLanding ? secondLanding.t - landing.t : null;
+  const targetSecondLegTime = state.solve.secondLegTime ?? state.solve.flightTime;
+  const targetNetClearance = state.solve.netClearance ?? 0.03;
   const firstOk = landing && firstError < 0.08;
   const secondOk = secondLanding && secondError < 0.1;
   const netOk = netClearance == null || netClearance > 0;
@@ -581,7 +599,8 @@ function analyze(base, variant, state){
   document.getElementById('status').innerHTML = `
     <div>基礎速度：<strong class="mono">${base.baseVel.x.toFixed(2)}, ${base.baseVel.y.toFixed(2)}, ${base.baseVel.z.toFixed(2)}</strong></div>
     <div>變因後：<strong class="mono">${variant.velocity.x.toFixed(2)}, ${variant.velocity.y.toFixed(2)}, ${variant.velocity.z.toFixed(2)}</strong></div>
-    <div>過網高度：<strong class="${netClearance == null || netClearance >= 0 ? 'ok' : 'bad'}">${netClearance == null ? '未過網' : netClearance.toFixed(3) + ' m'}</strong></div>
+    <div>過網高度：<strong class="${netClearance == null || netClearance >= 0 ? 'ok' : 'bad'}">${netClearance == null ? '未過網' : netClearance.toFixed(3) + ' m'}</strong> / 目標 ${targetNetClearance.toFixed(3)} m</div>
+    <div>第二段時間：<strong>${secondLegTime == null ? '未達第二跳' : secondLegTime.toFixed(3) + ' s'}</strong> / 目標 ${targetSecondLegTime.toFixed(3)} s</div>
     <div>第一落點${state.solve.targetMode === 'serve_bounces' ? '（發球端）' : ''}：<strong>${landingText}</strong>${firstError == null ? '' : ` / 誤差 ${firstError.toFixed(3)} m`}</div>
     <div>第二落點${state.solve.targetMode === 'serve_bounces' ? '（接球端）' : ''}：<strong>${secondText}</strong>${secondError == null ? '' : ` / 誤差 ${secondError.toFixed(3)} m`}</div>
     <div>落地終點：<strong>${groundText}</strong></div>
