@@ -85,15 +85,20 @@ button.warn{background:rgba(210,153,34,.12);color:var(--yellow);border-color:var
         <div class="field"><label>目標說明</label><input id="targetHint" readonly value="目標 = 第一跳 + 第二跳"></div>
       </div>
       <div class="grid">
-        <div class="field"><label>起點 X</label><input id="startX" type="number" step="0.01" value="0.28"></div>
-        <div class="field"><label>起點 Y</label><input id="startY" type="number" step="0.01" value="1.03"></div>
-        <div class="field"><label>起點 Z</label><input id="startZ" type="number" step="0.01" value="-1.24"></div>
+        <div class="field"><label>起點 X</label><input id="startX" type="number" step="0.01" value="0.28" readonly></div>
+        <div class="field"><label>發球高度</label><input id="startY" type="number" step="0.01" value="1.03"></div>
+        <div class="field"><label>起點 Z</label><input id="startZ" type="number" step="0.01" value="-1.52" readonly></div>
         <div class="field"><label>第一跳 X</label><input id="firstX" type="number" step="0.01" value="-0.08"></div>
         <div class="field"><label>第一跳 Y</label><input id="firstY" type="number" step="0.01" value="0.78"></div>
         <div class="field"><label>第一跳 Z</label><input id="firstZ" type="number" step="0.01" value="-0.34"></div>
         <div class="field"><label>第二跳 X</label><input id="targetX" type="number" step="0.01" value="-0.46"></div>
         <div class="field"><label>第二跳 Y</label><input id="targetY" type="number" step="0.01" value="0.78"></div>
         <div class="field"><label>第二跳 Z</label><input id="targetZ" type="number" step="0.01" value="0.88"></div>
+      </div>
+      <div class="grid" style="margin-top:8px">
+        <div class="field"><label>底線外距離</label><input id="baselineOffset" type="number" step="0.01" value="0.15"></div>
+        <div class="field"><label>左右偏移</label><input id="lateralOffset" type="number" step="0.01" value="0.00"></div>
+        <div class="field"><label>共線誤差</label><input id="lineError" readonly value="0"></div>
       </div>
       <div class="grid" style="margin-top:8px">
         <div class="field"><label>第二段時間</label><input id="flightTime" type="number" step="0.01" value="0.74"></div>
@@ -161,7 +166,7 @@ const BALL_RADIUS = 0.02;
 const BALL_RENDER_RADIUS = 0.034;
 const STORAGE_KEY = 'tt-physics-studio-presets-v1';
 const PLAY_MIN_DURATION_MS = 3000;
-const ids = ['solveTarget','startX','startY','startZ','firstX','firstY','firstZ','targetX','targetY','targetZ','flightTime','netClearance','gravity','varX','varY','varZ','topspin','sidespin','bounce','presetName'];
+const ids = ['solveTarget','startY','baselineOffset','lateralOffset','firstX','firstY','firstZ','targetX','targetY','targetZ','flightTime','netClearance','gravity','varX','varY','varZ','topspin','sidespin','bounce','presetName'];
 let animation = null;
 let playStart = 0;
 let isPlaying = false;
@@ -170,16 +175,64 @@ let scatterLines = [];
 
 function num(id){ return parseFloat(document.getElementById(id).value); }
 function setValue(id, value){ document.getElementById(id).value = value; }
+function computeServeStart(firstBounce, secondBounce, height, baselineOffset, lateralOffset){
+  const startZ = -TABLE.length / 2 - Math.max(0, baselineOffset);
+  const dx = secondBounce.x - firstBounce.x;
+  const dz = secondBounce.z - firstBounce.z;
+  const t = Math.abs(dz) < 0.001 ? 0 : (startZ - firstBounce.z) / dz;
+  const lineX = firstBounce.x + dx * t;
+  const length = Math.hypot(dx, dz) || 1;
+  const perpX = -dz / length;
+  const perpZ = dx / length;
+  return {
+    x: lineX + perpX * lateralOffset,
+    y: height,
+    z: startZ + perpZ * lateralOffset
+  };
+}
+function lineError(start, firstBounce, secondBounce){
+  const ax = secondBounce.x - firstBounce.x;
+  const az = secondBounce.z - firstBounce.z;
+  const bx = start.x - firstBounce.x;
+  const bz = start.z - firstBounce.z;
+  const length = Math.hypot(ax, az) || 1;
+  return Math.abs(ax * bz - az * bx) / length;
+}
+function inferServeLineControls(state, firstBounce, secondBounce){
+  const start = state.start || {};
+  const baselineOffset = state.serveLine?.baselineOffset ?? Math.max(0, -(start.z ?? -TABLE.length / 2 - 0.15) - TABLE.length / 2);
+  const autoStart = computeServeStart(firstBounce, secondBounce, start.y ?? state.serveLine?.height ?? 1.03, baselineOffset, 0);
+  const dx = secondBounce.x - firstBounce.x;
+  const dz = secondBounce.z - firstBounce.z;
+  const length = Math.hypot(dx, dz) || 1;
+  const perpX = -dz / length;
+  const perpZ = dx / length;
+  const lateralOffset = state.serveLine?.lateralOffset ?? ((start.x ?? autoStart.x) - autoStart.x) * perpX + ((start.z ?? autoStart.z) - autoStart.z) * perpZ;
+  return {
+    height: state.serveLine?.height ?? start.y ?? 1.03,
+    baselineOffset,
+    lateralOffset
+  };
+}
 function readState(){
-  const start = {x:num('startX'), y:num('startY'), z:num('startZ')};
   const firstBounce = {x:num('firstX'), y:num('firstY'), z:num('firstZ')};
   const target = {x:num('targetX'), y:num('targetY'), z:num('targetZ')};
+  const serveLine = {
+    height: num('startY'),
+    baselineOffset: num('baselineOffset'),
+    lateralOffset: num('lateralOffset')
+  };
+  const start = computeServeStart(firstBounce, target, serveLine.height, serveLine.baselineOffset, serveLine.lateralOffset);
+  setValue('startX', start.x.toFixed(2));
+  setValue('startZ', start.z.toFixed(2));
+  setValue('lineError', lineError(start, firstBounce, target).toFixed(3));
   return {
     id: document.getElementById('presetName').value.trim() || 'untitled',
     label: document.getElementById('presetName').value.trim() || '未命名',
     type: 'serve',
     mode: 'cheat_solve',
     start,
+    serveLine,
     firstBounce,
     secondBounce: target,
     target,
@@ -201,11 +254,14 @@ function applyState(state){
   setValue('presetName', state.label || state.id || '未命名');
   const firstBounce = state.firstBounce || (state.solve?.targetMode === 'first_bounce' ? state.target : null) || {x:-0.08,y:TABLE.top,z:-0.34};
   const secondBounce = state.secondBounce || state.target || {x:0,y:TABLE.top,z:0};
+  const serveLine = inferServeLineControls(state, firstBounce, secondBounce);
   ['x','y','z'].forEach(axis=>{
-    setValue('start' + axis.toUpperCase(), state.start?.[axis] ?? 0);
     setValue('first' + axis.toUpperCase(), firstBounce[axis] ?? 0);
     setValue('target' + axis.toUpperCase(), secondBounce[axis] ?? 0);
   });
+  setValue('startY', serveLine.height);
+  setValue('baselineOffset', serveLine.baselineOffset);
+  setValue('lateralOffset', serveLine.lateralOffset);
   setValue('flightTime', state.solve?.secondLegTime ?? state.solve?.flightTime ?? 0.74);
   setValue('netClearance', state.solve?.netClearance ?? 0.03);
   setValue('gravity', state.solve?.gravity ?? -4.2);
@@ -576,6 +632,8 @@ function analyze(base, variant, state){
   const groundText = ground ? `${ground.x.toFixed(2)}, ${ground.z.toFixed(2)}` : '未落地';
   const firstTarget = state.firstBounce || state.target;
   const secondTarget = state.target;
+  const serveLineError = lineError(state.start, firstTarget, secondTarget);
+  const outsideBaseline = state.start.z < -TABLE.length / 2;
   const firstError = landing ? Math.hypot(landing.x - firstTarget.x, landing.z - firstTarget.z) : null;
   const secondError = secondLanding ? Math.hypot(secondLanding.x - secondTarget.x, secondLanding.z - secondTarget.z) : null;
   const secondLegTime = landing && secondLanding ? secondLanding.t - landing.t : null;
@@ -599,6 +657,8 @@ function analyze(base, variant, state){
   document.getElementById('status').innerHTML = `
     <div>基礎速度：<strong class="mono">${base.baseVel.x.toFixed(2)}, ${base.baseVel.y.toFixed(2)}, ${base.baseVel.z.toFixed(2)}</strong></div>
     <div>變因後：<strong class="mono">${variant.velocity.x.toFixed(2)}, ${variant.velocity.y.toFixed(2)}, ${variant.velocity.z.toFixed(2)}</strong></div>
+    <div>自動起點：<strong class="mono">${state.start.x.toFixed(2)}, ${state.start.y.toFixed(2)}, ${state.start.z.toFixed(2)}</strong> / ${outsideBaseline ? '底線外' : '仍在桌內'}</div>
+    <div>平面共線誤差：<strong class="${serveLineError < 0.03 ? 'ok' : 'bad'}">${serveLineError.toFixed(3)} m</strong></div>
     <div>過網高度：<strong class="${netClearance == null || netClearance >= 0 ? 'ok' : 'bad'}">${netClearance == null ? '未過網' : netClearance.toFixed(3) + ' m'}</strong> / 目標 ${targetNetClearance.toFixed(3)} m</div>
     <div>第二段時間：<strong>${secondLegTime == null ? '未達第二跳' : secondLegTime.toFixed(3) + ' s'}</strong> / 目標 ${targetSecondLegTime.toFixed(3)} s</div>
     <div>第一落點${state.solve.targetMode === 'serve_bounces' ? '（發球端）' : ''}：<strong>${landingText}</strong>${firstError == null ? '' : ` / 誤差 ${firstError.toFixed(3)} m`}</div>
