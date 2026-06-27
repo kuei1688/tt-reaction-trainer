@@ -43,12 +43,35 @@ button.warn{background:rgba(210,153,34,.12);color:var(--yellow);border-color:var
 .bad{color:var(--red)}
 .mono{font-family:ui-monospace,Consolas,monospace}
 .preset-row{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:end}
+.view-toggle,.mobile-dock,.stepper-panel{display:none}
 @media (max-width: 900px){
   .stage{grid-template-columns:1fr}
   .stage{height:auto;overflow:visible}
-  .panel{border-left:0;border-top:1px solid var(--border);max-height:none}
-  .views{position:sticky;top:0;z-index:5;height:54vh;min-height:380px;background:var(--bg)}
+  .panel{border-left:0;border-top:1px solid var(--border);max-height:none;padding-bottom:126px}
+  header{padding:10px 12px}
+  h1{font-size:18px}
+  .views{position:sticky;top:0;z-index:5;height:44vh;min-height:315px;background:var(--bg);grid-template-rows:34px 1fr;gap:6px;padding:6px}
+  .view-toggle{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+  .view-toggle button{padding:6px;font-size:12px;background:var(--surface2);color:var(--text);border-color:var(--border)}
+  .view-toggle button.active{background:var(--blue);color:#06111f;border-color:var(--blue)}
+  .views .view{display:none}
+  .views .view.active{display:block}
   .grid{grid-template-columns:repeat(2,1fr)}
+  .section{padding:8px 10px}
+  input,select,textarea{min-height:38px;font-size:15px}
+  label{font-size:10px}
+  .mobile-dock{position:fixed;left:0;right:0;bottom:0;z-index:20;display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:8px;background:rgba(13,17,23,.96);border-top:1px solid var(--border)}
+  .mobile-dock button{padding:10px 6px;font-size:13px}
+  .stepper-panel{position:fixed;left:8px;right:8px;bottom:62px;z-index:21;display:none;gap:6px;padding:8px;background:rgba(22,27,34,.98);border:1px solid var(--border);border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+  .stepper-panel.active{display:grid}
+  .stepper-title{font-size:11px;color:var(--muted);font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .stepper-buttons{display:grid;grid-template-columns:repeat(6,1fr);gap:5px}
+  .stepper-buttons button{padding:8px 2px;font-size:12px;background:var(--surface2);color:var(--text);border-color:var(--border)}
+}
+@media (max-width: 900px) and (orientation: landscape){
+  .stage{grid-template-columns:1fr 360px;height:calc(100vh - 46px);overflow:hidden}
+  .views{position:static;height:auto;min-height:0}
+  .panel{max-height:calc(100vh - 46px);border-left:1px solid var(--border);border-top:0}
 }
 </style>
 </head>
@@ -60,11 +83,15 @@ button.warn{background:rgba(210,153,34,.12);color:var(--yellow);border-color:var
 
 <main class="stage">
   <section class="views">
-    <div class="view">
+    <div class="view-toggle" aria-label="切換視角">
+      <button id="frontViewTab" type="button" class="active" data-view-target="front">我方視角</button>
+      <button id="sideViewTab" type="button" data-view-target="side">側面視角</button>
+    </div>
+    <div class="view" data-view="side">
       <div class="view-label">側面視角</div>
       <canvas id="sideView"></canvas>
     </div>
-    <div class="view">
+    <div class="view active" data-view="front">
       <div class="view-label">我方視角</div>
       <canvas id="frontView"></canvas>
     </div>
@@ -192,6 +219,23 @@ button.warn{background:rgba(210,153,34,.12);color:var(--yellow);border-color:var
     </div>
   </aside>
 </main>
+<div class="stepper-panel" id="stepperPanel">
+  <div class="stepper-title" id="stepperTitle">選取數字欄位後可微調</div>
+  <div class="stepper-buttons">
+    <button type="button" data-step-delta="-0.10">-0.10</button>
+    <button type="button" data-step-delta="-0.05">-0.05</button>
+    <button type="button" data-step-delta="-0.01">-0.01</button>
+    <button type="button" data-step-delta="0.01">+0.01</button>
+    <button type="button" data-step-delta="0.05">+0.05</button>
+    <button type="button" data-step-delta="0.10">+0.10</button>
+  </div>
+</div>
+<div class="mobile-dock">
+  <button id="mobilePlayBtn" type="button">播放</button>
+  <button id="mobileResetBtn" type="button" class="secondary">重播</button>
+  <button id="mobileSaveBtn" type="button" class="warn">儲存</button>
+  <button id="mobileCopyBtn" type="button" class="secondary">複製</button>
+</div>
 
 <script src="vendor/three.r128.min.js"></script>
 <script>
@@ -212,6 +256,7 @@ let playStart = 0;
 let isPlaying = false;
 let currentPath = [];
 let scatterLines = [];
+let activeStepperInput = null;
 
 function num(id){ return parseFloat(document.getElementById(id).value); }
 function setValue(id, value){ document.getElementById(id).value = value; }
@@ -671,6 +716,7 @@ function addScatter(paths){
 function resize(){
   canvases.forEach((canvas,index)=>{
     const box = canvas.parentElement.getBoundingClientRect();
+    if(box.width < 2 || box.height < 2) return;
     renderers[index].setSize(box.width, box.height, false);
     cameras[index].aspect = box.width / box.height;
     cameras[index].updateProjectionMatrix();
@@ -678,6 +724,37 @@ function resize(){
   renderAll();
 }
 window.addEventListener('resize', resize);
+function switchMobileView(target){
+  document.querySelectorAll('[data-view]').forEach(view=>{
+    view.classList.toggle('active', view.dataset.view === target);
+  });
+  document.querySelectorAll('[data-view-target]').forEach(button=>{
+    button.classList.toggle('active', button.dataset.viewTarget === target);
+  });
+  requestAnimationFrame(resize);
+}
+function setupMobileSteppers(){
+  const panel = document.getElementById('stepperPanel');
+  const title = document.getElementById('stepperTitle');
+  document.querySelectorAll('input[type="number"]:not([readonly])').forEach(input=>{
+    input.addEventListener('focus', ()=>{
+      activeStepperInput = input;
+      const label = input.closest('.field')?.querySelector('label')?.textContent || input.id;
+      title.textContent = label;
+      panel.classList.add('active');
+    });
+  });
+  document.querySelectorAll('[data-step-delta]').forEach(button=>{
+    button.addEventListener('click', ()=>{
+      if(!activeStepperInput) return;
+      const delta = parseFloat(button.dataset.stepDelta);
+      const current = parseFloat(activeStepperInput.value || '0') || 0;
+      activeStepperInput.value = (current + delta).toFixed(2);
+      activeStepperInput.dispatchEvent(new Event('input', {bubbles:true}));
+      activeStepperInput.focus({preventScroll:true});
+    });
+  });
+}
 
 function analyze(base, variant, state){
   setValue('baseVx', base.baseVel.x.toFixed(3));
@@ -909,8 +986,16 @@ document.getElementById('loadBtn').addEventListener('click', loadSelected);
 document.getElementById('copyBtn').addEventListener('click', copyPrompt);
 document.getElementById('copyAllBtn').addEventListener('click', copyAllPresets);
 document.getElementById('clearPresetBtn').addEventListener('click', clearPresets);
+document.getElementById('mobilePlayBtn').addEventListener('click', play);
+document.getElementById('mobileResetBtn').addEventListener('click', replay);
+document.getElementById('mobileSaveBtn').addEventListener('click', saveCurrent);
+document.getElementById('mobileCopyBtn').addEventListener('click', copyPrompt);
+document.querySelectorAll('[data-view-target]').forEach(button=>{
+  button.addEventListener('click', ()=>switchMobileView(button.dataset.viewTarget));
+});
 
 renderPresetOptions();
+setupMobileSteppers();
 resize();
 updateStudio();
 </script>
