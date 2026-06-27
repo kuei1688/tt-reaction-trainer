@@ -77,19 +77,23 @@ button.warn{background:rgba(210,153,34,.12);color:var(--yellow);border-color:var
         <div class="field">
           <label>反推模式</label>
           <select id="solveTarget">
+            <option value="serve_bounces" selected>發球雙落點</option>
             <option value="first_bounce">指定第一落點</option>
             <option value="second_bounce">指定第二落點</option>
           </select>
         </div>
-        <div class="field"><label>目標說明</label><input id="targetHint" readonly value="目標 = 第一跳"></div>
+        <div class="field"><label>目標說明</label><input id="targetHint" readonly value="目標 = 第一跳 + 第二跳"></div>
       </div>
       <div class="grid">
         <div class="field"><label>起點 X</label><input id="startX" type="number" step="0.01" value="0.28"></div>
         <div class="field"><label>起點 Y</label><input id="startY" type="number" step="0.01" value="1.03"></div>
         <div class="field"><label>起點 Z</label><input id="startZ" type="number" step="0.01" value="-1.24"></div>
-        <div class="field"><label>目標 X</label><input id="targetX" type="number" step="0.01" value="-0.46"></div>
-        <div class="field"><label>目標 Y</label><input id="targetY" type="number" step="0.01" value="0.78"></div>
-        <div class="field"><label>目標 Z</label><input id="targetZ" type="number" step="0.01" value="0.88"></div>
+        <div class="field"><label>第一跳 X</label><input id="firstX" type="number" step="0.01" value="-0.08"></div>
+        <div class="field"><label>第一跳 Y</label><input id="firstY" type="number" step="0.01" value="0.78"></div>
+        <div class="field"><label>第一跳 Z</label><input id="firstZ" type="number" step="0.01" value="-0.34"></div>
+        <div class="field"><label>第二跳 X</label><input id="targetX" type="number" step="0.01" value="-0.46"></div>
+        <div class="field"><label>第二跳 Y</label><input id="targetY" type="number" step="0.01" value="0.78"></div>
+        <div class="field"><label>第二跳 Z</label><input id="targetZ" type="number" step="0.01" value="0.88"></div>
       </div>
       <div class="grid two" style="margin-top:8px">
         <div class="field"><label>飛行時間</label><input id="flightTime" type="number" step="0.01" value="0.78"></div>
@@ -156,7 +160,7 @@ const BALL_RADIUS = 0.02;
 const BALL_RENDER_RADIUS = 0.034;
 const STORAGE_KEY = 'tt-physics-studio-presets-v1';
 const PLAY_MIN_DURATION_MS = 3000;
-const ids = ['solveTarget','startX','startY','startZ','targetX','targetY','targetZ','flightTime','gravity','varX','varY','varZ','topspin','sidespin','bounce','presetName'];
+const ids = ['solveTarget','startX','startY','startZ','firstX','firstY','firstZ','targetX','targetY','targetZ','flightTime','gravity','varX','varY','varZ','topspin','sidespin','bounce','presetName'];
 let animation = null;
 let playStart = 0;
 let isPlaying = false;
@@ -167,6 +171,7 @@ function num(id){ return parseFloat(document.getElementById(id).value); }
 function setValue(id, value){ document.getElementById(id).value = value; }
 function readState(){
   const start = {x:num('startX'), y:num('startY'), z:num('startZ')};
+  const firstBounce = {x:num('firstX'), y:num('firstY'), z:num('firstZ')};
   const target = {x:num('targetX'), y:num('targetY'), z:num('targetZ')};
   return {
     id: document.getElementById('presetName').value.trim() || 'untitled',
@@ -174,6 +179,8 @@ function readState(){
     type: 'serve',
     mode: 'cheat_solve',
     start,
+    firstBounce,
+    secondBounce: target,
     target,
     solve: {targetMode:document.getElementById('solveTarget').value, flightTime:num('flightTime'), gravity:num('gravity')},
     variation: {
@@ -185,13 +192,16 @@ function readState(){
 }
 function applyState(state){
   setValue('presetName', state.label || state.id || '未命名');
+  const firstBounce = state.firstBounce || (state.solve?.targetMode === 'first_bounce' ? state.target : null) || {x:-0.08,y:TABLE.top,z:-0.34};
+  const secondBounce = state.secondBounce || state.target || {x:0,y:TABLE.top,z:0};
   ['x','y','z'].forEach(axis=>{
     setValue('start' + axis.toUpperCase(), state.start?.[axis] ?? 0);
-    setValue('target' + axis.toUpperCase(), state.target?.[axis] ?? 0);
+    setValue('first' + axis.toUpperCase(), firstBounce[axis] ?? 0);
+    setValue('target' + axis.toUpperCase(), secondBounce[axis] ?? 0);
   });
   setValue('flightTime', state.solve?.flightTime ?? 0.78);
   setValue('gravity', state.solve?.gravity ?? -4.2);
-  document.getElementById('solveTarget').value = state.solve?.targetMode || state.solve?.target || 'first_bounce';
+  document.getElementById('solveTarget').value = state.solve?.targetMode || state.solve?.target || 'serve_bounces';
   setValue('varX', state.variation?.velocity?.x ?? 0);
   setValue('varY', state.variation?.velocity?.y ?? 0);
   setValue('varZ', state.variation?.velocity?.z ?? 0);
@@ -211,10 +221,71 @@ function addVec(a,b){ return {x:a.x+b.x, y:a.y+b.y, z:a.z+b.z}; }
 function cloneVec(v){ return {x:v.x, y:v.y, z:v.z}; }
 
 function solveBaseVelocity(state){
+  if(state.solve.targetMode === 'serve_bounces'){
+    return solveServeBounceVelocity(state);
+  }
   if(state.solve.targetMode === 'second_bounce'){
     return solveSecondBounceVelocity(state);
   }
-  return solveVelocity(state.start, state.target, state.solve.flightTime, state.solve.gravity);
+  return solveVelocity(state.start, state.firstBounce || state.target, state.solve.flightTime, state.solve.gravity);
+}
+function solveServeBounceVelocity(state){
+  let best = findServeBounceSeed(state);
+  let bestScore = serveBounceScore(state, best);
+  let steps = {x:0.2, y:0.16, z:0.2};
+  for(let round=0; round<18; round++){
+    let improved = false;
+    for(const axis of ['x','y','z']){
+      for(const dir of [-1,1]){
+        const trial = {...best, [axis]: best[axis] + steps[axis] * dir};
+        const score = serveBounceScore(state, trial);
+        if(score < bestScore){
+          best = trial;
+          bestScore = score;
+          improved = true;
+        }
+      }
+    }
+    if(!improved){
+      steps.x *= 0.58;
+      steps.y *= 0.58;
+      steps.z *= 0.58;
+    }
+  }
+  return best;
+}
+function findServeBounceSeed(state){
+  const first = state.firstBounce || state.target;
+  const times = [0.18, 0.22, 0.26, 0.3, 0.36, 0.44, 0.54, 0.66, 0.78];
+  let best = solveVelocity(state.start, first, 0.34, state.solve.gravity);
+  let bestScore = serveBounceScore(state, best);
+  for(const time of times){
+    const candidate = solveVelocity(state.start, first, time, state.solve.gravity);
+    const score = serveBounceScore(state, candidate);
+    if(score < bestScore){
+      best = candidate;
+      bestScore = score;
+    }
+  }
+  return best;
+}
+function serveBounceScore(state, baseVel){
+  const result = simulateWithBaseVelocity(state, baseVel, {x:0,y:0,z:0});
+  const firstTarget = state.firstBounce || state.target;
+  const secondTarget = state.target;
+  const first = result.bounces[0];
+  const second = result.bounces[1];
+  const firstPoint = first || result.groundLanding || result.points[result.points.length - 1] || state.start;
+  const secondPoint = second || firstPoint;
+  const firstDx = firstPoint.x - firstTarget.x;
+  const firstDz = firstPoint.z - firstTarget.z;
+  const secondDx = secondPoint.x - secondTarget.x;
+  const secondDz = secondPoint.z - secondTarget.z;
+  const upwardPenalty = Math.max(0, baseVel.y) * 18;
+  const noFirstPenalty = first ? 0 : 8;
+  const noSecondPenalty = second ? 0 : 5;
+  const netPenalty = result.netY == null ? 1.5 : Math.max(0, TABLE.height + TABLE.net - result.netY) * 10;
+  return firstDx*firstDx*3.6 + firstDz*firstDz*3.6 + secondDx*secondDx + secondDz*secondDz + upwardPenalty + noFirstPenalty + noSecondPenalty + netPenalty;
 }
 function solveSecondBounceVelocity(state){
   const target = state.target;
@@ -401,9 +472,10 @@ function makeBall(scene){
 const balls = scenes.map(makeBall);
 const markers = scenes.map(scene=>{
   const start = new THREE.Mesh(new THREE.SphereGeometry(0.035,16,16), new THREE.MeshBasicMaterial({color:0x58a6ff}));
+  const first = new THREE.Mesh(new THREE.SphereGeometry(0.035,16,16), new THREE.MeshBasicMaterial({color:0xd29922}));
   const target = new THREE.Mesh(new THREE.SphereGeometry(0.035,16,16), new THREE.MeshBasicMaterial({color:0x3fb950}));
-  scene.add(start, target);
-  return {start,target};
+  scene.add(start, first, target);
+  return {start,first,target};
 });
 
 function makeLine(scene, color, opacity){
@@ -448,7 +520,7 @@ function resize(){
 }
 window.addEventListener('resize', resize);
 
-function analyze(base, variant){
+function analyze(base, variant, state){
   setValue('baseVx', base.baseVel.x.toFixed(3));
   setValue('baseVy', base.baseVel.y.toFixed(3));
   setValue('baseVz', base.baseVel.z.toFixed(3));
@@ -459,14 +531,31 @@ function analyze(base, variant){
   const landingText = landing ? `${landing.x.toFixed(2)}, ${landing.z.toFixed(2)}` : '未落桌';
   const secondText = secondLanding ? `${secondLanding.x.toFixed(2)}, ${secondLanding.z.toFixed(2)}` : '未達第二跳';
   const groundText = ground ? `${ground.x.toFixed(2)}, ${ground.z.toFixed(2)}` : '未落地';
-  const ok = landing && Math.abs(landing.x) <= TABLE.width/2 && Math.abs(landing.z) <= TABLE.length/2 && (netClearance == null || netClearance > 0);
-  const reason = !landing ? '未落桌' : netClearance != null && netClearance < 0 ? '掛網風險' : ok ? '有效落桌' : '出界';
+  const firstTarget = state.firstBounce || state.target;
+  const secondTarget = state.target;
+  const firstError = landing ? Math.hypot(landing.x - firstTarget.x, landing.z - firstTarget.z) : null;
+  const secondError = secondLanding ? Math.hypot(secondLanding.x - secondTarget.x, secondLanding.z - secondTarget.z) : null;
+  const firstOk = landing && firstError < 0.08;
+  const secondOk = secondLanding && secondError < 0.1;
+  const netOk = netClearance == null || netClearance > 0;
+  const ok = state.solve.targetMode === 'serve_bounces'
+    ? firstOk && secondOk && netOk
+    : landing && Math.abs(landing.x) <= TABLE.width/2 && Math.abs(landing.z) <= TABLE.length/2 && netOk;
+  const reason = !landing
+    ? '未落桌'
+    : !netOk
+      ? '掛網風險'
+      : state.solve.targetMode === 'serve_bounces' && !secondLanding
+        ? '未達第二跳'
+        : state.solve.targetMode === 'serve_bounces' && (!firstOk || !secondOk)
+          ? '落點偏離'
+          : ok ? '有效落桌' : '出界';
   document.getElementById('status').innerHTML = `
     <div>基礎速度：<strong class="mono">${base.baseVel.x.toFixed(2)}, ${base.baseVel.y.toFixed(2)}, ${base.baseVel.z.toFixed(2)}</strong></div>
     <div>變因後：<strong class="mono">${variant.velocity.x.toFixed(2)}, ${variant.velocity.y.toFixed(2)}, ${variant.velocity.z.toFixed(2)}</strong></div>
     <div>過網高度：<strong class="${netClearance == null || netClearance >= 0 ? 'ok' : 'bad'}">${netClearance == null ? '未過網' : netClearance.toFixed(3) + ' m'}</strong></div>
-    <div>第一落點：<strong>${landingText}</strong></div>
-    <div>第二落點：<strong>${secondText}</strong></div>
+    <div>第一落點：<strong>${landingText}</strong>${firstError == null ? '' : ` / 誤差 ${firstError.toFixed(3)} m`}</div>
+    <div>第二落點：<strong>${secondText}</strong>${secondError == null ? '' : ` / 誤差 ${secondError.toFixed(3)} m`}</div>
     <div>落地終點：<strong>${groundText}</strong></div>
     <div>判定：<strong class="${ok ? 'ok' : 'bad'}">${reason}</strong></div>
   `;
@@ -480,7 +569,12 @@ function updateExport(state){
 }
 function updateStudio(){
   const state = readState();
-  document.getElementById('targetHint').value = state.solve.targetMode === 'second_bounce' ? '目標 = 第二跳' : '目標 = 第一跳';
+  const hints = {
+    serve_bounces: '目標 = 第一跳 + 第二跳',
+    second_bounce: '目標 = 第二跳',
+    first_bounce: '目標 = 第一跳'
+  };
+  document.getElementById('targetHint').value = hints[state.solve.targetMode] || hints.serve_bounces;
   const base = simulate({...state, variation:{...state.variation, spin:{topspin:0,sidespin:0}, bounce:state.variation.bounce}}, {x:0,y:0,z:0});
   const variant = simulate(state, state.variation.velocity);
   currentPath = variant.points;
@@ -488,11 +582,12 @@ function updateStudio(){
     setLine(baseLines[index], base.points);
     setLine(variantLines[index], variant.points);
     markers[index].start.position.set(state.start.x, state.start.y, state.start.z);
+    markers[index].first.position.set(state.firstBounce.x, state.firstBounce.y, state.firstBounce.z);
     markers[index].target.position.set(state.target.x, state.target.y, state.target.z);
     const first = variant.points[0] || state.start;
     balls[index].position.set(first.x, first.y, first.z);
   });
-  analyze(base, variant);
+  analyze(base, variant, state);
   updateExport(state);
   renderAll();
 }
