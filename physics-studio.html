@@ -16,28 +16,28 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,B
 header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;border-bottom:1px solid var(--border);background:#0b1016}
 h1{font-size:20px;margin:0;font-weight:900}
 .badge{font-size:12px;color:var(--yellow);font-weight:800}
-.stage{display:grid;grid-template-columns:1fr 420px;height:calc(100vh - 54px);overflow:hidden}
+.stage{display:grid;grid-template-columns:1fr 405px;height:calc(100vh - 54px);overflow:hidden}
 .views{display:grid;grid-template-rows:minmax(240px,1.08fr) minmax(220px,.92fr);gap:8px;padding:8px;min-height:0}
 .view{position:relative;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;background:#05070a}
 .view-label{position:absolute;left:10px;top:8px;z-index:2;font-size:12px;color:var(--muted);font-weight:800}
 canvas{display:block;width:100%;height:100%}
 .panel{border-left:1px solid var(--border);background:var(--surface);overflow:auto;max-height:calc(100vh - 54px)}
-.section{padding:12px 14px;border-bottom:1px solid var(--border)}
-.section h2{font-size:13px;margin:0 0 10px;color:var(--yellow)}
-.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.section{padding:7px 9px;border-bottom:1px solid var(--border)}
+.section h2{font-size:11px;margin:0 0 6px;color:var(--yellow)}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
 .grid.two{grid-template-columns:repeat(2,1fr)}
-.field{display:grid;gap:4px}
-label{font-size:11px;color:var(--muted);font-weight:800}
+.field{display:grid;gap:3px}
+label{font-size:9px;color:var(--muted);font-weight:800}
 input,select,textarea,button{font:inherit}
-input,select,textarea{width:100%;background:#080b10;color:var(--text);border:1px solid var(--border);border-radius:8px;padding:8px}
+input,select,textarea{width:100%;background:#080b10;color:var(--text);border:1px solid var(--border);border-radius:7px;padding:5px;font-size:12px}
 input[readonly]{color:var(--yellow);background:#111720}
 input[type=range]{padding:0}
 textarea{min-height:116px;font-family:ui-monospace,Consolas,monospace;font-size:12px;line-height:1.45}
-button{border:1px solid var(--blue);background:var(--blue);color:#06111f;border-radius:8px;padding:9px 10px;font-weight:900;cursor:pointer}
+button{border:1px solid var(--blue);background:var(--blue);color:#06111f;border-radius:7px;padding:7px 8px;font-weight:900;cursor:pointer}
 button.secondary{background:var(--surface2);color:var(--text);border-color:var(--border)}
 button.warn{background:rgba(210,153,34,.12);color:var(--yellow);border-color:var(--yellow)}
-.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.status{display:grid;gap:6px;font-size:12px;color:var(--muted);line-height:1.45}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.status{display:grid;gap:3px;font-size:10.5px;color:var(--muted);line-height:1.3}
 .status strong{color:var(--text)}
 .ok{color:var(--green)}
 .bad{color:var(--red)}
@@ -166,6 +166,7 @@ const BALL_RADIUS = 0.02;
 const BALL_RENDER_RADIUS = 0.034;
 const STORAGE_KEY = 'tt-physics-studio-presets-v1';
 const PLAY_MIN_DURATION_MS = 3000;
+const MAX_TABLE_BOUNCES = 8;
 const ids = ['solveTarget','startY','baselineOffset','lateralOffset','firstX','firstY','firstZ','targetX','targetY','targetZ','flightTime','netClearance','gravity','varX','varY','varZ','topspin','sidespin','bounce','presetName'];
 let animation = null;
 let playStart = 0;
@@ -310,54 +311,41 @@ function solveBaseVelocity(state){
   return solveVelocity(state.start, state.firstBounce || state.target, state.solve.flightTime, state.solve.gravity);
 }
 function solveServeBounceVelocity(state){
-  let best = findServeBounceSeed(state);
+  let bestTime = findServeBounceTime(state);
+  let best = solveVelocity(state.start, state.firstBounce || state.target, bestTime, state.solve.gravity);
   let bestScore = serveBounceScore(state, best);
-  let steps = {x:0.2, y:0.16, z:0.2};
-  for(let round=0; round<18; round++){
+  let step = 0.12;
+  for(let round=0; round<22; round++){
     let improved = false;
-    for(const axis of ['x','y','z']){
-      for(const dir of [-1,1]){
-        const trial = {...best, [axis]: best[axis] + steps[axis] * dir};
-        const score = serveBounceScore(state, trial);
-        if(score < bestScore){
-          best = trial;
-          bestScore = score;
-          improved = true;
-        }
+    for(const dir of [-1,1]){
+      const trialTime = clamp(bestTime + step * dir, 0.12, 1.2);
+      const trial = solveVelocity(state.start, state.firstBounce || state.target, trialTime, state.solve.gravity);
+      const score = serveBounceScore(state, trial);
+      if(score < bestScore){
+        bestTime = trialTime;
+        best = trial;
+        bestScore = score;
+        improved = true;
       }
     }
-    if(!improved){
-      steps.x *= 0.58;
-      steps.y *= 0.58;
-      steps.z *= 0.58;
-    }
+    if(!improved) step *= 0.55;
   }
   return best;
 }
-function findServeBounceSeed(state){
+function findServeBounceTime(state){
   const first = state.firstBounce || state.target;
-  const times = [0.14, 0.18, 0.22, 0.26, 0.3, 0.36, 0.44, 0.54, 0.66, 0.82];
-  const xOffsets = [-1.2, -0.8, -0.4, 0, 0.4, 0.8, 1.2];
-  const yOffsets = [-0.75, -0.45, -0.2, 0, 0.2];
-  const zOffsets = [-1.0, -0.5, 0, 0.5, 1.0];
-  let best = solveVelocity(state.start, first, 0.34, state.solve.gravity);
-  let bestScore = serveBounceScore(state, best);
+  const times = [0.16, 0.2, 0.24, 0.28, 0.32, 0.36, 0.42, 0.5, 0.6, 0.72, 0.86];
+  let bestTime = times[3];
+  let bestScore = serveBounceScore(state, solveVelocity(state.start, first, bestTime, state.solve.gravity));
   for(const time of times){
-    const base = solveVelocity(state.start, first, time, state.solve.gravity);
-    for(const xOffset of xOffsets){
-      for(const yOffset of yOffsets){
-        for(const zOffset of zOffsets){
-          const candidate = {x:base.x + xOffset, y:base.y + yOffset, z:base.z + zOffset};
-          const score = serveBounceScore(state, candidate);
-          if(score < bestScore){
-            best = candidate;
-            bestScore = score;
-          }
-        }
-      }
+    const candidate = solveVelocity(state.start, first, time, state.solve.gravity);
+    const score = serveBounceScore(state, candidate);
+    if(score < bestScore){
+      bestTime = time;
+      bestScore = score;
     }
   }
-  return best;
+  return bestTime;
 }
 function serveBounceScore(state, baseVel){
   const result = simulateWithBaseVelocity(state, baseVel, {x:0,y:0,z:0});
@@ -376,15 +364,15 @@ function serveBounceScore(state, baseVel){
   const targetNetClearance = state.solve.netClearance ?? 0.03;
   const secondLegTime = first && second ? second.t - first.t : null;
   const targetSecondLegTime = state.solve.secondLegTime ?? state.solve.flightTime ?? 0.74;
-  const upwardPenalty = Math.max(0, baseVel.y) * 18;
+  const upwardPenalty = Math.pow(Math.max(0, baseVel.y - 0.25), 2) * 1.2;
   const noFirstPenalty = first ? 0 : 8;
   const noSecondPenalty = second ? 0 : 12;
   const wrongSidePenalty = result.bounces.some((bounce, index)=>index > 0 && bounce.z < 0) ? 3 : 0;
   const netPenalty = netClearance == null
     ? 1.5
-    : Math.max(0, -netClearance) * 10 + Math.pow(netClearance - targetNetClearance, 2) * 18;
-  const timePenalty = secondLegTime == null ? 1.5 : Math.pow(secondLegTime - targetSecondLegTime, 2) * 18;
-  return firstDx*firstDx*3.6 + firstDz*firstDz*3.6 + secondDx*secondDx + secondDz*secondDz + upwardPenalty + noFirstPenalty + noSecondPenalty + wrongSidePenalty + netPenalty + timePenalty;
+    : Math.max(0, -netClearance) * 10 + Math.pow(netClearance - targetNetClearance, 2) * 6;
+  const timePenalty = secondLegTime == null ? 1.5 : Math.pow(secondLegTime - targetSecondLegTime, 2) * 5;
+  return (firstDx*firstDx + firstDz*firstDz) * 80 + (secondDx*secondDx + secondDz*secondDz) * 22 + upwardPenalty + noFirstPenalty + noSecondPenalty + wrongSidePenalty + netPenalty + timePenalty;
 }
 function getServeBounces(result){
   const first = result.bounces.find(bounce=>bounce.z < 0) || null;
@@ -486,7 +474,8 @@ function simulateWithBaseVelocity(state, baseVel, variant){
       netY = prev.y + (pos.y - prev.y) * ratio;
       crossedNet = true;
     }
-    if(pos.y <= TABLE.top && vel.y < 0 && bounces.length < 4){
+    const crossedTableTop = prev.y >= TABLE.top && pos.y <= TABLE.top;
+    if(crossedTableTop && vel.y < 0){
       const ratio = (TABLE.top - prev.y) / (pos.y - prev.y || 1);
       const impact = {
         x: prev.x + (pos.x - prev.x) * ratio,
@@ -495,13 +484,17 @@ function simulateWithBaseVelocity(state, baseVel, variant){
       };
       const onTable = Math.abs(impact.x) <= TABLE.width/2 && Math.abs(impact.z) <= TABLE.length/2;
       if(onTable){
-      pos.x = impact.x;
-      pos.y = impact.y;
-      pos.z = impact.z;
-      const bouncePoint = {...cloneVec(pos), t: t - dt + dt * ratio};
-      if(!firstLanding) firstLanding = bouncePoint;
-      bounces.push(bouncePoint);
-      applyBounceSpin(vel, spin, bounce);
+        pos.x = impact.x;
+        pos.y = impact.y;
+        pos.z = impact.z;
+        const bouncePoint = {...cloneVec(pos), t: t - dt + dt * ratio};
+        if(!firstLanding) firstLanding = bouncePoint;
+        bounces.push(bouncePoint);
+        if(bounces.length > MAX_TABLE_BOUNCES){
+          points.push(bouncePoint);
+          break;
+        }
+        applyBounceSpin(vel, spin, bounce);
       }
     }
     if(pos.y <= BALL_RADIUS && prev.y > BALL_RADIUS){
@@ -663,11 +656,19 @@ function analyze(base, variant, state){
     ? '未落桌'
     : !netOk
       ? '掛網風險'
-        : state.solve.targetMode === 'serve_bounces' && !secondLanding
-          ? '未達接球端第二跳'
+      : state.solve.targetMode === 'serve_bounces' && !secondLanding
+        ? '未達接球端第二跳'
         : state.solve.targetMode === 'serve_bounces' && (!firstOk || !secondOk)
           ? '落點偏離'
           : ok ? '有效落桌' : '出界';
+  let tip = '參數可用';
+  if(state.solve.targetMode === 'serve_bounces' && secondLanding){
+    const secondLong = secondLanding.z - secondTarget.z;
+    if(secondLong > 0.12) tip = '第二跳偏長：加下旋、降低彈跳，或縮短第二段時間';
+    else if(secondLong < -0.12) tip = '第二跳偏短：減少下旋、提高彈跳，或拉長第二段時間';
+    else if(netClearance != null && netClearance - targetNetClearance > 0.08) tip = '過網偏高：降低目標過網高度或縮短第二段時間';
+    else if(netClearance != null && targetNetClearance - netClearance > 0.04) tip = '過網偏低：提高目標過網高度或拉長第二段時間';
+  }
   document.getElementById('status').innerHTML = `
     <div>基礎速度：<strong class="mono">${base.baseVel.x.toFixed(2)}, ${base.baseVel.y.toFixed(2)}, ${base.baseVel.z.toFixed(2)}</strong></div>
     <div>變因後：<strong class="mono">${variant.velocity.x.toFixed(2)}, ${variant.velocity.y.toFixed(2)}, ${variant.velocity.z.toFixed(2)}</strong></div>
@@ -679,6 +680,7 @@ function analyze(base, variant, state){
     <div>第二落點${state.solve.targetMode === 'serve_bounces' ? '（接球端）' : ''}：<strong>${secondText}</strong>${secondError == null ? '' : ` / 誤差 ${secondError.toFixed(3)} m`}</div>
     <div>落地終點：<strong>${groundText}</strong></div>
     <div>判定：<strong class="${ok ? 'ok' : 'bad'}">${reason}</strong></div>
+    <div>調整建議：<strong>${tip}</strong></div>
   `;
 }
 function exportPrompt(state){
