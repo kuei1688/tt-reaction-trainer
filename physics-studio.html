@@ -283,6 +283,22 @@ function solveVelocity(start, target, time, gravity){
 }
 function addVec(a,b){ return {x:a.x+b.x, y:a.y+b.y, z:a.z+b.z}; }
 function cloneVec(v){ return {x:v.x, y:v.y, z:v.z}; }
+function clamp(value, min, max){ return Math.max(min, Math.min(max, value)); }
+function applyBounceSpin(vel, spin, bounce){
+  const incomingX = vel.x;
+  const incomingZ = vel.z;
+  const speed = Math.hypot(incomingX, incomingZ);
+  const forward = speed > 0.001
+    ? {x:incomingX / speed, z:incomingZ / speed}
+    : {x:0, z:1};
+  const side = {x:-forward.z, z:forward.x};
+  let forwardSpeed = speed * 0.86 + spin.topspin * 0.42;
+  const sideSpeed = clamp(spin.sidespin * 0.32, -speed * 0.75, speed * 0.75);
+  forwardSpeed = clamp(forwardSpeed, -speed * 0.55, speed * 1.25);
+  vel.x = forward.x * forwardSpeed + side.x * sideSpeed;
+  vel.z = forward.z * forwardSpeed + side.z * sideSpeed;
+  vel.y = Math.abs(vel.y) * bounce;
+}
 
 function solveBaseVelocity(state){
   if(state.solve.targetMode === 'serve_bounces'){
@@ -485,9 +501,7 @@ function simulateWithBaseVelocity(state, baseVel, variant){
       const bouncePoint = {...cloneVec(pos), t: t - dt + dt * ratio};
       if(!firstLanding) firstLanding = bouncePoint;
       bounces.push(bouncePoint);
-      vel.y = Math.abs(vel.y) * bounce;
-      vel.z = (vel.z + spin.topspin * 0.55) * 0.86;
-      vel.x = (vel.x + spin.sidespin * 0.42) * 0.86;
+      applyBounceSpin(vel, spin, bounce);
       }
     }
     if(pos.y <= BALL_RADIUS && prev.y > BALL_RADIUS){
