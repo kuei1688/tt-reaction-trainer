@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="zh-TW" translate="no" class="notranslate">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="google" content="notranslate">
+<title>桌球回擊攝影棚</title>
+<style>
+:root{
+  --bg:#0d1117;--surface:#161b22;--surface2:#21262d;--border:#30363d;
+  --green:#3fb950;--yellow:#d29922;--red:#f85149;--blue:#58a6ff;
+  --text:#e6edf3;--muted:#8b949e;--radius:10px;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","Segoe UI",sans-serif}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;border-bottom:1px solid var(--border);background:#0b1016}
+h1{font-size:20px;margin:0;font-weight:900}
+.badge{font-size:12px;color:var(--yellow);font-weight:800}
+.stage{display:grid;grid-template-columns:1fr 420px;height:calc(100vh - 54px);overflow:hidden}
+.views{display:grid;grid-template-rows:minmax(240px,1.08fr) minmax(220px,.92fr);gap:8px;padding:8px;min-height:0}
+.view{position:relative;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;background:#05070a}
+.view-label{position:absolute;left:10px;top:8px;z-index:2;font-size:12px;color:var(--muted);font-weight:800}
+canvas{display:block;width:100%;height:100%}
+.panel{border-left:1px solid var(--border);background:var(--surface);overflow:auto;max-height:calc(100vh - 54px)}
+.section{padding:8px 10px;border-bottom:1px solid var(--border)}
+.section h2{font-size:12px;margin:0 0 7px;color:var(--yellow)}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.grid.two{grid-template-columns:repeat(2,1fr)}
+.field{display:grid;gap:3px}
+label{font-size:9px;color:var(--muted);font-weight:800}
+input,select,textarea,button{font:inherit}
+input,select,textarea{width:100%;background:#080b10;color:var(--text);border:1px solid var(--border);border-radius:7px;padding:5px;font-size:12px}
+input[readonly]{color:var(--yellow);background:#111720}
+input[type=range]{padding:0}
+textarea{min-height:128px;font-family:ui-monospace,Consolas,monospace;font-size:12px;line-height:1.45}
+button{border:1px solid var(--blue);background:var(--blue);color:#06111f;border-radius:7px;padding:7px 8px;font-weight:900;cursor:pointer}
+button.secondary{background:var(--surface2);color:var(--text);border-color:var(--border)}
+button.warn{background:rgba(210,153,34,.12);color:var(--yellow);border-color:var(--yellow)}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.status{display:grid;gap:3px;font-size:10.5px;color:var(--muted);line-height:1.35}
+.status strong{color:var(--text)}
+.ok{color:var(--green)}
+.bad{color:var(--red)}
+.preset-row{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:end}
+.hint{font-size:10px;color:var(--muted);line-height:1.35}
+@media (max-width: 900px){
+  .stage{grid-template-columns:1fr;height:auto;overflow:visible}
+  .panel{border-left:0;border-top:1px solid var(--border);max-height:none}
+  .views{position:sticky;top:0;z-index:5;height:54vh;min-height:380px;background:var(--bg)}
+  .grid{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body translate="no" class="notranslate">
+<header>
+  <h1>桌球回擊攝影棚</h1>
+  <div class="badge">Game 4 Return Studio v0</div>
+</header>
+
+<main class="stage">
+  <section class="views">
+    <div class="view">
+      <div class="view-label">側面視角</div>
+      <canvas id="sideView"></canvas>
+    </div>
+    <div class="view">
+      <div class="view-label">我方視角</div>
+      <canvas id="frontView"></canvas>
+    </div>
+  </section>
+
+  <aside class="panel">
+    <div class="section">
+      <h2>來球</h2>
+      <div class="field" style="margin-bottom:8px">
+        <label>使用發球攝影棚暫存 preset</label>
+        <select id="incomingPreset"></select>
+      </div>
+      <div class="grid">
+        <div class="field"><label>擊球點 X</label><input id="hitX" type="number" step="0.01" value="-0.18"></div>
+        <div class="field"><label>擊球點 Y</label><input id="hitY" type="number" step="0.01" value="0.92"></div>
+        <div class="field"><label>擊球點 Z</label><input id="hitZ" type="number" step="0.01" value="0.95"></div>
+      </div>
+      <div class="field" style="margin-top:8px">
+        <label>沿來球軌跡取點</label>
+        <input id="hitIndex" type="range" min="0" max="100" step="1" value="72">
+      </div>
+      <div class="grid" style="margin-top:8px">
+        <div class="field"><label>來球前後旋</label><input id="incomingTopspin" type="number" step="0.05" value="-0.35"></div>
+        <div class="field"><label>來球側旋</label><input id="incomingSidespin" type="number" step="0.05" value="-0.18"></div>
+        <div class="field"><label>來球彈跳</label><input id="incomingBounce" type="number" step="0.01" value="0.95"></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>回擊設定</h2>
+      <div class="grid two" style="margin-bottom:8px">
+        <div class="field">
+          <label>站位</label>
+          <select id="strokeSide">
+            <option value="backhand">反手</option>
+            <option value="forehand">正手</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>技術</label>
+          <select id="technique">
+            <option value="drive">攻球</option>
+            <option value="push">切球</option>
+            <option value="topspinLoop">上旋拉球</option>
+            <option value="backspinLoop">下旋拉球</option>
+          </select>
+        </div>
+      </div>
+      <div class="grid">
+        <div class="field">
+          <label>長短</label>
+          <select id="targetLength">
+            <option value="long">長球</option>
+            <option value="medium">中長</option>
+            <option value="short">短球</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>落點</label>
+          <select id="targetPlacement">
+            <option value="backhand">反手</option>
+            <option value="middle">中路</option>
+            <option value="forehand">正手</option>
+            <option value="wide_forehand">大角正手</option>
+            <option value="wide_backhand">大角反手</option>
+          </select>
+        </div>
+        <div class="field"><label>目標過網高度</label><input id="netClearance" type="number" step="0.01" value="0.16"></div>
+      </div>
+      <div class="grid" style="margin-top:8px">
+        <div class="field"><label>速度下限</label><input id="speedMin" type="number" step="0.1" value="3.5"></div>
+        <div class="field"><label>速度上限</label><input id="speedMax" type="number" step="0.1" value="9.0"></div>
+        <div class="field"><label>飛行時間</label><input id="flightTime" type="number" step="0.01" value="0.56"></div>
+      </div>
+      <div class="grid" style="margin-top:8px">
+        <div class="field"><label>變因 VX</label><input id="varX" type="number" step="0.01" value="0.00"></div>
+        <div class="field"><label>變因 VY</label><input id="varY" type="number" step="0.01" value="0.00"></div>
+        <div class="field"><label>變因 VZ</label><input id="varZ" type="number" step="0.01" value="0.00"></div>
+      </div>
+      <div class="grid" style="margin-top:8px">
+        <div class="field"><label>技術前後旋</label><input id="techTopspin" readonly value="0.30"></div>
+        <div class="field"><label>技術側旋</label><input id="techSidespin" readonly value="0.00"></div>
+        <div class="field"><label>重力</label><input id="gravity" type="number" step="0.1" value="-4.2"></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>操作</h2>
+      <div class="actions">
+        <button id="playBtn" type="button">播放</button>
+        <button id="resetBtn" type="button" class="secondary">重播</button>
+        <button id="copyBtn" type="button" class="secondary">複製指令</button>
+        <button id="copyAllBtn" type="button" class="warn">複製全部</button>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>分析</h2>
+      <div class="status" id="status"></div>
+    </div>
+
+    <div class="section">
+      <h2>Preset</h2>
+      <div class="preset-row">
+        <div class="field"><label>名稱</label><input id="presetName" value="反手切側下短球"></div>
+        <button id="saveBtn" type="button">儲存</button>
+      </div>
+      <div class="preset-row" style="margin-top:8px">
+        <div class="field"><label>已存回擊參數</label><select id="presetSelect"></select></div>
+        <button id="loadBtn" type="button" class="secondary">載入</button>
+      </div>
+      <div class="actions" style="margin-top:6px">
+        <button id="clearPresetBtn" type="button" class="secondary">清空暫存</button>
+        <button id="refreshServeBtn" type="button" class="secondary">重讀發球</button>
+      </div>
+      <div class="hint" style="margin-top:8px">這頁使用獨立暫存，不會改到發球攝影棚的 preset。</div>
+    </div>
+
+    <div class="section">
+      <h2>輸出</h2>
+      <textarea id="exportText" readonly></textarea>
+    </div>
+  </aside>
+</main>
+
+<script src="vendor/three.r128.min.js"></script>
+<script>
+const TABLE = { length: 2.74, width: 1.525, height: 0.76, top: 0.781, net: 0.1525 };
+const BALL_RADIUS = 0.02;
+const BALL_RENDER_RADIUS = 0.034;
+const RETURN_STORAGE_KEY = 'tt-return-studio-presets-v1';
+const SERVE_STORAGE_KEY = 'tt-physics-studio-presets-v1';
+const PLAY_MIN_DURATION_MS = 3000;
+const ids = ['incomingPreset','hitX','hitY','hitZ','hitIndex','incomingTopspin','incomingSidespin','incomingBounce','strokeSide','technique','targetLength','targetPlacement','netClearance','speedMin','speedMax','flightTime','varX','varY','varZ','gravity','presetName'];
+const TECHNIQUES = {
+  drive: {label:'攻球', topspin:0.3, sidespin:0, time:0.52, speed:[5.5,8.5]},
+  push: {label:'切球', topspin:-0.8, sidespin:0, time:0.72, speed:[3.6,6.2]},
+  topspinLoop: {label:'上旋拉球', topspin:0.9, sidespin:0, time:0.58, speed:[6.2,9.5]},
+  backspinLoop: {label:'下旋拉球', topspin:0.6, sidespin:0, time:0.64, speed:[5.2,8.8]}
+};
+const LABELS = {
+  strokeSide: {backhand:'反手', forehand:'正手'},
+  length: {short:'短球', medium:'中長', long:'長球'},
+  placement: {backhand:'反手', middle:'中路', forehand:'正手', wide_forehand:'大角正手', wide_backhand:'大角反手'}
+};
+let animation = null;
+let currentPath = [];
+let incomingPath = [];
+let currentAnalysis = null;
+
+function num(id){ return parseFloat(document.getElementById(id).value); }
+function setValue(id, value){ document.getElementById(id).value = value; }
+function clamp(value, min, max){ return Math.max(min, Math.min(max, value)); }
+function addVec(a,b){ return {x:a.x+b.x,y:a.y+b.y,z:a.z+b.z}; }
+function cloneVec(v){ return {x:v.x,y:v.y,z:v.z}; }
+function velocityToTarget(start, target, time, gravity){
+  return {
+    x:(target.x - start.x) / time,
+    y:(target.y - start.y - 0.5 * gravity * time * time) / time,
+    z:(target.z - start.z) / time
+  };
+}
+function vecSpeed(v){ return Math.hypot(v.x, v.y, v.z); }
+function scaleVelocityToRange(v, min, max){
+  const speed = vecSpeed(v);
+  if(speed < 0.001) return v;
+  const target = clamp(speed, min, max);
+  return {x:v.x * target / speed, y:v.y * target / speed, z:v.z * target / speed};
+}
+
+function loadJson(key){
+  try{ return JSON.parse(localStorage.getItem(key) || '[]'); }
+  catch(err){ return []; }
+}
+function saveJson(key, list){
+  localStorage.setItem(key, JSON.stringify(list));
+}
+function loadServePresets(){ return loadJson(SERVE_STORAGE_KEY); }
+function loadReturnPresets(){ return loadJson(RETURN_STORAGE_KEY); }
+function saveReturnPresets(list){ saveJson(RETURN_STORAGE_KEY, list); }
+
+function renderIncomingOptions(){
+  const list = loadServePresets();
+  const select = document.getElementById('incomingPreset');
+  select.innerHTML = '<option value="-1">使用預設來球</option>' + list.map((p,i)=>{
+    const length = p.tagLabels?.length || p.tags?.length || '';
+    const placement = p.tagLabels?.placement || p.tags?.placement || '';
+    return `<option value="${i}">${p.label || p.id || `serve-${i+1}`} · ${length} · ${placement}</option>`;
+  }).join('');
+}
+function renderReturnOptions(){
+  const list = loadReturnPresets();
+  const select = document.getElementById('presetSelect');
+  select.innerHTML = list.length
+    ? list.map((p,i)=>`<option value="${i}">${p.label || p.id} · ${p.tagLabels?.technique || ''} · ${p.tagLabels?.placement || ''}</option>`).join('')
+    : '<option value="-1">尚未儲存</option>';
+}
+
+function getSelectedServePreset(){
+  const index = parseInt(document.getElementById('incomingPreset').value, 10);
+  return loadServePresets()[index] || null;
+}
+function defaultServePreset(){
+  return {
+    label:'預設側下短球',
+    start:{x:0.45,y:1.04,z:-1.52},
+    firstBounce:{x:0.18,y:TABLE.top,z:-0.42},
+    secondBounce:{x:-0.18,y:TABLE.top,z:0.88},
+    target:{x:-0.18,y:TABLE.top,z:0.88},
+    solve:{gravity:-4.2},
+    variation:{spin:{topspin:-0.35,sidespin:-0.18}, bounce:0.95}
+  };
+}
+function selectedIncomingState(){
+  const preset = getSelectedServePreset() || defaultServePreset();
+  const second = preset.secondBounce || preset.target || {x:-0.18,y:TABLE.top,z:0.88};
+  return {
+    label:preset.label || '未命名來球',
+    start:preset.start || defaultServePreset().start,
+    firstBounce:preset.firstBounce || {x:0.18,y:TABLE.top,z:-0.42},
+    secondBounce:second,
+    spin:{topspin:num('incomingTopspin'),sidespin:num('incomingSidespin')},
+    bounce:num('incomingBounce'),
+    gravity:preset.solve?.gravity ?? num('gravity')
+  };
+}
+function applyIncomingFieldsFromPreset(){
+  const preset = getSelectedServePreset() || defaultServePreset();
+  setValue('incomingTopspin', preset.variation?.spin?.topspin ?? -0.35);
+  setValue('incomingSidespin', preset.variation?.spin?.sidespin ?? -0.18);
+  setValue('incomingBounce', preset.variation?.bounce ?? 0.95);
+  setValue('gravity', preset.solve?.gravity ?? num('gravity'));
+}
+function buildIncomingPath(incoming){
+  const gravity = incoming.gravity || -4.2;
+  const points = [];
+  const first = incoming.firstBounce;
+  const second = incoming.secondBounce;
+  appendArc(points, incoming.start, first, 0.34, gravity, 72);
+  appendArc(points, first, second, 0.62, gravity, 92);
+  const after = {x: second.x * 0.85, y: TABLE.top + 0.23, z: Math.min(TABLE.length/2 + 0.35, second.z + 0.52)};
+  appendArc(points, second, after, 0.36, gravity, 54);
+  return points;
+}
+function appendArc(points, start, target, time, gravity, steps){
+  const v = velocityToTarget(start, target, time, gravity);
+  const skipFirst = points.length > 0 ? 1 : 0;
+  for(let i=skipFirst;i<=steps;i++){
+    const t = time * i / steps;
+    points.push({
+      x:start.x + v.x * t,
+      y:start.y + v.y * t + 0.5 * gravity * t * t,
+      z:start.z + v.z * t
+    });
+  }
+}
+function updateHitFromSlider(){
+  const p = incomingPath[Math.round((incomingPath.length - 1) * num('hitIndex') / 100)];
+  if(!p) return;
+  setValue('hitX', p.x.toFixed(2));
+  setValue('hitY', Math.max(TABLE.top + BALL_RADIUS, p.y).toFixed(2));
+  setValue('hitZ', p.z.toFixed(2));
+}
+
+function targetPoint(state){
+  const zMap = {long:-TABLE.length/2 + 0.22, medium:-TABLE.length/2 + TABLE.length * 0.42, short:-TABLE.length/2 + TABLE.length * 0.68};
+  const xMap = {wide_backhand:-TABLE.width/2 + 0.1, backhand:-0.36, middle:0, forehand:0.36, wide_forehand:TABLE.width/2 - 0.1};
+  return {x:xMap[state.target.placement] ?? 0, y:TABLE.top, z:zMap[state.target.length] ?? -0.25};
+}
+function techniqueSpin(key){
+  const tech = TECHNIQUES[key] || TECHNIQUES.drive;
+  return {topspin:tech.topspin, sidespin:tech.sidespin};
+}
+function updateTechniqueDefaults(){
+  const tech = TECHNIQUES[document.getElementById('technique').value] || TECHNIQUES.drive;
+  setValue('techTopspin', tech.topspin.toFixed(2));
+  setValue('techSidespin', tech.sidespin.toFixed(2));
+}
+function readState(){
+  const tech = document.getElementById('technique').value;
+  const incoming = selectedIncomingState();
+  const hitPoint = {x:num('hitX'), y:num('hitY'), z:num('hitZ')};
+  const tags = {
+    strokeSide: document.getElementById('strokeSide').value,
+    technique: tech,
+    length: document.getElementById('targetLength').value,
+    placement: document.getElementById('targetPlacement').value
+  };
+  const tagLabels = {
+    strokeSide: LABELS.strokeSide[tags.strokeSide] || tags.strokeSide,
+    technique: TECHNIQUES[tags.technique]?.label || tags.technique,
+    length: LABELS.length[tags.length] || tags.length,
+    placement: LABELS.placement[tags.placement] || tags.placement
+  };
+  const state = {
+    id: document.getElementById('presetName').value.trim() || 'untitled',
+    label: document.getElementById('presetName').value.trim() || '未命名',
+    type:'return',
+    mode:'return_studio_v0',
+    sourceServeLabel: incoming.label,
+    tags,
+    tagLabels,
+    incoming: {
+      label: incoming.label,
+      spin: {topspin:num('incomingTopspin'), sidespin:num('incomingSidespin')},
+      bounce: num('incomingBounce')
+    },
+    hitPoint,
+    target: {
+      length: tags.length,
+      placement: tags.placement,
+      point: null,
+      netClearance: num('netClearance')
+    },
+    solve: {
+      speedMin: num('speedMin'),
+      speedMax: num('speedMax'),
+      flightTime: num('flightTime'),
+      gravity: num('gravity')
+    },
+    variation: {velocity:{x:num('varX'), y:num('varY'), z:num('varZ')}},
+    spin: {
+      incoming: {topspin:num('incomingTopspin'), sidespin:num('incomingSidespin')},
+      technique: techniqueSpin(tech),
+      final: null
+    }
+  };
+  state.target.point = targetPoint(state);
+  state.spin.final = {
+    topspin: state.spin.incoming.topspin + state.spin.technique.topspin,
+    sidespin: state.spin.incoming.sidespin + state.spin.technique.sidespin
+  };
+  return state;
+}
+function applyState(state){
+  document.getElementById('presetName').value = state.label || '未命名';
+  document.getElementById('strokeSide').value = state.tags?.strokeSide || 'backhand';
+  document.getElementById('technique').value = state.tags?.technique || 'drive';
+  document.getElementById('targetLength').value = state.tags?.length || 'long';
+  document.getElementById('targetPlacement').value = state.tags?.placement || 'backhand';
+  setValue('hitX', state.hitPoint?.x ?? -0.18);
+  setValue('hitY', state.hitPoint?.y ?? 0.92);
+  setValue('hitZ', state.hitPoint?.z ?? 0.95);
+  setValue('incomingTopspin', state.incoming?.spin?.topspin ?? -0.35);
+  setValue('incomingSidespin', state.incoming?.spin?.sidespin ?? -0.18);
+  setValue('incomingBounce', state.incoming?.bounce ?? 0.95);
+  setValue('netClearance', state.target?.netClearance ?? 0.16);
+  setValue('speedMin', state.solve?.speedMin ?? 5);
+  setValue('speedMax', state.solve?.speedMax ?? 9);
+  setValue('flightTime', state.solve?.flightTime ?? 0.56);
+  setValue('gravity', state.solve?.gravity ?? -4.2);
+  setValue('varX', state.variation?.velocity?.x ?? 0);
+  setValue('varY', state.variation?.velocity?.y ?? 0);
+  setValue('varZ', state.variation?.velocity?.z ?? 0);
+  updateStudio(false);
+}
+
+function solveReturn(state){
+  const base = velocityToTarget(state.hitPoint, state.target.point, state.solve.flightTime, state.solve.gravity);
+  const ranged = scaleVelocityToRange(base, state.solve.speedMin, state.solve.speedMax);
+  return addVec(ranged, state.variation.velocity);
+}
+function simulateReturn(state){
+  const pos = cloneVec(state.hitPoint);
+  const vel = solveReturn(state);
+  const points = [];
+  const landings = [];
+  let netY = null;
+  let crossedNet = false;
+  let ground = null;
+  for(let i=0;i<360;i++){
+    const dt = 1/120;
+    const prev = cloneVec(pos);
+    vel.y += state.solve.gravity * dt;
+    pos.x += vel.x * dt;
+    pos.y += vel.y * dt;
+    pos.z += vel.z * dt;
+    if(!crossedNet && prev.z > 0 && pos.z <= 0){
+      const ratio = (0 - prev.z) / (pos.z - prev.z || 1);
+      netY = prev.y + (pos.y - prev.y) * ratio;
+      crossedNet = true;
+    }
+    if(prev.y >= TABLE.top && pos.y <= TABLE.top && vel.y < 0){
+      const ratio = (TABLE.top - prev.y) / (pos.y - prev.y || 1);
+      const impact = {
+        x: prev.x + (pos.x - prev.x) * ratio,
+        y: TABLE.top,
+        z: prev.z + (pos.z - prev.z) * ratio
+      };
+      if(Math.abs(impact.x) <= TABLE.width/2 && Math.abs(impact.z) <= TABLE.length/2){
+        landings.push({...impact, t:(i+1)*dt});
+      }
+    }
+    if(pos.y <= 0){
+      ground = cloneVec(pos);
+      points.push(cloneVec(pos));
+      break;
+    }
+    points.push(cloneVec(pos));
+    if(pos.z < -TABLE.length/2 - TABLE.length/6) break;
+  }
+  return {points, landings, netY, ground, velocity:solveReturn(state)};
+}
+function analyze(state, result){
+  const target = state.target.point;
+  const first = result.landings[0] || null;
+  const landingText = first ? `${first.x.toFixed(2)}, ${first.z.toFixed(2)}` : '未落桌';
+  const targetText = `${target.x.toFixed(2)}, ${target.z.toFixed(2)}`;
+  const onOpponent = first && first.z < 0 && Math.abs(first.x) <= TABLE.width/2 && Math.abs(first.z) <= TABLE.length/2;
+  const netClear = result.netY == null ? null : result.netY - (TABLE.height + TABLE.net);
+  const reason = !first ? '未落桌' : onOpponent ? '有效回擊' : first.z > 0 ? '落在自己桌面' : '出界';
+  const speed = vecSpeed(result.velocity);
+  currentAnalysis = {landing:first, onOpponent, reason, speed, netClearance:netClear};
+  document.getElementById('status').innerHTML = `
+    <div>目標落點：<strong>${targetText}</strong></div>
+    <div>第一落點：<strong>${landingText}</strong></div>
+    <div>過網高度：<strong>${netClear == null ? '未過網' : netClear.toFixed(3) + ' m'}</strong></div>
+    <div>回擊速度：<strong>${speed.toFixed(2)}</strong></div>
+    <div>旋轉疊加：<strong>${state.spin.final.topspin.toFixed(2)}, ${state.spin.final.sidespin.toFixed(2)}</strong></div>
+    <div>判定：<strong class="${onOpponent ? 'ok' : 'bad'}">${reason}</strong></div>
+  `;
+}
+
+const scenes = [];
+const cameras = [];
+const renderers = [];
+const incomingLines = [];
+const returnLines = [];
+const balls = [];
+const markers = [];
+function initScene(canvas, kind){
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x05070a);
+  const camera = new THREE.PerspectiveCamera(42, 1, 0.01, 20);
+  if(kind === 'side') camera.position.set(3.4, 1.35, 0.1);
+  else camera.position.set(0, 2.4, 3.45);
+  camera.lookAt(0, TABLE.top, 0);
+  const renderer = new THREE.WebGLRenderer({canvas, antialias:true});
+  renderer.setPixelRatio(window.devicePixelRatio || 1);
+  scene.add(new THREE.HemisphereLight(0xffffff, 0x111722, 1.1));
+  const light = new THREE.DirectionalLight(0xffffff, .75);
+  light.position.set(2, 3, 3);
+  scene.add(light);
+  addTable(scene);
+  const incoming = makeLine(0x58a6ff, true);
+  const outgoing = makeLine(0xd29922, false);
+  scene.add(incoming, outgoing);
+  const ball = new THREE.Mesh(new THREE.SphereGeometry(BALL_RENDER_RADIUS, 24, 16), new THREE.MeshStandardMaterial({color:0x58a6ff, roughness:.35}));
+  scene.add(ball);
+  const markerSet = {
+    hit: makeMarker(0xffd166),
+    target: makeMarker(0x3fb950),
+    landing: makeMarker(0xf85149)
+  };
+  Object.values(markerSet).forEach(m=>scene.add(m));
+  scenes.push(scene);
+  cameras.push(camera);
+  renderers.push(renderer);
+  incomingLines.push(incoming);
+  returnLines.push(outgoing);
+  balls.push(ball);
+  markers.push(markerSet);
+}
+function addTable(scene){
+  const table = new THREE.Mesh(new THREE.BoxGeometry(TABLE.width, .045, TABLE.length), new THREE.MeshStandardMaterial({color:0x19713d, roughness:.72}));
+  table.position.y = TABLE.height;
+  scene.add(table);
+  const edge = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(TABLE.width, .048, TABLE.length)), new THREE.LineBasicMaterial({color:0xb8c4cc}));
+  edge.position.copy(table.position);
+  scene.add(edge);
+  const net = new THREE.Mesh(new THREE.BoxGeometry(TABLE.width, TABLE.net, .018), new THREE.MeshStandardMaterial({color:0xd8dee9, transparent:true, opacity:.65}));
+  net.position.set(0, TABLE.height + TABLE.net/2, 0);
+  scene.add(net);
+  const floor = new THREE.Mesh(new THREE.BoxGeometry(TABLE.width + 1.3, .02, TABLE.length + .9), new THREE.MeshStandardMaterial({color:0x151c25, roughness:.9}));
+  floor.position.set(0, -0.015, 0);
+  scene.add(floor);
+}
+function makeLine(color, dashed){
+  const geometry = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), new THREE.Vector3()]);
+  const material = dashed
+    ? new THREE.LineDashedMaterial({color, dashSize:.06, gapSize:.04})
+    : new THREE.LineBasicMaterial({color});
+  return new THREE.Line(geometry, material);
+}
+function makeMarker(color){
+  const mesh = new THREE.Mesh(new THREE.SphereGeometry(.035, 18, 12), new THREE.MeshStandardMaterial({color, emissive:color, emissiveIntensity:.12}));
+  return mesh;
+}
+function setLine(line, points){
+  const vectors = points.map(p=>new THREE.Vector3(p.x,p.y,p.z));
+  line.geometry.dispose();
+  line.geometry = new THREE.BufferGeometry().setFromPoints(vectors);
+  if(line.computeLineDistances) line.computeLineDistances();
+}
+function resize(){
+  renderers.forEach((renderer,index)=>{
+    const canvas = renderer.domElement;
+    const rect = canvas.parentElement.getBoundingClientRect();
+    renderer.setSize(rect.width, rect.height, false);
+    cameras[index].aspect = rect.width / Math.max(1, rect.height);
+    cameras[index].updateProjectionMatrix();
+  });
+  renderAll();
+}
+function renderAll(){
+  renderers.forEach((renderer,index)=>renderer.render(scenes[index], cameras[index]));
+}
+function setBallAtPathIndex(index){
+  if(!currentPath.length) return;
+  const safeIndex = clamp(index, 0, currentPath.length - 1);
+  const p = currentPath[safeIndex];
+  balls.forEach(ball=>ball.position.set(p.x,p.y,p.z));
+  renderAll();
+}
+function updateStudio(updateHit){
+  updateTechniqueDefaults();
+  const incoming = selectedIncomingState();
+  incomingPath = buildIncomingPath(incoming);
+  if(updateHit) updateHitFromSlider();
+  const state = readState();
+  const result = simulateReturn(state);
+  currentPath = result.points;
+  scenes.forEach((scene,index)=>{
+    setLine(incomingLines[index], incomingPath);
+    setLine(returnLines[index], currentPath);
+    markers[index].hit.position.set(state.hitPoint.x, state.hitPoint.y, state.hitPoint.z);
+    markers[index].target.position.set(state.target.point.x, state.target.point.y, state.target.point.z);
+    const landing = result.landings[0] || state.target.point;
+    markers[index].landing.position.set(landing.x, landing.y, landing.z);
+    const p = currentPath[0] || state.hitPoint;
+    balls[index].position.set(p.x,p.y,p.z);
+  });
+  analyze(state, result);
+  updateExport(state);
+  renderAll();
+}
+function stopPlayback(){
+  if(animation) cancelAnimationFrame(animation);
+  animation = null;
+  document.getElementById('playBtn').textContent = '播放';
+}
+function play(){
+  stopPlayback();
+  updateStudio(false);
+  const start = performance.now();
+  document.getElementById('playBtn').textContent = '播放中';
+  function tick(now){
+    const progress = Math.min(1, (now - start) / PLAY_MIN_DURATION_MS);
+    const i = Math.floor(progress * (currentPath.length - 1));
+    setBallAtPathIndex(i);
+    if(progress < 1) animation = requestAnimationFrame(tick);
+    else stopPlayback();
+  }
+  animation = requestAnimationFrame(tick);
+}
+function replay(){
+  stopPlayback();
+  setBallAtPathIndex(0);
+  play();
+}
+
+function exportPrompt(state){
+  const payload = JSON.stringify(state, null, 2);
+  return `請更新 Game 4 回擊 preset 資料，加入或修改以下回擊攝影棚參數：\n\n${payload}`;
+}
+function exportPresetList(list){
+  const payload = JSON.stringify({type:'returnPresetBatch', count:list.length, presets:list}, null, 2);
+  return `請整理並更新 Game 4 回擊 preset 資料，以下是我在回擊攝影棚累積的全部參數：\n\n${payload}`;
+}
+function updateExport(state){
+  document.getElementById('exportText').value = exportPrompt(state);
+}
+async function writeClipboard(text){
+  try{ await navigator.clipboard.writeText(text); }
+  catch(err){
+    const area = document.getElementById('exportText');
+    area.value = text;
+    area.select();
+    document.execCommand('copy');
+  }
+}
+async function copyPrompt(){
+  const text = document.getElementById('exportText').value;
+  await writeClipboard(text);
+  flashButton('copyBtn');
+}
+async function copyAllPresets(){
+  const list = loadReturnPresets();
+  const text = exportPresetList(list);
+  document.getElementById('exportText').value = text;
+  await writeClipboard(text);
+  flashButton('copyAllBtn');
+}
+function flashButton(id){
+  const btn = document.getElementById(id);
+  const old = btn.textContent;
+  btn.textContent = '已複製';
+  setTimeout(()=>btn.textContent = old, 1300);
+}
+function saveCurrent(){
+  const list = loadReturnPresets();
+  const state = readState();
+  state.id = state.label.replace(/\s+/g, '_').toLowerCase();
+  state.analysis = currentAnalysis;
+  const index = list.findIndex(p=>p.id === state.id);
+  if(index >= 0) list[index] = state;
+  else list.push(state);
+  saveReturnPresets(list);
+  renderReturnOptions();
+}
+function loadSelected(){
+  const list = loadReturnPresets();
+  const index = parseInt(document.getElementById('presetSelect').value, 10);
+  if(list[index]) applyState(list[index]);
+}
+function clearPresets(){
+  if(!confirm('清空目前瀏覽器暫存的全部回擊 preset？')) return;
+  saveReturnPresets([]);
+  renderReturnOptions();
+  updateExport(readState());
+}
+
+document.querySelectorAll('canvas').forEach((canvas,index)=>initScene(canvas, index === 0 ? 'side' : 'front'));
+ids.forEach(id=>{
+  const el = document.getElementById(id);
+  if(!el) return;
+  el.addEventListener('input', ()=>{
+    if(id === 'incomingPreset') applyIncomingFieldsFromPreset();
+    updateStudio(id === 'hitIndex' || id === 'incomingPreset');
+  });
+});
+document.getElementById('playBtn').addEventListener('click', play);
+document.getElementById('resetBtn').addEventListener('click', replay);
+document.getElementById('copyBtn').addEventListener('click', copyPrompt);
+document.getElementById('copyAllBtn').addEventListener('click', copyAllPresets);
+document.getElementById('saveBtn').addEventListener('click', saveCurrent);
+document.getElementById('loadBtn').addEventListener('click', loadSelected);
+document.getElementById('clearPresetBtn').addEventListener('click', clearPresets);
+document.getElementById('refreshServeBtn').addEventListener('click', ()=>{ renderIncomingOptions(); updateStudio(true); });
+window.addEventListener('resize', resize);
+renderIncomingOptions();
+renderReturnOptions();
+resize();
+updateStudio(true);
+</script>
+</body>
+</html>
