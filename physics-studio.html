@@ -142,6 +142,36 @@ button.warn{background:rgba(210,153,34,.12);color:var(--yellow);border-color:var
 
     <div class="section">
       <h2>Preset</h2>
+      <div class="grid" style="margin-bottom:6px">
+        <div class="field">
+          <label>旋轉類型</label>
+          <select id="presetSpinType">
+            <option value="sidebackspin">側下</option>
+            <option value="sidespin">側旋</option>
+            <option value="backspin">下旋</option>
+            <option value="topspin">上旋</option>
+            <option value="no_spin">不轉</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>長短</label>
+          <select id="presetLength">
+            <option value="short">短球</option>
+            <option value="half_long">半出台</option>
+            <option value="long">長球</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>落點</label>
+          <select id="presetPlacement">
+            <option value="backhand">反手</option>
+            <option value="middle">中路</option>
+            <option value="forehand">正手</option>
+            <option value="wide_forehand">大角正手</option>
+            <option value="wide_backhand">大角反手</option>
+          </select>
+        </div>
+      </div>
       <div class="preset-row">
         <div class="field"><label>名稱</label><input id="presetName" value="側下長球到反手"></div>
         <button id="saveBtn" type="button">儲存</button>
@@ -149,6 +179,10 @@ button.warn{background:rgba(210,153,34,.12);color:var(--yellow);border-color:var
       <div class="preset-row" style="margin-top:8px">
         <div class="field"><label>已存參數</label><select id="presetSelect"></select></div>
         <button id="loadBtn" type="button" class="secondary">載入</button>
+      </div>
+      <div class="actions" style="margin-top:6px">
+        <button id="copyAllBtn" type="button" class="secondary">複製全部</button>
+        <button id="clearPresetBtn" type="button" class="secondary">清空暫存</button>
       </div>
     </div>
 
@@ -167,7 +201,12 @@ const BALL_RENDER_RADIUS = 0.034;
 const STORAGE_KEY = 'tt-physics-studio-presets-v1';
 const PLAY_MIN_DURATION_MS = 3000;
 const MAX_TABLE_BOUNCES = 8;
-const ids = ['solveTarget','startY','baselineOffset','lateralOffset','firstX','firstY','firstZ','targetX','targetY','targetZ','flightTime','netClearance','gravity','varX','varY','varZ','topspin','sidespin','bounce','presetName'];
+const ids = ['solveTarget','startY','baselineOffset','lateralOffset','firstX','firstY','firstZ','targetX','targetY','targetZ','flightTime','netClearance','gravity','varX','varY','varZ','topspin','sidespin','bounce','presetSpinType','presetLength','presetPlacement','presetName'];
+const PRESET_TAG_LABELS = {
+  spinType: {sidebackspin:'側下', sidespin:'側旋', backspin:'下旋', topspin:'上旋', no_spin:'不轉'},
+  length: {short:'短球', half_long:'半出台', long:'長球'},
+  placement: {backhand:'反手', middle:'中路', forehand:'正手', wide_forehand:'大角正手', wide_backhand:'大角反手'}
+};
 let animation = null;
 let playStart = 0;
 let isPlaying = false;
@@ -227,11 +266,23 @@ function readState(){
   setValue('startX', start.x.toFixed(2));
   setValue('startZ', start.z.toFixed(2));
   setValue('lineError', lineError(start, firstBounce, target).toFixed(3));
+  const tags = {
+    spinType: document.getElementById('presetSpinType').value,
+    length: document.getElementById('presetLength').value,
+    placement: document.getElementById('presetPlacement').value
+  };
+  const tagLabels = {
+    spinType: PRESET_TAG_LABELS.spinType[tags.spinType] || tags.spinType,
+    length: PRESET_TAG_LABELS.length[tags.length] || tags.length,
+    placement: PRESET_TAG_LABELS.placement[tags.placement] || tags.placement
+  };
   return {
     id: document.getElementById('presetName').value.trim() || 'untitled',
     label: document.getElementById('presetName').value.trim() || '未命名',
     type: 'serve',
     mode: 'cheat_solve',
+    tags,
+    tagLabels,
     start,
     serveLine,
     firstBounce,
@@ -273,6 +324,9 @@ function applyState(state){
   setValue('topspin', state.variation?.spin?.topspin ?? 0);
   setValue('sidespin', state.variation?.spin?.sidespin ?? 0);
   setValue('bounce', state.variation?.bounce ?? 0.95);
+  document.getElementById('presetSpinType').value = state.tags?.spinType || state.spinType || 'sidebackspin';
+  document.getElementById('presetLength').value = state.tags?.length || state.length || 'short';
+  document.getElementById('presetPlacement').value = state.tags?.placement || state.placement || 'backhand';
   updateStudio();
 }
 function solveVelocity(start, target, time, gravity){
@@ -685,7 +739,11 @@ function analyze(base, variant, state){
 }
 function exportPrompt(state){
   const payload = JSON.stringify(state, null, 2);
-  return `請更新 physics-presets.json，加入或修改以下攝影棚參數：\n\n${payload}`;
+  return `請更新 Game 4 發球 preset 資料，加入或修改以下攝影棚參數：\n\n${payload}`;
+}
+function exportPresetList(list){
+  const payload = JSON.stringify({type:'servePresetBatch', count:list.length, presets:list}, null, 2);
+  return `請整理並更新 Game 4 發球 preset 資料，以下是我在攝影棚累積的全部參數：\n\n${payload}`;
 }
 function updateExport(state){
   document.getElementById('exportText').value = exportPrompt(state);
@@ -783,7 +841,11 @@ function renderPresetOptions(){
   const select = document.getElementById('presetSelect');
   const list = loadPresets();
   select.innerHTML = list.length
-    ? list.map((p,i)=>`<option value="${i}">${p.label || p.id}</option>`).join('')
+    ? list.map((p,i)=>{
+        const length = p.tagLabels?.length || PRESET_TAG_LABELS.length[p.tags?.length] || '未分類';
+        const placement = p.tagLabels?.placement || PRESET_TAG_LABELS.placement[p.tags?.placement] || '';
+        return `<option value="${i}">${p.label || p.id} · ${length} · ${placement}</option>`;
+      }).join('')
     : '<option value="-1">尚未儲存</option>';
 }
 function saveCurrent(){
@@ -801,14 +863,34 @@ function loadSelected(){
   const index = parseInt(document.getElementById('presetSelect').value, 10);
   if(list[index]) applyState(list[index]);
 }
-async function copyPrompt(){
-  const text = document.getElementById('exportText').value;
+async function writeClipboard(text){
   try{ await navigator.clipboard.writeText(text); }
   catch(err){
     const area = document.getElementById('exportText');
+    area.value = text;
     area.select();
     document.execCommand('copy');
   }
+}
+async function copyAllPresets(){
+  const list = loadPresets();
+  const text = exportPresetList(list);
+  document.getElementById('exportText').value = text;
+  await writeClipboard(text);
+  const btn = document.getElementById('copyAllBtn');
+  const old = btn.textContent;
+  btn.textContent = '已複製';
+  setTimeout(()=>btn.textContent = old, 1300);
+}
+function clearPresets(){
+  if(!confirm('清空目前瀏覽器暫存的全部攝影棚 preset？')) return;
+  savePresets([]);
+  renderPresetOptions();
+  updateExport(readState());
+}
+async function copyPrompt(){
+  const text = document.getElementById('exportText').value;
+  await writeClipboard(text);
   const btn = document.getElementById('copyBtn');
   const old = btn.textContent;
   btn.textContent = '已複製';
@@ -825,6 +907,8 @@ document.getElementById('randomBtn').addEventListener('click', makeScatter);
 document.getElementById('saveBtn').addEventListener('click', saveCurrent);
 document.getElementById('loadBtn').addEventListener('click', loadSelected);
 document.getElementById('copyBtn').addEventListener('click', copyPrompt);
+document.getElementById('copyAllBtn').addEventListener('click', copyAllPresets);
+document.getElementById('clearPresetBtn').addEventListener('click', clearPresets);
 
 renderPresetOptions();
 resize();
