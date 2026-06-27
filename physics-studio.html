@@ -427,14 +427,15 @@ function solveServeBounceVelocity(state){
   const gravity = state.solve.gravity;
   const times = [0.1, 0.115, 0.13, 0.145, 0.16, 0.18, 0.2, 0.23, 0.26, 0.3, 0.35, 0.42, 0.5, 0.62, 0.76, 0.92];
   const yNudges = [-0.16, -0.1, -0.05, 0, 0.05, 0.1, 0.16];
-  let bestTime = findServeBounceTime(state);
+  let bestTime = times[0];
   let bestYNudge = 0;
-  let best = makeServeAimCandidate(state, first, bestTime, bestYNudge);
-  let bestScore = serveBounceScore(state, best);
+  let best = null;
+  let bestScore = Infinity;
 
   function consider(time, yNudge){
     const candidate = makeServeAimCandidate(state, first, time, yNudge);
     if(!Number.isFinite(candidate.x) || !Number.isFinite(candidate.y) || !Number.isFinite(candidate.z)) return;
+    if(candidate.y > 0.05) return;
     const score = serveBounceScore(state, candidate);
     if(score < bestScore){
       bestTime = time;
@@ -448,6 +449,10 @@ function solveServeBounceVelocity(state){
     for(const yNudge of yNudges){
       consider(time, yNudge);
     }
+  }
+  if(!best){
+    best = makeServeAimCandidate(state, first, findServeBounceTime(state), 0);
+    bestScore = serveBounceScore(state, best);
   }
 
   let timeStep = 0.08;
@@ -511,7 +516,7 @@ function serveBounceScore(state, baseVel){
   const targetNetClearance = state.solve.netClearance ?? 0.03;
   const secondLegTime = first && second ? second.t - first.t : null;
   const targetSecondLegTime = state.solve.secondLegTime ?? state.solve.flightTime ?? 0.74;
-  const upwardPenalty = Math.pow(Math.max(0, baseVel.y - 0.25), 2) * 0.8;
+  const upwardPenalty = Math.max(0, baseVel.y - 0.02) * 70 + Math.pow(Math.max(0, baseVel.y - 0.02), 2) * 420;
   const noFirstPenalty = first ? 0 : 300;
   const noSecondPenalty = second ? 0 : 70;
   const wrongSidePenalty = result.bounces.some((bounce, index)=>index > 0 && bounce.z < 0) ? 25 : 0;
@@ -924,6 +929,9 @@ function analyze(base, variant, state){
   const timeDiff = secondLegTime == null ? null : secondLegTime - targetSecondLegTime;
   const solverIssues = [];
   if(state.solve.targetMode === 'serve_bounces'){
+    if(base.baseVel.y > 0.1){
+      solverIssues.push('發球 VY 向上過大');
+    }
     if(netClearance == null){
       solverIssues.push('過網目標未達成：未測到過網高度');
     }else if(netDiff > 0.05){
