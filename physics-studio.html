@@ -247,6 +247,11 @@ const BALL_RENDER_RADIUS = 0.034;
 const STORAGE_KEY = 'tt-physics-studio-presets-v1';
 const PLAY_MIN_DURATION_MS = 3000;
 const MAX_TABLE_BOUNCES = 8;
+const BOUNCE_PHYSICS = {
+  horizontalRestitution: 0.98,
+  topspinKick: 0.30,
+  sidespinKick: 0.22
+};
 const ids = ['solveTarget','startY','baselineOffset','lateralOffset','firstX','firstY','firstZ','targetX','targetY','targetZ','flightTime','netClearance','gravity','varX','varY','varZ','topspin','sidespin','bounce','presetSpinType','presetLength','presetPlacement','presetName'];
 const PRESET_TAG_LABELS = {
   spinType: {sidebackspin:'側下', sidespin:'側旋', backspin:'下旋', topspin:'上旋', no_spin:'不轉'},
@@ -400,9 +405,9 @@ function applyBounceSpin(vel, spin, bounce){
     ? {x:incomingX / speed, z:incomingZ / speed}
     : {x:0, z:1};
   const side = {x:-forward.z, z:forward.x};
-  let forwardSpeed = speed * 0.86 + spin.topspin * 0.42;
-  const sideSpeed = clamp(spin.sidespin * 0.32, -speed * 0.75, speed * 0.75);
-  forwardSpeed = clamp(forwardSpeed, -speed * 0.55, speed * 1.25);
+  let forwardSpeed = speed * BOUNCE_PHYSICS.horizontalRestitution + spin.topspin * BOUNCE_PHYSICS.topspinKick;
+  const sideSpeed = clamp(spin.sidespin * BOUNCE_PHYSICS.sidespinKick, -speed * 0.75, speed * 0.75);
+  forwardSpeed = clamp(forwardSpeed, -speed * 0.55, speed * 1.35);
   vel.x = forward.x * forwardSpeed + side.x * sideSpeed;
   vel.z = forward.z * forwardSpeed + side.z * sideSpeed;
   vel.y = Math.abs(vel.y) * bounce;
