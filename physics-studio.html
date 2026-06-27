@@ -425,58 +425,57 @@ function solveBaseVelocity(state){
 function solveServeBounceVelocity(state){
   const first = state.firstBounce || state.target;
   const gravity = state.solve.gravity;
-  const times = [0.12, 0.14, 0.16, 0.18, 0.2, 0.23, 0.26, 0.3, 0.35, 0.42, 0.5, 0.62, 0.76];
-  const yOffsets = [-0.75, -0.5, -0.28, -0.12, 0, 0.18, 0.36];
-  const horizontalScales = [0.78, 0.9, 1, 1.12, 1.28, 1.48, 1.72, 2.05];
-  let best = solveVelocity(state.start, first, findServeBounceTime(state), gravity);
+  const times = [0.1, 0.115, 0.13, 0.145, 0.16, 0.18, 0.2, 0.23, 0.26, 0.3, 0.35, 0.42, 0.5, 0.62, 0.76, 0.92];
+  const yNudges = [-0.16, -0.1, -0.05, 0, 0.05, 0.1, 0.16];
+  let bestTime = findServeBounceTime(state);
+  let bestYNudge = 0;
+  let best = makeServeAimCandidate(state, first, bestTime, bestYNudge);
   let bestScore = serveBounceScore(state, best);
 
-  function consider(candidate){
+  function consider(time, yNudge){
+    const candidate = makeServeAimCandidate(state, first, time, yNudge);
     if(!Number.isFinite(candidate.x) || !Number.isFinite(candidate.y) || !Number.isFinite(candidate.z)) return;
     const score = serveBounceScore(state, candidate);
     if(score < bestScore){
+      bestTime = time;
+      bestYNudge = yNudge;
       best = candidate;
       bestScore = score;
     }
   }
 
   for(const time of times){
-    const base = solveVelocity(state.start, first, time, gravity);
-    consider(base);
-    for(const yOffset of yOffsets){
-      consider({x:base.x, y:base.y + yOffset, z:base.z});
-    }
-    for(const scale of horizontalScales){
-      consider({x:base.x * scale, y:base.y, z:base.z * scale});
-    }
-    for(const scale of [1.18, 1.38, 1.62, 1.9]){
-      for(const yOffset of [-0.45, -0.24, 0]){
-        consider({x:base.x * scale, y:base.y + yOffset, z:base.z * scale});
-      }
+    for(const yNudge of yNudges){
+      consider(time, yNudge);
     }
   }
 
-  let steps = {x:0.42, y:0.28, z:0.52};
-  for(let round=0; round<30; round++){
+  let timeStep = 0.08;
+  let yStep = 0.07;
+  for(let round=0; round<28; round++){
     let improved = false;
-    for(const axis of ['x','y','z']){
-      for(const dir of [-1,1]){
-        const trial = {...best, [axis]:best[axis] + steps[axis] * dir};
-        const score = serveBounceScore(state, trial);
-        if(score < bestScore){
-          best = trial;
-          bestScore = score;
-          improved = true;
-        }
-      }
+    for(const dir of [-1,1]){
+      const trialTime = clamp(bestTime + timeStep * dir, 0.08, 1.05);
+      const beforeScore = bestScore;
+      consider(trialTime, bestYNudge);
+      improved = improved || bestScore < beforeScore;
+    }
+    for(const dir of [-1,1]){
+      const trialYNudge = clamp(bestYNudge + yStep * dir, -0.24, 0.24);
+      const beforeScore = bestScore;
+      consider(bestTime, trialYNudge);
+      improved = improved || bestScore < beforeScore;
     }
     if(!improved){
-      steps.x *= 0.58;
-      steps.y *= 0.58;
-      steps.z *= 0.58;
+      timeStep *= 0.58;
+      yStep *= 0.58;
     }
   }
   return best;
+}
+function makeServeAimCandidate(state, first, time, yNudge){
+  const base = solveVelocity(state.start, first, time, state.solve.gravity);
+  return {x:base.x, y:base.y + yNudge, z:base.z};
 }
 function findServeBounceTime(state){
   const first = state.firstBounce || state.target;
@@ -507,26 +506,28 @@ function serveBounceScore(state, baseVel){
   const secondDx = secondPoint.x - secondTarget.x;
   const secondDz = secondPoint.z - secondTarget.z;
   const firstMiss = Math.hypot(firstDx, firstDz);
+  const secondMiss = Math.hypot(secondDx, secondDz);
   const netClearance = result.netY == null ? null : result.netY - (TABLE.height + TABLE.net);
   const targetNetClearance = state.solve.netClearance ?? 0.03;
   const secondLegTime = first && second ? second.t - first.t : null;
   const targetSecondLegTime = state.solve.secondLegTime ?? state.solve.flightTime ?? 0.74;
-  const upwardPenalty = Math.pow(Math.max(0, baseVel.y - 0.25), 2) * 1.2;
-  const noFirstPenalty = first ? 0 : 8;
-  const noSecondPenalty = second ? 0 : 12;
-  const wrongSidePenalty = result.bounces.some((bounce, index)=>index > 0 && bounce.z < 0) ? 3 : 0;
+  const upwardPenalty = Math.pow(Math.max(0, baseVel.y - 0.25), 2) * 0.8;
+  const noFirstPenalty = first ? 0 : 300;
+  const noSecondPenalty = second ? 0 : 70;
+  const wrongSidePenalty = result.bounces.some((bounce, index)=>index > 0 && bounce.z < 0) ? 25 : 0;
   const netHigh = netClearance == null ? 0 : Math.max(0, netClearance - targetNetClearance);
   const netLow = netClearance == null ? 0 : Math.max(0, targetNetClearance - netClearance);
   const timeMiss = secondLegTime == null ? 0 : secondLegTime - targetSecondLegTime;
   const peakY = result.points.reduce((max, point)=>Math.max(max, point.y), state.start.y);
   const naturalPeakLimit = Math.max(state.start.y + 0.1, TABLE.height + TABLE.net + targetNetClearance + 0.22);
-  const peakPenalty = Math.pow(Math.max(0, peakY - naturalPeakLimit), 2) * 18;
+  const peakPenalty = Math.pow(Math.max(0, peakY - naturalPeakLimit), 2) * 12;
   const netPenalty = netClearance == null
-    ? 4
-    : Math.max(0, -netClearance) * 25 + netLow * 18 + Math.pow(netLow, 2) * 60 + netHigh * 6 + Math.pow(netHigh, 2) * 130;
-  const timePenalty = secondLegTime == null ? 4 : Math.abs(timeMiss) * 1.8 + timeMiss * timeMiss * 70;
-  const firstGuardPenalty = Math.pow(Math.max(0, firstMiss - 0.035), 2) * 1600;
-  return (firstDx*firstDx + firstDz*firstDz) * 190 + firstGuardPenalty + (secondDx*secondDx + secondDz*secondDz) * 44 + upwardPenalty + peakPenalty + noFirstPenalty + noSecondPenalty + wrongSidePenalty + netPenalty + timePenalty;
+    ? 16
+    : Math.max(0, -netClearance) * 220 + netLow * 45 + Math.pow(netLow, 2) * 260 + netHigh * 4 + Math.pow(netHigh, 2) * 24;
+  const timePenalty = secondLegTime == null ? 10 : Math.abs(timeMiss) * 0.5 + timeMiss * timeMiss * 8;
+  const firstGuardPenalty = Math.pow(Math.max(0, firstMiss - 0.025), 2) * 9000;
+  const secondGuardPenalty = Math.pow(Math.max(0, secondMiss - 0.12), 2) * 70;
+  return firstMiss * 80 + firstMiss * firstMiss * 420 + firstGuardPenalty + secondMiss * 14 + secondMiss * secondMiss * 48 + secondGuardPenalty + upwardPenalty + peakPenalty + noFirstPenalty + noSecondPenalty + wrongSidePenalty + netPenalty + timePenalty;
 }
 function getServeBounces(result){
   const first = result.bounces.find(bounce=>bounce.z < 0) || null;
