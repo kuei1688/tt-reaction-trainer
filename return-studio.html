@@ -82,8 +82,12 @@ button.warn{background:rgba(210,153,34,.12);color:var(--yellow);border-color:var
         <div class="field"><label>擊球點 Z</label><input id="hitZ" type="number" step="0.01" value="0.95"></div>
       </div>
       <div class="field" style="margin-top:8px">
-        <label>沿來球軌跡取點</label>
-        <input id="hitIndex" type="range" min="0" max="100" step="1" value="72">
+        <label>彈跳後擊球時機</label>
+        <input id="hitIndex" type="range" min="0" max="100" step="1" value="78">
+      </div>
+      <div class="field" style="margin-top:8px">
+        <label>時機判讀</label>
+        <input id="hitPhase" readonly value="下降期">
       </div>
       <div class="grid" style="margin-top:8px">
         <div class="field"><label>來球前後旋</label><input id="incomingTopspin" type="number" step="0.05" value="-0.35"></div>
@@ -212,6 +216,7 @@ const LABELS = {
 let animation = null;
 let currentPath = [];
 let incomingPath = [];
+let incomingHitWindow = [];
 let currentAnalysis = null;
 
 function num(id){ return parseFloat(document.getElementById(id).value); }
@@ -232,6 +237,21 @@ function scaleVelocityToRange(v, min, max){
   if(speed < 0.001) return v;
   const target = clamp(speed, min, max);
   return {x:v.x * target / speed, y:v.y * target / speed, z:v.z * target / speed};
+}
+function applyBounceSpin(vel, spin, bounce){
+  const incomingX = vel.x;
+  const incomingZ = vel.z;
+  const speed = Math.hypot(incomingX, incomingZ);
+  const forward = speed > 0.001
+    ? {x:incomingX / speed, z:incomingZ / speed}
+    : {x:0, z:-1};
+  const side = {x:-forward.z, z:forward.x};
+  let forwardSpeed = speed * 0.86 + spin.topspin * 0.42;
+  const sideSpeed = clamp(spin.sidespin * 0.32, -speed * 0.75, speed * 0.75);
+  forwardSpeed = clamp(forwardSpeed, -speed * 0.55, speed * 1.25);
+  vel.x = forward.x * forwardSpeed + side.x * sideSpeed;
+  vel.z = forward.z * forwardSpeed + side.z * sideSpeed;
+  vel.y = Math.abs(vel.y) * bounce;
 }
 
 function loadJson(key){
@@ -304,8 +324,10 @@ function buildIncomingPath(incoming){
   const second = incoming.secondBounce;
   appendArc(points, incoming.start, first, 0.34, gravity, 72);
   appendArc(points, first, second, 0.62, gravity, 92);
-  const after = {x: second.x * 0.85, y: TABLE.top + 0.23, z: Math.min(TABLE.length/2 + 0.35, second.z + 0.52)};
-  appendArc(points, second, after, 0.36, gravity, 54);
+  const hitStart = points.length - 1;
+  const after = {x: second.x * 0.55, y: 0.28, z: Math.min(TABLE.length/2 + 0.55, second.z + 0.95)};
+  appendArc(points, second, after, 0.95, gravity, 126);
+  incomingHitWindow = points.slice(hitStart).filter(point=>point.y >= TABLE.top + BALL_RADIUS);
   return points;
 }
 function appendArc(points, start, target, time, gravity, steps){
@@ -321,11 +343,15 @@ function appendArc(points, start, target, time, gravity, steps){
   }
 }
 function updateHitFromSlider(){
-  const p = incomingPath[Math.round((incomingPath.length - 1) * num('hitIndex') / 100)];
+  const window = incomingHitWindow.length ? incomingHitWindow : incomingPath;
+  const ratio = num('hitIndex') / 100;
+  const p = window[Math.round((window.length - 1) * ratio)];
   if(!p) return;
   setValue('hitX', p.x.toFixed(2));
   setValue('hitY', Math.max(TABLE.top + BALL_RADIUS, p.y).toFixed(2));
   setValue('hitZ', p.z.toFixed(2));
+  const phase = ratio < 0.34 ? '上升期' : ratio < 0.62 ? '最高點附近' : '下降期';
+  setValue('hitPhase', phase);
 }
 
 function targetPoint(state){
@@ -372,6 +398,10 @@ function readState(){
       bounce: num('incomingBounce')
     },
     hitPoint,
+    hitTiming: {
+      ratio: num('hitIndex') / 100,
+      phase: document.getElementById('hitPhase').value
+    },
     target: {
       length: tags.length,
       placement: tags.placement,
@@ -411,13 +441,15 @@ function applyState(state){
   setValue('incomingSidespin', state.incoming?.spin?.sidespin ?? -0.18);
   setValue('incomingBounce', state.incoming?.bounce ?? 0.95);
   setValue('netClearance', state.target?.netClearance ?? 0.16);
-  setValue('speedMin', state.solve?.speedMin ?? 5);
+  setValue('speedMin', state.solve?.speedMin ?? 3.5);
   setValue('speedMax', state.solve?.speedMax ?? 9);
   setValue('flightTime', state.solve?.flightTime ?? 0.56);
   setValue('gravity', state.solve?.gravity ?? -4.2);
   setValue('varX', state.variation?.velocity?.x ?? 0);
   setValue('varY', state.variation?.velocity?.y ?? 0);
   setValue('varZ', state.variation?.velocity?.z ?? 0);
+  setValue('hitIndex', Math.round((state.hitTiming?.ratio ?? 0.78) * 100));
+  setValue('hitPhase', state.hitTiming?.phase || '下降期');
   updateStudio(false);
 }
 
@@ -434,7 +466,8 @@ function simulateReturn(state){
   let netY = null;
   let crossedNet = false;
   let ground = null;
-  for(let i=0;i<360;i++){
+  let bounceCount = 0;
+  for(let i=0;i<520;i++){
     const dt = 1/120;
     const prev = cloneVec(pos);
     vel.y += state.solve.gravity * dt;
@@ -455,6 +488,11 @@ function simulateReturn(state){
       };
       if(Math.abs(impact.x) <= TABLE.width/2 && Math.abs(impact.z) <= TABLE.length/2){
         landings.push({...impact, t:(i+1)*dt});
+        pos.x = impact.x;
+        pos.y = TABLE.top + BALL_RADIUS * 0.35;
+        pos.z = impact.z;
+        applyBounceSpin(vel, state.spin.final, num('incomingBounce'));
+        bounceCount += 1;
       }
     }
     if(pos.y <= 0){
@@ -463,7 +501,8 @@ function simulateReturn(state){
       break;
     }
     points.push(cloneVec(pos));
-    if(pos.z < -TABLE.length/2 - TABLE.length/6) break;
+    if(bounceCount >= 1 && pos.z < -TABLE.length/2 - TABLE.length/4) break;
+    if(bounceCount >= 2) break;
   }
   return {points, landings, netY, ground, velocity:solveReturn(state)};
 }
