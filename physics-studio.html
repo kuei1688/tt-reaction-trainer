@@ -475,11 +475,17 @@ function serveBounceScore(state, baseVel){
   const noFirstPenalty = first ? 0 : 8;
   const noSecondPenalty = second ? 0 : 12;
   const wrongSidePenalty = result.bounces.some((bounce, index)=>index > 0 && bounce.z < 0) ? 3 : 0;
+  const netHigh = netClearance == null ? 0 : Math.max(0, netClearance - targetNetClearance);
+  const netLow = netClearance == null ? 0 : Math.max(0, targetNetClearance - netClearance);
+  const timeMiss = secondLegTime == null ? 0 : secondLegTime - targetSecondLegTime;
+  const peakY = result.points.reduce((max, point)=>Math.max(max, point.y), state.start.y);
+  const naturalPeakLimit = Math.max(state.start.y + 0.1, TABLE.height + TABLE.net + targetNetClearance + 0.22);
+  const peakPenalty = Math.pow(Math.max(0, peakY - naturalPeakLimit), 2) * 18;
   const netPenalty = netClearance == null
-    ? 1.5
-    : Math.max(0, -netClearance) * 10 + Math.pow(netClearance - targetNetClearance, 2) * 6;
-  const timePenalty = secondLegTime == null ? 1.5 : Math.pow(secondLegTime - targetSecondLegTime, 2) * 5;
-  return (firstDx*firstDx + firstDz*firstDz) * 80 + (secondDx*secondDx + secondDz*secondDz) * 22 + upwardPenalty + noFirstPenalty + noSecondPenalty + wrongSidePenalty + netPenalty + timePenalty;
+    ? 4
+    : Math.max(0, -netClearance) * 25 + netLow * 18 + Math.pow(netLow, 2) * 60 + netHigh * 6 + Math.pow(netHigh, 2) * 130;
+  const timePenalty = secondLegTime == null ? 4 : Math.abs(timeMiss) * 1.8 + timeMiss * timeMiss * 70;
+  return (firstDx*firstDx + firstDz*firstDz) * 90 + (secondDx*secondDx + secondDz*secondDz) * 34 + upwardPenalty + peakPenalty + noFirstPenalty + noSecondPenalty + wrongSidePenalty + netPenalty + timePenalty;
 }
 function getServeBounces(result){
   const first = result.bounces.find(bounce=>bounce.z < 0) || null;
@@ -872,6 +878,25 @@ function analyze(base, variant, state){
   const secondLegTime = landing && secondLanding ? secondLanding.t - landing.t : null;
   const targetSecondLegTime = state.solve.secondLegTime ?? state.solve.flightTime;
   const targetNetClearance = state.solve.netClearance ?? 0.03;
+  const netDiff = netClearance == null ? null : netClearance - targetNetClearance;
+  const timeDiff = secondLegTime == null ? null : secondLegTime - targetSecondLegTime;
+  const solverIssues = [];
+  if(state.solve.targetMode === 'serve_bounces'){
+    if(netClearance == null){
+      solverIssues.push('過網目標未達成：未測到過網高度');
+    }else if(netDiff > 0.05){
+      solverIssues.push(`過網目標未達成：偏高 ${(netDiff * 100).toFixed(1)} cm`);
+    }else if(netDiff < -0.015){
+      solverIssues.push(`過網目標未達成：偏低 ${Math.abs(netDiff * 100).toFixed(1)} cm`);
+    }
+    if(secondLegTime == null){
+      solverIssues.push('第二段時間未達成：沒有第二跳');
+    }else if(Math.abs(timeDiff) > 0.08){
+      solverIssues.push(`第二段時間未達成：${timeDiff > 0 ? '偏慢' : '偏快'} ${Math.abs(timeDiff).toFixed(3)} s`);
+    }
+  }
+  const solverTargetOk = solverIssues.length === 0;
+  const solverIssueText = solverTargetOk ? '目標大致達成' : solverIssues.join(' / ');
   const firstOk = landing && firstError < 0.08;
   const secondOk = secondLanding && secondError < 0.1;
   const netOk = netClearance == null || netClearance > 0;
@@ -892,8 +917,12 @@ function analyze(base, variant, state){
     const secondLong = secondLanding.z - secondTarget.z;
     if(secondLong > 0.12) tip = '第二跳偏長：加下旋、降低彈跳，或縮短第二段時間';
     else if(secondLong < -0.12) tip = '第二跳偏短：減少下旋、提高彈跳，或拉長第二段時間';
+    else if(!solverTargetOk) tip = '條件未完全達成：優先調整重力、第一跳、第二跳或發球高度，不要只怪單一參數';
     else if(netClearance != null && netClearance - targetNetClearance > 0.08) tip = '過網偏高：降低目標過網高度或縮短第二段時間';
     else if(netClearance != null && targetNetClearance - netClearance > 0.04) tip = '過網偏低：提高目標過網高度或拉長第二段時間';
+  }
+  if(state.solve.targetMode === 'serve_bounces' && !solverTargetOk){
+    tip = '條件未完全達成：優先調整重力、第一跳、第二跳或發球高度，不要只怪單一參數';
   }
   document.getElementById('status').innerHTML = `
     <div>基礎速度：<strong class="mono">${base.baseVel.x.toFixed(2)}, ${base.baseVel.y.toFixed(2)}, ${base.baseVel.z.toFixed(2)}</strong></div>
@@ -902,6 +931,7 @@ function analyze(base, variant, state){
     <div>平面共線誤差：<strong class="${serveLineError < 0.03 ? 'ok' : 'bad'}">${serveLineError.toFixed(3)} m</strong></div>
     <div>過網高度：<strong class="${netClearance == null || netClearance >= 0 ? 'ok' : 'bad'}">${netClearance == null ? '未過網' : netClearance.toFixed(3) + ' m'}</strong> / 目標 ${targetNetClearance.toFixed(3)} m</div>
     <div>第二段時間：<strong>${secondLegTime == null ? '未達第二跳' : secondLegTime.toFixed(3) + ' s'}</strong> / 目標 ${targetSecondLegTime.toFixed(3)} s</div>
+    <div>Solver 目標：<strong class="${solverTargetOk ? 'ok' : 'bad'}">${solverIssueText}</strong></div>
     <div>第一落點${state.solve.targetMode === 'serve_bounces' ? '（發球端）' : ''}：<strong>${landingText}</strong>${firstError == null ? '' : ` / 誤差 ${firstError.toFixed(3)} m`}</div>
     <div>第二落點${state.solve.targetMode === 'serve_bounces' ? '（接球端）' : ''}：<strong>${secondText}</strong>${secondError == null ? '' : ` / 誤差 ${secondError.toFixed(3)} m`}</div>
     <div>落地終點：<strong>${groundText}</strong></div>
