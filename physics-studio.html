@@ -21,6 +21,8 @@ h1{font-size:20px;margin:0;font-weight:900}
 .view{position:relative;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;background:#05070a}
 .view-label{position:absolute;left:10px;top:8px;z-index:2;font-size:12px;color:var(--muted);font-weight:800}
 canvas{display:block;width:100%;height:100%}
+canvas{touch-action:none;cursor:grab}
+canvas.dragging{cursor:grabbing}
 .panel{border-left:1px solid var(--border);background:var(--surface);overflow:auto;max-height:calc(100vh - 54px)}
 .section{padding:7px 9px;border-bottom:1px solid var(--border)}
 .section h2{font-size:11px;margin:0 0 6px;color:var(--yellow)}
@@ -257,6 +259,12 @@ let isPlaying = false;
 let currentPath = [];
 let scatterLines = [];
 let activeStepperInput = null;
+let dragPoint = null;
+let dragPointerId = null;
+const raycaster = new THREE.Raycaster();
+const pointer = new THREE.Vector2();
+const dragPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), -TABLE.top);
+const dragIntersection = new THREE.Vector3();
 
 function num(id){ return parseFloat(document.getElementById(id).value); }
 function setValue(id, value){ document.getElementById(id).value = value; }
@@ -678,6 +686,8 @@ const markers = scenes.map(scene=>{
   const start = new THREE.Mesh(new THREE.SphereGeometry(0.035,16,16), new THREE.MeshBasicMaterial({color:0x58a6ff}));
   const first = new THREE.Mesh(new THREE.SphereGeometry(0.035,16,16), new THREE.MeshBasicMaterial({color:0xd29922}));
   const target = new THREE.Mesh(new THREE.SphereGeometry(0.035,16,16), new THREE.MeshBasicMaterial({color:0x3fb950}));
+  first.userData.dragPoint = 'first';
+  target.userData.dragPoint = 'target';
   scene.add(start, first, target);
   return {start,first,target};
 });
@@ -724,6 +734,79 @@ function resize(){
   renderAll();
 }
 window.addEventListener('resize', resize);
+function eventToNdc(event, canvas){
+  const rect = canvas.getBoundingClientRect();
+  pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+  pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+}
+function pointFromCanvas(event, canvasIndex){
+  const canvas = canvases[canvasIndex];
+  eventToNdc(event, canvas);
+  raycaster.setFromCamera(pointer, cameras[canvasIndex]);
+  return raycaster.ray.intersectPlane(dragPlane, dragIntersection)
+    ? dragIntersection
+    : null;
+}
+function nearestDragPoint(event, canvasIndex){
+  const canvas = canvases[canvasIndex];
+  eventToNdc(event, canvas);
+  raycaster.setFromCamera(pointer, cameras[canvasIndex]);
+  const hits = raycaster.intersectObjects([markers[canvasIndex].first, markers[canvasIndex].target], false);
+  if(hits[0]?.object?.userData?.dragPoint) return hits[0].object.userData.dragPoint;
+  const point = pointFromCanvas(event, canvasIndex);
+  if(!point) return null;
+  const firstDistance = Math.hypot(point.x - num('firstX'), point.z - num('firstZ'));
+  const targetDistance = Math.hypot(point.x - num('targetX'), point.z - num('targetZ'));
+  const nearest = firstDistance <= targetDistance ? 'first' : 'target';
+  return Math.min(firstDistance, targetDistance) <= 0.22 ? nearest : null;
+}
+function applyDragPoint(pointName, point){
+  const x = Math.max(-TABLE.width / 2, Math.min(TABLE.width / 2, point.x));
+  const z = Math.max(-TABLE.length / 2, Math.min(TABLE.length / 2, point.z));
+  if(pointName === 'first'){
+    setValue('firstX', x.toFixed(2));
+    setValue('firstY', TABLE.top.toFixed(2));
+    setValue('firstZ', z.toFixed(2));
+  }else if(pointName === 'target'){
+    setValue('targetX', x.toFixed(2));
+    setValue('targetY', TABLE.top.toFixed(2));
+    setValue('targetZ', z.toFixed(2));
+  }
+  updateStudio();
+}
+function setupDragPoints(){
+  canvases.forEach((canvas,index)=>{
+    canvas.style.touchAction = 'none';
+    canvas.addEventListener('pointerdown', event=>{
+      const pointName = nearestDragPoint(event, index);
+      if(!pointName) return;
+      dragPoint = pointName;
+      dragPointerId = event.pointerId;
+      canvas.setPointerCapture(event.pointerId);
+      canvas.classList.add('dragging');
+      const point = pointFromCanvas(event, index);
+      if(point) applyDragPoint(dragPoint, point);
+    });
+    canvas.addEventListener('pointermove', event=>{
+      if(dragPointerId !== event.pointerId || !dragPoint) return;
+      const point = pointFromCanvas(event, index);
+      if(point) applyDragPoint(dragPoint, point);
+    });
+    canvas.addEventListener('pointerup', event=>{
+      if(dragPointerId !== event.pointerId) return;
+      dragPoint = null;
+      dragPointerId = null;
+      canvas.classList.remove('dragging');
+      if(canvas.hasPointerCapture(event.pointerId)) canvas.releasePointerCapture(event.pointerId);
+    });
+    canvas.addEventListener('pointercancel', event=>{
+      if(dragPointerId !== event.pointerId) return;
+      dragPoint = null;
+      dragPointerId = null;
+      canvas.classList.remove('dragging');
+    });
+  });
+}
 function switchMobileView(target){
   document.querySelectorAll('[data-view]').forEach(view=>{
     view.classList.toggle('active', view.dataset.view === target);
@@ -996,6 +1079,7 @@ document.querySelectorAll('[data-view-target]').forEach(button=>{
 
 renderPresetOptions();
 setupMobileSteppers();
+setupDragPoints();
 resize();
 updateStudio();
 </script>
