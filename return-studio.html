@@ -57,7 +57,7 @@ table.check th{color:var(--muted);font-weight:800}
 <body translate="no" class="notranslate">
 <header>
   <h1>桌球回擊攝影棚</h1>
-  <div class="badge">對齊 Game 4 物理引擎 v1</div>
+  <div class="badge">對齊 Game 4 物理引擎 v2（paddle restitution 模型）</div>
 </header>
 
 <main class="stage">
@@ -106,29 +106,18 @@ table.check th{color:var(--muted);font-weight:800}
 
     <div class="section">
       <h2>技術參數（會即時重新模擬）</h2>
-      <div class="grid two">
-        <div class="field"><label>目標 X</label><input id="targetX" type="number" step="0.01"></div>
-        <div class="field"><label>目標 Z</label><input id="targetZ" type="number" step="0.01"></div>
-      </div>
-      <div class="grid" style="margin-top:8px">
-        <div class="field"><label>速度 speed</label><input id="speed" type="number" step="0.1"></div>
-        <div class="field"><label>垂直初速 vy</label><input id="vy" type="number" step="0.01"></div>
-        <div class="field"><label>水平縮放 hzScale</label><input id="hzScale" type="number" step="0.01"></div>
+      <div class="hint" style="margin-bottom:6px">finalVel = incomingVel × PADDLE_RESTITUTION(-0.9) + techniqueVel。incomingVel 是球到達擊球點當下的真實速度（來自發球模擬），techniqueVel 是固定揮拍向量，只做小幅力量/方向微調。</div>
+      <div class="grid">
+        <div class="field"><label>techniqueVel X</label><input id="techVelX" type="number" step="0.05"></div>
+        <div class="field"><label>techniqueVel Y（力量/弧度）</label><input id="techVelY" type="number" step="0.05"></div>
+        <div class="field"><label>techniqueVel Z（前後）</label><input id="techVelZ" type="number" step="0.05"></div>
       </div>
       <div class="grid" style="margin-top:8px">
         <div class="field"><label>技術上旋 topspin</label><input id="techTopspin" type="number" step="0.01"></div>
         <div class="field"><label>技術側旋 sidespin</label><input id="techSidespin" type="number" step="0.01"></div>
         <div class="field"><label>落桌加速 bounceBoost</label><input id="bounceBoost" type="number" step="0.01"></div>
       </div>
-      <div class="hint" style="margin-top:6px">side offset（正手 -0.08 / 反手 +0.08）跟 Game 4 一致，會自動套用在目標 X 上，不用手動加。</div>
-    </div>
-
-    <div class="section">
-      <h2>下旋回擊補償（全域，跟 Game 4 RETURN_SPIN_RESPONSE 一致）</h2>
-      <div class="grid two">
-        <div class="field"><label>攻球 attackBackspinDrop</label><input id="attackBackspinDrop" type="number" step="0.01"></div>
-        <div class="field"><label>切球 pushBackspinDrop</label><input id="pushBackspinDrop" type="number" step="0.01"></div>
-      </div>
+      <div class="hint" style="margin-top:6px">正手攻球/反手攻球的站位是鎖定的（技術本身就代表站位）；切球/拉球兩邊站位共用同一組 techniqueVel，左右方向由 incomingVel 自然決定，不用手動加 offset。</div>
     </div>
 
     <div class="section">
@@ -154,7 +143,7 @@ table.check th{color:var(--muted);font-weight:800}
     </div>
 
     <div class="section">
-      <h2>匯出（可直接貼回 game4.html 取代 TECHNIQUES / RETURN_SPIN_RESPONSE）</h2>
+      <h2>匯出（可直接貼回 game4.html 取代 TECHNIQUES）</h2>
       <div class="actions">
         <button id="copyBtn" type="button" class="secondary">複製程式碼片段</button>
       </div>
@@ -174,18 +163,18 @@ const MAX_STEPS = 520;
 const MAX_TABLE_BOUNCES = 8;
 const BOUNCE_PHYSICS = {horizontalRestitution:0.98, topspinKick:0.30, sidespinKick:0.22};
 const NET_COLLISION = {depth:0.012, zRestitution:0.16, xDamping:0.55, yDamping:0.35};
-const STORAGE_KEY = 'tt-return-studio-tuning-v1';
+const STORAGE_KEY = 'tt-return-studio-tuning-v2';
+// 回擊公式：finalVel = incomingVel * PADDLE_RESTITUTION + techniqueVel
+const PADDLE_RESTITUTION = -0.9;
 
 const DEFAULT_TECHNIQUES = {
-  forehand_attack: {label:'正手攻球', target:{x:-0.38,z:-0.95}, speed:6, vy:0.95, hzScale:0.75, spin:{topspin:0.15,sidespin:0.05}, bounceBoost:0},
-  backhand_attack: {label:'反手攻球', target:{x:0.28,z:-0.9}, speed:6, vy:0.95, hzScale:0.75, spin:{topspin:0.15,sidespin:-0.05}, bounceBoost:0},
-  push: {label:'切球', target:{x:0.05,z:-0.45}, speed:5.5, vy:0.7, hzScale:0.8, spin:{topspin:-0.8,sidespin:0}, bounceBoost:0},
-  loop: {label:'拉球', target:{x:-0.18,z:-1.05}, speed:7, vy:1.0, hzScale:1.0, spin:{topspin:0.9,sidespin:0}, bounceBoost:0.3}
+  forehand_attack: {label:'正手攻球', techniqueVel:{x:-1.4, y:0.65, z:-2.95}, spin:{topspin:0.15,sidespin:0.05}, bounceBoost:0},
+  backhand_attack: {label:'反手攻球', techniqueVel:{x:-0.2, y:1.05, z:-1.45}, spin:{topspin:0.15,sidespin:-0.05}, bounceBoost:0},
+  push: {label:'切球', techniqueVel:{x:-0.6, y:1.18, z:-0.65}, spin:{topspin:-0.8,sidespin:0}, bounceBoost:0},
+  loop: {label:'拉球', techniqueVel:{x:-0.6, y:1.0, z:-1.65}, spin:{topspin:0.9,sidespin:0}, bounceBoost:0.3}
 };
-const DEFAULT_RETURN_SPIN_RESPONSE = {attackBackspinDrop:0.2, pushBackspinDrop:0.03};
 
 let TECHNIQUES = deepClone(DEFAULT_TECHNIQUES);
-let RETURN_SPIN_RESPONSE = deepClone(DEFAULT_RETURN_SPIN_RESPONSE);
 
 function deepClone(obj){ return JSON.parse(JSON.stringify(obj)); }
 function clone(v){ return {x:v.x,y:v.y,z:v.z}; }
@@ -219,6 +208,7 @@ function simulatePath(start, velocity, options){
   const pos = clone(start);
   const vel = clone(velocity);
   const points = [clone(pos)];
+  const velocities = [clone(velocity)];
   const bounces = [];
   let netY = null;
   let netHit = null;
@@ -240,6 +230,7 @@ function simulatePath(start, velocity, options){
         netHit = impact;
         pos.x = impact.x; pos.y = impact.y; pos.z = -incomingZ * NET_COLLISION.depth;
         points.push({...impact});
+        velocities.push(clone(vel));
         vel.x *= NET_COLLISION.xDamping;
         vel.y *= NET_COLLISION.yDamping;
         vel.z = -vel.z * NET_COLLISION.zRestitution;
@@ -256,6 +247,7 @@ function simulatePath(start, velocity, options){
         const bouncePoint = {...impact, index:points.length};
         bounces.push(bouncePoint);
         points.push(clone(pos));
+        velocities.push(clone(vel));
         if(bounces.length > MAX_TABLE_BOUNCES) break;
         applyBounceSpin(vel, spin, bounce);
         if(bounceBoost){
@@ -268,12 +260,14 @@ function simulatePath(start, velocity, options){
       const ratio = (BALL_RADIUS - prev.y) / (pos.y - prev.y || 1);
       groundLanding = {x:prev.x + (pos.x - prev.x) * ratio, y:BALL_RADIUS, z:prev.z + (pos.z - prev.z) * ratio};
       points.push(groundLanding);
+      velocities.push(clone(vel));
       break;
     }
     points.push(clone(pos));
+    velocities.push(clone(vel));
     if(Math.abs(pos.x) > 3 || Math.abs(pos.z) > 4) break;
   }
-  return {points, bounces, netY, netHit, groundLanding, baseVel:clone(velocity)};
+  return {points, velocities, bounces, netY, netHit, groundLanding, baseVel:clone(velocity)};
 }
 // ── 發球解算（跟 game4.html 一致，讓來球跟正式版一樣真實）────────────────────
 function solveBaseVelocity(preset){
@@ -392,36 +386,27 @@ function findHitIndex(path){
   const fallback = path.points.findIndex(p=>p.z > 0.45 && p.y > TABLE.top);
   return fallback >= 0 ? fallback : Math.min(path.points.length - 1, 90);
 }
-// ── 回擊（跟 game4.html 的 makeReturnVelocity / adjustReturnForIncomingSpin 一致）
-function makeReturnVelocity(start, target, tech){
-  const dx = target.x - start.x;
-  const dz = target.z - start.z;
-  const length = Math.hypot(dx, dz) || 1;
-  const horizontalSpeed = (tech.speed ?? 5) * (tech.hzScale ?? 1);
-  return {x:dx/length*horizontalSpeed, y:tech.vy ?? 0.5, z:dz/length*horizontalSpeed};
-}
-function adjustReturnForIncomingSpin(baseVel, incomingTopspin, techniqueKey){
-  const incomingBackspin = Math.max(0, -incomingTopspin);
-  if(!incomingBackspin) return baseVel;
-  const isAttack = techniqueKey === 'forehand_attack' || techniqueKey === 'backhand_attack';
-  const drop = incomingBackspin * (isAttack ? RETURN_SPIN_RESPONSE.attackBackspinDrop : RETURN_SPIN_RESPONSE.pushBackspinDrop);
-  return {...baseVel, y:baseVel.y - drop};
+// ── 回擊（跟 game4.html 的 makeReturnVelocity 一致）
+// finalVel = incomingVel * PADDLE_RESTITUTION + techniqueVel
+function makeReturnVelocity(incomingVel, techniqueVel){
+  return {
+    x: incomingVel.x * PADDLE_RESTITUTION + techniqueVel.x,
+    y: incomingVel.y * PADDLE_RESTITUTION + techniqueVel.y,
+    z: incomingVel.z * PADDLE_RESTITUTION + techniqueVel.z
+  };
 }
 function simulateReturnForPreset(preset, side, techniqueKey){
   const serve = simulateServe(preset);
   const hitIndex = findHitIndex(serve);
   const servePathPoints = serve.points.slice(0, hitIndex + 1);
   const hitPoint = servePathPoints[servePathPoints.length - 1];
+  const hitVel = serve.velocities[hitIndex];
   const tech = TECHNIQUES[techniqueKey];
   const start = {...hitPoint, y:Math.max(hitPoint.y + 0.12, TABLE.top + 0.12)};
   const gravity = preset.solve?.gravity ?? -4.2;
-  const target = {x:tech.target.x, y:TABLE.top, z:tech.target.z};
-  if(side === 'forehand') target.x -= 0.08;
-  if(side === 'backhand') target.x += 0.08;
-  const incomingTopspin = preset.variation?.spin?.topspin ?? 0;
-  const baseVel = adjustReturnForIncomingSpin(makeReturnVelocity(start, target, tech), incomingTopspin, techniqueKey);
+  const baseVel = makeReturnVelocity(hitVel, tech.techniqueVel);
   const result = simulatePath(start, baseVel, {gravity, spin:tech.spin, bounce:0.88, bounceBoost:tech.bounceBoost ?? 0});
-  return {servePathPoints, hitPoint, target, result};
+  return {servePathPoints, hitPoint, hitVel, result};
 }
 function judgeResult(result){
   const firstBounce = result.bounces[0] || null;
@@ -463,34 +448,22 @@ function syncSideLock(){
 }
 function loadTechniqueFields(){
   const tech = TECHNIQUES[currentTechniqueKey()];
-  setValue('targetX', tech.target.x);
-  setValue('targetZ', tech.target.z);
-  setValue('speed', tech.speed);
-  setValue('vy', tech.vy);
-  setValue('hzScale', tech.hzScale);
+  setValue('techVelX', tech.techniqueVel.x);
+  setValue('techVelY', tech.techniqueVel.y);
+  setValue('techVelZ', tech.techniqueVel.z);
   setValue('techTopspin', tech.spin.topspin);
   setValue('techSidespin', tech.spin.sidespin);
   setValue('bounceBoost', tech.bounceBoost ?? 0);
 }
-function loadGlobalFields(){
-  setValue('attackBackspinDrop', RETURN_SPIN_RESPONSE.attackBackspinDrop);
-  setValue('pushBackspinDrop', RETURN_SPIN_RESPONSE.pushBackspinDrop);
-}
 function readTechniqueFieldsIntoState(){
   const key = currentTechniqueKey();
   const tech = TECHNIQUES[key];
-  tech.target.x = num('targetX');
-  tech.target.z = num('targetZ');
-  tech.speed = num('speed');
-  tech.vy = num('vy');
-  tech.hzScale = num('hzScale');
+  tech.techniqueVel.x = num('techVelX');
+  tech.techniqueVel.y = num('techVelY');
+  tech.techniqueVel.z = num('techVelZ');
   tech.spin.topspin = num('techTopspin');
   tech.spin.sidespin = num('techSidespin');
   tech.bounceBoost = num('bounceBoost');
-}
-function readGlobalFieldsIntoState(){
-  RETURN_SPIN_RESPONSE.attackBackspinDrop = num('attackBackspinDrop');
-  RETURN_SPIN_RESPONSE.pushBackspinDrop = num('pushBackspinDrop');
 }
 
 // ── 3D 視圖 ──────────────────────────────────────────────────────────────
@@ -565,15 +538,15 @@ function refresh(){
   const preset = currentPreset();
   const side = currentSide();
   const techniqueKey = currentTechniqueKey();
-  const {servePathPoints, hitPoint, target, result} = simulateReturnForPreset(preset, side, techniqueKey);
+  const {servePathPoints, hitPoint, hitVel, result} = simulateReturnForPreset(preset, side, techniqueKey);
   currentIncoming = servePathPoints;
   currentReturn = result.points.filter(isValidPoint);
+  const landing = result.bounces[0] || hitPoint;
   scenes.forEach((scene,index)=>{
     setLine(incomingLines[index], currentIncoming);
     setLine(returnLines[index], currentReturn);
     markers[index].hit.position.set(hitPoint.x, hitPoint.y, hitPoint.z);
-    markers[index].target.position.set(target.x, TABLE.top, target.z);
-    const landing = result.bounces[0] || target;
+    markers[index].target.position.set(landing.x, TABLE.top, landing.z);
     markers[index].landing.position.set(landing.x, TABLE.top, landing.z);
     const p = currentIncoming[0] || hitPoint;
     balls[index].position.set(p.x, p.y, p.z);
@@ -582,9 +555,9 @@ function refresh(){
   document.getElementById('serveStatus').innerHTML = `
     <div>發球：<strong>${preset.label}</strong>　旋轉：<strong>${(preset.variation?.spin?.topspin ?? 0).toFixed(2)} / ${(preset.variation?.spin?.sidespin ?? 0).toFixed(2)}</strong></div>
     <div>擊球點（依 Game 4 findHitIndex 實際模擬）：<strong>${hitPoint.x.toFixed(2)}, ${hitPoint.z.toFixed(2)}</strong></div>
+    <div>incomingVel：<strong>x=${hitVel.x.toFixed(2)}, y=${hitVel.y.toFixed(2)}, z=${hitVel.z.toFixed(2)}</strong></div>
   `;
   document.getElementById('status').innerHTML = `
-    <div>目標：<strong>${target.x.toFixed(2)}, ${target.z.toFixed(2)}</strong></div>
     <div>過網高度：<strong>${judged.netClearance == null ? '未過網' : judged.netClearance.toFixed(3) + ' m'}</strong></div>
     <div>第一落點：<strong>${judged.firstBounce ? `${judged.firstBounce.x.toFixed(2)}, ${judged.firstBounce.z.toFixed(2)}` : '無'}</strong></div>
     <div>判定：<strong class="${judged.ok ? 'ok' : 'bad'}">${judged.reason}</strong></div>
@@ -642,39 +615,33 @@ function replay(){ stopPlayback(); play(); }
 
 // ── 儲存 / 還原 / 匯出 ──────────────────────────────────────────────────
 function saveTuning(){
-  localStorage.setItem(STORAGE_KEY, JSON.stringify({TECHNIQUES, RETURN_SPIN_RESPONSE}));
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({TECHNIQUES}));
   flashButton('saveBtn');
 }
 function loadTuning(){
   try{
     const raw = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
-    if(raw && raw.TECHNIQUES && raw.RETURN_SPIN_RESPONSE){
+    if(raw && raw.TECHNIQUES){
       TECHNIQUES = raw.TECHNIQUES;
-      RETURN_SPIN_RESPONSE = raw.RETURN_SPIN_RESPONSE;
     }
   }catch(err){ /* ignore */ }
 }
 function restoreDefaults(){
   if(!confirm('重置為目前 game4.html 內建的預設值？（會蓋掉這頁的調整）')) return;
   TECHNIQUES = deepClone(DEFAULT_TECHNIQUES);
-  RETURN_SPIN_RESPONSE = deepClone(DEFAULT_RETURN_SPIN_RESPONSE);
   loadTechniqueFields();
-  loadGlobalFields();
   refresh();
 }
 function formatTechniquesForExport(){
   const lines = Object.entries(TECHNIQUES).map(([key, tech])=>{
     const spinStr = `{topspin:${tech.spin.topspin},sidespin:${tech.spin.sidespin}}`;
     const boostStr = tech.bounceBoost ? `, bounceBoost:${tech.bounceBoost}` : '';
-    return `  ${key}: {label:'${tech.label}', target:{x:${tech.target.x},y:TABLE.top,z:${tech.target.z}}, speed:${tech.speed}, vy:${tech.vy}, hzScale:${tech.hzScale}, spin:${spinStr}${boostStr}},`;
+    return `  ${key}: {label:'${tech.label}', techniqueVel:{x:${tech.techniqueVel.x}, y:${tech.techniqueVel.y}, z:${tech.techniqueVel.z}}, spin:${spinStr}${boostStr}},`;
   });
   return `const TECHNIQUES = {\n${lines.join('\n')}\n};`;
 }
-function formatSpinResponseForExport(){
-  return `const RETURN_SPIN_RESPONSE = {\n  attackBackspinDrop: ${RETURN_SPIN_RESPONSE.attackBackspinDrop},\n  pushBackspinDrop: ${RETURN_SPIN_RESPONSE.pushBackspinDrop}\n};`;
-}
 function updateExport(){
-  document.getElementById('exportText').value = `${formatSpinResponseForExport()}\n\n${formatTechniquesForExport()}`;
+  document.getElementById('exportText').value = formatTechniquesForExport();
 }
 async function copyExport(){
   const text = document.getElementById('exportText').value;
@@ -705,15 +672,9 @@ document.getElementById('techniqueKey').addEventListener('change', ()=>{
   loadTechniqueFields();
   refresh();
 });
-['targetX','targetZ','speed','vy','hzScale','techTopspin','techSidespin','bounceBoost'].forEach(id=>{
+['techVelX','techVelY','techVelZ','techTopspin','techSidespin','bounceBoost'].forEach(id=>{
   document.getElementById(id).addEventListener('input', ()=>{
     readTechniqueFieldsIntoState();
-    refresh();
-  });
-});
-['attackBackspinDrop','pushBackspinDrop'].forEach(id=>{
-  document.getElementById(id).addEventListener('input', ()=>{
-    readGlobalFieldsIntoState();
     refresh();
   });
 });
@@ -729,7 +690,6 @@ window.addEventListener('resize', resize);
   await loadServePresets();
   syncSideLock();
   loadTechniqueFields();
-  loadGlobalFields();
   resize();
   refresh();
 })();
