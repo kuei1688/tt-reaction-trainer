@@ -165,6 +165,7 @@ const DT = 1 / 120;
 const MAX_STEPS = 520;
 const MAX_TABLE_BOUNCES = 8;
 const BOUNCE_PHYSICS = {horizontalRestitution:0.98, topspinKick:0.30, sidespinKick:0.22};
+const NET_COLLISION = {depth:0.012, zRestitution:0.16, xDamping:0.55, yDamping:0.35};
 const RETURN_SPIN_RESPONSE = {
   attackBackspinDrop: 0.34,
   pushBackspinDrop: 0.05
@@ -369,6 +370,7 @@ function simulatePath(start, velocity, options){
   let firstLanding = null;
   let groundLanding = null;
   let netY = null;
+  let netHit = null;
   let crossedNet = false;
   for(let i=0;i<MAX_STEPS;i++){
     const prev = clone(pos);
@@ -379,6 +381,25 @@ function simulatePath(start, velocity, options){
     if(!crossedNet && ((prev.z < 0 && pos.z >= 0) || (prev.z > 0 && pos.z <= 0))){
       const ratio = (0 - prev.z) / (pos.z - prev.z || 1);
       netY = prev.y + (pos.y - prev.y) * ratio;
+      const netTop = TABLE.height + TABLE.net;
+      if(netY < netTop){
+        const incomingZ = Math.sign(vel.z) || Math.sign(pos.z - prev.z) || 1;
+        const impact = {
+          x:prev.x + (pos.x - prev.x) * ratio,
+          y:netY,
+          z:0,
+          t:i * DT + DT * ratio,
+          index:points.length
+        };
+        netHit = impact;
+        pos.x = impact.x;
+        pos.y = impact.y;
+        pos.z = -incomingZ * NET_COLLISION.depth;
+        points.push({...impact});
+        vel.x *= NET_COLLISION.xDamping;
+        vel.y *= NET_COLLISION.yDamping;
+        vel.z = -vel.z * NET_COLLISION.zRestitution;
+      }
       crossedNet = true;
     }
     const crossedTableTop = prev.y >= TABLE.top && pos.y <= TABLE.top;
@@ -417,7 +438,7 @@ function simulatePath(start, velocity, options){
     points.push(clone(pos));
     if(Math.abs(pos.x) > 3 || Math.abs(pos.z) > 4) break;
   }
-  return {points, bounces, netY, firstLanding, groundLanding, baseVel:clone(velocity)};
+  return {points, bounces, netY, netHit, firstLanding, groundLanding, baseVel:clone(velocity)};
 }
 function solveBaseVelocity(preset){
   const targetMode = preset.solve?.targetMode || preset.solve?.target;
