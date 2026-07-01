@@ -71,7 +71,7 @@ button:disabled{opacity:.45;cursor:not-allowed}
   <h1>Game 4 最小版</h1>
   <div style="display:flex;gap:10px;align-items:center">
     <div class="badge">Serve → Choice → Return</div>
-    <div style="font-size:11px;color:#555;font-family:monospace" title="build version">v8d2e</div>
+    <div style="font-size:11px;color:#555;font-family:monospace" title="build version">v5f4a</div>
   </div>
 </header>
 <main>
@@ -176,10 +176,15 @@ camera.position.set(0, 1.72, 3.25);
 camera.lookAt(0, 0.801, -0.08);
 
 // ── Camera follow state ────────────────────────────────────────────────────
-const CAM_HOME_POS  = new THREE.Vector3(0, 1.72, 3.25);
-const CAM_LOOK_AT   = new THREE.Vector3(0, TABLE.top + 0.02, -0.08); // 固定不變
-const camPosTarget  = CAM_HOME_POS.clone();
-const CAM_LERP      = 0.025; // 全程統一
+const CAM_HOME_POS   = new THREE.Vector3(0, 1.72, 3.25);
+const CAM_LOOK_AT    = new THREE.Vector3(0, TABLE.top + 0.02, -0.08);
+const camPosTarget   = CAM_HOME_POS.clone();
+const camLookCurrent = CAM_LOOK_AT.clone(); // 目前 lookAt 插值位置
+// 選完正反手後 position 移動的偏移（相對 home）
+const CAM_OFFSET = {
+  forehand: { x: -0.25, y: 0, z: 0.15 },
+  backhand:  { x:  0.20, y: 0, z: 0.10 },
+};
 let camRaf = null;
 
 const table = new THREE.Mesh(
@@ -234,36 +239,40 @@ function setTrajectoryVisibility(){
 }
 // ── Camera follow helpers ──────────────────────────────────────────────────
 function tickCamera(){
-  camera.position.lerp(camPosTarget, CAM_LERP);
-  camera.lookAt(CAM_LOOK_AT); // 始終看桌面中心，不旋轉
+  if(phase === 'serve'){
+    // 階段一：position 不動，lookAt 極小幅跟球
+    camLookCurrent.lerp(ball.position, 0.02);
+    camera.lookAt(camLookCurrent);
+  } else if(phase === 'return'){
+    // 階段二：position 往偏移目標，lookAt 繼續跟球
+    camera.position.lerp(camPosTarget, 0.025);
+    camLookCurrent.lerp(ball.position, 0.025);
+    camera.lookAt(camLookCurrent);
+  } else {
+    // 階段三 / idle：position 回 camPosTarget（已含弧線控制），lookAt 回中心
+    camera.position.lerp(camPosTarget, 0.03);
+    camLookCurrent.lerp(CAM_LOOK_AT, 0.03);
+    camera.lookAt(camLookCurrent);
+  }
 }
 function resetCam(hard){
   camPosTarget.copy(CAM_HOME_POS);
-  if(hard){ camera.position.copy(CAM_HOME_POS); camera.lookAt(CAM_LOOK_AT); }
+  if(hard){
+    camera.position.copy(CAM_HOME_POS);
+    camLookCurrent.copy(CAM_LOOK_AT);
+    camera.lookAt(CAM_LOOK_AT);
+  }
 }
 function startCamReturn(){
   if(camRaf) cancelAnimationFrame(camRaf);
   function loop(){
     tickCamera();
-    if(animation === null) render(); // 球動畫跑時由 animatePath 負責 render
-    const done = camera.position.distanceTo(camPosTarget) < 0.001;
-    camRaf = done ? null : requestAnimationFrame(loop);
+    if(animation === null) render();
+    const posDone  = camera.position.distanceTo(camPosTarget) < 0.002;
+    const lookDone = camLookCurrent.distanceTo(CAM_LOOK_AT) < 0.002;
+    camRaf = (posDone && lookDone) ? null : requestAnimationFrame(loop);
   }
   camRaf = requestAnimationFrame(loop);
-}
-function triggerBodyArc(side){
-  if(side === 'forehand'){
-    // 右移備位 → 左移隨揮 → 歸中（全程同一 lerp factor，只改 position.x）
-    camPosTarget.set(CAM_HOME_POS.x + 0.18, CAM_HOME_POS.y, CAM_HOME_POS.z);
-    startCamReturn();
-    setTimeout(()=>{ camPosTarget.set(CAM_HOME_POS.x - 0.2, CAM_HOME_POS.y, CAM_HOME_POS.z); }, 180);
-    setTimeout(()=>{ resetCam(false); startCamReturn(); }, 460);
-  } else {
-    // 左移穩定 → 歸中
-    camPosTarget.set(CAM_HOME_POS.x - 0.1, CAM_HOME_POS.y, CAM_HOME_POS.z);
-    startCamReturn();
-    setTimeout(()=>{ resetCam(false); startCamReturn(); }, 300);
-  }
 }
 function resize(){
   const rect = canvas.parentElement.getBoundingClientRect();
@@ -467,7 +476,9 @@ function playServe(){
 function chooseReturn(side, techniqueKey){
   if(phase !== 'choose_side' && phase !== 'choose_technique') return;
   selectedSide = side;
-  triggerBodyArc(side);
+  // 階段二：設定 position 偏移目標（tickCamera 在 return phase 會 lerp 過去）
+  const off = CAM_OFFSET[side] || CAM_OFFSET.forehand;
+  camPosTarget.set(CAM_HOME_POS.x + off.x, CAM_HOME_POS.y + off.y, CAM_HOME_POS.z + off.z);
   returnBall(techniqueKey);
 }
 function returnBall(techniqueKey){
@@ -526,9 +537,15 @@ function judgeReturn(result){
   showResult(ok, reason, detail);
   setPhase('result');
   document.getElementById('centerTip').textContent = ok ? '成功，按下一球繼續' : `${reason}，按下一球再試`;
-  // 判定後確保歸位（弧線動畫若還沒跑完，這裡覆蓋掉）
-  resetCam(false);
-  startCamReturn();
+  // 階段三：歸位；正手先略超中軸再回
+  if(selectedSide === 'forehand'){
+    camPosTarget.set(CAM_HOME_POS.x - 0.12, CAM_HOME_POS.y, CAM_HOME_POS.z);
+    startCamReturn();
+    setTimeout(()=>{ resetCam(false); startCamReturn(); }, 200);
+  } else {
+    resetCam(false);
+    startCamReturn();
+  }
 }
 function renderServeButtons(){
   const wrap = document.getElementById('serveList');
