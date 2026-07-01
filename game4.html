@@ -97,7 +97,7 @@ button:disabled{opacity:.45;cursor:not-allowed}
   <h1>Game 4 最小版</h1>
   <div style="display:flex;gap:10px;align-items:center">
     <div class="badge">Serve → Choice → Return</div>
-    <div style="font-size:11px;color:#555;font-family:monospace" title="build version">v5d38</div>
+    <div style="font-size:11px;color:#555;font-family:monospace" title="build version">v6f47</div>
   </div>
 </header>
 <main>
@@ -173,13 +173,13 @@ const RETURN_INPUT = {topspinExpireMs:1200, chargeTimeMs:600, slideThresholdPx:3
 const BOUNCE_PHYSICS = {horizontalRestitution:0.98, topspinKick:0.30, sidespinKick:0.22};
 const NET_COLLISION = {depth:0.012, zRestitution:0.16, xDamping:0.55, yDamping:0.35};
 const RETURN_SPIN_RESPONSE = {
-  attackBackspinDrop: 0.34,
-  pushBackspinDrop: 0.05
+  attackBackspinDrop: 0.2,
+  pushBackspinDrop: 0.03
 };
 const TECHNIQUES = {
-  forehand_attack: {label:'正手攻球', target:{x:-0.38,y:TABLE.top,z:-0.95}, speed:6, vy:0.5, hzScale:0.7, spin:{topspin:0.15,sidespin:0.05}},
-  backhand_attack: {label:'反手攻球', target:{x:0.28,y:TABLE.top,z:-0.9}, speed:6, vy:0.5, hzScale:0.7, spin:{topspin:0.15,sidespin:-0.05}},
-  push: {label:'切球', target:{x:0.05,y:TABLE.top,z:-0.45}, speed:4, vy:0.3, hzScale:0.6, spin:{topspin:-0.8,sidespin:0}},
+  forehand_attack: {label:'正手攻球', target:{x:-0.38,y:TABLE.top,z:-0.95}, speed:6, vy:0.95, hzScale:0.75, spin:{topspin:0.15,sidespin:0.05}},
+  backhand_attack: {label:'反手攻球', target:{x:0.28,y:TABLE.top,z:-0.9}, speed:6, vy:0.95, hzScale:0.75, spin:{topspin:0.15,sidespin:-0.05}},
+  push: {label:'切球', target:{x:0.05,y:TABLE.top,z:-0.45}, speed:5.5, vy:0.7, hzScale:0.8, spin:{topspin:-0.8,sidespin:0}},
   loop: {label:'拉球', target:{x:-0.18,y:TABLE.top,z:-1.05}, speed:7, vy:1.0, hzScale:1.0, spin:{topspin:0.9,sidespin:0}, bounceBoost:0.3}
 };
 let presets = [];
@@ -789,7 +789,7 @@ function playServe(){
     }else if(!missResolved){
       missReturn();
     }
-  }, 9, index=>{
+  }, 13, index=>{
     if(index >= returnAppearIndex) openReturnInput();
     if(index >= returnLandIndex && !pendingReturn) missReturn();
   });
