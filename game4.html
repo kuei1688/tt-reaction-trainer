@@ -71,7 +71,7 @@ button:disabled{opacity:.45;cursor:not-allowed}
   <h1>Game 4 最小版</h1>
   <div style="display:flex;gap:10px;align-items:center">
     <div class="badge">Serve → Choice → Return</div>
-    <div style="font-size:11px;color:#555;font-family:monospace" title="build version">v9a3f</div>
+    <div style="font-size:11px;color:#555;font-family:monospace" title="build version">v4c7b</div>
   </div>
 </header>
 <main>
@@ -171,13 +171,13 @@ const light = new THREE.DirectionalLight(0xffffff, 0.9);
 light.position.set(2,5,3);
 scene.add(light);
 const camera = new THREE.PerspectiveCamera(48, 1, 0.01, 30);
-camera.position.set(0, 1.05, 3.25);
-camera.lookAt(0, 0.801, -0.08);
+camera.position.set(0, 1.45, 3.25);
+camera.lookAt(0, 0.5, 0.3);
 
 // ── Camera follow state ────────────────────────────────────────────────────
-const CAM_HOME_POS    = new THREE.Vector3(0, 1.05, 3.25); // y 全程鎖定 1.05
-const CAM_INTERCEPT_Y = 1.05;
-const CAM_LOOK_AT     = new THREE.Vector3(0, TABLE.top + 0.02, -0.08);
+const CAM_HOME_POS    = new THREE.Vector3(0, 1.45, 3.25);
+const CAM_INTERCEPT_Y = 1.45; // 全程鎖定，犧牲站姿換桌面可視性
+const CAM_LOOK_AT     = new THREE.Vector3(0, 0.5, 0.3); // 壓低俯角，桌面更完整
 const camPosTarget    = CAM_HOME_POS.clone();
 const camLookTarget   = CAM_LOOK_AT.clone();
 const camLookCurrent  = CAM_LOOK_AT.clone();
@@ -242,7 +242,7 @@ function tickCamera(){
     // 對方第一跳離地後（ball.position.z > camTriggerZ）觸發移動
     if(!camBounceTriggered && ball.position.z > camTriggerZ && hitPoint){
       camBounceTriggered = true;
-      camPosTarget.set(hitPoint.x * 0.65, CAM_INTERCEPT_Y, CAM_HOME_POS.z);
+      camPosTarget.set(hitPoint.x, CAM_INTERCEPT_Y, CAM_HOME_POS.z);
     }
     camera.position.lerp(camPosTarget, 0.05);
     // lookAt 只做 x 軸輕微偏移跟球，y/z 鎖定
@@ -505,7 +505,7 @@ function chooseReturn(side, techniqueKey){
   selectedSide = side;
   // 選完後確認/微調目標（攝影機此時應已在移動中）
   if(side === 'backhand'){
-    // 反手：position 對齊落點 x，lookAt 在 tickCamera 裡指向 hitPointVec
+    // 反手：position.x 完全對齊落點 x，讓球出現在畫面正中央
     camPosTarget.set(hitPoint ? hitPoint.x : 0, CAM_INTERCEPT_Y, CAM_HOME_POS.z);
   } else {
     // 正手：往右側移，lookAt 往側面觀察點
