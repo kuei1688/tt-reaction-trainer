@@ -101,7 +101,7 @@ button:disabled{opacity:.45;cursor:not-allowed}
   <h1>Game 4 最小版</h1>
   <div style="display:flex;gap:10px;align-items:center">
     <div class="badge">Serve → Choice → Return</div>
-    <div id="buildVersion" style="font-size:11px;color:#555;font-family:monospace" title="build version">v8h68</div>
+    <div id="buildVersion" style="font-size:11px;color:#555;font-family:monospace" title="build version">-----</div>
   </div>
 </header>
 <main>
@@ -1147,7 +1147,9 @@ document.querySelectorAll('[data-return-technique]').forEach(btn=>{
   btn.addEventListener('pointerup', cancelCharge);
   btn.addEventListener('pointercancel', cancelCharge);
 });
-document.getElementById('buildVersion').textContent = `${BUILD_VERSION}-${Math.random().toString(36).slice(2, 7)}`;
+const buildVersionEl = document.getElementById('buildVersion');
+buildVersionEl.textContent = Math.random().toString(36).slice(2, 7);
+buildVersionEl.title = BUILD_VERSION;
 resize();
 updateScore();
 loadPresets().catch(error=>{
