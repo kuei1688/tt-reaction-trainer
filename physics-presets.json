@@ -2,11 +2,11 @@
   "version": 1,
   "serves": [
     {
-      "id": "backspin_long_backhand",
-      "label": "下旋長球到反手",
+      "id": "backspin_short_backhand",
+      "label": "下旋短球到反手",
       "tags": {
         "spinType": "backspin",
-        "length": "long",
+        "length": "short",
         "placement": "backhand"
       },
       "start": { "x": 0.78, "y": 0.9, "z": -1.52 },
@@ -19,12 +19,12 @@
       }
     },
     {
-      "id": "backspin_short_backhand",
-      "label": "下旋短球到反手",
+      "id": "backspin_short_forehand",
+      "label": "下旋短球到正手",
       "tags": {
         "spinType": "backspin",
         "length": "short",
-        "placement": "backhand"
+        "placement": "forehand"
       },
       "start": { "x": 0.14, "y": 0.9, "z": -1.52 },
       "firstBounce": { "x": 0.25, "y": 0.781, "z": -0.5 },
@@ -36,11 +36,11 @@
       }
     },
     {
-      "id": "sidebackspin_long_backhand",
-      "label": "側下旋長球到反手",
+      "id": "sidebackspin_short_backhand",
+      "label": "側下旋短球到反手",
       "tags": {
         "spinType": "sidebackspin",
-        "length": "long",
+        "length": "short",
         "placement": "backhand"
       },
       "start": { "x": 0.78, "y": 0.9, "z": -1.52 },
@@ -53,12 +53,12 @@
       }
     },
     {
-      "id": "sidebackspin_short_backhand",
-      "label": "側下旋短球到反手",
+      "id": "sidebackspin_short_forehand",
+      "label": "側下旋短球到正手",
       "tags": {
         "spinType": "sidebackspin",
         "length": "short",
-        "placement": "backhand"
+        "placement": "forehand"
       },
       "start": { "x": 0.14, "y": 0.9, "z": -1.52 },
       "firstBounce": { "x": 0.25, "y": 0.781, "z": -0.5 },
