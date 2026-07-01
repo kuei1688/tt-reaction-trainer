@@ -71,7 +71,7 @@ button:disabled{opacity:.45;cursor:not-allowed}
   <h1>Game 4 最小版</h1>
   <div style="display:flex;gap:10px;align-items:center">
     <div class="badge">Serve → Choice → Return</div>
-    <div style="font-size:11px;color:#555;font-family:monospace" title="build version">v6e1d</div>
+    <div style="font-size:11px;color:#555;font-family:monospace" title="build version">v9a3f</div>
   </div>
 </header>
 <main>
@@ -171,19 +171,20 @@ const light = new THREE.DirectionalLight(0xffffff, 0.9);
 light.position.set(2,5,3);
 scene.add(light);
 const camera = new THREE.PerspectiveCamera(48, 1, 0.01, 30);
-camera.position.set(0, 1.72, 3.25);
-// CAM_LOOK_AT 在下方定義，這裡先用相同數值
+camera.position.set(0, 1.05, 3.25);
 camera.lookAt(0, 0.801, -0.08);
 
 // ── Camera follow state ────────────────────────────────────────────────────
-const CAM_HOME_POS    = new THREE.Vector3(0, 1.72, 3.25);
-const CAM_INTERCEPT_Y = 1.05; // 攔截站姿高度
+const CAM_HOME_POS    = new THREE.Vector3(0, 1.05, 3.25); // y 全程鎖定 1.05
+const CAM_INTERCEPT_Y = 1.05;
 const CAM_LOOK_AT     = new THREE.Vector3(0, TABLE.top + 0.02, -0.08);
 const camPosTarget    = CAM_HOME_POS.clone();
 const camLookTarget   = CAM_LOOK_AT.clone();
 const camLookCurrent  = CAM_LOOK_AT.clone();
+const hitPointVec     = new THREE.Vector3(); // 反手 lookAt 目標（預測落點）
 let camRaf = null;
-let camBounceTriggered = false; // 球落我方後是否已觸發移動
+let camBounceTriggered = false; // 對方第一跳離地後是否已觸發
+let camTriggerZ = -TABLE.length; // 觸發門檻 z（對方第一跳 z + margin）
 
 const table = new THREE.Mesh(
   new THREE.BoxGeometry(TABLE.width, 0.04, TABLE.length),
@@ -238,35 +239,34 @@ function setTrajectoryVisibility(){
 // ── Camera follow helpers ──────────────────────────────────────────────────
 function tickCamera(){
   if(phase === 'serve'){
-    // 球落我方桌面（z>0）後才開始觸發移動
-    if(!camBounceTriggered && ball.position.z > 0 && hitPoint){
+    // 對方第一跳離地後（ball.position.z > camTriggerZ）觸發移動
+    if(!camBounceTriggered && ball.position.z > camTriggerZ && hitPoint){
       camBounceTriggered = true;
-      // 攔截點：對齊 hitPoint.x，高度固定站姿
-      camPosTarget.set(hitPoint.x * 0.6, CAM_INTERCEPT_Y, CAM_HOME_POS.z);
+      camPosTarget.set(hitPoint.x * 0.65, CAM_INTERCEPT_Y, CAM_HOME_POS.z);
     }
-    // position lerp（觸發前 camPosTarget = CAM_HOME_POS，不動）
     camera.position.lerp(camPosTarget, 0.05);
-    // lookAt 只做輕微 x 偏移跟著落點方向，y/z 固定
+    // lookAt 只做 x 軸輕微偏移跟球，y/z 鎖定
     const tx = ball.position.x * 0.1;
     camLookCurrent.x += (tx - camLookCurrent.x) * 0.025;
     camLookCurrent.y = CAM_LOOK_AT.y;
     camLookCurrent.z = CAM_LOOK_AT.z;
-    camera.lookAt(camLookCurrent);
   } else if(phase === 'return'){
-    // 選完後微調：正手加側移+旋轉，反手對齊球路
     camera.position.lerp(camPosTarget, 0.04);
     if(selectedSide === 'backhand'){
-      camLookCurrent.lerp(ball.position, 0.03);
+      // 反手：lookAt 指向預測落點，讓球出現在畫面正中央
+      camLookCurrent.lerp(hitPointVec, 0.04);
     } else {
+      // 正手：lookAt 往固定側面觀察點
       camLookCurrent.lerp(camLookTarget, 0.03);
     }
-    camera.lookAt(camLookCurrent);
   } else {
-    // 結果 / idle：歸位
+    // idle / result：歸位
     camera.position.lerp(camPosTarget, 0.03);
     camLookCurrent.lerp(CAM_LOOK_AT, 0.03);
-    camera.lookAt(camLookCurrent);
   }
+  // y 全程鎖定 1.05
+  camera.position.y = CAM_INTERCEPT_Y;
+  camera.lookAt(camLookCurrent);
 }
 function resetCam(hard){
   camBounceTriggered = false;
@@ -474,6 +474,11 @@ function prepareServe(){
   const hitIndex = findHitIndex(serve);
   servePath = serve.points.slice(0, hitIndex + 1);
   hitPoint = servePath[servePath.length - 1];
+  // 觸發門檻：對方桌面第一跳之後（z < 0 的 bounce + margin）
+  const serverBounce = serve.bounces.find(b => b.z < 0);
+  camTriggerZ = serverBounce ? serverBounce.z + 0.12 : -TABLE.length / 2;
+  // 反手 lookAt 用的預測落點 Vector3
+  if(hitPoint) hitPointVec.set(hitPoint.x, hitPoint.y, hitPoint.z);
   updateLine(pathLine, serve.points.slice(0, Math.min(serve.points.length, hitIndex + 36)));
   updateLine(returnLine, []);
   setBall(preset.start);
@@ -498,13 +503,12 @@ function playServe(){
 function chooseReturn(side, techniqueKey){
   if(phase !== 'choose_side' && phase !== 'choose_technique') return;
   selectedSide = side;
-  // 選完後微調（攝影機此時應已在移動中）
+  // 選完後確認/微調目標（攝影機此時應已在移動中）
   if(side === 'backhand'){
-    // 反手：對齊球路正前方，保持站姿高度
-    const bx = hitPoint ? hitPoint.x * 0.65 : 0;
-    camPosTarget.set(bx, CAM_INTERCEPT_Y, CAM_HOME_POS.z);
+    // 反手：position 對齊落點 x，lookAt 在 tickCamera 裡指向 hitPointVec
+    camPosTarget.set(hitPoint ? hitPoint.x : 0, CAM_INTERCEPT_Y, CAM_HOME_POS.z);
   } else {
-    // 正手：往右側移展現側向視角
+    // 正手：往右側移，lookAt 往側面觀察點
     camPosTarget.set(CAM_HOME_POS.x + 0.45, CAM_INTERCEPT_Y, CAM_HOME_POS.z - 0.1);
     camLookTarget.set(-0.35, TABLE.top + 0.05, 0.3);
   }
