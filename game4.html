@@ -71,7 +71,7 @@ button:disabled{opacity:.45;cursor:not-allowed}
   <h1>Game 4 最小版</h1>
   <div style="display:flex;gap:10px;align-items:center">
     <div class="badge">Serve → Choice → Return</div>
-    <div style="font-size:11px;color:#555;font-family:monospace" title="build version">v2b8c</div>
+    <div style="font-size:11px;color:#555;font-family:monospace" title="build version">v6e1d</div>
   </div>
 </header>
 <main>
@@ -176,12 +176,14 @@ camera.position.set(0, 1.72, 3.25);
 camera.lookAt(0, 0.801, -0.08);
 
 // ── Camera follow state ────────────────────────────────────────────────────
-const CAM_HOME_POS   = new THREE.Vector3(0, 1.72, 3.25);
-const CAM_LOOK_AT    = new THREE.Vector3(0, TABLE.top + 0.02, -0.08);
-const camPosTarget   = CAM_HOME_POS.clone();
-const camLookTarget  = CAM_LOOK_AT.clone(); // 正手階段二 lookAt 目標
-const camLookCurrent = CAM_LOOK_AT.clone(); // 目前 lookAt 插值位置
+const CAM_HOME_POS    = new THREE.Vector3(0, 1.72, 3.25);
+const CAM_INTERCEPT_Y = 1.05; // 攔截站姿高度
+const CAM_LOOK_AT     = new THREE.Vector3(0, TABLE.top + 0.02, -0.08);
+const camPosTarget    = CAM_HOME_POS.clone();
+const camLookTarget   = CAM_LOOK_AT.clone();
+const camLookCurrent  = CAM_LOOK_AT.clone();
 let camRaf = null;
+let camBounceTriggered = false; // 球落我方後是否已觸發移動
 
 const table = new THREE.Mesh(
   new THREE.BoxGeometry(TABLE.width, 0.04, TABLE.length),
@@ -236,31 +238,38 @@ function setTrajectoryVisibility(){
 // ── Camera follow helpers ──────────────────────────────────────────────────
 function tickCamera(){
   if(phase === 'serve'){
-    // 階段一：position 不動；lookAt 只做 x 軸輕微偏移（不追 y/z）
-    const tx = ball.position.x * 0.12;
-    camLookCurrent.x += (tx - camLookCurrent.x) * 0.02;
+    // 球落我方桌面（z>0）後才開始觸發移動
+    if(!camBounceTriggered && ball.position.z > 0 && hitPoint){
+      camBounceTriggered = true;
+      // 攔截點：對齊 hitPoint.x，高度固定站姿
+      camPosTarget.set(hitPoint.x * 0.6, CAM_INTERCEPT_Y, CAM_HOME_POS.z);
+    }
+    // position lerp（觸發前 camPosTarget = CAM_HOME_POS，不動）
+    camera.position.lerp(camPosTarget, 0.05);
+    // lookAt 只做輕微 x 偏移跟著落點方向，y/z 固定
+    const tx = ball.position.x * 0.1;
+    camLookCurrent.x += (tx - camLookCurrent.x) * 0.025;
     camLookCurrent.y = CAM_LOOK_AT.y;
     camLookCurrent.z = CAM_LOOK_AT.z;
     camera.lookAt(camLookCurrent);
   } else if(phase === 'return'){
-    // 階段二：position 往目標移
-    camera.position.lerp(camPosTarget, 0.025);
+    // 選完後微調：正手加側移+旋轉，反手對齊球路
+    camera.position.lerp(camPosTarget, 0.04);
     if(selectedSide === 'backhand'){
-      // 反手：lookAt 跟球，讓球路從正面飛來
-      camLookCurrent.lerp(ball.position, 0.025);
+      camLookCurrent.lerp(ball.position, 0.03);
     } else {
-      // 正手：lookAt 往固定側面點（camLookTarget），展現側向視角
-      camLookCurrent.lerp(camLookTarget, 0.025);
+      camLookCurrent.lerp(camLookTarget, 0.03);
     }
     camera.lookAt(camLookCurrent);
   } else {
-    // 階段三 / idle：position 和 lookAt 都歸位
+    // 結果 / idle：歸位
     camera.position.lerp(camPosTarget, 0.03);
     camLookCurrent.lerp(CAM_LOOK_AT, 0.03);
     camera.lookAt(camLookCurrent);
   }
 }
 function resetCam(hard){
+  camBounceTriggered = false;
   camPosTarget.copy(CAM_HOME_POS);
   camLookTarget.copy(CAM_LOOK_AT);
   if(hard){
@@ -489,16 +498,15 @@ function playServe(){
 function chooseReturn(side, techniqueKey){
   if(phase !== 'choose_side' && phase !== 'choose_technique') return;
   selectedSide = side;
-  // 階段二：根據正反手設定不同的攝影機策略
+  // 選完後微調（攝影機此時應已在移動中）
   if(side === 'backhand'){
-    // 反手：position 側移到球路 x 位置，讓球從正前方飛來
+    // 反手：對齊球路正前方，保持站姿高度
     const bx = hitPoint ? hitPoint.x * 0.65 : 0;
-    camPosTarget.set(bx, CAM_HOME_POS.y, CAM_HOME_POS.z);
-    // lookAt 在 tickCamera 裡直接追 ball.position
+    camPosTarget.set(bx, CAM_INTERCEPT_Y, CAM_HOME_POS.z);
   } else {
-    // 正手：position 往右側移 + 旋轉看側面（類側身對球路）
-    camPosTarget.set(CAM_HOME_POS.x + 0.45, CAM_HOME_POS.y, CAM_HOME_POS.z - 0.1);
-    camLookTarget.set(-0.35, TABLE.top + 0.05, 0.3); // 固定側面觀察點
+    // 正手：往右側移展現側向視角
+    camPosTarget.set(CAM_HOME_POS.x + 0.45, CAM_INTERCEPT_Y, CAM_HOME_POS.z - 0.1);
+    camLookTarget.set(-0.35, TABLE.top + 0.05, 0.3);
   }
   returnBall(techniqueKey);
 }
