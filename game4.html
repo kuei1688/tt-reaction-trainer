@@ -222,6 +222,7 @@ let hitVel = null;
 let returnAppearIndex = 0;
 let returnHintStartIndex = 0;
 let returnLandIndex = 0;
+let returnMissIndex = 0;
 let pendingReturn = null;
 let inputWindowOpen = false;
 let missResolved = false;
@@ -690,6 +691,13 @@ function findHitIndex(path){
   const fallback = path.points.findIndex(p=>p.z > 0.45 && p.y > TABLE.top);
   return fallback >= 0 ? fallback : Math.min(path.points.length - 1, 90);
 }
+function findMissIndex(path, startIndex){
+  const points = path.points || [];
+  for(let i = Math.max(0, startIndex); i < points.length; i++){
+    if(points[i]?.y < TABLE.top) return i;
+  }
+  return Math.max(0, points.length - 1);
+}
 function currentPreset(){ return presets[selectedServeIndex]; }
 function timingPhaseFromVelocity(vel){
   if(!vel) return 'unknown';
@@ -851,11 +859,12 @@ function prepareServe(){
   const receiverBounce = serve.bounces.find(b => b.z > 0);
   returnHintStartIndex = Math.min(hitIndex, receiverBounce?.index ?? hitIndex);
   returnLandIndex = hitIndex;
+  returnMissIndex = findMissIndex(serve, returnHintStartIndex);
   const serverBounceForInput = serve.bounces.find(b => b.z < 0);
   returnAppearIndex = Math.min(returnHintStartIndex, (serverBounceForInput?.index ?? 0) + 2);
-  servePath = serve.points.slice(0, hitIndex + 1);
-  serveVelocities = serve.velocities.slice(0, hitIndex + 1);
-  hitPoint = servePath[servePath.length - 1];
+  servePath = serve.points.slice(0, returnMissIndex + 1);
+  serveVelocities = serve.velocities.slice(0, returnMissIndex + 1);
+  hitPoint = serve.points[hitIndex];
   hitVel = serve.velocities[hitIndex];
   // 觸發門檻：對方桌面第一跳之後（z < 0 的 bounce + margin）
   const serverBounce = serve.bounces.find(b => b.z < 0);
@@ -892,10 +901,10 @@ function playServe(){
   }, 13 / GAME_SPEED, (index, point, progress, velocity)=>{
     currentServePoint = point ? clone(point) : null;
     currentServeVel = velocity ? clone(velocity) : null;
-    timingHintActive = index >= returnHintStartIndex && index <= returnLandIndex;
+    timingHintActive = index >= returnHintStartIndex && index <= returnMissIndex;
     updateTimingHint(currentServeVel);
     if(index >= returnAppearIndex) openReturnInput();
-    if(index >= returnLandIndex && !pendingReturn) missReturn();
+    if(point?.y < TABLE.top && !pendingReturn) missReturn();
   }, serveVelocities);
 }
 function chooseReturn(side, techniqueKey){
@@ -923,6 +932,7 @@ function chooseReturn(side, techniqueKey){
     camPosTarget.set(CAM_HOME_POS.x + fOffX, CAM_INTERCEPT_Y, CAM_HOME_POS.z + fOffZ);
     camLookTarget.set(-0.35, TABLE.top + 0.05, 0.3);
   }
+  returnBall(techniqueKey);
   hideReturnInput();
 }
 function attackKeyForSide(side){
