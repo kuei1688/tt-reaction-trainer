@@ -171,6 +171,14 @@ const camera = new THREE.PerspectiveCamera(48, 1, 0.01, 30);
 camera.position.set(0, 1.72, 3.25);
 camera.lookAt(0, TABLE.top + 0.02, -0.08);
 
+// ── Camera follow state ────────────────────────────────────────────────────
+const CAM_HOME_POS  = new THREE.Vector3(0, 1.72, 3.25);
+const CAM_HOME_LOOK = new THREE.Vector3(0, TABLE.top + 0.02, -0.08);
+const camPosTarget   = CAM_HOME_POS.clone();
+const camLookTarget  = CAM_HOME_LOOK.clone();
+const camLookCurrent = CAM_HOME_LOOK.clone();
+let camRaf = null;
+
 const table = new THREE.Mesh(
   new THREE.BoxGeometry(TABLE.width, 0.04, TABLE.length),
   new THREE.MeshLambertMaterial({color:0x14723f})
@@ -220,6 +228,38 @@ function updateLine(line, points){
 function setTrajectoryVisibility(){
   if(pathLine) pathLine.visible = showTrajectories;
   if(returnLine) returnLine.visible = showTrajectories;
+}
+// ── Camera follow helpers ──────────────────────────────────────────────────
+function tickCamera(posFactor, lookFactor){
+  camera.position.lerp(camPosTarget, posFactor || 0.05);
+  camLookCurrent.lerp(camLookTarget, lookFactor || 0.08);
+  camera.lookAt(camLookCurrent);
+}
+function resetCam(hard){
+  camPosTarget.copy(CAM_HOME_POS);
+  camLookTarget.copy(CAM_HOME_LOOK);
+  if(hard){
+    camera.position.copy(CAM_HOME_POS);
+    camLookCurrent.copy(CAM_HOME_LOOK);
+    camera.lookAt(camLookCurrent);
+  }
+}
+function setCamForReturn(side, isLong){
+  const xOff = side === 'forehand' ? -0.3 :  0.3;
+  const zOff = isLong ? 0.3 : 0.6;
+  camPosTarget.set(CAM_HOME_POS.x + xOff, CAM_HOME_POS.y, CAM_HOME_POS.z + zOff);
+  if(hitPoint) camLookTarget.set(hitPoint.x, hitPoint.y + 0.1, hitPoint.z);
+}
+function startCamReturn(){
+  if(camRaf) cancelAnimationFrame(camRaf);
+  function loop(){
+    tickCamera(0.06, 0.07);
+    render();
+    const done = camera.position.distanceTo(camPosTarget) < 0.002
+              && camLookCurrent.distanceTo(camLookTarget) < 0.002;
+    camRaf = done ? null : requestAnimationFrame(loop);
+  }
+  camRaf = requestAnimationFrame(loop);
 }
 function resize(){
   const rect = canvas.parentElement.getBoundingClientRect();
@@ -348,6 +388,8 @@ function animatePath(points, onDone, speedMs){
     const progress = Math.min(1, (now - playStart) / duration);
     const index = Math.min(safePoints.length - 1, Math.floor(progress * (safePoints.length - 1)));
     setBall(safePoints[index]);
+    camLookTarget.set(safePoints[index].x, safePoints[index].y, safePoints[index].z);
+    tickCamera(0.05, 0.08);
     render();
     if(progress < 1){
       animation = requestAnimationFrame(tick);
@@ -386,6 +428,8 @@ function showResult(ok, reason, detail){
   updateScore();
 }
 function prepareServe(){
+  resetCam(false);
+  startCamReturn();
   const preset = currentPreset();
   document.getElementById('serveName').textContent = preset?.label || '未選擇';
   selectedSide = null;
@@ -420,6 +464,9 @@ function playServe(){
 function chooseReturn(side, techniqueKey){
   if(phase !== 'choose_side' && phase !== 'choose_technique') return;
   selectedSide = side;
+  const isLong = currentPreset()?.tags?.length !== 'short';
+  setCamForReturn(side, isLong);
+  startCamReturn();
   returnBall(techniqueKey);
 }
 function returnBall(techniqueKey){
@@ -478,6 +525,16 @@ function judgeReturn(result){
   showResult(ok, reason, detail);
   setPhase('result');
   document.getElementById('centerTip').textContent = ok ? '成功，按下一球繼續' : `${reason}，按下一球再試`;
+  // Camera return：正手先略超中軸再歸位，反手直接歸位
+  if(selectedSide === 'forehand'){
+    camPosTarget.set(-0.1, CAM_HOME_POS.y, CAM_HOME_POS.z);
+    camLookTarget.copy(CAM_HOME_LOOK);
+    startCamReturn();
+    setTimeout(()=>{ resetCam(false); startCamReturn(); }, 220);
+  } else {
+    resetCam(false);
+    startCamReturn();
+  }
 }
 function renderServeButtons(){
   const wrap = document.getElementById('serveList');
