@@ -498,10 +498,10 @@ const scenes = [], cameras = [], renderers = [], incomingLines = [], returnLines
 function initScene(canvas, kind){
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0x05070a);
-  const camera = new THREE.PerspectiveCamera(42, 1, 0.01, 20);
-  if(kind === 'side') camera.position.set(3.4, 1.35, 0.1);
-  else camera.position.set(0, 2.4, 3.45);
-  camera.lookAt(0, TABLE.top, 0);
+  const camera = new THREE.PerspectiveCamera(46, 1, 0.01, 30);
+  if(kind === 'side') camera.position.set(5.2, 1.7, -0.3);
+  else camera.position.set(0, 3.0, 5.0);
+  camera.lookAt(0, 0.85, 0.5);
   const renderer = new THREE.WebGLRenderer({canvas, antialias:true});
   renderer.setPixelRatio(window.devicePixelRatio || 1);
   scene.add(new THREE.HemisphereLight(0xffffff, 0x111722, 1.1));
