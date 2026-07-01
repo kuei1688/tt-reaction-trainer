@@ -478,6 +478,26 @@
   .opt.wrong   { border-color: var(--red);   background: rgba(248,81,73,0.10);  color: var(--red); }
   .opt.reveal  { border-color: var(--green); background: rgba(63,185,80,0.06);  color: var(--green); opacity: 0.55; }
   .opt:disabled { cursor: default; }
+  .tech-img-opt {
+    min-height: 112px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+  .tech-img {
+    width: min(100%, 220px);
+    height: 72px;
+    object-fit: contain;
+    filter: invert(1) brightness(1.55);
+    opacity: 0.95;
+  }
+  .tech-img-label {
+    font-size: 13px;
+    font-weight: 900;
+  }
 
   /* feedback */
   .feedback {
@@ -1456,6 +1476,23 @@ function getDistractors(correct, spinType, landing, length) {
 }
 
 // ═══ STATE ═══
+const TECH_OPTION_IMAGES = {
+  '攻球': 'images/techniques/attack.png',
+  '切球': 'images/techniques/cut.png',
+};
+
+function renderTechOption(label, index) {
+  const img = TECH_OPTION_IMAGES[label];
+  if (!img) {
+    return `<button class="opt" onclick="answerTech(${index})" style="width:100%;">${label}</button>`;
+  }
+  return `
+    <button class="opt tech-img-opt" onclick="answerTech(${index})" style="width:100%;" aria-label="${label}" title="${label}">
+      <img class="tech-img" src="${img}" alt="">
+      <span class="tech-img-label">${label}</span>
+    </button>`;
+}
+
 let queue = [];
 let qIndex = 0;
 let score = 0;
@@ -1725,9 +1762,7 @@ function renderTech(sc, landing) {
     </div>
     <canvas id="${canvasId}" width="260" height="170" style="width:100%;border-radius:6px;background:#000;margin-bottom:8px;"></canvas>
     <div style="display:flex;flex-direction:column;gap:8px;" id="techArea">
-      ${allTechs.map((t, i) =>
-        `<button class="opt" onclick="answerTech(${i})" style="width:100%;">${t}</button>`
-      ).join('')}
+      ${allTechs.map((t, i) => renderTechOption(t, i)).join('')}
     </div>
   `;
 
