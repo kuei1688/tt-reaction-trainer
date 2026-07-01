@@ -58,6 +58,9 @@ button:disabled{opacity:.45;cursor:not-allowed}
 .tech-grid{display:grid;gap:8px}
 .option-row{display:flex;align-items:center;gap:9px;padding:9px 10px;border:1px solid var(--border);border-radius:7px;background:rgba(13,17,23,.45);font-size:13px;font-weight:800;color:var(--text);cursor:pointer}
 .option-row input{width:18px;height:18px;accent-color:var(--blue)}
+.field-row{display:flex;align-items:center;gap:9px;padding:9px 10px;border:1px solid var(--border);border-radius:7px;background:rgba(13,17,23,.45)}
+.field-row label{white-space:nowrap}
+.field-row select{flex:1}
 .meta{font-size:12px;color:var(--muted);line-height:1.55;white-space:pre-wrap}
 .result{font-size:16px;font-weight:900;line-height:1.45}
 .result.ok{color:var(--green)}
@@ -88,6 +91,7 @@ button:disabled{opacity:.45;cursor:not-allowed}
   #controlsSection h2{display:none}
   #controlsSection .list{display:grid;grid-template-columns:1fr 1fr;gap:8px}
   #controlsSection .option-row{grid-column:1 / -1;padding:6px 8px;font-size:12px}
+  #controlsSection .field-row{grid-column:1 / -1;padding:6px 8px;font-size:12px}
   #controlsSection button{min-height:46px;font-size:14px;padding:8px}
 }
 </style>
@@ -97,7 +101,7 @@ button:disabled{opacity:.45;cursor:not-allowed}
   <h1>Game 4 最小版</h1>
   <div style="display:flex;gap:10px;align-items:center">
     <div class="badge">Serve → Choice → Return</div>
-    <div style="font-size:11px;color:#555;font-family:monospace" title="build version">v7g59</div>
+    <div style="font-size:11px;color:#555;font-family:monospace" title="build version">v8h63</div>
   </div>
 </header>
 <main>
@@ -151,6 +155,17 @@ button:disabled{opacity:.45;cursor:not-allowed}
           <input id="trajectoryToggle" type="checkbox">
           <span>顯示軌跡</span>
         </label>
+        <div class="field-row" id="speedRow">
+          <label for="speedControl" style="font-size:12px;font-weight:800;color:var(--muted)">遊戲速度</label>
+          <select id="speedControl">
+            <option value="0.25">0.25x（很慢，測試回擊用）</option>
+            <option value="0.5">0.5x（慢）</option>
+            <option value="0.75">0.75x</option>
+            <option value="1" selected>1x（正常）</option>
+            <option value="1.5">1.5x（快）</option>
+            <option value="2">2x（很快）</option>
+          </select>
+        </div>
       </div>
     </div>
     <div class="section">
@@ -202,6 +217,7 @@ let loopExpireTimer = null;
 let chargeState = null;
 let score = {ok:0, fail:0};
 let showTrajectories = false;
+let GAME_SPEED = 1; // 動畫播放速度倍率，只影響球的播放節奏，不影響物理／落點
 
 const canvas = document.getElementById('scene');
 const renderer = new THREE.WebGLRenderer({canvas, antialias:true});
@@ -795,7 +811,7 @@ function playServe(){
     }else if(!missResolved){
       missReturn();
     }
-  }, 13, index=>{
+  }, 13 / GAME_SPEED, index=>{
     if(index >= returnAppearIndex) openReturnInput();
     if(index >= returnLandIndex && !pendingReturn) missReturn();
   });
@@ -911,7 +927,7 @@ function returnBall(techniqueKey){
     setPhase('result');
     return;
   }
-  animatePath(returnPath, ()=>judgeReturn(result), 7);
+  animatePath(returnPath, ()=>judgeReturn(result), 7 / GAME_SPEED);
 }
 function makeReturnVelocity(incomingVel, techniqueVel){
   return {
@@ -988,6 +1004,9 @@ document.getElementById('trajectoryToggle').addEventListener('change', event=>{
   showTrajectories = event.target.checked;
   setTrajectoryVisibility();
   render();
+});
+document.getElementById('speedControl').addEventListener('change', event=>{
+  GAME_SPEED = parseFloat(event.target.value) || 1;
 });
 document.getElementById('nextBtn').addEventListener('click', ()=>{
   selectedServeIndex = (selectedServeIndex + 1) % Math.max(1, presets.length);
