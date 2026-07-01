@@ -27,9 +27,14 @@ canvas{display:block;width:100%;height:100%;touch-action:manipulation}
 .pill.bad{border-color:rgba(255,123,114,.65);color:var(--red)}
 .pill.warn{border-color:rgba(210,153,34,.65);color:var(--yellow)}
 .center-tip{position:absolute;left:50%;bottom:18px;transform:translateX(-50%);background:rgba(13,17,23,.88);border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-weight:800;color:var(--text);text-align:center;min-width:min(520px,calc(100% - 24px))}
-.side-hint{position:absolute;inset:0;display:none;pointer-events:none}
-.side-hint.active{display:grid;grid-template-columns:1fr 1fr}
-.side-hint div{display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:900;color:rgba(240,246,252,.18);border:2px dashed rgba(88,166,255,.22)}
+.action-pad{position:absolute;left:12px;right:12px;bottom:14px;display:none;grid-template-columns:1fr 2fr;gap:10px;pointer-events:none}
+.action-pad.active{display:grid;pointer-events:auto}
+.action-zone{display:grid;grid-template-rows:auto 1fr;gap:8px;min-height:132px;padding:10px;border:1px solid rgba(88,166,255,.38);border-radius:8px;background:rgba(13,17,23,.78);box-shadow:0 12px 32px rgba(0,0,0,.35)}
+.action-zone.forehand{border-color:rgba(63,185,80,.42)}
+.zone-label{font-size:13px;font-weight:900;color:var(--muted)}
+.zone-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;align-content:end}
+.zone-actions button{min-height:78px;font-size:17px}
+.action-zone.backhand .zone-actions{grid-template-columns:1fr}
 aside{border-left:1px solid var(--border);background:var(--surface);min-height:0;overflow:auto}
 .section{padding:12px;border-bottom:1px solid var(--border)}
 h2{font-size:14px;margin:0 0 8px;color:var(--yellow)}
@@ -52,6 +57,10 @@ button:disabled{opacity:.45;cursor:not-allowed}
   main{grid-template-columns:1fr;grid-template-rows:58vh auto}
   aside{border-left:0;border-top:1px solid var(--border)}
   h1{font-size:18px}
+  .center-tip{bottom:10px;min-width:calc(100% - 20px);font-size:13px}
+  .action-pad{left:8px;right:8px;bottom:8px;gap:7px}
+  .action-zone{min-height:112px;padding:8px}
+  .zone-actions button{min-height:64px;font-size:15px;padding:8px}
 }
 </style>
 </head>
@@ -73,9 +82,21 @@ button:disabled{opacity:.45;cursor:not-allowed}
         <div class="pill" id="scoreText">成功 0 / 失分 0</div>
       </div>
     </div>
-    <div class="side-hint" id="sideHint">
-      <div>反手</div>
-      <div>正手</div>
+    <div class="action-pad" id="actionPad">
+      <div class="action-zone backhand">
+        <div class="zone-label">反手區 1/3</div>
+        <div class="zone-actions">
+          <button type="button" data-return-side="backhand" data-return-technique="backhand_attack">反手攻球</button>
+          <button type="button" data-return-side="backhand" data-return-technique="push">反手切球</button>
+        </div>
+      </div>
+      <div class="action-zone forehand">
+        <div class="zone-label">正手區 2/3</div>
+        <div class="zone-actions">
+          <button type="button" data-return-side="forehand" data-return-technique="forehand_attack">正手攻球</button>
+          <button type="button" data-return-side="forehand" data-return-technique="push">正手切球</button>
+        </div>
+      </div>
     </div>
     <div class="center-tip" id="centerTip">讀取 physics-presets.json...</div>
   </section>
@@ -86,12 +107,7 @@ button:disabled{opacity:.45;cursor:not-allowed}
     </div>
     <div class="section">
       <h2>回擊技術</h2>
-      <div class="tech-grid">
-        <button id="forehandAttackBtn" data-technique="forehand_attack" disabled>正手攻球</button>
-        <button id="backhandAttackBtn" data-technique="backhand_attack" disabled>反手攻球</button>
-        <button id="pushBtn" data-technique="push" disabled>切球</button>
-      </div>
-      <div class="small" style="margin-top:8px">先點畫面左半邊/右半邊選反手或正手，再選技術。</div>
+      <div class="small">球停在可回擊點時，直接用畫面下方的分區按鈕回擊。左側 1/3 是反手區，右側 2/3 是正手區。</div>
     </div>
     <div class="section">
       <h2>操作</h2>
@@ -332,14 +348,15 @@ function setPhase(next){
   document.getElementById('phaseText').textContent = {
     idle:'準備',
     serve:'看球',
-    choose_side:'選正反手',
-    choose_technique:'選技術',
+    choose_side:'選回擊',
+    choose_technique:'選回擊',
     return:'回擊中',
     result:'結果'
   }[next] || next;
-  document.getElementById('sideHint').classList.toggle('active', next === 'choose_side');
-  const enableTech = next === 'choose_technique';
-  document.querySelectorAll('[data-technique]').forEach(btn=>btn.disabled = !enableTech);
+  const enableReturn = next === 'choose_side' || next === 'choose_technique';
+  document.getElementById('actionPad').classList.toggle('active', enableReturn);
+  document.getElementById('centerTip').style.display = enableReturn ? 'none' : '';
+  document.querySelectorAll('[data-return-technique]').forEach(btn=>btn.disabled = !enableReturn);
 }
 function updateScore(){
   document.getElementById('scoreText').textContent = `成功 ${score.ok} / 失分 ${score.fail}`;
@@ -359,7 +376,7 @@ function prepareServe(){
   selectedSide = null;
   selectedTechnique = null;
   document.getElementById('choiceText').textContent = '尚未選擇';
-  document.querySelectorAll('[data-technique]').forEach(btn=>btn.classList.remove('active'));
+  document.querySelectorAll('[data-return-technique]').forEach(btn=>btn.classList.remove('active'));
   const serve = simulateServe(preset);
   const hitIndex = findHitIndex(serve);
   servePath = serve.points.slice(0, hitIndex + 1);
@@ -380,21 +397,20 @@ function playServe(){
   document.getElementById('centerTip').textContent = '看球落桌與彈起';
   animatePath(servePath, ()=>{
     setPhase('choose_side');
-    document.getElementById('centerTip').textContent = '點畫面左半邊選反手，右半邊選正手';
+    document.getElementById('centerTip').textContent = '用下方分區直接選回擊';
   }, 9);
 }
-function chooseSide(clientX){
-  if(phase !== 'choose_side') return;
-  const rect = canvas.getBoundingClientRect();
-  selectedSide = clientX < rect.left + rect.width / 2 ? 'backhand' : 'forehand';
-  document.getElementById('choiceText').textContent = selectedSide === 'backhand' ? '反手' : '正手';
-  setPhase('choose_technique');
-  document.getElementById('centerTip').textContent = '選一個回擊技術';
+function chooseReturn(side, techniqueKey){
+  if(phase !== 'choose_side' && phase !== 'choose_technique') return;
+  selectedSide = side;
+  returnBall(techniqueKey);
 }
 function returnBall(techniqueKey){
-  if(phase !== 'choose_technique' || !hitPoint) return;
+  if((phase !== 'choose_side' && phase !== 'choose_technique') || !hitPoint || !selectedSide) return;
   selectedTechnique = techniqueKey;
-  document.querySelectorAll('[data-technique]').forEach(btn=>btn.classList.toggle('active', btn.dataset.technique === techniqueKey));
+  document.querySelectorAll('[data-return-technique]').forEach(btn=>{
+    btn.classList.toggle('active', btn.dataset.returnTechnique === techniqueKey && btn.dataset.returnSide === selectedSide);
+  });
   const tech = TECHNIQUES[techniqueKey];
   if(!tech){
     showResult(false, '找不到回擊技術', `技術代碼：${techniqueKey}`);
@@ -469,7 +485,6 @@ async function loadPresets(){
   renderServeButtons();
   prepareServe();
 }
-canvas.addEventListener('click', event=>chooseSide(event.clientX));
 document.getElementById('playBtn').addEventListener('click', playServe);
 document.getElementById('nextBtn').addEventListener('click', ()=>{
   selectedServeIndex = (selectedServeIndex + 1) % Math.max(1, presets.length);
@@ -477,8 +492,9 @@ document.getElementById('nextBtn').addEventListener('click', ()=>{
   prepareServe();
   playServe();
 });
-document.querySelectorAll('[data-technique]').forEach(btn=>{
-  btn.addEventListener('click', ()=>returnBall(btn.dataset.technique));
+document.querySelectorAll('[data-return-technique]').forEach(btn=>{
+  btn.disabled = true;
+  btn.addEventListener('click', ()=>chooseReturn(btn.dataset.returnSide, btn.dataset.returnTechnique));
 });
 resize();
 updateScore();
