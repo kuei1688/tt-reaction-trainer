@@ -166,6 +166,14 @@ button:disabled{opacity:.45;cursor:not-allowed}
             <option value="2">2x（很快）</option>
           </select>
         </div>
+        <div class="field-row" id="difficultyRow">
+          <label for="difficultyControl" style="font-size:12px;font-weight:800;color:var(--muted)">難度</label>
+          <select id="difficultyControl">
+            <option value="beginner" selected>beginner（全提示）</option>
+            <option value="practice">practice（只閃最高點）</option>
+            <option value="match">match（關閉提示）</option>
+          </select>
+        </div>
       </div>
     </div>
     <div class="section">
@@ -185,6 +193,8 @@ const DT = 1 / 120;
 const MAX_STEPS = 520;
 const MAX_TABLE_BOUNCES = 8;
 const RETURN_INPUT = {topspinExpireMs:1200, chargeTimeMs:600, slideThresholdPx:30};
+const BALL_COLORS = {default:0xffd84d, rising:0x4488ff, sideRising:0x66bbff, apex:0xffffff, falling:0xef9f27};
+const TIMING_HINT = {threshold:0.05, flashMs:100, sideRisingHoldMs:220};
 const BOUNCE_PHYSICS = {horizontalRestitution:0.98, topspinKick:0.30, sidespinKick:0.22};
 const NET_COLLISION = {depth:0.012, zRestitution:0.16, xDamping:0.55, yDamping:0.35};
 // 回擊公式：finalVel = incomingVel * PADDLE_RESTITUTION + techniqueVel
@@ -202,6 +212,7 @@ let phase = 'loading';
 let selectedSide = null;
 let selectedTechnique = null;
 let servePath = [];
+let serveVelocities = [];
 let returnPath = [];
 let currentPath = [];
 let playStart = 0;
@@ -209,6 +220,7 @@ let animation = null;
 let hitPoint = null;
 let hitVel = null;
 let returnAppearIndex = 0;
+let returnHintStartIndex = 0;
 let returnLandIndex = 0;
 let pendingReturn = null;
 let inputWindowOpen = false;
@@ -218,6 +230,14 @@ let chargeState = null;
 let score = {ok:0, fail:0};
 let showTrajectories = false;
 let GAME_SPEED = 1; // 動畫播放速度倍率，只影響球的播放節奏，不影響物理／落點
+let DIFFICULTY_MODE = 'beginner';
+let currentServePoint = null;
+let currentServeVel = null;
+let currentTimingPhase = 'unknown';
+let timingHintActive = false;
+let lastTimingPhase = 'unknown';
+let timingFlashUntil = 0;
+let timingSideRisingUntil = 0;
 
 const canvas = document.getElementById('scene');
 const renderer = new THREE.WebGLRenderer({canvas, antialias:true});
@@ -272,9 +292,10 @@ const floor = new THREE.Mesh(
 );
 floor.rotation.x = -Math.PI / 2;
 scene.add(floor);
+const ballMaterial = new THREE.MeshLambertMaterial({color:BALL_COLORS.default});
 const ball = new THREE.Mesh(
   new THREE.SphereGeometry(BALL_RENDER_RADIUS, 24, 16),
-  new THREE.MeshLambertMaterial({color:0xffd84d})
+  ballMaterial
 );
 scene.add(ball);
 let pathLine = makeLine([], 0xffd84d, 0.9);
@@ -670,12 +691,59 @@ function findHitIndex(path){
   return fallback >= 0 ? fallback : Math.min(path.points.length - 1, 90);
 }
 function currentPreset(){ return presets[selectedServeIndex]; }
+function timingPhaseFromVelocity(vel){
+  if(!vel) return 'unknown';
+  if(vel.y > TIMING_HINT.threshold) return 'rising';
+  if(vel.y < -TIMING_HINT.threshold) return 'falling';
+  return 'apex';
+}
+function timingLabel(phase){
+  return {rising:'上升', apex:'最高點', falling:'下降'}[phase] || '未知';
+}
+function setBallColor(color){
+  ballMaterial.color.setHex(color);
+}
+function resetBallColor(){
+  setBallColor(BALL_COLORS.default);
+}
+function isSidespinServe(preset = currentPreset()){
+  const spinType = String(preset?.tags?.spinType || preset?.spinType || '').toLowerCase();
+  return spinType.includes('side');
+}
+function updateTimingHint(vel, now = performance.now()){
+  currentTimingPhase = timingPhaseFromVelocity(vel);
+  if(!timingHintActive || DIFFICULTY_MODE === 'match'){
+    resetBallColor();
+    lastTimingPhase = currentTimingPhase;
+    timingSideRisingUntil = 0;
+    return;
+  }
+  if(currentTimingPhase === 'apex' && lastTimingPhase !== 'apex'){
+    timingFlashUntil = now + TIMING_HINT.flashMs;
+  }
+  if(DIFFICULTY_MODE === 'beginner' && isSidespinServe() && currentTimingPhase === 'rising'){
+    timingSideRisingUntil = now + TIMING_HINT.sideRisingHoldMs;
+  }
+  lastTimingPhase = currentTimingPhase;
+  if(now < timingFlashUntil){
+    setBallColor(BALL_COLORS.apex);
+    return;
+  }
+  if(DIFFICULTY_MODE === 'practice'){
+    resetBallColor();
+    return;
+  }
+  if(now < timingSideRisingUntil) setBallColor(BALL_COLORS.sideRising);
+  else if(currentTimingPhase === 'rising') setBallColor(BALL_COLORS.rising);
+  else if(currentTimingPhase === 'falling') setBallColor(BALL_COLORS.falling);
+  else setBallColor(BALL_COLORS.apex);
+}
 function setBall(point){
   if(!isValidPoint(point)) return;
   ball.position.set(point.x, point.y, point.z);
 }
 function render(){ renderer.render(scene, camera); }
-function animatePath(points, onDone, speedMs, onFrame){
+function animatePath(points, onDone, speedMs, onFrame, velocities){
   if(animation) cancelAnimationFrame(animation);
   const safePoints = (points || []).filter(isValidPoint);
   currentPath = safePoints;
@@ -689,7 +757,7 @@ function animatePath(points, onDone, speedMs, onFrame){
   function tick(now){
     const progress = Math.min(1, (now - playStart) / duration);
     const index = Math.min(safePoints.length - 1, Math.floor(progress * (safePoints.length - 1)));
-    onFrame?.(index, safePoints[index], progress);
+    onFrame?.(index, safePoints[index], progress, velocities?.[index] || null);
     setBall(safePoints[index]);
     try{ tickCamera(); }catch(e){}
     render();
@@ -766,17 +834,27 @@ function prepareServe(){
   pendingReturn = null;
   inputWindowOpen = false;
   missResolved = false;
+  timingHintActive = false;
+  currentServePoint = null;
+  currentServeVel = null;
+  currentTimingPhase = 'unknown';
+  lastTimingPhase = 'unknown';
+  timingFlashUntil = 0;
+  timingSideRisingUntil = 0;
   clearTimeout(loopExpireTimer);
   cancelCharge();
+  resetBallColor();
   document.getElementById('choiceText').textContent = '尚未選擇';
   document.querySelectorAll('[data-return-technique]').forEach(btn=>btn.classList.remove('active'));
   const serve = simulateServe(preset);
   const hitIndex = findHitIndex(serve);
   const receiverBounce = serve.bounces.find(b => b.z > 0);
-  returnLandIndex = Math.min(hitIndex, receiverBounce?.index ?? hitIndex);
+  returnHintStartIndex = Math.min(hitIndex, receiverBounce?.index ?? hitIndex);
+  returnLandIndex = hitIndex;
   const serverBounceForInput = serve.bounces.find(b => b.z < 0);
-  returnAppearIndex = Math.min(returnLandIndex, (serverBounceForInput?.index ?? 0) + 2);
+  returnAppearIndex = Math.min(returnHintStartIndex, (serverBounceForInput?.index ?? 0) + 2);
   servePath = serve.points.slice(0, hitIndex + 1);
+  serveVelocities = serve.velocities.slice(0, hitIndex + 1);
   hitPoint = servePath[servePath.length - 1];
   hitVel = serve.velocities[hitIndex];
   // 觸發門檻：對方桌面第一跳之後（z < 0 的 bounce + margin）
@@ -811,16 +889,28 @@ function playServe(){
     }else if(!missResolved){
       missReturn();
     }
-  }, 13 / GAME_SPEED, index=>{
+  }, 13 / GAME_SPEED, (index, point, progress, velocity)=>{
+    currentServePoint = point ? clone(point) : null;
+    currentServeVel = velocity ? clone(velocity) : null;
+    timingHintActive = index >= returnHintStartIndex && index <= returnLandIndex;
+    updateTimingHint(currentServeVel);
     if(index >= returnAppearIndex) openReturnInput();
     if(index >= returnLandIndex && !pendingReturn) missReturn();
-  });
+  }, serveVelocities);
 }
 function chooseReturn(side, techniqueKey){
   if(!inputWindowOpen || pendingReturn || missResolved) return;
   selectedSide = side;
   selectedTechnique = techniqueKey;
-  pendingReturn = {side, techniqueKey};
+  const livePoint = currentServePoint || hitPoint;
+  const liveVel = currentServeVel || hitVel;
+  pendingReturn = {
+    side,
+    techniqueKey,
+    hitPoint:livePoint ? clone(livePoint) : null,
+    hitVel:liveVel ? clone(liveVel) : null,
+    timingPhase:currentTimingPhase
+  };
   document.querySelectorAll('[data-return-technique]').forEach(btn=>{
     btn.classList.toggle('active', btn.dataset.returnTechnique === techniqueKey && btn.dataset.returnSide === selectedSide);
   });
@@ -898,6 +988,10 @@ function moveLoopCharge(event){
 }
 function returnBall(techniqueKey){
   if((phase !== 'choose_side' && phase !== 'choose_technique') || !hitPoint || !selectedSide) return;
+  const contact = pendingReturn || {};
+  const contactPoint = contact.hitPoint || hitPoint;
+  const contactVel = contact.hitVel || hitVel;
+  const contactPhase = contact.timingPhase || timingPhaseFromVelocity(contactVel);
   selectedTechnique = techniqueKey;
   document.querySelectorAll('[data-return-technique]').forEach(btn=>{
     btn.classList.toggle('active', btn.dataset.returnTechnique === techniqueKey && btn.dataset.returnSide === selectedSide);
@@ -908,9 +1002,9 @@ function returnBall(techniqueKey){
     setPhase('result');
     return;
   }
-  const start = {...hitPoint, y:Math.max(hitPoint.y + 0.12, TABLE.top + 0.12)};
+  const start = {...contactPoint, y:Math.max(contactPoint.y + 0.12, TABLE.top + 0.12)};
   const gravity = currentPreset().solve?.gravity ?? -4.2;
-  const baseVel = makeReturnVelocity(hitVel, tech.techniqueVel);
+  const baseVel = makeReturnVelocity(contactVel, tech.techniqueVel);
   const result = simulatePath(start, baseVel, {
     gravity,
     spin:tech.spin,
@@ -919,6 +1013,8 @@ function returnBall(techniqueKey){
   });
   returnPath = result.points.filter(isValidPoint);
   updateLine(returnLine, returnPath);
+  timingHintActive = false;
+  resetBallColor();
   setPhase('return');
   document.getElementById('choiceText').textContent = `${selectedSide === 'forehand' ? '正手' : '反手'} / ${tech.label}`;
   document.getElementById('centerTip').textContent = '回球飛出';
@@ -927,7 +1023,7 @@ function returnBall(techniqueKey){
     setPhase('result');
     return;
   }
-  animatePath(returnPath, ()=>judgeReturn(result), 7 / GAME_SPEED);
+  animatePath(returnPath, ()=>judgeReturn(result, contactPhase), 7 / GAME_SPEED);
 }
 function makeReturnVelocity(incomingVel, techniqueVel){
   return {
@@ -936,7 +1032,7 @@ function makeReturnVelocity(incomingVel, techniqueVel){
     z: incomingVel.z * PADDLE_RESTITUTION + techniqueVel.z
   };
 }
-function judgeReturn(result){
+function judgeReturn(result, contactPhase){
   const firstBounce = result.bounces[0] || null;
   const netClearance = result.netY == null ? null : result.netY - (TABLE.height + TABLE.net);
   let ok = false;
@@ -952,6 +1048,7 @@ function judgeReturn(result){
   const detail = [
     `第一落點：${firstBounce ? `${firstBounce.x.toFixed(2)}, ${firstBounce.z.toFixed(2)}` : '無'}`,
     `過網高度：${netClearance == null ? '未測到' : netClearance.toFixed(3) + ' m'}`,
+    `擊球時機：${timingLabel(contactPhase)}`,
     `發球：${currentPreset().label}`
   ].join('\n');
   showResult(ok, reason, detail);
@@ -1007,6 +1104,10 @@ document.getElementById('trajectoryToggle').addEventListener('change', event=>{
 });
 document.getElementById('speedControl').addEventListener('change', event=>{
   GAME_SPEED = parseFloat(event.target.value) || 1;
+});
+document.getElementById('difficultyControl').addEventListener('change', event=>{
+  DIFFICULTY_MODE = event.target.value || 'beginner';
+  updateTimingHint(currentServeVel);
 });
 document.getElementById('nextBtn').addEventListener('click', ()=>{
   selectedServeIndex = (selectedServeIndex + 1) % Math.max(1, presets.length);
