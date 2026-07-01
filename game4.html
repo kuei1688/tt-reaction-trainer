@@ -229,6 +229,9 @@ function resize(){
   renderer.render(scene, camera);
 }
 window.addEventListener('resize', resize);
+if(window.ResizeObserver){
+  new ResizeObserver(resize).observe(canvas.parentElement);
+}
 
 function solveVelocity(start, target, time, gravity){
   return {
@@ -402,6 +405,8 @@ function prepareServe(){
 }
 function playServe(){
   if(!presets.length) return;
+  document.activeElement?.blur?.();
+  resize();
   setPhase('serve');
   document.getElementById('resultText').textContent = '球飛來了';
   document.getElementById('resultText').className = 'result';
