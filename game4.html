@@ -35,6 +35,12 @@ canvas{display:block;width:100%;height:100%;touch-action:manipulation}
 .zone-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;align-content:end}
 .zone-actions button{min-height:58px;font-size:16px;background:rgba(33,38,45,.72);box-shadow:0 8px 18px rgba(0,0,0,.22)}
 .action-zone.backhand .zone-actions{grid-template-columns:1fr}
+.zone-actions .technique-button{min-height:68px;padding:6px;background:rgba(13,17,23,.28);border-color:rgba(240,246,252,.18);overflow:hidden}
+.zone-actions .technique-button:hover{background:rgba(13,17,23,.42)}
+.zone-actions .technique-button.active{background:rgba(88,166,255,.18)}
+.technique-button:disabled .technique-icon{opacity:.34;filter:grayscale(.25)}
+.technique-icon{display:block;width:100%;height:58px;object-fit:contain;opacity:.78;filter:drop-shadow(0 7px 10px rgba(0,0,0,.42));transition:opacity .15s ease, transform .15s ease}
+.technique-button:hover .technique-icon,.technique-button.active .technique-icon{opacity:1;transform:scale(1.03)}
 aside{border-left:1px solid var(--border);background:var(--surface);min-height:0;overflow:auto}
 .section{padding:12px;border-bottom:1px solid var(--border)}
 h2{font-size:14px;margin:0 0 8px;color:var(--yellow)}
@@ -64,6 +70,8 @@ button:disabled{opacity:.45;cursor:not-allowed}
   .action-pad{left:8px;right:8px;bottom:8px;gap:7px}
   .action-zone{min-height:96px;padding:7px}
   .zone-actions button{min-height:50px;font-size:14px;padding:7px}
+  .zone-actions .technique-button{min-height:58px;padding:5px}
+  .technique-icon{height:48px}
   #controlsSection{
     position:fixed;
     left:0;right:0;bottom:0;
@@ -106,15 +114,15 @@ button:disabled{opacity:.45;cursor:not-allowed}
       <div class="action-zone backhand">
         <div class="zone-label">反手區 1/3</div>
         <div class="zone-actions">
-          <button type="button" data-return-side="backhand" data-return-technique="backhand_attack">反手攻球</button>
-          <button type="button" data-return-side="backhand" data-return-technique="push">反手切球</button>
+          <button class="technique-button" type="button" data-return-side="backhand" data-return-technique="backhand_attack" title="反手攻球" aria-label="反手攻球"><img class="technique-icon" src="images/techniques/attack.png" alt=""></button>
+          <button class="technique-button" type="button" data-return-side="backhand" data-return-technique="push" title="反手切球" aria-label="反手切球"><img class="technique-icon" src="images/techniques/cut.png" alt=""></button>
         </div>
       </div>
       <div class="action-zone forehand">
         <div class="zone-label">正手區 2/3</div>
         <div class="zone-actions">
-          <button type="button" data-return-side="forehand" data-return-technique="forehand_attack">正手攻球</button>
-          <button type="button" data-return-side="forehand" data-return-technique="push">正手切球</button>
+          <button class="technique-button" type="button" data-return-side="forehand" data-return-technique="forehand_attack" title="正手攻球" aria-label="正手攻球"><img class="technique-icon" src="images/techniques/attack.png" alt=""></button>
+          <button class="technique-button" type="button" data-return-side="forehand" data-return-technique="push" title="正手切球" aria-label="正手切球"><img class="technique-icon" src="images/techniques/cut.png" alt=""></button>
         </div>
       </div>
     </div>
