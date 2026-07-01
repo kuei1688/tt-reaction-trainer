@@ -16,7 +16,7 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,B
 header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;border-bottom:1px solid var(--border);background:#0b1016}
 h1{font-size:20px;margin:0;font-weight:900}
 .badge{font-size:12px;color:var(--yellow);font-weight:800}
-.stage{display:grid;grid-template-columns:1fr 420px;height:calc(100vh - 54px);overflow:hidden}
+.stage{display:grid;grid-template-columns:1fr 440px;height:calc(100vh - 54px);overflow:hidden}
 .views{display:grid;grid-template-rows:minmax(240px,1.08fr) minmax(220px,.92fr);gap:8px;padding:8px;min-height:0}
 .view{position:relative;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;background:#05070a}
 .view-label{position:absolute;left:10px;top:8px;z-index:2;font-size:12px;color:var(--muted);font-weight:800}
@@ -26,13 +26,13 @@ canvas{display:block;width:100%;height:100%}
 .section h2{font-size:12px;margin:0 0 7px;color:var(--yellow)}
 .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
 .grid.two{grid-template-columns:repeat(2,1fr)}
+.grid.four{grid-template-columns:repeat(4,1fr)}
 .field{display:grid;gap:3px}
 label{font-size:9px;color:var(--muted);font-weight:800}
 input,select,textarea,button{font:inherit}
 input,select,textarea{width:100%;background:#080b10;color:var(--text);border:1px solid var(--border);border-radius:7px;padding:5px;font-size:12px}
 input[readonly]{color:var(--yellow);background:#111720}
-input[type=range]{padding:0}
-textarea{min-height:128px;font-family:ui-monospace,Consolas,monospace;font-size:12px;line-height:1.45}
+textarea{min-height:120px;font-family:ui-monospace,Consolas,monospace;font-size:11.5px;line-height:1.45}
 button{border:1px solid var(--blue);background:var(--blue);color:#06111f;border-radius:7px;padding:7px 8px;font-weight:900;cursor:pointer}
 button.secondary{background:var(--surface2);color:var(--text);border-color:var(--border)}
 button.warn{background:rgba(210,153,34,.12);color:var(--yellow);border-color:var(--yellow)}
@@ -41,8 +41,11 @@ button.warn{background:rgba(210,153,34,.12);color:var(--yellow);border-color:var
 .status strong{color:var(--text)}
 .ok{color:var(--green)}
 .bad{color:var(--red)}
-.preset-row{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:end}
 .hint{font-size:10px;color:var(--muted);line-height:1.35}
+table.check{width:100%;border-collapse:collapse;font-size:10.5px}
+table.check th,table.check td{border-bottom:1px solid var(--border);padding:4px 3px;text-align:left}
+table.check th{color:var(--muted);font-weight:800}
+.side-lock{opacity:.5}
 @media (max-width: 900px){
   .stage{grid-template-columns:1fr;height:auto;overflow:visible}
   .panel{border-left:0;border-top:1px solid var(--border);max-height:none}
@@ -54,7 +57,7 @@ button.warn{background:rgba(210,153,34,.12);color:var(--yellow);border-color:var
 <body translate="no" class="notranslate">
 <header>
   <h1>桌球回擊攝影棚</h1>
-  <div class="badge">Game 4 Return Studio v0</div>
+  <div class="badge">對齊 Game 4 物理引擎 v1</div>
 </header>
 
 <main class="stage">
@@ -71,86 +74,60 @@ button.warn{background:rgba(210,153,34,.12);color:var(--yellow);border-color:var
 
   <aside class="panel">
     <div class="section">
-      <h2>來球</h2>
-      <div class="field" style="margin-bottom:8px">
-        <label>使用發球攝影棚暫存 preset</label>
-        <select id="incomingPreset"></select>
+      <h2>發球（讀取 physics-presets.json，跟 Game 4 同一份資料）</h2>
+      <div class="field">
+        <label>選擇發球</label>
+        <select id="servePreset"></select>
       </div>
-      <div class="grid">
-        <div class="field"><label>擊球點 X</label><input id="hitX" type="number" step="0.01" value="-0.18"></div>
-        <div class="field"><label>擊球點 Y</label><input id="hitY" type="number" step="0.01" value="0.92"></div>
-        <div class="field"><label>擊球點 Z</label><input id="hitZ" type="number" step="0.01" value="0.95"></div>
-      </div>
-      <div class="field" style="margin-top:8px">
-        <label>彈跳後擊球時機</label>
-        <input id="hitIndex" type="range" min="0" max="100" step="1" value="78">
-      </div>
-      <div class="field" style="margin-top:8px">
-        <label>時機判讀</label>
-        <input id="hitPhase" readonly value="下降期">
-      </div>
-      <div class="grid" style="margin-top:8px">
-        <div class="field"><label>來球前後旋</label><input id="incomingTopspin" type="number" step="0.05" value="-0.35"></div>
-        <div class="field"><label>來球側旋</label><input id="incomingSidespin" type="number" step="0.05" value="-0.18"></div>
-        <div class="field"><label>來球彈跳</label><input id="incomingBounce" type="number" step="0.01" value="0.95"></div>
-      </div>
+      <div class="status" id="serveStatus" style="margin-top:6px"></div>
     </div>
 
     <div class="section">
-      <h2>回擊設定</h2>
-      <div class="grid two" style="margin-bottom:8px">
+      <h2>回擊選擇</h2>
+      <div class="grid two">
         <div class="field">
-          <label>站位</label>
-          <select id="strokeSide">
+          <label>站位（進攻/切球/拉球可自由選；攻球會鎖定對應站位）</label>
+          <select id="side">
             <option value="backhand">反手</option>
             <option value="forehand">正手</option>
           </select>
         </div>
         <div class="field">
           <label>技術</label>
-          <select id="technique">
-            <option value="drive">攻球</option>
+          <select id="techniqueKey">
+            <option value="forehand_attack">正手攻球</option>
+            <option value="backhand_attack">反手攻球</option>
             <option value="push">切球</option>
-            <option value="topspinLoop">上旋拉球</option>
-            <option value="backspinLoop">下旋拉球</option>
+            <option value="loop">拉球</option>
           </select>
         </div>
       </div>
-      <div class="grid">
-        <div class="field">
-          <label>長短</label>
-          <select id="targetLength">
-            <option value="long">長球</option>
-            <option value="medium">中長</option>
-            <option value="short">短球</option>
-          </select>
-        </div>
-        <div class="field">
-          <label>落點</label>
-          <select id="targetPlacement">
-            <option value="backhand">反手</option>
-            <option value="middle">中路</option>
-            <option value="forehand">正手</option>
-            <option value="wide_forehand">大角正手</option>
-            <option value="wide_backhand">大角反手</option>
-          </select>
-        </div>
-        <div class="field"><label>目標過網高度</label><input id="netClearance" type="number" step="0.01" value="0.16"></div>
+    </div>
+
+    <div class="section">
+      <h2>技術參數（會即時重新模擬）</h2>
+      <div class="grid two">
+        <div class="field"><label>目標 X</label><input id="targetX" type="number" step="0.01"></div>
+        <div class="field"><label>目標 Z</label><input id="targetZ" type="number" step="0.01"></div>
       </div>
       <div class="grid" style="margin-top:8px">
-        <div class="field"><label>速度下限</label><input id="speedMin" type="number" step="0.1" value="3.5"></div>
-        <div class="field"><label>速度上限</label><input id="speedMax" type="number" step="0.1" value="9.0"></div>
-        <div class="field"><label>飛行時間</label><input id="flightTime" type="number" step="0.01" value="0.56"></div>
+        <div class="field"><label>速度 speed</label><input id="speed" type="number" step="0.1"></div>
+        <div class="field"><label>垂直初速 vy</label><input id="vy" type="number" step="0.01"></div>
+        <div class="field"><label>水平縮放 hzScale</label><input id="hzScale" type="number" step="0.01"></div>
       </div>
       <div class="grid" style="margin-top:8px">
-        <div class="field"><label>變因 VX</label><input id="varX" type="number" step="0.01" value="0.00"></div>
-        <div class="field"><label>變因 VY</label><input id="varY" type="number" step="0.01" value="0.00"></div>
-        <div class="field"><label>變因 VZ</label><input id="varZ" type="number" step="0.01" value="0.00"></div>
+        <div class="field"><label>技術上旋 topspin</label><input id="techTopspin" type="number" step="0.01"></div>
+        <div class="field"><label>技術側旋 sidespin</label><input id="techSidespin" type="number" step="0.01"></div>
+        <div class="field"><label>落桌加速 bounceBoost</label><input id="bounceBoost" type="number" step="0.01"></div>
       </div>
-      <div class="grid" style="margin-top:8px">
-        <div class="field"><label>技術前後旋</label><input id="techTopspin" readonly value="0.30"></div>
-        <div class="field"><label>技術側旋</label><input id="techSidespin" readonly value="0.00"></div>
-        <div class="field"><label>重力</label><input id="gravity" type="number" step="0.1" value="-4.2"></div>
+      <div class="hint" style="margin-top:6px">side offset（正手 -0.08 / 反手 +0.08）跟 Game 4 一致，會自動套用在目標 X 上，不用手動加。</div>
+    </div>
+
+    <div class="section">
+      <h2>下旋回擊補償（全域，跟 Game 4 RETURN_SPIN_RESPONSE 一致）</h2>
+      <div class="grid two">
+        <div class="field"><label>攻球 attackBackspinDrop</label><input id="attackBackspinDrop" type="number" step="0.01"></div>
+        <div class="field"><label>切球 pushBackspinDrop</label><input id="pushBackspinDrop" type="number" step="0.01"></div>
       </div>
     </div>
 
@@ -159,385 +136,365 @@ button.warn{background:rgba(210,153,34,.12);color:var(--yellow);border-color:var
       <div class="actions">
         <button id="playBtn" type="button">播放</button>
         <button id="resetBtn" type="button" class="secondary">重播</button>
-        <button id="copyBtn" type="button" class="secondary">複製指令</button>
-        <button id="copyAllBtn" type="button" class="warn">複製全部</button>
+      </div>
+      <div class="actions" style="margin-top:6px">
+        <button id="saveBtn" type="button" class="secondary">儲存修改（本機）</button>
+        <button id="restoreBtn" type="button" class="warn">重置為目前 Game 4 內建值</button>
       </div>
     </div>
 
     <div class="section">
-      <h2>分析</h2>
+      <h2>分析（目前這一顆發球）</h2>
       <div class="status" id="status"></div>
     </div>
 
     <div class="section">
-      <h2>Preset</h2>
-      <div class="preset-row">
-        <div class="field"><label>名稱</label><input id="presetName" value="反手切側下短球"></div>
-        <button id="saveBtn" type="button">儲存</button>
-      </div>
-      <div class="preset-row" style="margin-top:8px">
-        <div class="field"><label>已存回擊參數</label><select id="presetSelect"></select></div>
-        <button id="loadBtn" type="button" class="secondary">載入</button>
-      </div>
-      <div class="actions" style="margin-top:6px">
-        <button id="clearPresetBtn" type="button" class="secondary">清空暫存</button>
-        <button id="refreshServeBtn" type="button" class="secondary">重讀發球</button>
-      </div>
-      <div class="hint" style="margin-top:8px">這頁使用獨立暫存，不會改到發球攝影棚的 preset。</div>
+      <h2>對 3 個真實發球全部測試（同一組技術參數）</h2>
+      <table class="check" id="checkTable"></table>
     </div>
 
     <div class="section">
-      <h2>輸出</h2>
-      <textarea id="exportText" readonly></textarea>
+      <h2>匯出（可直接貼回 game4.html 取代 TECHNIQUES / RETURN_SPIN_RESPONSE）</h2>
+      <div class="actions">
+        <button id="copyBtn" type="button" class="secondary">複製程式碼片段</button>
+      </div>
+      <textarea id="exportText" readonly style="margin-top:6px"></textarea>
     </div>
   </aside>
 </main>
 
 <script src="vendor/three.r128.min.js"></script>
 <script>
-const TABLE = { length: 2.74, width: 1.525, height: 0.76, top: 0.781, net: 0.1525 };
+// ── 完全對齊 game4.html 的物理引擎 ──────────────────────────────────────────
+const TABLE = {length:2.74, width:1.525, height:0.76, top:0.781, net:0.1525};
 const BALL_RADIUS = 0.02;
-const BALL_RENDER_RADIUS = 0.034;
-const RETURN_STORAGE_KEY = 'tt-return-studio-presets-v1';
-const SERVE_STORAGE_KEY = 'tt-physics-studio-presets-v1';
-const PLAY_MIN_DURATION_MS = 3000;
-const BOUNCE_PHYSICS = {
-  horizontalRestitution: 0.98,
-  topspinKick: 0.30,
-  sidespinKick: 0.22
-};
-const ids = ['incomingPreset','hitX','hitY','hitZ','hitIndex','incomingTopspin','incomingSidespin','incomingBounce','strokeSide','technique','targetLength','targetPlacement','netClearance','speedMin','speedMax','flightTime','varX','varY','varZ','gravity','presetName'];
-const TECHNIQUES = {
-  drive: {label:'攻球', topspin:0.3, sidespin:0, time:0.52, speed:[5.5,8.5]},
-  push: {label:'切球', topspin:-0.8, sidespin:0, time:0.72, speed:[3.6,6.2]},
-  topspinLoop: {label:'上旋拉球', topspin:0.9, sidespin:0, time:0.58, speed:[6.2,9.5]},
-  backspinLoop: {label:'下旋拉球', topspin:0.6, sidespin:0, time:0.64, speed:[5.2,8.8]}
-};
-const LABELS = {
-  strokeSide: {backhand:'反手', forehand:'正手'},
-  length: {short:'短球', medium:'中長', long:'長球'},
-  placement: {backhand:'反手', middle:'中路', forehand:'正手', wide_forehand:'大角正手', wide_backhand:'大角反手'}
-};
-let animation = null;
-let currentPath = [];
-let incomingPath = [];
-let incomingHitWindow = [];
-let currentAnalysis = null;
+const BALL_RENDER_RADIUS = 0.03;
+const DT = 1 / 120;
+const MAX_STEPS = 520;
+const MAX_TABLE_BOUNCES = 8;
+const BOUNCE_PHYSICS = {horizontalRestitution:0.98, topspinKick:0.30, sidespinKick:0.22};
+const NET_COLLISION = {depth:0.012, zRestitution:0.16, xDamping:0.55, yDamping:0.35};
+const STORAGE_KEY = 'tt-return-studio-tuning-v1';
 
-function num(id){ return parseFloat(document.getElementById(id).value); }
-function setValue(id, value){ document.getElementById(id).value = value; }
-function clamp(value, min, max){ return Math.max(min, Math.min(max, value)); }
-function addVec(a,b){ return {x:a.x+b.x,y:a.y+b.y,z:a.z+b.z}; }
-function cloneVec(v){ return {x:v.x,y:v.y,z:v.z}; }
-function velocityToTarget(start, target, time, gravity){
+const DEFAULT_TECHNIQUES = {
+  forehand_attack: {label:'正手攻球', target:{x:-0.38,z:-0.95}, speed:6, vy:0.95, hzScale:0.75, spin:{topspin:0.15,sidespin:0.05}, bounceBoost:0},
+  backhand_attack: {label:'反手攻球', target:{x:0.28,z:-0.9}, speed:6, vy:0.95, hzScale:0.75, spin:{topspin:0.15,sidespin:-0.05}, bounceBoost:0},
+  push: {label:'切球', target:{x:0.05,z:-0.45}, speed:5.5, vy:0.7, hzScale:0.8, spin:{topspin:-0.8,sidespin:0}, bounceBoost:0},
+  loop: {label:'拉球', target:{x:-0.18,z:-1.05}, speed:7, vy:1.0, hzScale:1.0, spin:{topspin:0.9,sidespin:0}, bounceBoost:0.3}
+};
+const DEFAULT_RETURN_SPIN_RESPONSE = {attackBackspinDrop:0.2, pushBackspinDrop:0.03};
+
+let TECHNIQUES = deepClone(DEFAULT_TECHNIQUES);
+let RETURN_SPIN_RESPONSE = deepClone(DEFAULT_RETURN_SPIN_RESPONSE);
+
+function deepClone(obj){ return JSON.parse(JSON.stringify(obj)); }
+function clone(v){ return {x:v.x,y:v.y,z:v.z}; }
+function clamp(value,min,max){ return Math.max(min, Math.min(max, value)); }
+function isValidPoint(point){
+  return point && Number.isFinite(point.x) && Number.isFinite(point.y) && Number.isFinite(point.z);
+}
+function solveVelocity(start, target, time, gravity){
   return {
     x:(target.x - start.x) / time,
     y:(target.y - start.y - 0.5 * gravity * time * time) / time,
     z:(target.z - start.z) / time
   };
 }
-function vecSpeed(v){ return Math.hypot(v.x, v.y, v.z); }
-function scaleVelocityToRange(v, min, max){
-  const speed = vecSpeed(v);
-  if(speed < 0.001) return v;
-  const target = clamp(speed, min, max);
-  return {x:v.x * target / speed, y:v.y * target / speed, z:v.z * target / speed};
-}
 function applyBounceSpin(vel, spin, bounce){
-  const incomingX = vel.x;
-  const incomingZ = vel.z;
-  const speed = Math.hypot(incomingX, incomingZ);
-  const forward = speed > 0.001
-    ? {x:incomingX / speed, z:incomingZ / speed}
-    : {x:0, z:-1};
+  const speed = Math.hypot(vel.x, vel.z);
+  const forward = speed > 0.001 ? {x:vel.x/speed, z:vel.z/speed} : {x:0, z:1};
   const side = {x:-forward.z, z:forward.x};
-  let forwardSpeed = speed * BOUNCE_PHYSICS.horizontalRestitution + spin.topspin * BOUNCE_PHYSICS.topspinKick;
-  const sideSpeed = clamp(spin.sidespin * BOUNCE_PHYSICS.sidespinKick, -speed * 0.75, speed * 0.75);
+  let forwardSpeed = speed * BOUNCE_PHYSICS.horizontalRestitution + (spin.topspin || 0) * BOUNCE_PHYSICS.topspinKick;
+  const sideSpeed = clamp((spin.sidespin || 0) * BOUNCE_PHYSICS.sidespinKick, -speed * 0.75, speed * 0.75);
   forwardSpeed = clamp(forwardSpeed, -speed * 0.55, speed * 1.35);
   vel.x = forward.x * forwardSpeed + side.x * sideSpeed;
   vel.z = forward.z * forwardSpeed + side.z * sideSpeed;
   vel.y = Math.abs(vel.y) * bounce;
 }
-
-function loadJson(key){
-  try{ return JSON.parse(localStorage.getItem(key) || '[]'); }
-  catch(err){ return []; }
-}
-function saveJson(key, list){
-  localStorage.setItem(key, JSON.stringify(list));
-}
-function loadServePresets(){ return loadJson(SERVE_STORAGE_KEY); }
-function loadReturnPresets(){ return loadJson(RETURN_STORAGE_KEY); }
-function saveReturnPresets(list){ saveJson(RETURN_STORAGE_KEY, list); }
-
-function renderIncomingOptions(){
-  const list = loadServePresets();
-  const select = document.getElementById('incomingPreset');
-  select.innerHTML = '<option value="-1">使用預設來球</option>' + list.map((p,i)=>{
-    const length = p.tagLabels?.length || p.tags?.length || '';
-    const placement = p.tagLabels?.placement || p.tags?.placement || '';
-    return `<option value="${i}">${p.label || p.id || `serve-${i+1}`} · ${length} · ${placement}</option>`;
-  }).join('');
-}
-function renderReturnOptions(){
-  const list = loadReturnPresets();
-  const select = document.getElementById('presetSelect');
-  select.innerHTML = list.length
-    ? list.map((p,i)=>`<option value="${i}">${p.label || p.id} · ${p.tagLabels?.technique || ''} · ${p.tagLabels?.placement || ''}</option>`).join('')
-    : '<option value="-1">尚未儲存</option>';
-}
-
-function getSelectedServePreset(){
-  const index = parseInt(document.getElementById('incomingPreset').value, 10);
-  return loadServePresets()[index] || null;
-}
-function defaultServePreset(){
-  return {
-    label:'預設側下短球',
-    start:{x:0.45,y:1.04,z:-1.52},
-    firstBounce:{x:0.18,y:TABLE.top,z:-0.42},
-    secondBounce:{x:-0.18,y:TABLE.top,z:0.88},
-    target:{x:-0.18,y:TABLE.top,z:0.88},
-    solve:{gravity:-4.2},
-    variation:{spin:{topspin:-0.35,sidespin:-0.18}, bounce:0.95}
-  };
-}
-function selectedIncomingState(){
-  const preset = getSelectedServePreset() || defaultServePreset();
-  const second = preset.secondBounce || preset.target || {x:-0.18,y:TABLE.top,z:0.88};
-  return {
-    label:preset.label || '未命名來球',
-    start:preset.start || defaultServePreset().start,
-    firstBounce:preset.firstBounce || {x:0.18,y:TABLE.top,z:-0.42},
-    secondBounce:second,
-    spin:{topspin:num('incomingTopspin'),sidespin:num('incomingSidespin')},
-    bounce:num('incomingBounce'),
-    gravity:preset.solve?.gravity ?? num('gravity')
-  };
-}
-function applyIncomingFieldsFromPreset(){
-  const preset = getSelectedServePreset() || defaultServePreset();
-  setValue('incomingTopspin', preset.variation?.spin?.topspin ?? -0.35);
-  setValue('incomingSidespin', preset.variation?.spin?.sidespin ?? -0.18);
-  setValue('incomingBounce', preset.variation?.bounce ?? 0.95);
-  setValue('gravity', preset.solve?.gravity ?? num('gravity'));
-}
-function buildIncomingPath(incoming){
-  const gravity = incoming.gravity || -4.2;
-  const points = [];
-  const first = incoming.firstBounce;
-  const second = incoming.secondBounce;
-  appendArc(points, incoming.start, first, 0.34, gravity, 72);
-  appendArc(points, first, second, 0.62, gravity, 92);
-  const hitStart = points.length - 1;
-  const after = {x: second.x * 0.55, y: 0.28, z: Math.min(TABLE.length/2 + 0.55, second.z + 0.95)};
-  appendArc(points, second, after, 0.95, gravity, 126);
-  incomingHitWindow = points.slice(hitStart).filter(point=>point.y >= TABLE.top + BALL_RADIUS);
-  return points;
-}
-function appendArc(points, start, target, time, gravity, steps){
-  const v = velocityToTarget(start, target, time, gravity);
-  const skipFirst = points.length > 0 ? 1 : 0;
-  for(let i=skipFirst;i<=steps;i++){
-    const t = time * i / steps;
-    points.push({
-      x:start.x + v.x * t,
-      y:start.y + v.y * t + 0.5 * gravity * t * t,
-      z:start.z + v.z * t
-    });
-  }
-}
-function updateHitFromSlider(){
-  const window = incomingHitWindow.length ? incomingHitWindow : incomingPath;
-  const ratio = num('hitIndex') / 100;
-  const p = window[Math.round((window.length - 1) * ratio)];
-  if(!p) return;
-  setValue('hitX', p.x.toFixed(2));
-  setValue('hitY', Math.max(TABLE.top + BALL_RADIUS, p.y).toFixed(2));
-  setValue('hitZ', p.z.toFixed(2));
-  const phase = ratio < 0.34 ? '上升期' : ratio < 0.62 ? '最高點附近' : '下降期';
-  setValue('hitPhase', phase);
-}
-
-function targetPoint(state){
-  const zMap = {long:-TABLE.length/2 + 0.22, medium:-TABLE.length/2 + TABLE.length * 0.42, short:-TABLE.length/2 + TABLE.length * 0.68};
-  const xMap = {wide_backhand:-TABLE.width/2 + 0.1, backhand:-0.36, middle:0, forehand:0.36, wide_forehand:TABLE.width/2 - 0.1};
-  return {x:xMap[state.target.placement] ?? 0, y:TABLE.top, z:zMap[state.target.length] ?? -0.25};
-}
-function techniqueSpin(key){
-  const tech = TECHNIQUES[key] || TECHNIQUES.drive;
-  return {topspin:tech.topspin, sidespin:tech.sidespin};
-}
-function updateTechniqueDefaults(){
-  const tech = TECHNIQUES[document.getElementById('technique').value] || TECHNIQUES.drive;
-  setValue('techTopspin', tech.topspin.toFixed(2));
-  setValue('techSidespin', tech.sidespin.toFixed(2));
-}
-function readState(){
-  const tech = document.getElementById('technique').value;
-  const incoming = selectedIncomingState();
-  const hitPoint = {x:num('hitX'), y:num('hitY'), z:num('hitZ')};
-  const tags = {
-    strokeSide: document.getElementById('strokeSide').value,
-    technique: tech,
-    length: document.getElementById('targetLength').value,
-    placement: document.getElementById('targetPlacement').value
-  };
-  const tagLabels = {
-    strokeSide: LABELS.strokeSide[tags.strokeSide] || tags.strokeSide,
-    technique: TECHNIQUES[tags.technique]?.label || tags.technique,
-    length: LABELS.length[tags.length] || tags.length,
-    placement: LABELS.placement[tags.placement] || tags.placement
-  };
-  const state = {
-    id: document.getElementById('presetName').value.trim() || 'untitled',
-    label: document.getElementById('presetName').value.trim() || '未命名',
-    type:'return',
-    mode:'return_studio_v0',
-    sourceServeLabel: incoming.label,
-    tags,
-    tagLabels,
-    incoming: {
-      label: incoming.label,
-      spin: {topspin:num('incomingTopspin'), sidespin:num('incomingSidespin')},
-      bounce: num('incomingBounce')
-    },
-    hitPoint,
-    hitTiming: {
-      ratio: num('hitIndex') / 100,
-      phase: document.getElementById('hitPhase').value
-    },
-    target: {
-      length: tags.length,
-      placement: tags.placement,
-      point: null,
-      netClearance: num('netClearance')
-    },
-    solve: {
-      speedMin: num('speedMin'),
-      speedMax: num('speedMax'),
-      flightTime: num('flightTime'),
-      gravity: num('gravity')
-    },
-    variation: {velocity:{x:num('varX'), y:num('varY'), z:num('varZ')}},
-    spin: {
-      incoming: {topspin:num('incomingTopspin'), sidespin:num('incomingSidespin')},
-      technique: techniqueSpin(tech),
-      final: null
-    }
-  };
-  state.target.point = targetPoint(state);
-  state.spin.final = {
-    topspin: state.spin.incoming.topspin + state.spin.technique.topspin,
-    sidespin: state.spin.incoming.sidespin + state.spin.technique.sidespin
-  };
-  return state;
-}
-function applyState(state){
-  document.getElementById('presetName').value = state.label || '未命名';
-  document.getElementById('strokeSide').value = state.tags?.strokeSide || 'backhand';
-  document.getElementById('technique').value = state.tags?.technique || 'drive';
-  document.getElementById('targetLength').value = state.tags?.length || 'long';
-  document.getElementById('targetPlacement').value = state.tags?.placement || 'backhand';
-  setValue('hitX', state.hitPoint?.x ?? -0.18);
-  setValue('hitY', state.hitPoint?.y ?? 0.92);
-  setValue('hitZ', state.hitPoint?.z ?? 0.95);
-  setValue('incomingTopspin', state.incoming?.spin?.topspin ?? -0.35);
-  setValue('incomingSidespin', state.incoming?.spin?.sidespin ?? -0.18);
-  setValue('incomingBounce', state.incoming?.bounce ?? 0.95);
-  setValue('netClearance', state.target?.netClearance ?? 0.16);
-  setValue('speedMin', state.solve?.speedMin ?? 3.5);
-  setValue('speedMax', state.solve?.speedMax ?? 9);
-  setValue('flightTime', state.solve?.flightTime ?? 0.56);
-  setValue('gravity', state.solve?.gravity ?? -4.2);
-  setValue('varX', state.variation?.velocity?.x ?? 0);
-  setValue('varY', state.variation?.velocity?.y ?? 0);
-  setValue('varZ', state.variation?.velocity?.z ?? 0);
-  setValue('hitIndex', Math.round((state.hitTiming?.ratio ?? 0.78) * 100));
-  setValue('hitPhase', state.hitTiming?.phase || '下降期');
-  updateStudio(false);
-}
-
-function solveReturn(state){
-  const base = velocityToTarget(state.hitPoint, state.target.point, state.solve.flightTime, state.solve.gravity);
-  const ranged = scaleVelocityToRange(base, state.solve.speedMin, state.solve.speedMax);
-  return addVec(ranged, state.variation.velocity);
-}
-function simulateReturn(state){
-  const pos = cloneVec(state.hitPoint);
-  const vel = solveReturn(state);
-  const points = [];
-  const landings = [];
+function simulatePath(start, velocity, options){
+  const gravity = options.gravity ?? -4.2;
+  const spin = options.spin || {topspin:0,sidespin:0};
+  const bounce = options.bounce ?? 0.95;
+  const bounceBoost = options.bounceBoost ?? 0;
+  const pos = clone(start);
+  const vel = clone(velocity);
+  const points = [clone(pos)];
+  const bounces = [];
   let netY = null;
+  let netHit = null;
   let crossedNet = false;
-  let ground = null;
-  let bounceCount = 0;
-  for(let i=0;i<520;i++){
-    const dt = 1/120;
-    const prev = cloneVec(pos);
-    vel.y += state.solve.gravity * dt;
-    pos.x += vel.x * dt;
-    pos.y += vel.y * dt;
-    pos.z += vel.z * dt;
-    if(!crossedNet && prev.z > 0 && pos.z <= 0){
+  let groundLanding = null;
+  for(let i=0;i<MAX_STEPS;i++){
+    const prev = clone(pos);
+    vel.y += gravity * DT;
+    pos.x += vel.x * DT;
+    pos.y += vel.y * DT;
+    pos.z += vel.z * DT;
+    if(!crossedNet && ((prev.z < 0 && pos.z >= 0) || (prev.z > 0 && pos.z <= 0))){
       const ratio = (0 - prev.z) / (pos.z - prev.z || 1);
       netY = prev.y + (pos.y - prev.y) * ratio;
+      const netTop = TABLE.height + TABLE.net;
+      if(netY < netTop){
+        const incomingZ = Math.sign(vel.z) || Math.sign(pos.z - prev.z) || 1;
+        const impact = {x:prev.x + (pos.x - prev.x) * ratio, y:netY, z:0, index:points.length};
+        netHit = impact;
+        pos.x = impact.x; pos.y = impact.y; pos.z = -incomingZ * NET_COLLISION.depth;
+        points.push({...impact});
+        vel.x *= NET_COLLISION.xDamping;
+        vel.y *= NET_COLLISION.yDamping;
+        vel.z = -vel.z * NET_COLLISION.zRestitution;
+      }
       crossedNet = true;
     }
-    if(prev.y >= TABLE.top && pos.y <= TABLE.top && vel.y < 0){
+    const crossedTableTop = prev.y >= TABLE.top && pos.y <= TABLE.top;
+    if(crossedTableTop && vel.y < 0){
       const ratio = (TABLE.top - prev.y) / (pos.y - prev.y || 1);
-      const impact = {
-        x: prev.x + (pos.x - prev.x) * ratio,
-        y: TABLE.top,
-        z: prev.z + (pos.z - prev.z) * ratio
-      };
-      if(Math.abs(impact.x) <= TABLE.width/2 && Math.abs(impact.z) <= TABLE.length/2){
-        landings.push({...impact, t:(i+1)*dt});
-        pos.x = impact.x;
-        pos.y = TABLE.top + BALL_RADIUS * 0.35;
-        pos.z = impact.z;
-        applyBounceSpin(vel, state.spin.final, num('incomingBounce'));
-        bounceCount += 1;
+      const impact = {x:prev.x + (pos.x - prev.x) * ratio, y:TABLE.top, z:prev.z + (pos.z - prev.z) * ratio, t:i*DT + DT*ratio};
+      const onTable = Math.abs(impact.x) <= TABLE.width/2 && Math.abs(impact.z) <= TABLE.length/2;
+      if(onTable){
+        pos.x = impact.x; pos.y = TABLE.top; pos.z = impact.z;
+        const bouncePoint = {...impact, index:points.length};
+        bounces.push(bouncePoint);
+        points.push(clone(pos));
+        if(bounces.length > MAX_TABLE_BOUNCES) break;
+        applyBounceSpin(vel, spin, bounce);
+        if(bounceBoost){
+          const forwardZ = Math.sign(vel.z || velocity.z || -1);
+          vel.z += forwardZ * bounceBoost;
+        }
       }
     }
-    if(pos.y <= 0){
-      ground = cloneVec(pos);
-      points.push(cloneVec(pos));
+    if(pos.y <= BALL_RADIUS && prev.y > BALL_RADIUS){
+      const ratio = (BALL_RADIUS - prev.y) / (pos.y - prev.y || 1);
+      groundLanding = {x:prev.x + (pos.x - prev.x) * ratio, y:BALL_RADIUS, z:prev.z + (pos.z - prev.z) * ratio};
+      points.push(groundLanding);
       break;
     }
-    points.push(cloneVec(pos));
-    if(bounceCount >= 1 && pos.z < -TABLE.length/2 - TABLE.length/4) break;
-    if(bounceCount >= 2) break;
+    points.push(clone(pos));
+    if(Math.abs(pos.x) > 3 || Math.abs(pos.z) > 4) break;
   }
-  return {points, landings, netY, ground, velocity:solveReturn(state)};
+  return {points, bounces, netY, netHit, groundLanding, baseVel:clone(velocity)};
 }
-function analyze(state, result){
-  const target = state.target.point;
-  const first = result.landings[0] || null;
-  const landingText = first ? `${first.x.toFixed(2)}, ${first.z.toFixed(2)}` : '未落桌';
-  const targetText = `${target.x.toFixed(2)}, ${target.z.toFixed(2)}`;
-  const onOpponent = first && first.z < 0 && Math.abs(first.x) <= TABLE.width/2 && Math.abs(first.z) <= TABLE.length/2;
-  const netClear = result.netY == null ? null : result.netY - (TABLE.height + TABLE.net);
-  const reason = !first ? '未落桌' : onOpponent ? '有效回擊' : first.z > 0 ? '落在自己桌面' : '出界';
-  const speed = vecSpeed(result.velocity);
-  currentAnalysis = {landing:first, onOpponent, reason, speed, netClearance:netClear};
-  document.getElementById('status').innerHTML = `
-    <div>目標落點：<strong>${targetText}</strong></div>
-    <div>第一落點：<strong>${landingText}</strong></div>
-    <div>過網高度：<strong>${netClear == null ? '未過網' : netClear.toFixed(3) + ' m'}</strong></div>
-    <div>回擊速度：<strong>${speed.toFixed(2)}</strong></div>
-    <div>旋轉疊加：<strong>${state.spin.final.topspin.toFixed(2)}, ${state.spin.final.sidespin.toFixed(2)}</strong></div>
-    <div>判定：<strong class="${onOpponent ? 'ok' : 'bad'}">${reason}</strong></div>
-  `;
+// ── 發球解算（跟 game4.html 一致，讓來球跟正式版一樣真實）────────────────────
+function solveBaseVelocity(preset){
+  const targetMode = preset.solve?.targetMode || preset.solve?.target;
+  if(targetMode === 'serve_bounces') return solveServeBounceVelocity(preset);
+  const time = preset.solve?.timeToFirst ?? preset.solve?.flightTime ?? 0.3;
+  return solveVelocity(preset.start, preset.firstBounce || preset.target, time, preset.solve?.gravity ?? -4.2);
+}
+function solveServeBounceVelocity(preset){
+  const first = preset.firstBounce || preset.target;
+  const profile = getServeLengthProfile(preset);
+  const times = [0.1,0.115,0.13,0.145,0.16,0.18,0.2,0.23,0.26,0.3,0.35,0.42,0.5,0.62,0.76,0.92,1.08,1.2];
+  const yNudges = profile.yNudges;
+  let bestTime = times[0], bestYNudge = 0, best = null, bestScore = Infinity;
+  function consider(time, yNudge){
+    const candidate = makeServeAimCandidate(preset, first, time, yNudge);
+    if(!Number.isFinite(candidate.x) || !Number.isFinite(candidate.y) || !Number.isFinite(candidate.z)) return;
+    if(candidate.y > profile.vyHardMax) return;
+    if(Math.hypot(candidate.x, candidate.z) > profile.speedReject) return;
+    const score = serveBounceScore(preset, candidate);
+    if(score < bestScore){ bestTime=time; bestYNudge=yNudge; best=candidate; bestScore=score; }
+  }
+  for(const time of times) for(const yNudge of yNudges) consider(time, yNudge);
+  if(!best){ best = makeServeAimCandidate(preset, first, findServeBounceTime(preset), 0); bestScore = serveBounceScore(preset, best); }
+  let timeStep = 0.08, yStep = 0.07;
+  for(let round=0; round<28; round++){
+    let improved = false;
+    for(const dir of [-1,1]){ const b=bestScore; consider(clamp(bestTime+timeStep*dir,0.08,1.05), bestYNudge); improved = improved || bestScore<b; }
+    for(const dir of [-1,1]){ const b=bestScore; consider(bestTime, clamp(bestYNudge+yStep*dir,-0.24,0.24)); improved = improved || bestScore<b; }
+    if(!improved){ timeStep*=0.58; yStep*=0.58; }
+  }
+  return best;
+}
+function makeServeAimCandidate(preset, first, time, yNudge){
+  const base = solveVelocity(preset.start, first, time, preset.solve?.gravity ?? -4.2);
+  return {x:base.x, y:base.y + yNudge, z:base.z};
+}
+function getServeLengthProfile(preset){
+  const length = preset.tags?.length || preset.length || 'short';
+  if(length === 'long') return {yNudges:[-0.16,-0.1,-0.05,0,0.05], vySoftMax:0.02, vyHardMax:0.08, speedIdealMin:3.0, speedIdealMax:5.2, speedHardMax:5.7, speedReject:6.4};
+  if(length === 'half_long') return {yNudges:[-0.16,-0.1,-0.05,0,0.08,0.16,0.26], vySoftMax:0.18, vyHardMax:0.35, speedIdealMin:2.0, speedIdealMax:3.6, speedHardMax:4.1, speedReject:4.8};
+  return {yNudges:[-0.12,-0.05,0,0.08,0.16,0.28,0.42,0.58], vySoftMax:0.85, vyHardMax:1.15, speedIdealMin:1.1, speedIdealMax:2.05, speedHardMax:2.25, speedReject:2.65};
+}
+function findServeBounceTime(preset){
+  const first = preset.firstBounce || preset.target;
+  const gravity = preset.solve?.gravity ?? -4.2;
+  const times = [0.16,0.2,0.24,0.28,0.32,0.36,0.42,0.5,0.6,0.72,0.86];
+  let bestTime = times[3];
+  let bestScore = serveBounceScore(preset, solveVelocity(preset.start, first, bestTime, gravity));
+  for(const time of times){
+    const candidate = solveVelocity(preset.start, first, time, gravity);
+    const score = serveBounceScore(preset, candidate);
+    if(score < bestScore){ bestTime = time; bestScore = score; }
+  }
+  return bestTime;
+}
+function getServeBounces(path){
+  const first = path.bounces.find(b=>b.z < 0) || null;
+  const second = path.bounces.find(b=>b.z > 0) || null;
+  return {first, second};
+}
+function serveBounceScore(preset, baseVel){
+  const profile = getServeLengthProfile(preset);
+  const result = simulatePath(preset.start, baseVel, {gravity:preset.solve?.gravity ?? -4.2, spin:preset.variation?.spin, bounce:preset.variation?.bounce});
+  const firstTarget = preset.firstBounce || preset.target;
+  const secondTarget = preset.secondBounce || preset.target;
+  const serveBounces = getServeBounces(result);
+  const first = serveBounces.first, second = serveBounces.second;
+  const firstPoint = first || result.groundLanding || result.points[result.points.length-1] || preset.start;
+  const secondPoint = second || firstPoint;
+  const firstMiss = Math.hypot(firstPoint.x - firstTarget.x, firstPoint.z - firstTarget.z);
+  const secondMiss = Math.hypot(secondPoint.x - secondTarget.x, secondPoint.z - secondTarget.z);
+  const netClearance = result.netY == null ? null : result.netY - (TABLE.height + TABLE.net);
+  const targetNetClearance = preset.solve?.netClearance ?? 0.03;
+  const secondLegTime = first && second ? second.t - first.t : null;
+  const targetSecondLegTime = preset.solve?.secondLegTime ?? preset.solve?.flightTime ?? 0.74;
+  const horizontalSpeed = Math.hypot(baseVel.x, baseVel.z);
+  const upwardOver = Math.max(0, baseVel.y - profile.vySoftMax);
+  const upwardPenalty = upwardOver*55 + upwardOver*upwardOver*260;
+  const speedHigh = Math.max(0, horizontalSpeed - profile.speedIdealMax);
+  const speedHard = Math.max(0, horizontalSpeed - profile.speedHardMax);
+  const speedLow = Math.max(0, profile.speedIdealMin - horizontalSpeed);
+  const horizontalPenalty = speedHigh*5 + speedHigh*speedHigh*32 + speedHard*speedHard*180 + speedLow*speedLow*18;
+  const noFirstPenalty = first ? 0 : 300;
+  const noSecondPenalty = second ? 0 : 70;
+  const wrongSidePenalty = result.bounces.some((b,i)=>i>0 && b.z<0) ? 25 : 0;
+  const netHigh = netClearance == null ? 0 : Math.max(0, netClearance - targetNetClearance);
+  const netLow = netClearance == null ? 0 : Math.max(0, targetNetClearance - netClearance);
+  const timeMiss = secondLegTime == null ? 0 : secondLegTime - targetSecondLegTime;
+  const peakY = result.points.reduce((max,p)=>Math.max(max,p.y), preset.start.y);
+  const naturalPeakLimit = Math.max(preset.start.y + 0.1, TABLE.height + TABLE.net + targetNetClearance + 0.22);
+  const peakPenalty = Math.pow(Math.max(0, peakY - naturalPeakLimit), 2) * 12;
+  const netPenalty = netClearance == null ? 16 : Math.max(0,-netClearance)*220 + netLow*45 + Math.pow(netLow,2)*260 + netHigh*4 + Math.pow(netHigh,2)*24;
+  const timePenalty = secondLegTime == null ? 10 : Math.abs(timeMiss)*0.5 + timeMiss*timeMiss*8;
+  const firstGuardPenalty = Math.pow(Math.max(0, firstMiss-0.025),2)*9000;
+  const secondGuardPenalty = Math.pow(Math.max(0, secondMiss-0.12),2)*70;
+  return firstMiss*80 + firstMiss*firstMiss*420 + firstGuardPenalty + secondMiss*14 + secondMiss*secondMiss*48 + secondGuardPenalty + horizontalPenalty + upwardPenalty + peakPenalty + noFirstPenalty + noSecondPenalty + wrongSidePenalty + netPenalty + timePenalty;
+}
+function simulateServe(preset){
+  const gravity = preset.solve?.gravity ?? -4.2;
+  const velocity = solveBaseVelocity(preset);
+  return simulatePath(preset.start, velocity, {gravity, spin:preset.variation?.spin, bounce:preset.variation?.bounce});
+}
+function findHitIndex(path){
+  const receiverBounceIdx = path.bounces.findIndex(b=>b.z > 0);
+  if(receiverBounceIdx >= 0){
+    const receiverBounce = path.bounces[receiverBounceIdx];
+    const nextBounce = path.bounces[receiverBounceIdx + 1];
+    const hardStop = nextBounce ? nextBounce.index : path.points.length;
+    const start = receiverBounce.index + 1;
+    for(let i = start; i < Math.min(hardStop, path.points.length - 1); i++){
+      if(path.points[i].y > TABLE.top && path.points[i + 1].y < path.points[i].y) return i;
+    }
+    return Math.min(hardStop - 1, start + 15);
+  }
+  const fallback = path.points.findIndex(p=>p.z > 0.45 && p.y > TABLE.top);
+  return fallback >= 0 ? fallback : Math.min(path.points.length - 1, 90);
+}
+// ── 回擊（跟 game4.html 的 makeReturnVelocity / adjustReturnForIncomingSpin 一致）
+function makeReturnVelocity(start, target, tech){
+  const dx = target.x - start.x;
+  const dz = target.z - start.z;
+  const length = Math.hypot(dx, dz) || 1;
+  const horizontalSpeed = (tech.speed ?? 5) * (tech.hzScale ?? 1);
+  return {x:dx/length*horizontalSpeed, y:tech.vy ?? 0.5, z:dz/length*horizontalSpeed};
+}
+function adjustReturnForIncomingSpin(baseVel, incomingTopspin, techniqueKey){
+  const incomingBackspin = Math.max(0, -incomingTopspin);
+  if(!incomingBackspin) return baseVel;
+  const isAttack = techniqueKey === 'forehand_attack' || techniqueKey === 'backhand_attack';
+  const drop = incomingBackspin * (isAttack ? RETURN_SPIN_RESPONSE.attackBackspinDrop : RETURN_SPIN_RESPONSE.pushBackspinDrop);
+  return {...baseVel, y:baseVel.y - drop};
+}
+function simulateReturnForPreset(preset, side, techniqueKey){
+  const serve = simulateServe(preset);
+  const hitIndex = findHitIndex(serve);
+  const servePathPoints = serve.points.slice(0, hitIndex + 1);
+  const hitPoint = servePathPoints[servePathPoints.length - 1];
+  const tech = TECHNIQUES[techniqueKey];
+  const start = {...hitPoint, y:Math.max(hitPoint.y + 0.12, TABLE.top + 0.12)};
+  const gravity = preset.solve?.gravity ?? -4.2;
+  const target = {x:tech.target.x, y:TABLE.top, z:tech.target.z};
+  if(side === 'forehand') target.x -= 0.08;
+  if(side === 'backhand') target.x += 0.08;
+  const incomingTopspin = preset.variation?.spin?.topspin ?? 0;
+  const baseVel = adjustReturnForIncomingSpin(makeReturnVelocity(start, target, tech), incomingTopspin, techniqueKey);
+  const result = simulatePath(start, baseVel, {gravity, spin:tech.spin, bounce:0.88, bounceBoost:tech.bounceBoost ?? 0});
+  return {servePathPoints, hitPoint, target, result};
+}
+function judgeResult(result){
+  const firstBounce = result.bounces[0] || null;
+  const netClearance = result.netY == null ? null : result.netY - (TABLE.height + TABLE.net);
+  let ok = false, reason = '出界';
+  if(netClearance != null && netClearance < 0) reason = '掛網';
+  else if(firstBounce && firstBounce.z > 0) reason = '落在自己桌面';
+  else if(firstBounce && firstBounce.z < 0 && Math.abs(firstBounce.x) <= TABLE.width/2 && Math.abs(firstBounce.z) <= TABLE.length/2){ ok = true; reason = '成功'; }
+  return {ok, reason, firstBounce, netClearance};
 }
 
-const scenes = [];
-const cameras = [];
-const renderers = [];
-const incomingLines = [];
-const returnLines = [];
-const balls = [];
-const markers = [];
+// ── UI 狀態 ──────────────────────────────────────────────────────────────
+let servePresets = [];
+let selectedPresetIndex = 0;
+let animation = null;
+let currentIncoming = [];
+let currentReturn = [];
+
+function num(id){ return parseFloat(document.getElementById(id).value); }
+function setValue(id, value){ document.getElementById(id).value = value; }
+
+async function loadServePresets(){
+  const res = await fetch('physics-presets.json?v=' + Date.now());
+  const data = await res.json();
+  servePresets = (data.serves || []);
+  const select = document.getElementById('servePreset');
+  select.innerHTML = servePresets.map((p,i)=>`<option value="${i}">${p.label}</option>`).join('');
+}
+function currentPreset(){ return servePresets[selectedPresetIndex]; }
+function currentSide(){ return document.getElementById('side').value; }
+function currentTechniqueKey(){ return document.getElementById('techniqueKey').value; }
+
+function syncSideLock(){
+  const key = currentTechniqueKey();
+  const sideEl = document.getElementById('side');
+  if(key === 'forehand_attack'){ sideEl.value = 'forehand'; sideEl.disabled = true; }
+  else if(key === 'backhand_attack'){ sideEl.value = 'backhand'; sideEl.disabled = true; }
+  else { sideEl.disabled = false; }
+}
+function loadTechniqueFields(){
+  const tech = TECHNIQUES[currentTechniqueKey()];
+  setValue('targetX', tech.target.x);
+  setValue('targetZ', tech.target.z);
+  setValue('speed', tech.speed);
+  setValue('vy', tech.vy);
+  setValue('hzScale', tech.hzScale);
+  setValue('techTopspin', tech.spin.topspin);
+  setValue('techSidespin', tech.spin.sidespin);
+  setValue('bounceBoost', tech.bounceBoost ?? 0);
+}
+function loadGlobalFields(){
+  setValue('attackBackspinDrop', RETURN_SPIN_RESPONSE.attackBackspinDrop);
+  setValue('pushBackspinDrop', RETURN_SPIN_RESPONSE.pushBackspinDrop);
+}
+function readTechniqueFieldsIntoState(){
+  const key = currentTechniqueKey();
+  const tech = TECHNIQUES[key];
+  tech.target.x = num('targetX');
+  tech.target.z = num('targetZ');
+  tech.speed = num('speed');
+  tech.vy = num('vy');
+  tech.hzScale = num('hzScale');
+  tech.spin.topspin = num('techTopspin');
+  tech.spin.sidespin = num('techSidespin');
+  tech.bounceBoost = num('bounceBoost');
+}
+function readGlobalFieldsIntoState(){
+  RETURN_SPIN_RESPONSE.attackBackspinDrop = num('attackBackspinDrop');
+  RETURN_SPIN_RESPONSE.pushBackspinDrop = num('pushBackspinDrop');
+}
+
+// ── 3D 視圖 ──────────────────────────────────────────────────────────────
+const scenes = [], cameras = [], renderers = [], incomingLines = [], returnLines = [], balls = [], markers = [];
 function initScene(canvas, kind){
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0x05070a);
@@ -557,19 +514,10 @@ function initScene(canvas, kind){
   scene.add(incoming, outgoing);
   const ball = new THREE.Mesh(new THREE.SphereGeometry(BALL_RENDER_RADIUS, 24, 16), new THREE.MeshStandardMaterial({color:0x58a6ff, roughness:.35}));
   scene.add(ball);
-  const markerSet = {
-    hit: makeMarker(0xffd166),
-    target: makeMarker(0x3fb950),
-    landing: makeMarker(0xf85149)
-  };
+  const markerSet = {hit:makeMarker(0xffd166), target:makeMarker(0x3fb950), landing:makeMarker(0xf85149)};
   Object.values(markerSet).forEach(m=>scene.add(m));
-  scenes.push(scene);
-  cameras.push(camera);
-  renderers.push(renderer);
-  incomingLines.push(incoming);
-  returnLines.push(outgoing);
-  balls.push(ball);
-  markers.push(markerSet);
+  scenes.push(scene); cameras.push(camera); renderers.push(renderer);
+  incomingLines.push(incoming); returnLines.push(outgoing); balls.push(ball); markers.push(markerSet);
 }
 function addTable(scene){
   const table = new THREE.Mesh(new THREE.BoxGeometry(TABLE.width, .045, TABLE.length), new THREE.MeshStandardMaterial({color:0x19713d, roughness:.72}));
@@ -587,14 +535,11 @@ function addTable(scene){
 }
 function makeLine(color, dashed){
   const geometry = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), new THREE.Vector3()]);
-  const material = dashed
-    ? new THREE.LineDashedMaterial({color, dashSize:.06, gapSize:.04})
-    : new THREE.LineBasicMaterial({color});
+  const material = dashed ? new THREE.LineDashedMaterial({color, dashSize:.06, gapSize:.04}) : new THREE.LineBasicMaterial({color});
   return new THREE.Line(geometry, material);
 }
 function makeMarker(color){
-  const mesh = new THREE.Mesh(new THREE.SphereGeometry(.035, 18, 12), new THREE.MeshStandardMaterial({color, emissive:color, emissiveIntensity:.12}));
-  return mesh;
+  return new THREE.Mesh(new THREE.SphereGeometry(.035, 18, 12), new THREE.MeshStandardMaterial({color, emissive:color, emissiveIntensity:.12}));
 }
 function setLine(line, points){
   const vectors = points.map(p=>new THREE.Vector3(p.x,p.y,p.z));
@@ -612,36 +557,64 @@ function resize(){
   });
   renderAll();
 }
-function renderAll(){
-  renderers.forEach((renderer,index)=>renderer.render(scenes[index], cameras[index]));
-}
-function setBallAtPathIndex(index){
-  if(!currentPath.length) return;
-  const safeIndex = clamp(index, 0, currentPath.length - 1);
-  const p = currentPath[safeIndex];
-  balls.forEach(ball=>ball.position.set(p.x,p.y,p.z));
+function renderAll(){ renderers.forEach((renderer,index)=>renderer.render(scenes[index], cameras[index])); }
+
+// ── 主流程 ──────────────────────────────────────────────────────────────
+function refresh(){
+  if(!servePresets.length) return;
+  const preset = currentPreset();
+  const side = currentSide();
+  const techniqueKey = currentTechniqueKey();
+  const {servePathPoints, hitPoint, target, result} = simulateReturnForPreset(preset, side, techniqueKey);
+  currentIncoming = servePathPoints;
+  currentReturn = result.points.filter(isValidPoint);
+  scenes.forEach((scene,index)=>{
+    setLine(incomingLines[index], currentIncoming);
+    setLine(returnLines[index], currentReturn);
+    markers[index].hit.position.set(hitPoint.x, hitPoint.y, hitPoint.z);
+    markers[index].target.position.set(target.x, TABLE.top, target.z);
+    const landing = result.bounces[0] || target;
+    markers[index].landing.position.set(landing.x, TABLE.top, landing.z);
+    const p = currentIncoming[0] || hitPoint;
+    balls[index].position.set(p.x, p.y, p.z);
+  });
+  const judged = judgeResult(result);
+  document.getElementById('serveStatus').innerHTML = `
+    <div>發球：<strong>${preset.label}</strong>　旋轉：<strong>${(preset.variation?.spin?.topspin ?? 0).toFixed(2)} / ${(preset.variation?.spin?.sidespin ?? 0).toFixed(2)}</strong></div>
+    <div>擊球點（依 Game 4 findHitIndex 實際模擬）：<strong>${hitPoint.x.toFixed(2)}, ${hitPoint.z.toFixed(2)}</strong></div>
+  `;
+  document.getElementById('status').innerHTML = `
+    <div>目標：<strong>${target.x.toFixed(2)}, ${target.z.toFixed(2)}</strong></div>
+    <div>過網高度：<strong>${judged.netClearance == null ? '未過網' : judged.netClearance.toFixed(3) + ' m'}</strong></div>
+    <div>第一落點：<strong>${judged.firstBounce ? `${judged.firstBounce.x.toFixed(2)}, ${judged.firstBounce.z.toFixed(2)}` : '無'}</strong></div>
+    <div>判定：<strong class="${judged.ok ? 'ok' : 'bad'}">${judged.reason}</strong></div>
+  `;
+  updateCheckTable(side, techniqueKey);
+  updateExport();
   renderAll();
 }
-function updateStudio(updateHit){
-  updateTechniqueDefaults();
-  const incoming = selectedIncomingState();
-  incomingPath = buildIncomingPath(incoming);
-  if(updateHit) updateHitFromSlider();
-  const state = readState();
-  const result = simulateReturn(state);
-  currentPath = result.points;
-  scenes.forEach((scene,index)=>{
-    setLine(incomingLines[index], incomingPath);
-    setLine(returnLines[index], currentPath);
-    markers[index].hit.position.set(state.hitPoint.x, state.hitPoint.y, state.hitPoint.z);
-    markers[index].target.position.set(state.target.point.x, state.target.point.y, state.target.point.z);
-    const landing = result.landings[0] || state.target.point;
-    markers[index].landing.position.set(landing.x, landing.y, landing.z);
-    const p = currentPath[0] || state.hitPoint;
-    balls[index].position.set(p.x,p.y,p.z);
-  });
-  analyze(state, result);
-  updateExport(state);
+function updateCheckTable(side, techniqueKey){
+  const rows = servePresets.map(preset=>{
+    const {result} = simulateReturnForPreset(preset, side, techniqueKey);
+    const judged = judgeResult(result);
+    return `<tr>
+      <td>${preset.label}</td>
+      <td>${(preset.variation?.spin?.topspin ?? 0).toFixed(2)}</td>
+      <td>${judged.netClearance == null ? '未過網' : judged.netClearance.toFixed(3)}</td>
+      <td>${judged.firstBounce ? `${judged.firstBounce.x.toFixed(2)}, ${judged.firstBounce.z.toFixed(2)}` : '無'}</td>
+      <td class="${judged.ok ? 'ok' : 'bad'}">${judged.reason}</td>
+    </tr>`;
+  }).join('');
+  document.getElementById('checkTable').innerHTML = `
+    <tr><th>發球</th><th>來球上旋</th><th>過網高度</th><th>落點</th><th>判定</th></tr>
+    ${rows}
+  `;
+}
+function setBallAtPathIndex(index, path){
+  if(!path.length) return;
+  const safe = Math.max(0, Math.min(path.length - 1, index));
+  const p = path[safe];
+  balls.forEach(ball=>ball.position.set(p.x,p.y,p.z));
   renderAll();
 }
 function stopPlayback(){
@@ -651,107 +624,115 @@ function stopPlayback(){
 }
 function play(){
   stopPlayback();
-  updateStudio(false);
+  refresh();
+  const fullPath = currentIncoming.concat(currentReturn);
   const start = performance.now();
+  const duration = Math.max(900, fullPath.length * 8);
   document.getElementById('playBtn').textContent = '播放中';
   function tick(now){
-    const progress = Math.min(1, (now - start) / PLAY_MIN_DURATION_MS);
-    const i = Math.floor(progress * (currentPath.length - 1));
-    setBallAtPathIndex(i);
+    const progress = Math.min(1, (now - start) / duration);
+    const i = Math.floor(progress * (fullPath.length - 1));
+    setBallAtPathIndex(i, fullPath);
     if(progress < 1) animation = requestAnimationFrame(tick);
     else stopPlayback();
   }
   animation = requestAnimationFrame(tick);
 }
-function replay(){
-  stopPlayback();
-  setBallAtPathIndex(0);
-  play();
-}
+function replay(){ stopPlayback(); play(); }
 
-function exportPrompt(state){
-  const payload = JSON.stringify(state, null, 2);
-  return `請更新 Game 4 回擊 preset 資料，加入或修改以下回擊攝影棚參數：\n\n${payload}`;
+// ── 儲存 / 還原 / 匯出 ──────────────────────────────────────────────────
+function saveTuning(){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({TECHNIQUES, RETURN_SPIN_RESPONSE}));
+  flashButton('saveBtn');
 }
-function exportPresetList(list){
-  const payload = JSON.stringify({type:'returnPresetBatch', count:list.length, presets:list}, null, 2);
-  return `請整理並更新 Game 4 回擊 preset 資料，以下是我在回擊攝影棚累積的全部參數：\n\n${payload}`;
+function loadTuning(){
+  try{
+    const raw = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
+    if(raw && raw.TECHNIQUES && raw.RETURN_SPIN_RESPONSE){
+      TECHNIQUES = raw.TECHNIQUES;
+      RETURN_SPIN_RESPONSE = raw.RETURN_SPIN_RESPONSE;
+    }
+  }catch(err){ /* ignore */ }
 }
-function updateExport(state){
-  document.getElementById('exportText').value = exportPrompt(state);
+function restoreDefaults(){
+  if(!confirm('重置為目前 game4.html 內建的預設值？（會蓋掉這頁的調整）')) return;
+  TECHNIQUES = deepClone(DEFAULT_TECHNIQUES);
+  RETURN_SPIN_RESPONSE = deepClone(DEFAULT_RETURN_SPIN_RESPONSE);
+  loadTechniqueFields();
+  loadGlobalFields();
+  refresh();
 }
-async function writeClipboard(text){
+function formatTechniquesForExport(){
+  const lines = Object.entries(TECHNIQUES).map(([key, tech])=>{
+    const spinStr = `{topspin:${tech.spin.topspin},sidespin:${tech.spin.sidespin}}`;
+    const boostStr = tech.bounceBoost ? `, bounceBoost:${tech.bounceBoost}` : '';
+    return `  ${key}: {label:'${tech.label}', target:{x:${tech.target.x},y:TABLE.top,z:${tech.target.z}}, speed:${tech.speed}, vy:${tech.vy}, hzScale:${tech.hzScale}, spin:${spinStr}${boostStr}},`;
+  });
+  return `const TECHNIQUES = {\n${lines.join('\n')}\n};`;
+}
+function formatSpinResponseForExport(){
+  return `const RETURN_SPIN_RESPONSE = {\n  attackBackspinDrop: ${RETURN_SPIN_RESPONSE.attackBackspinDrop},\n  pushBackspinDrop: ${RETURN_SPIN_RESPONSE.pushBackspinDrop}\n};`;
+}
+function updateExport(){
+  document.getElementById('exportText').value = `${formatSpinResponseForExport()}\n\n${formatTechniquesForExport()}`;
+}
+async function copyExport(){
+  const text = document.getElementById('exportText').value;
   try{ await navigator.clipboard.writeText(text); }
   catch(err){
     const area = document.getElementById('exportText');
-    area.value = text;
     area.select();
     document.execCommand('copy');
   }
-}
-async function copyPrompt(){
-  const text = document.getElementById('exportText').value;
-  await writeClipboard(text);
   flashButton('copyBtn');
-}
-async function copyAllPresets(){
-  const list = loadReturnPresets();
-  const text = exportPresetList(list);
-  document.getElementById('exportText').value = text;
-  await writeClipboard(text);
-  flashButton('copyAllBtn');
 }
 function flashButton(id){
   const btn = document.getElementById(id);
   const old = btn.textContent;
-  btn.textContent = '已複製';
-  setTimeout(()=>btn.textContent = old, 1300);
-}
-function saveCurrent(){
-  const list = loadReturnPresets();
-  const state = readState();
-  state.id = state.label.replace(/\s+/g, '_').toLowerCase();
-  state.analysis = currentAnalysis;
-  const index = list.findIndex(p=>p.id === state.id);
-  if(index >= 0) list[index] = state;
-  else list.push(state);
-  saveReturnPresets(list);
-  renderReturnOptions();
-}
-function loadSelected(){
-  const list = loadReturnPresets();
-  const index = parseInt(document.getElementById('presetSelect').value, 10);
-  if(list[index]) applyState(list[index]);
-}
-function clearPresets(){
-  if(!confirm('清空目前瀏覽器暫存的全部回擊 preset？')) return;
-  saveReturnPresets([]);
-  renderReturnOptions();
-  updateExport(readState());
+  btn.textContent = '已完成';
+  setTimeout(()=>btn.textContent = old, 1200);
 }
 
+// ── 綁定事件 ──────────────────────────────────────────────────────────────
 document.querySelectorAll('canvas').forEach((canvas,index)=>initScene(canvas, index === 0 ? 'side' : 'front'));
-ids.forEach(id=>{
-  const el = document.getElementById(id);
-  if(!el) return;
-  el.addEventListener('input', ()=>{
-    if(id === 'incomingPreset') applyIncomingFieldsFromPreset();
-    updateStudio(id === 'hitIndex' || id === 'incomingPreset');
+document.getElementById('servePreset').addEventListener('change', event=>{
+  selectedPresetIndex = parseInt(event.target.value, 10) || 0;
+  refresh();
+});
+document.getElementById('side').addEventListener('change', refresh);
+document.getElementById('techniqueKey').addEventListener('change', ()=>{
+  syncSideLock();
+  loadTechniqueFields();
+  refresh();
+});
+['targetX','targetZ','speed','vy','hzScale','techTopspin','techSidespin','bounceBoost'].forEach(id=>{
+  document.getElementById(id).addEventListener('input', ()=>{
+    readTechniqueFieldsIntoState();
+    refresh();
+  });
+});
+['attackBackspinDrop','pushBackspinDrop'].forEach(id=>{
+  document.getElementById(id).addEventListener('input', ()=>{
+    readGlobalFieldsIntoState();
+    refresh();
   });
 });
 document.getElementById('playBtn').addEventListener('click', play);
 document.getElementById('resetBtn').addEventListener('click', replay);
-document.getElementById('copyBtn').addEventListener('click', copyPrompt);
-document.getElementById('copyAllBtn').addEventListener('click', copyAllPresets);
-document.getElementById('saveBtn').addEventListener('click', saveCurrent);
-document.getElementById('loadBtn').addEventListener('click', loadSelected);
-document.getElementById('clearPresetBtn').addEventListener('click', clearPresets);
-document.getElementById('refreshServeBtn').addEventListener('click', ()=>{ renderIncomingOptions(); updateStudio(true); });
+document.getElementById('saveBtn').addEventListener('click', saveTuning);
+document.getElementById('restoreBtn').addEventListener('click', restoreDefaults);
+document.getElementById('copyBtn').addEventListener('click', copyExport);
 window.addEventListener('resize', resize);
-renderIncomingOptions();
-renderReturnOptions();
-resize();
-updateStudio(true);
+
+(async function init(){
+  loadTuning();
+  await loadServePresets();
+  syncSideLock();
+  loadTechniqueFields();
+  loadGlobalFields();
+  resize();
+  refresh();
+})();
 </script>
 </body>
 </html>
