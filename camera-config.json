@@ -1,0 +1,15 @@
+{
+  "height": 1.45,
+  "lerpFactor": 0.025,
+  "lookAt": { "x": 0, "y": 0.5, "z": 0.3 },
+  "forehand": {
+    "offsetX": -0.3,
+    "offsetZ": 0.3,
+    "returnArc": 0.1
+  },
+  "backhand": {
+    "alignToHitPoint": true,
+    "offsetZ": 0.3
+  },
+  "triggerStage": "firstBounceOpponent"
+}

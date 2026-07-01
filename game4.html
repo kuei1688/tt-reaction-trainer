@@ -71,7 +71,7 @@ button:disabled{opacity:.45;cursor:not-allowed}
   <h1>Game 4 最小版</h1>
   <div style="display:flex;gap:10px;align-items:center">
     <div class="badge">Serve → Choice → Return</div>
-    <div style="font-size:11px;color:#555;font-family:monospace" title="build version">v7e2a</div>
+    <div style="font-size:11px;color:#555;font-family:monospace" title="build version">v1f6c</div>
   </div>
 </header>
 <main>
@@ -176,8 +176,9 @@ camera.lookAt(0, 0.5, 0.3);
 
 // ── Camera follow state ────────────────────────────────────────────────────
 const CAM_HOME_POS    = new THREE.Vector3(0, 1.45, 3.25);
-const CAM_INTERCEPT_Y = 1.45; // 全程鎖定，犧牲站姿換桌面可視性
-const CAM_LOOK_AT     = new THREE.Vector3(0, 0.5, 0.3); // 壓低俯角，桌面更完整
+let   CAM_INTERCEPT_Y = 1.45; // 由 camera-config.json 覆蓋
+const CAM_LOOK_AT     = new THREE.Vector3(0, 0.5, 0.3);
+let   CAM_CFG         = {}; // camera-config.json 載入後填入
 const camPosTarget    = CAM_HOME_POS.clone();
 const camLookTarget   = CAM_LOOK_AT.clone();
 const camLookCurrent  = CAM_LOOK_AT.clone();
@@ -238,35 +239,39 @@ function setTrajectoryVisibility(){
 }
 // ── Camera follow helpers ──────────────────────────────────────────────────
 function tickCamera(){
+  const f = CAM_CFG.lerpFactor ?? 0.025;
   if(phase === 'serve'){
-    // 對方第一跳離地後（ball.position.z > camTriggerZ）觸發移動
     if(!camBounceTriggered && ball.position.z > camTriggerZ && hitPoint){
       camBounceTriggered = true;
       camPosTarget.set(hitPoint.x, CAM_INTERCEPT_Y, CAM_HOME_POS.z);
     }
-    camera.position.lerp(camPosTarget, 0.05);
-    // lookAt 只做 x 軸輕微偏移跟球，y/z 鎖定
+    camera.position.lerp(camPosTarget, f * 2);
     const tx = ball.position.x * 0.1;
-    camLookCurrent.x += (tx - camLookCurrent.x) * 0.025;
+    camLookCurrent.x += (tx - camLookCurrent.x) * f;
     camLookCurrent.y = CAM_LOOK_AT.y;
     camLookCurrent.z = CAM_LOOK_AT.z;
   } else if(phase === 'return'){
-    camera.position.lerp(camPosTarget, 0.04);
+    camera.position.lerp(camPosTarget, f);
     if(selectedSide === 'backhand'){
-      // 反手：lookAt 指向預測落點，讓球出現在畫面正中央
-      camLookCurrent.lerp(hitPointVec, 0.04);
+      camLookCurrent.lerp(hitPointVec, f);
     } else {
-      // 正手：lookAt 往固定側面觀察點
-      camLookCurrent.lerp(camLookTarget, 0.03);
+      camLookCurrent.lerp(camLookTarget, f);
     }
   } else {
-    // idle / result：歸位
-    camera.position.lerp(camPosTarget, 0.03);
-    camLookCurrent.lerp(CAM_LOOK_AT, 0.03);
+    camera.position.lerp(camPosTarget, f);
+    camLookCurrent.lerp(CAM_LOOK_AT, f);
   }
-  // y 全程鎖定 1.05
   camera.position.y = CAM_INTERCEPT_Y;
   camera.lookAt(camLookCurrent);
+}
+function applyCamConfig(){
+  CAM_INTERCEPT_Y = CAM_CFG.height ?? CAM_INTERCEPT_Y;
+  CAM_HOME_POS.setY(CAM_INTERCEPT_Y);
+  if(CAM_CFG.lookAt){
+    CAM_LOOK_AT.set(CAM_CFG.lookAt.x ?? 0, CAM_CFG.lookAt.y ?? 0.5, CAM_CFG.lookAt.z ?? 0.3);
+  }
+  camera.position.y = CAM_INTERCEPT_Y;
+  camera.lookAt(CAM_LOOK_AT);
 }
 function resetCam(hard){
   camBounceTriggered = false;
@@ -505,11 +510,12 @@ function chooseReturn(side, techniqueKey){
   selectedSide = side;
   // 選完後確認/微調目標（攝影機此時應已在移動中）
   if(side === 'backhand'){
-    // 反手：position.x 完全對齊落點 x，讓球出現在畫面正中央
-    camPosTarget.set(hitPoint ? hitPoint.x : 0, CAM_INTERCEPT_Y, CAM_HOME_POS.z);
+    const bOffZ = CAM_CFG.backhand?.offsetZ ?? 0;
+    camPosTarget.set(hitPoint ? hitPoint.x : 0, CAM_INTERCEPT_Y, CAM_HOME_POS.z + bOffZ);
   } else {
-    // 正手：往右側移，lookAt 往側面觀察點
-    camPosTarget.set(CAM_HOME_POS.x + 0.45, CAM_INTERCEPT_Y, CAM_HOME_POS.z - 0.1);
+    const fOffX = CAM_CFG.forehand?.offsetX ?? -0.3;
+    const fOffZ = CAM_CFG.forehand?.offsetZ ?? 0.3;
+    camPosTarget.set(CAM_HOME_POS.x + fOffX, CAM_INTERCEPT_Y, CAM_HOME_POS.z + fOffZ);
     camLookTarget.set(-0.35, TABLE.top + 0.05, 0.3);
   }
   returnBall(techniqueKey);
@@ -572,7 +578,8 @@ function judgeReturn(result){
   document.getElementById('centerTip').textContent = ok ? '成功，按下一球繼續' : `${reason}，按下一球再試`;
   // 階段三：歸位；正手先略超中軸再回
   if(selectedSide === 'forehand'){
-    camPosTarget.set(CAM_HOME_POS.x - 0.12, CAM_HOME_POS.y, CAM_HOME_POS.z);
+    const arc = CAM_CFG.forehand?.returnArc ?? 0.1;
+    camPosTarget.set(CAM_HOME_POS.x - arc, CAM_HOME_POS.y, CAM_HOME_POS.z);
     startCamReturn();
     setTimeout(()=>{ resetCam(false); startCamReturn(); }, 200);
   } else {
@@ -596,9 +603,17 @@ function renderServeButtons(){
   });
 }
 async function loadPresets(){
-  const response = await fetch('physics-presets.json?v=' + Date.now());
-  if(!response.ok) throw new Error('physics-presets.json 載入失敗');
-  const data = await response.json();
+  // 同時載入 physics-presets.json 和 camera-config.json
+  const [presetsRes, camRes] = await Promise.all([
+    fetch('physics-presets.json?v=' + Date.now()),
+    fetch('camera-config.json?v=' + Date.now()).catch(() => null)
+  ]);
+  if(!presetsRes.ok) throw new Error('physics-presets.json 載入失敗');
+  if(camRes?.ok){
+    CAM_CFG = await camRes.json();
+    applyCamConfig();
+  }
+  const data = await presetsRes.json();
   presets = (data.serves || []).slice(0, 4);
   renderServeButtons();
   prepareServe();
