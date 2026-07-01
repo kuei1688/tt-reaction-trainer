@@ -101,7 +101,7 @@ button:disabled{opacity:.45;cursor:not-allowed}
   <h1>Game 4 最小版</h1>
   <div style="display:flex;gap:10px;align-items:center">
     <div class="badge">Serve → Choice → Return</div>
-    <div style="font-size:11px;color:#555;font-family:monospace" title="build version">v8h66</div>
+    <div style="font-size:11px;color:#555;font-family:monospace" title="build version">v8h67</div>
   </div>
 </header>
 <main>
@@ -195,6 +195,7 @@ const MAX_TABLE_BOUNCES = 8;
 const RETURN_INPUT = {topspinExpireMs:1200, chargeTimeMs:600, slideThresholdPx:30};
 const BALL_COLORS = {default:0xffd84d, rising:0x4488ff, sideRising:0x66bbff, apex:0xffffff, falling:0xef9f27};
 const TIMING_HINT = {threshold:0.05, flashMs:100, sideRisingHoldMs:220};
+const MISS_Y = TABLE.top - BALL_RADIUS;
 const BOUNCE_PHYSICS = {horizontalRestitution:0.98, topspinKick:0.30, sidespinKick:0.22};
 const NET_COLLISION = {depth:0.012, zRestitution:0.16, xDamping:0.55, yDamping:0.35};
 // 回擊公式：finalVel = incomingVel * PADDLE_RESTITUTION + techniqueVel
@@ -684,7 +685,10 @@ function findHitIndex(path){
     const hardStop = nextBounce ? nextBounce.index : path.points.length;
     const start = receiverBounce.index + 1;
     for(let i = start; i < Math.min(hardStop, path.points.length - 1); i++){
-      if(path.points[i].y > TABLE.top && path.points[i + 1].y < path.points[i].y) return i;
+      if(path.points[i].y > TABLE.top && path.velocities[i]?.y < -TIMING_HINT.threshold) return i;
+    }
+    for(let i = start; i < Math.min(hardStop, path.points.length - 1); i++){
+      if(path.points[i].y > TABLE.top && path.points[i + 1].y < path.points[i].y) return Math.min(i + 1, hardStop - 1);
     }
     return Math.min(hardStop - 1, start + 15);
   }
@@ -694,7 +698,7 @@ function findHitIndex(path){
 function findMissIndex(path, startIndex){
   const points = path.points || [];
   for(let i = Math.max(0, startIndex); i < points.length; i++){
-    if(points[i]?.y < TABLE.top) return i;
+    if(points[i]?.y < MISS_Y) return i;
   }
   return Math.max(0, points.length - 1);
 }
@@ -904,7 +908,7 @@ function playServe(){
     timingHintActive = index >= returnHintStartIndex && index <= returnMissIndex;
     updateTimingHint(currentServeVel);
     if(index >= returnAppearIndex) openReturnInput();
-    if(point?.y < TABLE.top && !pendingReturn) missReturn();
+    if(point?.y < MISS_Y && !pendingReturn) missReturn();
   }, serveVelocities);
 }
 function chooseReturn(side, techniqueKey){
