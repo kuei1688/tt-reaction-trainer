@@ -167,9 +167,9 @@ scene.add(new THREE.AmbientLight(0xffffff, 0.55));
 const light = new THREE.DirectionalLight(0xffffff, 0.9);
 light.position.set(2,5,3);
 scene.add(light);
-const camera = new THREE.PerspectiveCamera(62, 1, 0.01, 30);
-camera.position.set(0, 1.65, 2.65);
-camera.lookAt(0, TABLE.top, -0.12);
+const camera = new THREE.PerspectiveCamera(48, 1, 0.01, 30);
+camera.position.set(0, 1.72, 3.25);
+camera.lookAt(0, TABLE.top + 0.02, -0.08);
 
 const table = new THREE.Mesh(
   new THREE.BoxGeometry(TABLE.width, 0.04, TABLE.length),
