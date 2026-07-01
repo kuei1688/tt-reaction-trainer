@@ -212,6 +212,9 @@ function solveVelocity(start, target, time, gravity){
 function clone(v){ return {x:v.x,y:v.y,z:v.z}; }
 function add(a,b){ return {x:a.x+b.x,y:a.y+b.y,z:a.z+b.z}; }
 function clamp(value,min,max){ return Math.max(min, Math.min(max, value)); }
+function isValidPoint(point){
+  return point && Number.isFinite(point.x) && Number.isFinite(point.y) && Number.isFinite(point.z);
+}
 function applyBounceSpin(vel, spin, bounce){
   const speed = Math.hypot(vel.x, vel.z);
   const forward = speed > 0.001 ? {x:vel.x/speed, z:vel.z/speed} : {x:0,z:1};
@@ -229,7 +232,7 @@ function simulatePath(start, velocity, options){
   const bounce = options.bounce ?? 0.95;
   const pos = clone(start);
   const vel = clone(velocity);
-  const points = [];
+  const points = [clone(pos)];
   const bounces = [];
   let netY = null;
   let crossedNet = false;
@@ -294,17 +297,26 @@ function findHitIndex(path){
   return fallback >= 0 ? fallback : Math.min(path.points.length - 1, 90);
 }
 function currentPreset(){ return presets[selectedServeIndex]; }
-function setBall(point){ ball.position.set(point.x, point.y, point.z); }
+function setBall(point){
+  if(!isValidPoint(point)) return;
+  ball.position.set(point.x, point.y, point.z);
+}
 function render(){ renderer.render(scene, camera); }
 function animatePath(points, onDone, speedMs){
   if(animation) cancelAnimationFrame(animation);
-  currentPath = points;
+  const safePoints = (points || []).filter(isValidPoint);
+  currentPath = safePoints;
+  if(!safePoints.length){
+    animation = null;
+    onDone?.();
+    return;
+  }
   playStart = performance.now();
-  const duration = Math.max(700, points.length * (speedMs || 10));
+  const duration = Math.max(700, safePoints.length * (speedMs || 10));
   function tick(now){
     const progress = Math.min(1, (now - playStart) / duration);
-    const index = Math.min(points.length - 1, Math.floor(progress * (points.length - 1)));
-    setBall(points[index]);
+    const index = Math.min(safePoints.length - 1, Math.floor(progress * (safePoints.length - 1)));
+    setBall(safePoints[index]);
     render();
     if(progress < 1){
       animation = requestAnimationFrame(tick);
@@ -384,6 +396,11 @@ function returnBall(techniqueKey){
   selectedTechnique = techniqueKey;
   document.querySelectorAll('[data-technique]').forEach(btn=>btn.classList.toggle('active', btn.dataset.technique === techniqueKey));
   const tech = TECHNIQUES[techniqueKey];
+  if(!tech){
+    showResult(false, '找不到回擊技術', `技術代碼：${techniqueKey}`);
+    setPhase('result');
+    return;
+  }
   const start = {...hitPoint, y:Math.max(hitPoint.y + 0.12, TABLE.top + 0.12)};
   const gravity = currentPreset().solve?.gravity ?? -4.2;
   const target = {...tech.target};
@@ -395,12 +412,17 @@ function returnBall(techniqueKey){
     spin:tech.spin,
     bounce:0.88
   });
-  returnPath = result.points;
+  returnPath = result.points.filter(isValidPoint);
   updateLine(returnLine, returnPath);
   setPhase('return');
   document.getElementById('choiceText').textContent = `${selectedSide === 'forehand' ? '正手' : '反手'} / ${tech.label}`;
   document.getElementById('centerTip').textContent = '回球飛出';
-  animatePath(returnPath, ()=>judgeReturn(result), 9);
+  if(!returnPath.length){
+    showResult(false, '回球軌跡產生失敗', '這組參數沒有產生可播放的球路，請按下一球再試。');
+    setPhase('result');
+    return;
+  }
+  animatePath(returnPath, ()=>judgeReturn(result), 7);
 }
 function judgeReturn(result){
   const firstBounce = result.bounces[0] || null;
