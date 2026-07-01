@@ -155,6 +155,7 @@ const BALL_RADIUS = 0.02;
 const BALL_RENDER_RADIUS = 0.022;
 const DT = 1 / 120;
 const MAX_STEPS = 520;
+const MAX_TABLE_BOUNCES = 8;
 const BOUNCE_PHYSICS = {horizontalRestitution:0.98, topspinKick:0.30, sidespinKick:0.22};
 const TECHNIQUES = {
   forehand_attack: {label:'正手攻球', target:{x:-0.38,y:TABLE.top,z:-0.95}, time:0.62, spin:{topspin:0.55,sidespin:0.05}},
@@ -353,6 +354,8 @@ function simulatePath(start, velocity, options){
   const vel = clone(velocity);
   const points = [clone(pos)];
   const bounces = [];
+  let firstLanding = null;
+  let groundLanding = null;
   let netY = null;
   let crossedNet = false;
   for(let i=0;i<MAX_STEPS;i++){
@@ -380,29 +383,197 @@ function simulatePath(start, velocity, options){
         pos.x = impact.x;
         pos.y = TABLE.top;
         pos.z = impact.z;
-        bounces.push({...impact, index:points.length});
+        const bouncePoint = {...impact, index:points.length};
+        if(!firstLanding) firstLanding = bouncePoint;
+        bounces.push(bouncePoint);
         points.push(clone(pos));
+        if(bounces.length > MAX_TABLE_BOUNCES) break;
         applyBounceSpin(vel, spin, bounce);
       }
     }
     if(pos.y <= BALL_RADIUS && prev.y > BALL_RADIUS){
       const ratio = (BALL_RADIUS - prev.y) / (pos.y - prev.y || 1);
-      points.push({
+      groundLanding = {
         x:prev.x + (pos.x - prev.x) * ratio,
         y:BALL_RADIUS,
-        z:prev.z + (pos.z - prev.z) * ratio
-      });
+        z:prev.z + (pos.z - prev.z) * ratio,
+        t:i * DT + DT * ratio
+      };
+      points.push(groundLanding);
       break;
     }
     points.push(clone(pos));
     if(Math.abs(pos.x) > 3 || Math.abs(pos.z) > 4) break;
   }
-  return {points, bounces, netY};
+  return {points, bounces, netY, firstLanding, groundLanding, baseVel:clone(velocity)};
+}
+function solveBaseVelocity(preset){
+  const targetMode = preset.solve?.targetMode || preset.solve?.target;
+  if(targetMode === 'serve_bounces'){
+    return solveServeBounceVelocity(preset);
+  }
+  const time = preset.solve?.timeToFirst ?? preset.solve?.flightTime ?? 0.3;
+  return solveVelocity(preset.start, preset.firstBounce || preset.target, time, preset.solve?.gravity ?? -4.2);
+}
+function solveServeBounceVelocity(preset){
+  const first = preset.firstBounce || preset.target;
+  const profile = getServeLengthProfile(preset);
+  const times = [0.1, 0.115, 0.13, 0.145, 0.16, 0.18, 0.2, 0.23, 0.26, 0.3, 0.35, 0.42, 0.5, 0.62, 0.76, 0.92, 1.08, 1.2];
+  const yNudges = profile.yNudges;
+  let bestTime = times[0];
+  let bestYNudge = 0;
+  let best = null;
+  let bestScore = Infinity;
+
+  function consider(time, yNudge){
+    const candidate = makeServeAimCandidate(preset, first, time, yNudge);
+    if(!Number.isFinite(candidate.x) || !Number.isFinite(candidate.y) || !Number.isFinite(candidate.z)) return;
+    if(candidate.y > profile.vyHardMax) return;
+    if(Math.hypot(candidate.x, candidate.z) > profile.speedReject) return;
+    const score = serveBounceScore(preset, candidate);
+    if(score < bestScore){
+      bestTime = time;
+      bestYNudge = yNudge;
+      best = candidate;
+      bestScore = score;
+    }
+  }
+
+  for(const time of times){
+    for(const yNudge of yNudges) consider(time, yNudge);
+  }
+  if(!best){
+    best = makeServeAimCandidate(preset, first, findServeBounceTime(preset), 0);
+    bestScore = serveBounceScore(preset, best);
+  }
+
+  let timeStep = 0.08;
+  let yStep = 0.07;
+  for(let round=0; round<28; round++){
+    let improved = false;
+    for(const dir of [-1,1]){
+      const beforeScore = bestScore;
+      consider(clamp(bestTime + timeStep * dir, 0.08, 1.05), bestYNudge);
+      improved = improved || bestScore < beforeScore;
+    }
+    for(const dir of [-1,1]){
+      const beforeScore = bestScore;
+      consider(bestTime, clamp(bestYNudge + yStep * dir, -0.24, 0.24));
+      improved = improved || bestScore < beforeScore;
+    }
+    if(!improved){
+      timeStep *= 0.58;
+      yStep *= 0.58;
+    }
+  }
+  return best;
+}
+function makeServeAimCandidate(preset, first, time, yNudge){
+  const base = solveVelocity(preset.start, first, time, preset.solve?.gravity ?? -4.2);
+  return {x:base.x, y:base.y + yNudge, z:base.z};
+}
+function getServeLengthProfile(preset){
+  const length = preset.tags?.length || preset.length || 'short';
+  if(length === 'long'){
+    return {
+      yNudges:[-0.16, -0.1, -0.05, 0, 0.05],
+      vySoftMax:0.02,
+      vyHardMax:0.08,
+      speedIdealMin:3.0,
+      speedIdealMax:5.2,
+      speedHardMax:5.7,
+      speedReject:6.4
+    };
+  }
+  if(length === 'half_long'){
+    return {
+      yNudges:[-0.16, -0.1, -0.05, 0, 0.08, 0.16, 0.26],
+      vySoftMax:0.18,
+      vyHardMax:0.35,
+      speedIdealMin:2.0,
+      speedIdealMax:3.6,
+      speedHardMax:4.1,
+      speedReject:4.8
+    };
+  }
+  return {
+    yNudges:[-0.12, -0.05, 0, 0.08, 0.16, 0.28, 0.42, 0.58],
+    vySoftMax:0.85,
+    vyHardMax:1.15,
+    speedIdealMin:1.1,
+    speedIdealMax:2.05,
+    speedHardMax:2.25,
+    speedReject:2.65
+  };
+}
+function findServeBounceTime(preset){
+  const first = preset.firstBounce || preset.target;
+  const gravity = preset.solve?.gravity ?? -4.2;
+  const times = [0.16, 0.2, 0.24, 0.28, 0.32, 0.36, 0.42, 0.5, 0.6, 0.72, 0.86];
+  let bestTime = times[3];
+  let bestScore = serveBounceScore(preset, solveVelocity(preset.start, first, bestTime, gravity));
+  for(const time of times){
+    const candidate = solveVelocity(preset.start, first, time, gravity);
+    const score = serveBounceScore(preset, candidate);
+    if(score < bestScore){
+      bestTime = time;
+      bestScore = score;
+    }
+  }
+  return bestTime;
+}
+function getServeBounces(path){
+  const first = path.bounces.find(bounce=>bounce.z < 0) || null;
+  const second = path.bounces.find(bounce=>bounce.z > 0) || null;
+  return {first, second};
+}
+function serveBounceScore(preset, baseVel){
+  const profile = getServeLengthProfile(preset);
+  const result = simulatePath(preset.start, baseVel, {
+    gravity:preset.solve?.gravity ?? -4.2,
+    spin:preset.variation?.spin,
+    bounce:preset.variation?.bounce
+  });
+  const firstTarget = preset.firstBounce || preset.target;
+  const secondTarget = preset.secondBounce || preset.target;
+  const serveBounces = getServeBounces(result);
+  const first = serveBounces.first;
+  const second = serveBounces.second;
+  const firstPoint = first || result.groundLanding || result.points[result.points.length - 1] || preset.start;
+  const secondPoint = second || firstPoint;
+  const firstMiss = Math.hypot(firstPoint.x - firstTarget.x, firstPoint.z - firstTarget.z);
+  const secondMiss = Math.hypot(secondPoint.x - secondTarget.x, secondPoint.z - secondTarget.z);
+  const netClearance = result.netY == null ? null : result.netY - (TABLE.height + TABLE.net);
+  const targetNetClearance = preset.solve?.netClearance ?? 0.03;
+  const secondLegTime = first && second ? second.t - first.t : null;
+  const targetSecondLegTime = preset.solve?.secondLegTime ?? preset.solve?.flightTime ?? 0.74;
+  const horizontalSpeed = Math.hypot(baseVel.x, baseVel.z);
+  const upwardOver = Math.max(0, baseVel.y - profile.vySoftMax);
+  const upwardPenalty = upwardOver * 55 + upwardOver * upwardOver * 260;
+  const speedHigh = Math.max(0, horizontalSpeed - profile.speedIdealMax);
+  const speedHard = Math.max(0, horizontalSpeed - profile.speedHardMax);
+  const speedLow = Math.max(0, profile.speedIdealMin - horizontalSpeed);
+  const horizontalPenalty = speedHigh * 5 + speedHigh * speedHigh * 32 + speedHard * speedHard * 180 + speedLow * speedLow * 18;
+  const noFirstPenalty = first ? 0 : 300;
+  const noSecondPenalty = second ? 0 : 70;
+  const wrongSidePenalty = result.bounces.some((bounce, index)=>index > 0 && bounce.z < 0) ? 25 : 0;
+  const netHigh = netClearance == null ? 0 : Math.max(0, netClearance - targetNetClearance);
+  const netLow = netClearance == null ? 0 : Math.max(0, targetNetClearance - netClearance);
+  const timeMiss = secondLegTime == null ? 0 : secondLegTime - targetSecondLegTime;
+  const peakY = result.points.reduce((max, point)=>Math.max(max, point.y), preset.start.y);
+  const naturalPeakLimit = Math.max(preset.start.y + 0.1, TABLE.height + TABLE.net + targetNetClearance + 0.22);
+  const peakPenalty = Math.pow(Math.max(0, peakY - naturalPeakLimit), 2) * 12;
+  const netPenalty = netClearance == null
+    ? 16
+    : Math.max(0, -netClearance) * 220 + netLow * 45 + Math.pow(netLow, 2) * 260 + netHigh * 4 + Math.pow(netHigh, 2) * 24;
+  const timePenalty = secondLegTime == null ? 10 : Math.abs(timeMiss) * 0.5 + timeMiss * timeMiss * 8;
+  const firstGuardPenalty = Math.pow(Math.max(0, firstMiss - 0.025), 2) * 9000;
+  const secondGuardPenalty = Math.pow(Math.max(0, secondMiss - 0.12), 2) * 70;
+  return firstMiss * 80 + firstMiss * firstMiss * 420 + firstGuardPenalty + secondMiss * 14 + secondMiss * secondMiss * 48 + secondGuardPenalty + horizontalPenalty + upwardPenalty + peakPenalty + noFirstPenalty + noSecondPenalty + wrongSidePenalty + netPenalty + timePenalty;
 }
 function simulateServe(preset){
-  const time = preset.solve?.timeToFirst ?? 0.3;
   const gravity = preset.solve?.gravity ?? -4.2;
-  const velocity = solveVelocity(preset.start, preset.firstBounce, time, gravity);
+  const velocity = solveBaseVelocity(preset);
   return simulatePath(preset.start, velocity, {
     gravity,
     spin:preset.variation?.spin,
