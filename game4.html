@@ -27,20 +27,23 @@ canvas{display:block;width:100%;height:100%;touch-action:manipulation}
 .pill.bad{border-color:rgba(255,123,114,.65);color:var(--red)}
 .pill.warn{border-color:rgba(210,153,34,.65);color:var(--yellow)}
 .center-tip{position:absolute;left:50%;bottom:18px;transform:translateX(-50%);background:rgba(13,17,23,.88);border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-weight:800;color:var(--text);text-align:center;min-width:min(520px,calc(100% - 24px))}
-.action-pad{position:absolute;left:12px;right:12px;bottom:12px;display:none;grid-template-columns:1fr 2fr;gap:9px;align-items:end;pointer-events:none}
-.action-pad.active{display:grid;pointer-events:auto}
+.action-pad{position:absolute;left:12px;right:12px;bottom:12px;display:grid;grid-template-columns:1fr 2fr;gap:9px;align-items:end;pointer-events:none;opacity:0;visibility:hidden;transition:opacity 200ms ease, visibility 0s linear 200ms}
+.action-pad.active{pointer-events:auto;opacity:1;visibility:visible;transition:opacity 150ms ease}
 .action-zone{display:grid;grid-template-rows:auto 1fr;gap:7px;min-height:108px;padding:8px;border:1px solid rgba(88,166,255,.34);border-radius:8px;background:rgba(13,17,23,.34);box-shadow:0 10px 26px rgba(0,0,0,.22);backdrop-filter:blur(2px)}
 .action-zone.forehand{border-color:rgba(63,185,80,.36)}
 .zone-label{font-size:12px;font-weight:900;color:rgba(240,246,252,.72);text-shadow:0 1px 2px rgba(0,0,0,.7)}
-.zone-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;align-content:end}
+.zone-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;align-content:end}
 .zone-actions button{min-height:58px;font-size:16px;background:rgba(33,38,45,.72);box-shadow:0 8px 18px rgba(0,0,0,.22)}
 .action-zone.backhand .zone-actions{grid-template-columns:1fr}
 .zone-actions .technique-button{min-height:68px;padding:6px;background:rgba(13,17,23,.28);border-color:rgba(240,246,252,.18);overflow:hidden}
 .zone-actions .technique-button:hover{background:rgba(13,17,23,.42)}
 .zone-actions .technique-button.active{background:rgba(88,166,255,.18)}
+.technique-button.charging{border-color:var(--green)}
+.action-pad.loop-expired [data-return-technique="loop"]{opacity:0;pointer-events:none;transition:opacity 200ms ease}
 .technique-button:disabled .technique-icon{opacity:.34;filter:grayscale(.25)}
 .technique-icon{display:block;width:100%;height:58px;object-fit:contain;opacity:.78;filter:drop-shadow(0 7px 10px rgba(0,0,0,.42));transition:opacity .15s ease, transform .15s ease}
 .technique-button:hover .technique-icon,.technique-button.active .technique-icon{opacity:1;transform:scale(1.03)}
+.loop-icon{font-size:24px;line-height:58px;color:rgba(240,246,252,.88);text-shadow:0 7px 10px rgba(0,0,0,.42)}
 aside{border-left:1px solid var(--border);background:var(--surface);min-height:0;overflow:auto}
 .section{padding:12px;border-bottom:1px solid var(--border)}
 h2{font-size:14px;margin:0 0 8px;color:var(--yellow)}
@@ -114,6 +117,7 @@ button:disabled{opacity:.45;cursor:not-allowed}
       <div class="action-zone backhand">
         <div class="zone-label">反手區 1/3</div>
         <div class="zone-actions">
+          <button class="technique-button" type="button" data-return-side="backhand" data-return-technique="loop" title="反手拉球" aria-label="反手拉球"><span class="loop-icon">↻</span></button>
           <button class="technique-button" type="button" data-return-side="backhand" data-return-technique="backhand_attack" title="反手攻球" aria-label="反手攻球"><img class="technique-icon" src="images/techniques/attack.png" alt=""></button>
           <button class="technique-button" type="button" data-return-side="backhand" data-return-technique="push" title="反手切球" aria-label="反手切球"><img class="technique-icon" src="images/techniques/cut.png" alt=""></button>
         </div>
@@ -121,6 +125,7 @@ button:disabled{opacity:.45;cursor:not-allowed}
       <div class="action-zone forehand">
         <div class="zone-label">正手區 2/3</div>
         <div class="zone-actions">
+          <button class="technique-button" type="button" data-return-side="forehand" data-return-technique="loop" title="正手拉球" aria-label="正手拉球"><span class="loop-icon">↻</span></button>
           <button class="technique-button" type="button" data-return-side="forehand" data-return-technique="forehand_attack" title="正手攻球" aria-label="正手攻球"><img class="technique-icon" src="images/techniques/attack.png" alt=""></button>
           <button class="technique-button" type="button" data-return-side="forehand" data-return-technique="push" title="正手切球" aria-label="正手切球"><img class="technique-icon" src="images/techniques/cut.png" alt=""></button>
         </div>
@@ -164,6 +169,7 @@ const BALL_RENDER_RADIUS = 0.022;
 const DT = 1 / 120;
 const MAX_STEPS = 520;
 const MAX_TABLE_BOUNCES = 8;
+const RETURN_INPUT = {topspinExpireMs:1200, chargeTimeMs:600, slideThresholdPx:30};
 const BOUNCE_PHYSICS = {horizontalRestitution:0.98, topspinKick:0.30, sidespinKick:0.22};
 const NET_COLLISION = {depth:0.012, zRestitution:0.16, xDamping:0.55, yDamping:0.35};
 const RETURN_SPIN_RESPONSE = {
@@ -171,9 +177,10 @@ const RETURN_SPIN_RESPONSE = {
   pushBackspinDrop: 0.05
 };
 const TECHNIQUES = {
-  forehand_attack: {label:'正手攻球', target:{x:-0.38,y:TABLE.top,z:-0.95}, time:0.62, spin:{topspin:0.55,sidespin:0.05}},
-  backhand_attack: {label:'反手攻球', target:{x:0.28,y:TABLE.top,z:-0.9}, time:0.62, spin:{topspin:0.45,sidespin:-0.05}},
-  push: {label:'切球', target:{x:0.05,y:TABLE.top,z:-0.45}, time:0.78, spin:{topspin:-0.75,sidespin:0}}
+  forehand_attack: {label:'正手攻球', target:{x:-0.38,y:TABLE.top,z:-0.95}, speed:6, vy:0.5, hzScale:0.7, spin:{topspin:0.15,sidespin:0.05}},
+  backhand_attack: {label:'反手攻球', target:{x:0.28,y:TABLE.top,z:-0.9}, speed:6, vy:0.5, hzScale:0.7, spin:{topspin:0.15,sidespin:-0.05}},
+  push: {label:'切球', target:{x:0.05,y:TABLE.top,z:-0.45}, speed:4, vy:0.3, hzScale:0.6, spin:{topspin:-0.8,sidespin:0}},
+  loop: {label:'拉球', target:{x:-0.18,y:TABLE.top,z:-1.05}, speed:7, vy:1.0, hzScale:1.0, spin:{topspin:0.9,sidespin:0}, bounceBoost:0.3}
 };
 let presets = [];
 let selectedServeIndex = 0;
@@ -186,6 +193,13 @@ let currentPath = [];
 let playStart = 0;
 let animation = null;
 let hitPoint = null;
+let returnAppearIndex = 0;
+let returnLandIndex = 0;
+let pendingReturn = null;
+let inputWindowOpen = false;
+let missResolved = false;
+let loopExpireTimer = null;
+let chargeState = null;
 let score = {ok:0, fail:0};
 let showTrajectories = false;
 
@@ -363,6 +377,7 @@ function simulatePath(start, velocity, options){
   const gravity = options.gravity ?? -4.2;
   const spin = options.spin || {topspin:0,sidespin:0};
   const bounce = options.bounce ?? 0.95;
+  const bounceBoost = options.bounceBoost ?? 0;
   const pos = clone(start);
   const vel = clone(velocity);
   const points = [clone(pos)];
@@ -422,6 +437,10 @@ function simulatePath(start, velocity, options){
         points.push(clone(pos));
         if(bounces.length > MAX_TABLE_BOUNCES) break;
         applyBounceSpin(vel, spin, bounce);
+        if(bounceBoost){
+          const forwardZ = Math.sign(vel.z || velocity.z || -1);
+          vel.z += forwardZ * bounceBoost;
+        }
       }
     }
     if(pos.y <= BALL_RADIUS && prev.y > BALL_RADIUS){
@@ -635,7 +654,7 @@ function setBall(point){
   ball.position.set(point.x, point.y, point.z);
 }
 function render(){ renderer.render(scene, camera); }
-function animatePath(points, onDone, speedMs){
+function animatePath(points, onDone, speedMs, onFrame){
   if(animation) cancelAnimationFrame(animation);
   const safePoints = (points || []).filter(isValidPoint);
   currentPath = safePoints;
@@ -649,6 +668,7 @@ function animatePath(points, onDone, speedMs){
   function tick(now){
     const progress = Math.min(1, (now - playStart) / duration);
     const index = Math.min(safePoints.length - 1, Math.floor(progress * (safePoints.length - 1)));
+    onFrame?.(index, safePoints[index], progress);
     setBall(safePoints[index]);
     try{ tickCamera(); }catch(e){}
     render();
@@ -689,16 +709,52 @@ function showResult(ok, reason, detail){
   else score.fail += 1;
   updateScore();
 }
+function openReturnInput(){
+  if(inputWindowOpen || pendingReturn || missResolved) return;
+  inputWindowOpen = true;
+  setPhase('choose_technique');
+  const pad = document.getElementById('actionPad');
+  pad.classList.remove('loop-expired');
+  clearTimeout(loopExpireTimer);
+  loopExpireTimer = setTimeout(()=>pad.classList.add('loop-expired'), RETURN_INPUT.topspinExpireMs);
+}
+function hideReturnInput(){
+  inputWindowOpen = false;
+  clearTimeout(loopExpireTimer);
+  document.getElementById('actionPad').classList.remove('active');
+  document.querySelectorAll('[data-return-technique]').forEach(btn=>{
+    btn.disabled = true;
+    btn.classList.remove('active');
+  });
+  cancelCharge();
+}
+function missReturn(){
+  if(missResolved || pendingReturn) return;
+  missResolved = true;
+  hideReturnInput();
+  showResult(false, '漏球', `發球：${currentPreset().label}`);
+  setPhase('result');
+  document.getElementById('centerTip').textContent = '漏球，請按下一球';
+}
 function prepareServe(){
   resetCam(false);
   const preset = currentPreset();
   document.getElementById('serveName').textContent = preset?.label || '未選擇';
   selectedSide = null;
   selectedTechnique = null;
+  pendingReturn = null;
+  inputWindowOpen = false;
+  missResolved = false;
+  clearTimeout(loopExpireTimer);
+  cancelCharge();
   document.getElementById('choiceText').textContent = '尚未選擇';
   document.querySelectorAll('[data-return-technique]').forEach(btn=>btn.classList.remove('active'));
   const serve = simulateServe(preset);
   const hitIndex = findHitIndex(serve);
+  const receiverBounce = serve.bounces.find(b => b.z > 0);
+  returnLandIndex = Math.min(hitIndex, receiverBounce?.index ?? hitIndex);
+  const serverBounceForInput = serve.bounces.find(b => b.z < 0);
+  returnAppearIndex = Math.min(returnLandIndex, (serverBounceForInput?.index ?? 0) + 2);
   servePath = serve.points.slice(0, hitIndex + 1);
   hitPoint = servePath[servePath.length - 1];
   // 觸發門檻：對方桌面第一跳之後（z < 0 的 bounce + margin）
@@ -717,20 +773,35 @@ function playServe(){
   if(!presets.length) return;
   document.activeElement?.blur?.();
   resize();
+  pendingReturn = null;
+  inputWindowOpen = false;
+  missResolved = false;
+  clearTimeout(loopExpireTimer);
+  cancelCharge();
   setPhase('serve');
-  document.getElementById('resultText').textContent = '球飛來了';
+  document.getElementById('resultText').textContent = '準備中';
   document.getElementById('resultText').className = 'result';
   document.getElementById('detailText').textContent = '';
-  document.getElementById('centerTip').textContent = '看球落桌與彈起';
+  document.getElementById('centerTip').textContent = '發球中';
   animatePath(servePath, ()=>{
-    setPhase('choose_side');
-    document.getElementById('centerTip').textContent = '用下方分區直接選回擊';
-  }, 9);
+    if(pendingReturn && !missResolved){
+      returnBall(pendingReturn.techniqueKey);
+    }else if(!missResolved){
+      missReturn();
+    }
+  }, 9, index=>{
+    if(index >= returnAppearIndex) openReturnInput();
+    if(index >= returnLandIndex && !pendingReturn) missReturn();
+  });
 }
 function chooseReturn(side, techniqueKey){
-  if(phase !== 'choose_side' && phase !== 'choose_technique') return;
+  if(!inputWindowOpen || pendingReturn || missResolved) return;
   selectedSide = side;
-  // 選完後確認/微調目標（攝影機此時應已在移動中）
+  selectedTechnique = techniqueKey;
+  pendingReturn = {side, techniqueKey};
+  document.querySelectorAll('[data-return-technique]').forEach(btn=>{
+    btn.classList.toggle('active', btn.dataset.returnTechnique === techniqueKey && btn.dataset.returnSide === selectedSide);
+  });
   if(side === 'backhand'){
     const bOffZ = CAM_CFG.backhand?.offsetZ ?? 0;
     camPosTarget.set(hitPoint ? hitPoint.x : 0, CAM_INTERCEPT_Y, CAM_HOME_POS.z + bOffZ);
@@ -740,7 +811,68 @@ function chooseReturn(side, techniqueKey){
     camPosTarget.set(CAM_HOME_POS.x + fOffX, CAM_INTERCEPT_Y, CAM_HOME_POS.z + fOffZ);
     camLookTarget.set(-0.35, TABLE.top + 0.05, 0.3);
   }
-  returnBall(techniqueKey);
+  hideReturnInput();
+}
+function attackKeyForSide(side){
+  return side === 'forehand' ? 'forehand_attack' : 'backhand_attack';
+}
+function switchTechniqueFromSlide(side, dx, dy){
+  if(Math.abs(dx) >= Math.abs(dy)){
+    return dx >= 0 ? attackKeyForSide(side) : 'push';
+  }
+  return dy < 0 ? attackKeyForSide(side) : 'push';
+}
+function cancelCharge(){
+  if(!chargeState) return;
+  cancelAnimationFrame(chargeState.raf);
+  chargeState.button.classList.remove('charging');
+  chargeState.button.style.removeProperty('border-color');
+  chargeState = null;
+}
+function startLoopCharge(event, button){
+  if(document.getElementById('actionPad').classList.contains('loop-expired')) return;
+  event.preventDefault();
+  cancelCharge();
+  const side = button.dataset.returnSide;
+  chargeState = {
+    button,
+    side,
+    startX:event.clientX,
+    startY:event.clientY,
+    startTime:performance.now(),
+    raf:null
+  };
+  button.classList.add('charging');
+  button.setPointerCapture?.(event.pointerId);
+  const finish = ()=>{
+    if(!chargeState) return;
+    const finishedSide = chargeState.side;
+    cancelCharge();
+    chooseReturn(finishedSide, 'loop');
+  };
+  const tick = now=>{
+    if(!chargeState) return;
+    const progress = clamp((now - chargeState.startTime) / RETURN_INPUT.chargeTimeMs, 0, 1);
+    const green = Math.round(185 - progress * 105);
+    const blue = Math.round(80 - progress * 35);
+    button.style.borderColor = `rgb(63, ${green}, ${blue})`;
+    if(progress >= 1){
+      finish();
+      return;
+    }
+    chargeState.raf = requestAnimationFrame(tick);
+  };
+  chargeState.raf = requestAnimationFrame(tick);
+}
+function moveLoopCharge(event){
+  if(!chargeState) return;
+  const dx = event.clientX - chargeState.startX;
+  const dy = event.clientY - chargeState.startY;
+  if(Math.hypot(dx, dy) < RETURN_INPUT.slideThresholdPx) return;
+  const side = chargeState.side;
+  const techniqueKey = switchTechniqueFromSlide(side, dx, dy);
+  cancelCharge();
+  chooseReturn(side, techniqueKey);
 }
 function returnBall(techniqueKey){
   if((phase !== 'choose_side' && phase !== 'choose_technique') || !hitPoint || !selectedSide) return;
@@ -760,14 +892,15 @@ function returnBall(techniqueKey){
   if(selectedSide === 'forehand') target.x -= 0.08;
   if(selectedSide === 'backhand') target.x += 0.08;
   const baseVel = adjustReturnForIncomingSpin(
-    solveVelocity(start, target, tech.time, gravity),
+    makeReturnVelocity(start, target, tech),
     currentPreset(),
     techniqueKey
   );
   const result = simulatePath(start, baseVel, {
     gravity,
     spin:tech.spin,
-    bounce:0.88
+    bounce:0.88,
+    bounceBoost:tech.bounceBoost ?? 0
   });
   returnPath = result.points.filter(isValidPoint);
   updateLine(returnLine, returnPath);
@@ -780,6 +913,17 @@ function returnBall(techniqueKey){
     return;
   }
   animatePath(returnPath, ()=>judgeReturn(result), 7);
+}
+function makeReturnVelocity(start, target, tech){
+  const dx = target.x - start.x;
+  const dz = target.z - start.z;
+  const length = Math.hypot(dx, dz) || 1;
+  const horizontalSpeed = (tech.speed ?? 5) * (tech.hzScale ?? 1);
+  return {
+    x:dx / length * horizontalSpeed,
+    y:tech.vy ?? 0.5,
+    z:dz / length * horizontalSpeed
+  };
 }
 function adjustReturnForIncomingSpin(baseVel, preset, techniqueKey){
   const incomingTopspin = preset.variation?.spin?.topspin ?? 0;
@@ -866,7 +1010,20 @@ document.getElementById('nextBtn').addEventListener('click', ()=>{
 });
 document.querySelectorAll('[data-return-technique]').forEach(btn=>{
   btn.disabled = true;
-  btn.addEventListener('click', ()=>chooseReturn(btn.dataset.returnSide, btn.dataset.returnTechnique));
+  btn.addEventListener('click', event=>event.preventDefault());
+  btn.addEventListener('pointerdown', event=>{
+    if(btn.disabled || !inputWindowOpen) return;
+    const techniqueKey = btn.dataset.returnTechnique;
+    if(techniqueKey === 'loop'){
+      startLoopCharge(event, btn);
+      return;
+    }
+    event.preventDefault();
+    chooseReturn(btn.dataset.returnSide, techniqueKey);
+  });
+  btn.addEventListener('pointermove', moveLoopCharge);
+  btn.addEventListener('pointerup', cancelCharge);
+  btn.addEventListener('pointercancel', cancelCharge);
 });
 resize();
 updateScore();
