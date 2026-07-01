@@ -71,7 +71,7 @@ button:disabled{opacity:.45;cursor:not-allowed}
   <h1>Game 4 最小版</h1>
   <div style="display:flex;gap:10px;align-items:center">
     <div class="badge">Serve → Choice → Return</div>
-    <div style="font-size:11px;color:#555;font-family:monospace" title="build version">v1f6c</div>
+    <div style="font-size:11px;color:#555;font-family:monospace" title="build version">v3a9e</div>
   </div>
 </header>
 <main>
@@ -395,14 +395,17 @@ function simulateServe(preset){
   });
 }
 function findHitIndex(path){
-  const receiverBounce = path.bounces.find(b=>b.z > 0);
-  if(receiverBounce){
+  const receiverBounceIdx = path.bounces.findIndex(b=>b.z > 0);
+  if(receiverBounceIdx >= 0){
+    const receiverBounce = path.bounces[receiverBounceIdx];
+    // 若有第二個我方桌面 bounce，強制在它的 index 之前截斷
+    const nextBounce = path.bounces[receiverBounceIdx + 1];
+    const hardStop = nextBounce ? nextBounce.index : path.points.length;
     const start = receiverBounce.index + 1;
-    // 球彈起後 y > TABLE.top 才開始偵測下降（避免彈跳點重複 y 值誤觸）
-    for(let i = start; i < path.points.length - 1; i++){
+    for(let i = start; i < Math.min(hardStop, path.points.length - 1); i++){
       if(path.points[i].y > TABLE.top && path.points[i + 1].y < path.points[i].y) return i;
     }
-    return Math.min(path.points.length - 1, start + 8);
+    return Math.min(hardStop - 1, start + 15);
   }
   const fallback = path.points.findIndex(p=>p.z > 0.45 && p.y > TABLE.top);
   return fallback >= 0 ? fallback : Math.min(path.points.length - 1, 90);
