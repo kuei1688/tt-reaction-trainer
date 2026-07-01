@@ -71,7 +71,7 @@ button:disabled{opacity:.45;cursor:not-allowed}
   <h1>Game 4 最小版</h1>
   <div style="display:flex;gap:10px;align-items:center">
     <div class="badge">Serve → Choice → Return</div>
-    <div style="font-size:11px;color:#555;font-family:monospace" title="build version">v5f4a</div>
+    <div style="font-size:11px;color:#555;font-family:monospace" title="build version">v2b8c</div>
   </div>
 </header>
 <main>
@@ -179,12 +179,8 @@ camera.lookAt(0, 0.801, -0.08);
 const CAM_HOME_POS   = new THREE.Vector3(0, 1.72, 3.25);
 const CAM_LOOK_AT    = new THREE.Vector3(0, TABLE.top + 0.02, -0.08);
 const camPosTarget   = CAM_HOME_POS.clone();
+const camLookTarget  = CAM_LOOK_AT.clone(); // 正手階段二 lookAt 目標
 const camLookCurrent = CAM_LOOK_AT.clone(); // 目前 lookAt 插值位置
-// 選完正反手後 position 移動的偏移（相對 home）
-const CAM_OFFSET = {
-  forehand: { x: -0.25, y: 0, z: 0.15 },
-  backhand:  { x:  0.20, y: 0, z: 0.10 },
-};
 let camRaf = null;
 
 const table = new THREE.Mesh(
@@ -240,16 +236,25 @@ function setTrajectoryVisibility(){
 // ── Camera follow helpers ──────────────────────────────────────────────────
 function tickCamera(){
   if(phase === 'serve'){
-    // 階段一：position 不動，lookAt 極小幅跟球
-    camLookCurrent.lerp(ball.position, 0.02);
+    // 階段一：position 不動；lookAt 只做 x 軸輕微偏移（不追 y/z）
+    const tx = ball.position.x * 0.12;
+    camLookCurrent.x += (tx - camLookCurrent.x) * 0.02;
+    camLookCurrent.y = CAM_LOOK_AT.y;
+    camLookCurrent.z = CAM_LOOK_AT.z;
     camera.lookAt(camLookCurrent);
   } else if(phase === 'return'){
-    // 階段二：position 往偏移目標，lookAt 繼續跟球
+    // 階段二：position 往目標移
     camera.position.lerp(camPosTarget, 0.025);
-    camLookCurrent.lerp(ball.position, 0.025);
+    if(selectedSide === 'backhand'){
+      // 反手：lookAt 跟球，讓球路從正面飛來
+      camLookCurrent.lerp(ball.position, 0.025);
+    } else {
+      // 正手：lookAt 往固定側面點（camLookTarget），展現側向視角
+      camLookCurrent.lerp(camLookTarget, 0.025);
+    }
     camera.lookAt(camLookCurrent);
   } else {
-    // 階段三 / idle：position 回 camPosTarget（已含弧線控制），lookAt 回中心
+    // 階段三 / idle：position 和 lookAt 都歸位
     camera.position.lerp(camPosTarget, 0.03);
     camLookCurrent.lerp(CAM_LOOK_AT, 0.03);
     camera.lookAt(camLookCurrent);
@@ -257,6 +262,7 @@ function tickCamera(){
 }
 function resetCam(hard){
   camPosTarget.copy(CAM_HOME_POS);
+  camLookTarget.copy(CAM_LOOK_AT);
   if(hard){
     camera.position.copy(CAM_HOME_POS);
     camLookCurrent.copy(CAM_LOOK_AT);
@@ -376,7 +382,14 @@ function simulateServe(preset){
 }
 function findHitIndex(path){
   const receiverBounce = path.bounces.find(b=>b.z > 0);
-  if(receiverBounce) return Math.min(path.points.length - 1, receiverBounce.index + 18);
+  if(receiverBounce){
+    const start = receiverBounce.index + 1;
+    // 找彈起後 y 開始下降（velocity.y 由正變負）的那幀
+    for(let i = start; i < path.points.length - 1; i++){
+      if(path.points[i + 1].y < path.points[i].y) return i;
+    }
+    return Math.min(path.points.length - 1, start + 10);
+  }
   const fallback = path.points.findIndex(p=>p.z > 0.45 && p.y > TABLE.top);
   return fallback >= 0 ? fallback : Math.min(path.points.length - 1, 90);
 }
@@ -476,9 +489,17 @@ function playServe(){
 function chooseReturn(side, techniqueKey){
   if(phase !== 'choose_side' && phase !== 'choose_technique') return;
   selectedSide = side;
-  // 階段二：設定 position 偏移目標（tickCamera 在 return phase 會 lerp 過去）
-  const off = CAM_OFFSET[side] || CAM_OFFSET.forehand;
-  camPosTarget.set(CAM_HOME_POS.x + off.x, CAM_HOME_POS.y + off.y, CAM_HOME_POS.z + off.z);
+  // 階段二：根據正反手設定不同的攝影機策略
+  if(side === 'backhand'){
+    // 反手：position 側移到球路 x 位置，讓球從正前方飛來
+    const bx = hitPoint ? hitPoint.x * 0.65 : 0;
+    camPosTarget.set(bx, CAM_HOME_POS.y, CAM_HOME_POS.z);
+    // lookAt 在 tickCamera 裡直接追 ball.position
+  } else {
+    // 正手：position 往右側移 + 旋轉看側面（類側身對球路）
+    camPosTarget.set(CAM_HOME_POS.x + 0.45, CAM_HOME_POS.y, CAM_HOME_POS.z - 0.1);
+    camLookTarget.set(-0.35, TABLE.top + 0.05, 0.3); // 固定側面觀察點
+  }
   returnBall(techniqueKey);
 }
 function returnBall(techniqueKey){
