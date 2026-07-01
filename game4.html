@@ -71,7 +71,7 @@ button:disabled{opacity:.45;cursor:not-allowed}
   <h1>Game 4 最小版</h1>
   <div style="display:flex;gap:10px;align-items:center">
     <div class="badge">Serve → Choice → Return</div>
-    <div style="font-size:11px;color:#555;font-family:monospace" title="build version">v4c7b</div>
+    <div style="font-size:11px;color:#555;font-family:monospace" title="build version">v7e2a</div>
   </div>
 </header>
 <main>
@@ -393,11 +393,11 @@ function findHitIndex(path){
   const receiverBounce = path.bounces.find(b=>b.z > 0);
   if(receiverBounce){
     const start = receiverBounce.index + 1;
-    // 找彈起後 y 開始下降（velocity.y 由正變負）的那幀
+    // 球彈起後 y > TABLE.top 才開始偵測下降（避免彈跳點重複 y 值誤觸）
     for(let i = start; i < path.points.length - 1; i++){
-      if(path.points[i + 1].y < path.points[i].y) return i;
+      if(path.points[i].y > TABLE.top && path.points[i + 1].y < path.points[i].y) return i;
     }
-    return Math.min(path.points.length - 1, start + 10);
+    return Math.min(path.points.length - 1, start + 8);
   }
   const fallback = path.points.findIndex(p=>p.z > 0.45 && p.y > TABLE.top);
   return fallback >= 0 ? fallback : Math.min(path.points.length - 1, 90);
@@ -477,8 +477,8 @@ function prepareServe(){
   // 觸發門檻：對方桌面第一跳之後（z < 0 的 bounce + margin）
   const serverBounce = serve.bounces.find(b => b.z < 0);
   camTriggerZ = serverBounce ? serverBounce.z + 0.12 : -TABLE.length / 2;
-  // 反手 lookAt 用的預測落點 Vector3
-  if(hitPoint) hitPointVec.set(hitPoint.x, hitPoint.y, hitPoint.z);
+  // 反手 lookAt：hitPoint.x 對齊，y/z 壓到俯視高度
+  if(hitPoint) hitPointVec.set(hitPoint.x, 0.5, 0.3);
   updateLine(pathLine, serve.points.slice(0, Math.min(serve.points.length, hitIndex + 36)));
   updateLine(returnLine, []);
   setBall(preset.start);
