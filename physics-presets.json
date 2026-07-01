@@ -56,7 +56,7 @@
           "z": 0
         },
         "spin": {
-          "topspin": 0.8,
+          "topspin": -0.8,
           "sidespin": -0.18
         },
         "bounce": 0.95
