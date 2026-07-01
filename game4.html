@@ -69,7 +69,10 @@ button:disabled{opacity:.45;cursor:not-allowed}
 <body translate="no" class="notranslate">
 <header>
   <h1>Game 4 最小版</h1>
-  <div class="badge">Serve → Choice → Return</div>
+  <div style="display:flex;gap:10px;align-items:center">
+    <div class="badge">Serve → Choice → Return</div>
+    <div style="font-size:11px;color:#555;font-family:monospace" title="build version">v7a1b</div>
+  </div>
 </header>
 <main>
   <section class="scene-wrap">
@@ -390,14 +393,16 @@ function animatePath(points, onDone, speedMs){
     const progress = Math.min(1, (now - playStart) / duration);
     const index = Math.min(safePoints.length - 1, Math.floor(progress * (safePoints.length - 1)));
     setBall(safePoints[index]);
-    camLookTarget.set(safePoints[index].x, safePoints[index].y, safePoints[index].z);
-    tickCamera(0.05, 0.08);
+    try{
+      camLookTarget.set(safePoints[index].x, safePoints[index].y, safePoints[index].z);
+      tickCamera(0.05, 0.08);
+    }catch(e){ /* 相機跟隨失敗不影響球動畫 */ }
     render();
     if(progress < 1){
       animation = requestAnimationFrame(tick);
     }else{
       animation = null;
-      startCamReturn(); // 球動畫結束，把相機 lerp 交還給 camRaf
+      try{ startCamReturn(); }catch(e){}
       onDone?.();
     }
   }
