@@ -27,13 +27,13 @@ canvas{display:block;width:100%;height:100%;touch-action:manipulation}
 .pill.bad{border-color:rgba(255,123,114,.65);color:var(--red)}
 .pill.warn{border-color:rgba(210,153,34,.65);color:var(--yellow)}
 .center-tip{position:absolute;left:50%;bottom:18px;transform:translateX(-50%);background:rgba(13,17,23,.88);border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-weight:800;color:var(--text);text-align:center;min-width:min(520px,calc(100% - 24px))}
-.action-pad{position:absolute;left:12px;right:12px;bottom:14px;display:none;grid-template-columns:1fr 2fr;gap:10px;pointer-events:none}
+.action-pad{position:absolute;left:12px;right:12px;bottom:12px;display:none;grid-template-columns:1fr 2fr;gap:9px;align-items:end;pointer-events:none}
 .action-pad.active{display:grid;pointer-events:auto}
-.action-zone{display:grid;grid-template-rows:auto 1fr;gap:8px;min-height:132px;padding:10px;border:1px solid rgba(88,166,255,.38);border-radius:8px;background:rgba(13,17,23,.78);box-shadow:0 12px 32px rgba(0,0,0,.35)}
-.action-zone.forehand{border-color:rgba(63,185,80,.42)}
-.zone-label{font-size:13px;font-weight:900;color:var(--muted)}
-.zone-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;align-content:end}
-.zone-actions button{min-height:78px;font-size:17px}
+.action-zone{display:grid;grid-template-rows:auto 1fr;gap:7px;min-height:108px;padding:8px;border:1px solid rgba(88,166,255,.34);border-radius:8px;background:rgba(13,17,23,.34);box-shadow:0 10px 26px rgba(0,0,0,.22);backdrop-filter:blur(2px)}
+.action-zone.forehand{border-color:rgba(63,185,80,.36)}
+.zone-label{font-size:12px;font-weight:900;color:rgba(240,246,252,.72);text-shadow:0 1px 2px rgba(0,0,0,.7)}
+.zone-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;align-content:end}
+.zone-actions button{min-height:58px;font-size:16px;background:rgba(33,38,45,.72);box-shadow:0 8px 18px rgba(0,0,0,.22)}
 .action-zone.backhand .zone-actions{grid-template-columns:1fr}
 aside{border-left:1px solid var(--border);background:var(--surface);min-height:0;overflow:auto}
 .section{padding:12px;border-bottom:1px solid var(--border)}
@@ -47,6 +47,8 @@ button.warn{background:rgba(210,153,34,.14);border-color:rgba(210,153,34,.65);co
 button.active{outline:2px solid var(--blue);background:rgba(88,166,255,.18)}
 button:disabled{opacity:.45;cursor:not-allowed}
 .tech-grid{display:grid;gap:8px}
+.option-row{display:flex;align-items:center;gap:9px;padding:9px 10px;border:1px solid var(--border);border-radius:7px;background:rgba(13,17,23,.45);font-size:13px;font-weight:800;color:var(--text);cursor:pointer}
+.option-row input{width:18px;height:18px;accent-color:var(--blue)}
 .meta{font-size:12px;color:var(--muted);line-height:1.55;white-space:pre-wrap}
 .result{font-size:16px;font-weight:900;line-height:1.45}
 .result.ok{color:var(--green)}
@@ -59,8 +61,8 @@ button:disabled{opacity:.45;cursor:not-allowed}
   h1{font-size:18px}
   .center-tip{bottom:10px;min-width:calc(100% - 20px);font-size:13px}
   .action-pad{left:8px;right:8px;bottom:8px;gap:7px}
-  .action-zone{min-height:112px;padding:8px}
-  .zone-actions button{min-height:64px;font-size:15px;padding:8px}
+  .action-zone{min-height:96px;padding:7px}
+  .zone-actions button{min-height:50px;font-size:14px;padding:7px}
 }
 </style>
 </head>
@@ -114,6 +116,10 @@ button:disabled{opacity:.45;cursor:not-allowed}
       <div class="list">
         <button id="playBtn" class="primary">開始發球</button>
         <button id="nextBtn">下一球</button>
+        <label class="option-row">
+          <input id="trajectoryToggle" type="checkbox">
+          <span>顯示軌跡</span>
+        </label>
       </div>
     </div>
     <div class="section">
@@ -149,6 +155,7 @@ let playStart = 0;
 let animation = null;
 let hitPoint = null;
 let score = {ok:0, fail:0};
+let showTrajectories = false;
 
 const canvas = document.getElementById('scene');
 const renderer = new THREE.WebGLRenderer({canvas, antialias:true});
@@ -199,6 +206,7 @@ let pathLine = makeLine([], 0xffd84d, 0.9);
 scene.add(pathLine);
 let returnLine = makeLine([], 0x58a6ff, 0.85);
 scene.add(returnLine);
+setTrajectoryVisibility();
 
 function makeLine(points, color, opacity){
   const geometry = new THREE.BufferGeometry().setFromPoints(points.map(p=>new THREE.Vector3(p.x,p.y,p.z)));
@@ -208,6 +216,10 @@ function makeLine(points, color, opacity){
 function updateLine(line, points){
   line.geometry.dispose();
   line.geometry = new THREE.BufferGeometry().setFromPoints(points.map(p=>new THREE.Vector3(p.x,p.y,p.z)));
+}
+function setTrajectoryVisibility(){
+  if(pathLine) pathLine.visible = showTrajectories;
+  if(returnLine) returnLine.visible = showTrajectories;
 }
 function resize(){
   const rect = canvas.parentElement.getBoundingClientRect();
@@ -486,6 +498,11 @@ async function loadPresets(){
   prepareServe();
 }
 document.getElementById('playBtn').addEventListener('click', playServe);
+document.getElementById('trajectoryToggle').addEventListener('change', event=>{
+  showTrajectories = event.target.checked;
+  setTrajectoryVisibility();
+  render();
+});
 document.getElementById('nextBtn').addEventListener('click', ()=>{
   selectedServeIndex = (selectedServeIndex + 1) % Math.max(1, presets.length);
   renderServeButtons();
