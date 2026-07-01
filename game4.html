@@ -71,7 +71,7 @@ button:disabled{opacity:.45;cursor:not-allowed}
   <h1>Game 4 最小版</h1>
   <div style="display:flex;gap:10px;align-items:center">
     <div class="badge">Serve → Choice → Return</div>
-    <div style="font-size:11px;color:#555;font-family:monospace" title="build version">v7a1b</div>
+    <div style="font-size:11px;color:#555;font-family:monospace" title="build version">v3c9f</div>
   </div>
 </header>
 <main>
@@ -247,24 +247,35 @@ function resetCam(hard){
     camera.lookAt(camLookCurrent);
   }
 }
-function setCamForReturn(side, isLong){
-  const xOff = side === 'forehand' ? -0.3 :  0.3;
-  const zOff = isLong ? 0.3 : 0.6;
-  camPosTarget.set(CAM_HOME_POS.x + xOff, CAM_HOME_POS.y, CAM_HOME_POS.z + zOff);
-  if(hitPoint) camLookTarget.set(hitPoint.x, hitPoint.y + 0.1, hitPoint.z);
-}
 function startCamReturn(){
   if(camRaf) cancelAnimationFrame(camRaf);
   function loop(){
-    // 球動畫正在跑時讓位，由 animatePath 負責渲染
-    if(animation !== null){ camRaf = null; return; }
     tickCamera(0.06, 0.07);
-    render();
+    // 球動畫跑時不重複 render，交給 animatePath 的 tick 負責
+    if(animation === null) render();
     const done = camera.position.distanceTo(camPosTarget) < 0.002
               && camLookCurrent.distanceTo(camLookTarget) < 0.002;
     camRaf = done ? null : requestAnimationFrame(loop);
   }
   camRaf = requestAnimationFrame(loop);
+}
+function triggerBodyArc(side){
+  // 正手：往右備位 → 往左隨揮 → 歸中
+  // 反手：輕微穩定偏移 → 歸中
+  camLookTarget.copy(CAM_HOME_LOOK);
+  if(side === 'forehand'){
+    camPosTarget.set(CAM_HOME_POS.x + 0.18, CAM_HOME_POS.y - 0.02, CAM_HOME_POS.z);
+    startCamReturn();
+    setTimeout(()=>{
+      camPosTarget.set(CAM_HOME_POS.x - 0.22, CAM_HOME_POS.y + 0.02, CAM_HOME_POS.z - 0.08);
+      startCamReturn();
+    }, 160);
+    setTimeout(()=>{ resetCam(false); startCamReturn(); }, 460);
+  } else {
+    camPosTarget.set(CAM_HOME_POS.x - 0.1, CAM_HOME_POS.y, CAM_HOME_POS.z + 0.05);
+    startCamReturn();
+    setTimeout(()=>{ resetCam(false); startCamReturn(); }, 300);
+  }
 }
 function resize(){
   const rect = canvas.parentElement.getBoundingClientRect();
@@ -393,10 +404,7 @@ function animatePath(points, onDone, speedMs){
     const progress = Math.min(1, (now - playStart) / duration);
     const index = Math.min(safePoints.length - 1, Math.floor(progress * (safePoints.length - 1)));
     setBall(safePoints[index]);
-    try{
-      camLookTarget.set(safePoints[index].x, safePoints[index].y, safePoints[index].z);
-      tickCamera(0.05, 0.08);
-    }catch(e){ /* 相機跟隨失敗不影響球動畫 */ }
+    try{ tickCamera(0.05, 0.07); }catch(e){}
     render();
     if(progress < 1){
       animation = requestAnimationFrame(tick);
@@ -471,9 +479,7 @@ function playServe(){
 function chooseReturn(side, techniqueKey){
   if(phase !== 'choose_side' && phase !== 'choose_technique') return;
   selectedSide = side;
-  const isLong = currentPreset()?.tags?.length !== 'short';
-  setCamForReturn(side, isLong);
-  startCamReturn();
+  triggerBodyArc(side);
   returnBall(techniqueKey);
 }
 function returnBall(techniqueKey){
@@ -532,16 +538,9 @@ function judgeReturn(result){
   showResult(ok, reason, detail);
   setPhase('result');
   document.getElementById('centerTip').textContent = ok ? '成功，按下一球繼續' : `${reason}，按下一球再試`;
-  // Camera return：正手先略超中軸再歸位，反手直接歸位
-  if(selectedSide === 'forehand'){
-    camPosTarget.set(-0.1, CAM_HOME_POS.y, CAM_HOME_POS.z);
-    camLookTarget.copy(CAM_HOME_LOOK);
-    startCamReturn();
-    setTimeout(()=>{ resetCam(false); startCamReturn(); }, 220);
-  } else {
-    resetCam(false);
-    startCamReturn();
-  }
+  // 判定後確保歸位（弧線動畫若還沒跑完，這裡覆蓋掉）
+  resetCam(false);
+  startCamReturn();
 }
 function renderServeButtons(){
   const wrap = document.getElementById('serveList');
