@@ -241,7 +241,8 @@ epsilon = clamp(baselineEpsilon - spinPenalty, EPSILON_MIN, EPSILON)
 **使用者的長期考量：** 之後球拍會有不同膠皮（正膠/反膠/防弧）跟底板（全木/碳纖維），這些都會影響回擊表現。所以這次不是單純修 bug，而是要把「球拍材質」做成獨立、可覆寫的參數，即使現在只給一組共用預設值，之後要做不同膠皮設定時只需要覆寫兩個常數，不用動接觸力學本身。**球的材質差異使用者決定先忽略不計。**
 
 **文獻依據（WebSearch，非精確數值，工程估計居多）：**
-- 拍面法向反彈係數：多篇桌球膠皮衝擊研究（[MDPI 9(1):158](https://www.mdpi.com/2076-3417/9/1/158)、[ScienceDirect Non-Linearity of Ball/Rubber Impact](https://www.sciencedirect.com/science/article/pii/S1877705816307548)）指出橡膠反彈係數約在 **0.8~0.9** 之間，會隨撞擊速度增加而下降；一般橡膠球 CoR 約 0.85~0.95。採用 `PADDLE_RESTITUTION_V2 = 0.85`（落在文獻範圍內）。
+- 拍面法向反彈係數：多篇桌球膠皮衝擊研究（[MDPI 9(1):158](https://www.mdpi.com/2076-3417/9/1/158)、[ScienceDirect Non-Linearity of Ball/Rubber Impact](https://www.sciencedirect.com/science/article/pii/S1877705816307548)）指出橡膠反彈係數約在 **0.8~0.9** 之間。
+- **反彈係數會隨撞擊速度變化，不是固定值**（[ISJOS Impact Velocity and CoR](https://www.isjos.org/pdfs/ISJOS_v15_p2.pdf)、ScienceDirect 同上）：CoR 會隨撞擊速度增加**線性下降**，低速（~2 m/s）到高速（~12 m/s）之間差異可達 **0.15**。這點原本查到但沒有整合，後來使用者主動要求補上——已實作成 `dynamicPaddleEpsilon()`，比照 Phase 2 幫桌面做的 `dynamicEpsilon()`：低速端 `PADDLE_RESTITUTION_LOW=0.9`，高速端 `PADDLE_RESTITUTION_HIGH=0.75`，用撞擊速度（拍面相對速度的法向分量）在 `PADDLE_SPEED_LOW=2.0` ~ `PADDLE_SPEED_HIGH=12.0` 之間線性插值。物理意義：殺球等重擊會讓球拍損耗更多能量比例，速度越快、反彈效率越低，這一點原本的固定係數版本沒有反映。
 - 拍面切向摩擦係數：ITTF 自 2008 年起規定膠皮最低摩擦力為 25 mN（用專用儀器量測的規範值，不是直接的無因次庫倫 μ，無法直接套用）。查無精確的無因次摩擦係數文獻值。**工程估計** `PADDLE_FRICTION = 0.4`（比桌面的 `μ=0.13` 高，因為橡膠抓球力明顯強於桌面硬質貼合材），標記為之後可能需要再校準的暫定值，之後要做膠皮差異化時應該是主要調整對象。
 
 **核心公式開發與驗證：**
@@ -259,9 +260,9 @@ epsilon = clamp(baselineEpsilon - spinPenalty, EPSILON_MIN, EPSILON)
 **校準（自動化搜尋，只用 2 顆無旋轉發球當基準，刻意不用下旋 preset 校準）：**
 - 使用者明確指出第一版校準的錯誤：不應該拿全部 13 顆（含 9 顆下旋/側下旋）一起搜「怎樣參數讓最多顆成功」，這等於在教攻球「作弊打穿旋轉」。正確做法是只用 `no_spin_long_forehand`/`no_spin_long_backhand` 這 2 顆無旋轉發球去校準「一般平擊回擊該有的基礎力道跟拍面角度」，再讓下旋 preset 的成功/失敗自然浮現，不去人工調整讓它們成功。
 - 搜尋變數：`techniqueVel.{y,z}`（`x` 由瞄準修正自動解出，不參與搜尋）、拍面法向的 y 傾角 `tiltY`。
-- **最終校準結果**（已套用）：
-  - 攻球：`techniqueVel = {x:0, y:-0.189, z:-1}`，`racketNormal = normalize({x:0, y:0.1, z:-1})`
-  - 切球：`techniqueVel = {x:0, y:0.054, z:-1}`，`racketNormal = normalize({x:0, y:0.1, z:-1})`
+- **最終校準結果**（已套用，含 `dynamicPaddleEpsilon` 後的重新校準值）：
+  - 攻球：`techniqueVel = {x:0, y:-0.234, z:-1}`，`racketNormal = normalize({x:0, y:0.1, z:-1})`
+  - 切球：`techniqueVel = {x:0, y:0.011, z:-1}`，`racketNormal = normalize({x:0, y:0.1, z:-1})`
   - 2 顆無旋轉基準：攻球/切球皆成功（netClearance ≈ 0.08~0.09）。
 
 **驗收標準：** 用只靠無旋轉球校準出的參數去測全部 16 顆發球（扣掉 Phase 5 已知的 3 顆過不了網的），旋轉應該要自然造成差異化的成功/失敗結果，不需要額外的人工補償。✅ **已達成，結果完全符合 Phase 0 的設計原則：**

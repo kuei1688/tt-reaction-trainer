@@ -178,15 +178,20 @@ const STORAGE_KEY = 'tt-return-studio-tuning-v2';
 // 攻球/切球改用跟球對桌面同一套接觸力學（bounceOffPlane，見上方），球拍視為
 // 一個有自己法向量、自己揮拍速度的「移動中的平面」。球拍材質（膠皮/底板）
 // 目前先用一組共用的合理預設值，之後要做不同膠皮/底板時，只需要覆寫
-// PADDLE_RESTITUTION_V2 / PADDLE_FRICTION 這兩個常數，不用動接觸力學本身。
-const PADDLE_RESTITUTION_V2 = 0.85; // 拍面法向反彈係數，文獻：橡膠反彈係數約 0.8~0.9
+// PADDLE_RESTITUTION_LOW/HIGH / PADDLE_FRICTION 這幾個常數，不用動接觸力學本身。
+// 拍面法向反彈係數：文獻顯示會隨撞擊速度線性下降（低速~2m/s 約 0.9，高速~12m/s 約 0.75，
+// 差異可達 0.15），不是固定值，見 dynamicPaddleEpsilon()。
+const PADDLE_RESTITUTION_LOW = 0.9;   // 低速（~2m/s）反彈係數上限
+const PADDLE_RESTITUTION_HIGH = 0.75; // 高速（~12m/s）反彈係數下限
+const PADDLE_SPEED_LOW = 2.0;
+const PADDLE_SPEED_HIGH = 12.0;
 const PADDLE_FRICTION = 0.4;        // 拍面切向摩擦係數，工程估計值（無精確文獻，之後可依膠皮種類覆寫）
 const PADDLE_RESTITUTION = -0.9;    // 舊模型殘留常數，目前只有 loop（拉球）還在用，尚未套用球拍接觸力學
 
 const DEFAULT_TECHNIQUES = {
-  forehand_attack: {label:'正手攻球', model:'attack', techniqueVel:{x:0, y:-0.189, z:-1}, racketNormal:normalize({x:0, y:0.1, z:-1}), bounceBoost:0},
-  backhand_attack: {label:'反手攻球', model:'attack', techniqueVel:{x:0, y:-0.189, z:-1}, racketNormal:normalize({x:0, y:0.1, z:-1}), bounceBoost:0},
-  push: {label:'切球', model:'push', techniqueVel:{x:0, y:0.054, z:-1}, racketNormal:normalize({x:0, y:0.1, z:-1}), bounceBoost:0},
+  forehand_attack: {label:'正手攻球', model:'attack', techniqueVel:{x:0, y:-0.234, z:-1}, racketNormal:normalize({x:0, y:0.1, z:-1}), bounceBoost:0},
+  backhand_attack: {label:'反手攻球', model:'attack', techniqueVel:{x:0, y:-0.234, z:-1}, racketNormal:normalize({x:0, y:0.1, z:-1}), bounceBoost:0},
+  push: {label:'切球', model:'push', techniqueVel:{x:0, y:0.011, z:-1}, racketNormal:normalize({x:0, y:0.1, z:-1}), bounceBoost:0},
   loop: {label:'拉球', model:'direct', techniqueVel:{x:-0.6, y:1.0, z:-1.65}, spin:{topspin:0.9,sidespin:0}, bounceBoost:0.3}
 };
 
@@ -318,11 +323,18 @@ function solveRacketVelXForTargetOutX(incomingVel, incomingSpin, racketNormal, t
   }
   return x1;
 }
+function dynamicPaddleEpsilon(incomingVel, planeVel, planeNormal){
+  const relVel = subVec3(incomingVel, planeVel);
+  const normalSpeed = Math.abs(dotVec3(relVel, planeNormal));
+  const t = clamp((normalSpeed - PADDLE_SPEED_LOW) / (PADDLE_SPEED_HIGH - PADDLE_SPEED_LOW), 0, 1);
+  return PADDLE_RESTITUTION_LOW + (PADDLE_RESTITUTION_HIGH - PADDLE_RESTITUTION_LOW) * t;
+}
 function makeRacketReturnVelocity(incomingVel, incomingSpin, tech){
   const spin = incomingSpin || {topspin:0, sidespin:0};
-  const aimedX = solveRacketVelXForTargetOutX(incomingVel, spin, tech.racketNormal, tech.techniqueVel, PADDLE_RESTITUTION_V2, PADDLE_FRICTION, 0);
+  const epsilon = dynamicPaddleEpsilon(incomingVel, tech.techniqueVel, tech.racketNormal);
+  const aimedX = solveRacketVelXForTargetOutX(incomingVel, spin, tech.racketNormal, tech.techniqueVel, epsilon, PADDLE_FRICTION, 0);
   const planeVel = {x:aimedX, y:tech.techniqueVel.y, z:tech.techniqueVel.z};
-  return bounceOffPlane(incomingVel, spin, tech.racketNormal, planeVel, PADDLE_RESTITUTION_V2, PADDLE_FRICTION);
+  return bounceOffPlane(incomingVel, spin, tech.racketNormal, planeVel, epsilon, PADDLE_FRICTION);
 }
 function simulatePath(start, velocity, options){
   const gravity = options.gravity ?? -4.2;
