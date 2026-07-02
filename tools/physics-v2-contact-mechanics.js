@@ -31,6 +31,35 @@ const M = 0.0027;    // 球質量 (kg)，ITTF 2.7g
 const ALPHA = 2 / 3;  // 薄殼球轉動慣量係數：I = ALPHA * M * R²
 const I = ALPHA * M * R * R;
 const EPSILON = 0.876; // 法向反彈係數（ITTF 球桌測試，30cm 落下彈回 23cm）
+const EPSILON_OBLIQUE = 0.57; // 斜向撞擊約 83 度時的實測反彈係數
+const EPSILON_MIN = 0.45; // 資料不足時先保守限制，避免劇烈滑動讓垂直反彈歸零
+const OBLIQUE_ANGLE_DEG = 83;
+
+function clamp(value, min, max) {
+  return Math.max(min, Math.min(max, value));
+}
+
+function contactSlipSpeed(vel, spin) {
+  const slipZ = vel.z - (spin.topspin || 0) * R;
+  const slipX = vel.x + (spin.sidespin || 0) * R;
+  return Math.hypot(slipX, slipZ);
+}
+
+function dynamicEpsilon(vel, spin) {
+  const normalSpeed = Math.abs(vel.y);
+  if (normalSpeed < 1e-9) return EPSILON_MIN;
+
+  const slip = contactSlipSpeed(vel, spin || {topspin: 0, sidespin: 0});
+  const obliqueSlip = normalSpeed / Math.tan(OBLIQUE_ANGLE_DEG * Math.PI / 180);
+
+  if (slip <= obliqueSlip) {
+    const t = clamp(slip / obliqueSlip, 0, 1);
+    return EPSILON + (EPSILON_OBLIQUE - EPSILON) * t;
+  }
+
+  const extra = clamp((slip - obliqueSlip) / (obliqueSlip * 3), 0, 1);
+  return EPSILON_OBLIQUE + (EPSILON_MIN - EPSILON_OBLIQUE) * extra;
+}
 
 // 一維「球撞桌 + 旋轉」問題的通用解
 // v: 觸桌前的切向速度（沿某個水平軸）
@@ -77,8 +106,9 @@ function bounceTangentialAxis(v, omega, normalImpulse, mu) {
 // vel = {x, y, z}, spin = {topspin, sidespin} 皆為 rad/s（Phase 0 規格）
 function bounceWithSpinPhysical(vel, spin, mu) {
   if (vel.y >= 0) throw new Error('bounceWithSpinPhysical 只處理下墜中的球 (vy<0)');
-  const normalImpulse = M * (1 + EPSILON) * Math.abs(vel.y);
-  const vyAfter = -EPSILON * vel.y;
+  const epsilon = dynamicEpsilon(vel, spin);
+  const normalImpulse = M * (1 + epsilon) * Math.abs(vel.y);
+  const vyAfter = -epsilon * vel.y;
 
   // z 軸切向：對應 topspin（ωx）。slip_z = vz - ωx*R
   const zResult = bounceTangentialAxis(vel.z, spin.topspin, normalImpulse, mu);
@@ -89,11 +119,30 @@ function bounceWithSpinPhysical(vel, spin, mu) {
   return {
     vel: { x: xResult.v2, y: vyAfter, z: zResult.v2 },
     spin: { topspin: zResult.omega2, sidespin: -xResult.omega2 },
+    epsilon,
     regime: { topspin: zResult.regime, sidespin: xResult.regime },
   };
 }
 
-module.exports = { R, M, I, ALPHA, EPSILON, bounceTangentialAxis, bounceWithSpinPhysical };
+function bounceApexHeight(startY, vyAfter, gravity = -4.2) {
+  return startY + (vyAfter * vyAfter) / (2 * Math.abs(gravity));
+}
+
+module.exports = {
+  R,
+  M,
+  I,
+  ALPHA,
+  EPSILON,
+  EPSILON_OBLIQUE,
+  EPSILON_MIN,
+  OBLIQUE_ANGLE_DEG,
+  contactSlipSpeed,
+  dynamicEpsilon,
+  bounceApexHeight,
+  bounceTangentialAxis,
+  bounceWithSpinPhysical,
+};
 
 // ── 單元測試（依 docs/physics-engine-v2-plan.md Phase 1 checklist）─────────
 if (require.main === module) {
@@ -110,7 +159,7 @@ if (require.main === module) {
     const spin = { topspin: 0, sidespin: 0 };
     const result = bounceWithSpinPhysical(vel, spin, MU_TEST);
     console.log('  結果:', result);
-    check('垂直反彈係數正確 (vy2 ≈ -ε*vy1)', Math.abs(result.vel.y - 3 * EPSILON) < 1e-6, result.vel.y);
+    check('垂直反彈係數正確 (vy2 ≈ -ε*vy1)', Math.abs(result.vel.y - 3 * result.epsilon) < 1e-6, result.vel.y);
     check('零旋轉時水平方向應該只有摩擦造成的些微變化，不該爆衝', Math.abs(result.vel.z) < 4 * 1.2, result.vel.z);
     check('零旋轉球撞擊後應該會產生新的旋轉（角動量不再是 0）', Math.abs(result.spin.topspin) > 0, result.spin.topspin);
   }
@@ -123,6 +172,20 @@ if (require.main === module) {
     const result = bounceWithSpinPhysical(vel, spinWeak, MU_TEST);
     console.log('  結果:', result);
     check('下旋球撞桌後前進速度應該比入射速度低（下旋抵消前進）', result.vel.z < vel.z, { before: vel.z, after: result.vel.z });
+  }
+
+  console.log('');
+  console.log('=== 測試 2b：20rps 下旋會讓彈起弧線比不轉球更低 ===');
+  {
+    const vel = { x: 0, y: -3, z: 0.3 };
+    const noSpin = bounceWithSpinPhysical(vel, { topspin: 0, sidespin: 0 }, MU_TEST);
+    const backspin20 = bounceWithSpinPhysical(vel, { topspin: -125.66, sidespin: 0 }, MU_TEST);
+    const noSpinApex = bounceApexHeight(0.781, noSpin.vel.y);
+    const backspinApex = bounceApexHeight(0.781, backspin20.vel.y);
+    console.log('  不轉:', {epsilon: noSpin.epsilon, apex: noSpinApex});
+    console.log('  20rps 下旋:', {epsilon: backspin20.epsilon, apex: backspinApex});
+    check('20rps 下旋的動態 ε 應低於不轉球', backspin20.epsilon < noSpin.epsilon, {noSpin: noSpin.epsilon, backspin20: backspin20.epsilon});
+    check('20rps 下旋撞桌後最高點應明顯比不轉球低', backspinApex < noSpinApex - 0.02, {noSpinApex, backspinApex});
   }
 
   console.log('');
