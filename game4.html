@@ -239,7 +239,12 @@ const PADDLE_RESTITUTION = -0.9;    // 舊模型殘留常數，目前只有 loop
 const TECHNIQUES = {
   forehand_attack: {label:'正手攻球', model:'attack', techniqueVel:{x:0, y:-0.234, z:-1}, racketNormal:normalize({x:0, y:0.1, z:-1})},
   backhand_attack: {label:'反手攻球', model:'attack', techniqueVel:{x:0, y:-0.234, z:-1}, racketNormal:normalize({x:0, y:0.1, z:-1})},
-  push: {label:'切球', model:'push', techniqueVel:{x:0, y:0.011, z:-1}, racketNormal:normalize({x:0, y:0.1, z:-1})},
+  // 切球：拍面角度加大、力道減弱，讓彈跳後下降期的整個時機窗口都能成功（原本只有
+  // ~10 幀的窄窗口，現在 forehand 全窗口成功、backhand 前半段成功），且落點會隨切球
+  // 時機變晚而越靠近網，符合「越晚切效果越好」的設計。已知殘留問題：短球下旋掛網、
+  // 部分側下旋長球在窗口後段出界，需要依距離網遠近動態調整力道才能完整解決（比照
+  // 發球的長短球分級），這次先不做，見 docs/physics-engine-v2-plan.md Phase 6。
+  push: {label:'切球', model:'push', techniqueVel:{x:0, y:0, z:-0.2}, racketNormal:normalize({x:0, y:0.6, z:-1})},
   loop: {label:'拉球', model:'direct', techniqueVel:{x:-0.6, y:1.0, z:-1.65}, spin:{topspin:0.9,sidespin:0}, bounceBoost:0.3}
 };
 let presets = [];
