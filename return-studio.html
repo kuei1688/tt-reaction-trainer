@@ -174,19 +174,20 @@ const SPIN_EPSILON_REFERENCE = 6.0; // 球面旋轉速度達到此值時，套�
 const CONTACT_FRICTION_MU = 0.13;   // Phase 2 校準定案值
 const NET_COLLISION = {depth:0.012, zRestitution:0.16, xDamping:0.55, yDamping:0.35};
 const STORAGE_KEY = 'tt-return-studio-tuning-v2';
-// 回擊公式：攻球/拉球走直向反彈；切球拆成拍面法向量反彈與切向摩擦衰減。
-const PADDLE_RESTITUTION = -0.9;
-const PUSH_NORMAL = normalize({x:0, y:1, z:-0.2});
-const PUSH_TANGENTIAL_RETAIN = -0.60;
+// 回擊：球拍接觸力學（Phase 6，docs/physics-engine-v2-plan.md）。
+// 攻球/切球改用跟球對桌面同一套接觸力學（bounceOffPlane，見上方），球拍視為
+// 一個有自己法向量、自己揮拍速度的「移動中的平面」。球拍材質（膠皮/底板）
+// 目前先用一組共用的合理預設值，之後要做不同膠皮/底板時，只需要覆寫
+// PADDLE_RESTITUTION_V2 / PADDLE_FRICTION 這兩個常數，不用動接觸力學本身。
+const PADDLE_RESTITUTION_V2 = 0.85; // 拍面法向反彈係數，文獻：橡膠反彈係數約 0.8~0.9
+const PADDLE_FRICTION = 0.4;        // 拍面切向摩擦係數，工程估計值（無精確文獻，之後可依膠皮種類覆寫）
+const PADDLE_RESTITUTION = -0.9;    // 舊模型殘留常數，目前只有 loop（拉球）還在用，尚未套用球拍接觸力學
 
-// Phase 5\uff1atechniqueVel \u5df2\u91dd\u5c0d\u7269\u7406\u5f15\u64ce v2 \u91cd\u65b0\u81ea\u52d5\u641c\u5c0b\u6821\u6e96\uff082026-07-02\uff09\uff0c
-// \u5c0d 13 \u9846\u6709\u6548\u767c\u7403\uff08\u6392\u9664 3 \u9846\u5df2\u77e5\u904e\u4e0d\u4e86\u7db2\u7684\u91cd\u4e0b\u65cb preset\uff09\u8a55\u5206\u512a\u5316\uff0c
-// \u8a73\u898b docs/physics-engine-v2-plan.md Phase 5\u3002
 const DEFAULT_TECHNIQUES = {
-  forehand_attack: {label:'\u6b63\u624b\u653b\u7403', model:'attack', techniqueVel:{x:0, y:0.4, z:-3.52}, spin:{topspin:0,sidespin:0}, bounceBoost:0},
-  backhand_attack: {label:'\u53cd\u624b\u653b\u7403', model:'attack', techniqueVel:{x:0, y:0.4, z:-3.52}, spin:{topspin:0,sidespin:0}, bounceBoost:0},
-  push: {label:'\u5207\u7403', model:'push', techniqueVel:{x:0, y:0.74, z:-2.0}, spin:{topspin:-1.05,sidespin:0}, bounceBoost:0},
-  loop: {label:'\u62c9\u7403', model:'direct', techniqueVel:{x:-0.6, y:1.0, z:-1.65}, spin:{topspin:0.9,sidespin:0}, bounceBoost:0.3}
+  forehand_attack: {label:'正手攻球', model:'attack', techniqueVel:{x:0, y:-0.189, z:-1}, racketNormal:normalize({x:0, y:0.1, z:-1}), bounceBoost:0},
+  backhand_attack: {label:'反手攻球', model:'attack', techniqueVel:{x:0, y:-0.189, z:-1}, racketNormal:normalize({x:0, y:0.1, z:-1}), bounceBoost:0},
+  push: {label:'切球', model:'push', techniqueVel:{x:0, y:0.054, z:-1}, racketNormal:normalize({x:0, y:0.1, z:-1}), bounceBoost:0},
+  loop: {label:'拉球', model:'direct', techniqueVel:{x:-0.6, y:1.0, z:-1.65}, spin:{topspin:0.9,sidespin:0}, bounceBoost:0.3}
 };
 
 let TECHNIQUES = deepClone(DEFAULT_TECHNIQUES);
@@ -259,6 +260,70 @@ function bounceWithSpinPhysical(vel, spin, mu){
     regime:{topspin:zResult.regime, sidespin:xResult.regime}
   };
 }
+// ── 物理引擎 v2：球拍接觸力學（通用版，任意拍面法向 + 拍面自身速度）──────────
+// 逐字對齊 game4.html / tools/racket-contact-mechanics.js。
+function crossVec3(a, b){
+  return {x:a.y*b.z-a.z*b.y, y:a.z*b.x-a.x*b.z, z:a.x*b.y-a.y*b.x};
+}
+function subVec3(a, b){ return {x:a.x-b.x, y:a.y-b.y, z:a.z-b.z}; }
+function scaleVec3(v, s){ return {x:v.x*s, y:v.y*s, z:v.z*s}; }
+function dotVec3(a, b){ return a.x*b.x + a.y*b.y + a.z*b.z; }
+function bounceOffPlane(vel, spin, planeNormal, planeVel, restitution, friction){
+  const omega = {x:(spin && spin.topspin) || 0, y:0, z:(spin && spin.sidespin) || 0};
+  const relVel = subVec3(vel, planeVel);
+  const normalSpeed = dotVec3(relVel, planeNormal);
+  const normalImpulse = BALL_MASS * (1 + restitution) * Math.abs(normalSpeed);
+  const normalRelAfter = -restitution * normalSpeed;
+  const r = scaleVec3(planeNormal, -BALL_RADIUS);
+  const rotContact = crossVec3(omega, r);
+  const contactRelVel = addVec(relVel, rotContact);
+  const normalComp = scaleVec3(planeNormal, dotVec3(contactRelVel, planeNormal));
+  const tangentSlip = subVec3(contactRelVel, normalComp);
+  const slipMag = Math.hypot(tangentSlip.x, tangentSlip.y, tangentSlip.z);
+  const comTangent = subVec3(relVel, scaleVec3(planeNormal, normalSpeed));
+  let tangentRelAfter, omegaAfter;
+  if(slipMag < 1e-9){
+    tangentRelAfter = comTangent;
+    omegaAfter = omega;
+  } else {
+    const e1 = scaleVec3(tangentSlip, 1 / slipMag);
+    const e2 = crossVec3(planeNormal, e1);
+    const v1 = dotVec3(comTangent, e1);
+    const v2 = dotVec3(comTangent, e2);
+    const r1 = bounceTangentialAxis(v1, dotVec3(omega, e2), normalImpulse, friction);
+    const r2 = bounceTangentialAxis(v2, -dotVec3(omega, e1), normalImpulse, friction);
+    tangentRelAfter = addVec(scaleVec3(e1, r1.v2), scaleVec3(e2, r2.v2));
+    const normalSpinComp = scaleVec3(planeNormal, dotVec3(omega, planeNormal));
+    omegaAfter = addVec(addVec(normalSpinComp, scaleVec3(e2, r1.omega2)), scaleVec3(e1, -r2.omega2));
+  }
+  const velAfterRel = addVec(scaleVec3(planeNormal, normalRelAfter), tangentRelAfter);
+  const velAfter = addVec(velAfterRel, planeVel);
+  return {vel:velAfter, spin:{topspin:omegaAfter.x, sidespin:omegaAfter.z}};
+}
+// 瞄準修正：割線法反推球拍速度的 x 分量，讓打出去的球側向速度趨近 targetOutX。
+function solveRacketVelXForTargetOutX(incomingVel, incomingSpin, racketNormal, techVel, restitution, friction, targetOutX){
+  function outXFor(rx){
+    const planeVel = {x:rx, y:techVel.y, z:techVel.z};
+    return bounceOffPlane(incomingVel, incomingSpin, racketNormal, planeVel, restitution, friction).vel.x;
+  }
+  let x0 = 0, x1 = -incomingVel.x;
+  let f0 = outXFor(x0) - targetOutX;
+  let f1 = outXFor(x1) - targetOutX;
+  for(let i=0;i<20;i++){
+    if(Math.abs(f1) < 1e-4) break;
+    const denom = (f1 - f0) || 1e-9;
+    const x2 = x1 - f1 * (x1 - x0) / denom;
+    x0 = x1; f0 = f1;
+    x1 = x2; f1 = outXFor(x1) - targetOutX;
+  }
+  return x1;
+}
+function makeRacketReturnVelocity(incomingVel, incomingSpin, tech){
+  const spin = incomingSpin || {topspin:0, sidespin:0};
+  const aimedX = solveRacketVelXForTargetOutX(incomingVel, spin, tech.racketNormal, tech.techniqueVel, PADDLE_RESTITUTION_V2, PADDLE_FRICTION, 0);
+  const planeVel = {x:aimedX, y:tech.techniqueVel.y, z:tech.techniqueVel.z};
+  return bounceOffPlane(incomingVel, spin, tech.racketNormal, planeVel, PADDLE_RESTITUTION_V2, PADDLE_FRICTION);
+}
 function simulatePath(start, velocity, options){
   const gravity = options.gravity ?? -4.2;
   let spin = {topspin:(options.spin && options.spin.topspin) || 0, sidespin:(options.spin && options.spin.sidespin) || 0};
@@ -267,6 +332,7 @@ function simulatePath(start, velocity, options){
   const vel = clone(velocity);
   const points = [clone(pos)];
   const velocities = [clone(velocity)];
+  const spins = [{...spin}];
   const bounces = [];
   let netY = null;
   let netHit = null;
@@ -289,6 +355,7 @@ function simulatePath(start, velocity, options){
         pos.x = impact.x; pos.y = impact.y; pos.z = -incomingZ * NET_COLLISION.depth;
         points.push({...impact});
         velocities.push(clone(vel));
+        spins.push({...spin});
         vel.x *= NET_COLLISION.xDamping;
         vel.y *= NET_COLLISION.yDamping;
         vel.z = -vel.z * NET_COLLISION.zRestitution;
@@ -306,6 +373,7 @@ function simulatePath(start, velocity, options){
         bounces.push(bouncePoint);
         points.push(clone(pos));
         velocities.push(clone(vel));
+        spins.push({...spin});
         if(bounces.length > MAX_TABLE_BOUNCES) break;
         const bounced = bounceWithSpinPhysical(vel, spin, CONTACT_FRICTION_MU);
         vel.x = bounced.vel.x; vel.y = bounced.vel.y; vel.z = bounced.vel.z;
@@ -321,13 +389,15 @@ function simulatePath(start, velocity, options){
       groundLanding = {x:prev.x + (pos.x - prev.x) * ratio, y:BALL_RADIUS, z:prev.z + (pos.z - prev.z) * ratio};
       points.push(groundLanding);
       velocities.push(clone(vel));
+      spins.push({...spin});
       break;
     }
     points.push(clone(pos));
     velocities.push(clone(vel));
+    spins.push({...spin});
     if(Math.abs(pos.x) > 3 || Math.abs(pos.z) > 4) break;
   }
-  return {points, velocities, bounces, netY, netHit, groundLanding, baseVel:clone(velocity)};
+  return {points, velocities, spins, bounces, netY, netHit, groundLanding, baseVel:clone(velocity)};
 }
 // ── 發球解算（跟 game4.html 一致，讓來球跟正式版一樣真實）────────────────────
 function solveBaseVelocity(preset){
@@ -467,16 +537,10 @@ function makeDirectReturnVelocity(incomingVel, techniqueVel){
     z: incomingVel.z * PADDLE_RESTITUTION + techniqueVel.z
   };
 }
-function makePushReturnVelocity(incomingVel, techniqueVel){
-  const normalDot = dot(incomingVel, PUSH_NORMAL);
-  const normalComponent = scaleVec(PUSH_NORMAL, normalDot * PADDLE_RESTITUTION);
-  const tangential = addVec(incomingVel, scaleVec(PUSH_NORMAL, -normalDot));
-  const frictionComponent = scaleVec(tangential, PUSH_TANGENTIAL_RETAIN);
-  return addVec(addVec(normalComponent, frictionComponent), techniqueVel);
-}
-function makeReturnVelocity(incomingVel, tech){
-  if(tech.model === 'push') return makePushReturnVelocity(incomingVel, tech.techniqueVel);
-  return makeDirectReturnVelocity(incomingVel, tech.techniqueVel);
+function makeReturnVelocity(incomingVel, incomingSpin, tech){
+  if(tech.model === 'push' || tech.model === 'attack') return makeRacketReturnVelocity(incomingVel, incomingSpin, tech);
+  // loop（拉球，model:'direct'）尚未套用球拍接觸力學，維持舊公式（Phase 6 待辦）
+  return {vel: makeDirectReturnVelocity(incomingVel, tech.techniqueVel), spin: tech.spin || {topspin:0,sidespin:0}};
 }
 function simulateReturnForPreset(preset, side, techniqueKey){
   const serve = simulateServe(preset);
@@ -484,11 +548,12 @@ function simulateReturnForPreset(preset, side, techniqueKey){
   const servePathPoints = serve.points.slice(0, hitIndex + 1);
   const hitPoint = servePathPoints[servePathPoints.length - 1];
   const hitVel = serve.velocities[hitIndex];
+  const hitSpin = serve.spins[hitIndex];
   const tech = TECHNIQUES[techniqueKey];
   const start = {...hitPoint, y:Math.max(hitPoint.y + 0.12, TABLE.top + 0.12)};
   const gravity = preset.solve?.gravity ?? -4.2;
-  const baseVel = makeReturnVelocity(hitVel, tech);
-  const result = simulatePath(start, baseVel, {gravity, spin:tech.spin, bounceBoost:tech.bounceBoost ?? 0});
+  const returnHit = makeReturnVelocity(hitVel, hitSpin, tech);
+  const result = simulatePath(start, returnHit.vel, {gravity, spin:returnHit.spin, bounceBoost:tech.bounceBoost ?? 0});
   return {servePathPoints, hitPoint, hitVel, result};
 }
 function judgeResult(result){
