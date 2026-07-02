@@ -143,6 +143,26 @@
       line-height:1.5;
       padding:10px 0 0;
     }
+    .explain{
+      margin-top:14px;
+      border:1px solid var(--line);
+      background:#101923;
+      border-radius:8px;
+      padding:12px;
+      color:var(--text);
+      font-size:13px;
+      line-height:1.55;
+    }
+    .explain h2{
+      margin:0 0 8px;
+      color:var(--accent);
+      font-size:14px;
+    }
+    .explain ul{
+      margin:0;
+      padding-left:18px;
+    }
+    .explain li{margin:4px 0}
     .metric-strip{
       display:grid;
       grid-template-columns:repeat(4,minmax(0,1fr));
@@ -215,13 +235,14 @@
       </div>
       <div class="legend" id="legend"></div>
       <table class="readout" id="readout"></table>
+      <div class="explain" id="interpretation"></div>
       <div class="note">
         這個頁面只校準 Phase 2 獨立模型，不會影響 Game 4。視覺重點是比較同一組入射速度下，不轉與下旋的第二跳弧線高度。
       </div>
     </aside>
   </main>
   <script>
-const BUILD_VERSION = 'v2c01';
+const BUILD_VERSION = 'v2c02';
 const R = 0.02;
 const M = 0.0027;
 const ALPHA = 2 / 3;
@@ -387,42 +408,74 @@ function drawGrid(ctx, size){
 }
 function makeProjector(cases, size){
   const all = cases.flatMap(item=>item.points);
+  const minZ = Math.min(-0.8, ...all.map(point=>point.z)) - 0.15;
   const maxZ = Math.max(1.2, ...all.map(point=>point.z)) + 0.25;
   const maxY = Math.max(1.15, ...all.map(point=>point.y)) + 0.1;
   const pad = {left:54, right:22, top:22, bottom:48};
   const w = size.width - pad.left - pad.right;
   const h = size.height - pad.top - pad.bottom;
-  return point => ({
-    x:pad.left + (point.z / maxZ) * w,
+  const project = point => ({
+    x:pad.left + ((point.z - minZ) / (maxZ - minZ)) * w,
     y:pad.top + (1 - ((point.y - TABLE_Y) / (maxY - TABLE_Y))) * h,
   });
+  return {project, minZ, maxZ, maxY, pad};
+}
+function drawLabel(ctx, text, x, y, color = '#dce7f3'){
+  ctx.save();
+  ctx.font = '12px system-ui';
+  const width = ctx.measureText(text).width + 12;
+  ctx.fillStyle = 'rgba(8, 16, 24, 0.82)';
+  ctx.strokeStyle = 'rgba(154, 168, 183, 0.45)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.roundRect(x - 6, y - 15, width, 22, 5);
+  ctx.fill();
+  ctx.stroke();
+  ctx.fillStyle = color;
+  ctx.fillText(text, x, y);
+  ctx.restore();
 }
 function drawScene(cases){
   const canvas = document.getElementById('canvas');
   const ctx = canvas.getContext('2d');
   const size = resizeCanvas(canvas);
-  const project = makeProjector(cases, size);
+  const view = makeProjector(cases, size);
+  const project = view.project;
   drawGrid(ctx, size);
 
-  const tableA = project({z:0, y:TABLE_Y});
-  const tableB = project({z:4, y:TABLE_Y});
+  const tableA = project({z:view.minZ, y:TABLE_Y});
+  const tableB = project({z:view.maxZ, y:TABLE_Y});
+  const origin = project({z:0, y:TABLE_Y});
   ctx.strokeStyle = '#516b82';
   ctx.lineWidth = 3;
   ctx.beginPath();
   ctx.moveTo(tableA.x, tableA.y);
   ctx.lineTo(tableB.x, tableB.y);
   ctx.stroke();
+
+  ctx.strokeStyle = '#9aa8b7';
+  ctx.lineWidth = 1;
+  ctx.setLineDash([4, 4]);
+  ctx.beginPath();
+  ctx.moveTo(origin.x, 24);
+  ctx.lineTo(origin.x, tableA.y + 18);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
   ctx.fillStyle = '#9aa8b7';
   ctx.font = '12px system-ui';
-  ctx.fillText('桌面高度', tableA.x, tableA.y - 8);
+  ctx.fillText('回彈 ←', tableA.x + 8, tableA.y - 10);
+  ctx.fillText('→ 往前', Math.max(origin.x + 40, tableB.x - 72), tableA.y - 10);
+  drawLabel(ctx, '撞桌點 z=0', origin.x + 8, tableA.y + 28, '#f7c948');
 
   const elapsed = isPlaying ? (performance.now() - playStart) / 1000 : 0;
   const progress = isPlaying ? (elapsed % 2.4) / 2.4 : 0;
 
-  for(const item of cases){
+  for(const [caseIndex, item] of cases.entries()){
     ctx.strokeStyle = item.color;
     ctx.lineWidth = 3;
     ctx.globalAlpha = 0.9;
+    ctx.setLineDash(item.key === 'backspinB' ? [9, 6] : []);
     ctx.beginPath();
     item.points.forEach((point, index)=>{
       const p = project(point);
@@ -430,6 +483,7 @@ function drawScene(cases){
       else ctx.lineTo(p.x, p.y);
     });
     ctx.stroke();
+    ctx.setLineDash([]);
     ctx.globalAlpha = 1;
 
     const apexPoint = item.points.reduce((best, point)=>point.y > best.y ? point : best, item.points[0]);
@@ -438,6 +492,16 @@ function drawScene(cases){
     ctx.beginPath();
     ctx.arc(apex.x, apex.y, 4, 0, Math.PI * 2);
     ctx.fill();
+    drawLabel(ctx, `${item.label} 最高點`, apex.x + 8, apex.y - 8 - caseIndex * 18, item.color);
+
+    if(item.land){
+      const land = project(item.land);
+      ctx.fillStyle = item.color;
+      ctx.beginPath();
+      ctx.arc(land.x, land.y, 4, 0, Math.PI * 2);
+      ctx.fill();
+      drawLabel(ctx, `${item.label} 落點`, land.x + 8, land.y + 26 + caseIndex * 18, item.color);
+    }
 
     const index = Math.min(item.points.length - 1, Math.floor(progress * (item.points.length - 1)));
     const ball = project(item.points[index]);
@@ -453,13 +517,17 @@ function drawScene(cases){
     ctx.globalAlpha = 1;
   }
 }
+function formatCmDiff(value){
+  const cm = value * 100;
+  return `${cm > 0 ? '+' : ''}${cm.toFixed(1)} cm`;
+}
 function updateReadout(cases){
   const legend = document.getElementById('legend');
   legend.innerHTML = cases.map(item=>`<span><i class="swatch" style="background:${item.color}"></i>${item.label}</span>`).join('');
 
   const readout = document.getElementById('readout');
   readout.innerHTML = `
-    <tr><th>球種</th><th>ε</th><th>最高點</th><th>落點 z</th><th>出射 vz</th><th>regime</th></tr>
+    <tr><th>球種</th><th>反彈 ε</th><th>彈起最高點</th><th>落點(+前/-回)</th><th>出桌 vz</th><th>接觸</th></tr>
     ${cases.map(item=>`
       <tr>
         <td>${item.label}</td>
@@ -475,12 +543,37 @@ function updateReadout(cases){
   const noSpin = cases[0];
   const a = cases[1];
   const b = cases[2];
+  const apexDiffA = a.apex - noSpin.apex;
+  const apexDiffB = b.apex - noSpin.apex;
+  const landDiffA = (a.land?.z ?? 0) - (noSpin.land?.z ?? 0);
+  const landDiffB = (b.land?.z ?? 0) - (noSpin.land?.z ?? 0);
   document.getElementById('metrics').innerHTML = [
-    ['A 高度差', `${(a.apex - noSpin.apex).toFixed(3)} m`],
-    ['B 高度差', `${(b.apex - noSpin.apex).toFixed(3)} m`],
-    ['A 落點差', `${((a.land?.z ?? 0) - (noSpin.land?.z ?? 0)).toFixed(3)} m`],
-    ['B 落點差', `${((b.land?.z ?? 0) - (noSpin.land?.z ?? 0)).toFixed(3)} m`],
+    [`${a.rps}rps 高度差`, formatCmDiff(apexDiffA)],
+    [`${b.rps}rps 高度差`, formatCmDiff(apexDiffB)],
+    [`${a.rps}rps 落點差`, formatCmDiff(landDiffA)],
+    [`${b.rps}rps 落點差`, formatCmDiff(landDiffB)],
   ].map(([label, value])=>`<div class="metric"><span>${label}</span><strong>${value}</strong></div>`).join('');
+
+  const nearSameBackspin = Math.abs(a.apex - b.apex) < 0.005 && Math.abs((a.land?.z ?? 0) - (b.land?.z ?? 0)) < 0.005;
+  const backspinGoesBack = (a.land?.z ?? 0) < 0 || (b.land?.z ?? 0) < 0;
+  const lowerA = apexDiffA < -0.02;
+  const lowerB = apexDiffB < -0.02;
+  const lines = [
+    '撞桌點是 z=0；圖上往右代表球繼續往前，往左代表球被下旋帶回來。',
+    lowerA || lowerB
+      ? `目前下旋會把彈跳最高點壓低約 ${(Math.abs(Math.min(apexDiffA, apexDiffB)) * 100).toFixed(1)} cm，這就是我們要校準的「弧線被壓扁」。`
+      : '目前下旋沒有明顯壓低彈跳弧線，代表模型還不夠像真實下旋。',
+    backspinGoesBack
+      ? '下旋落點出現在負 z，意思是球撞桌後已經往回彈；這不是畫壞，而是摩擦/旋轉太強或入射前進速度太低。'
+      : '下旋落點仍在正 z，意思是球撞桌後還是往前跑，只是弧線和落點被改變。',
+    nearSameBackspin
+      ? '20rps 和 40rps 幾乎重疊，代表 EPSILON_MIN 已經飽和；再加旋轉也被同一個下限夾住。'
+      : '20rps 和 40rps 有分開，代表旋轉強度仍會改變彈跳結果。',
+  ];
+  document.getElementById('interpretation').innerHTML = `
+    <h2>怎麼看這張圖</h2>
+    <ul>${lines.map(line=>`<li>${line}</li>`).join('')}</ul>
+  `;
 }
 function refresh(){
   const {cases} = buildCases();
