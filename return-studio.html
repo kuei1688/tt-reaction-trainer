@@ -167,12 +167,12 @@ const STORAGE_KEY = 'tt-return-studio-tuning-v2';
 // 回擊公式：攻球/拉球走直向反彈；切球拆成拍面法向量反彈與切向摩擦衰減。
 const PADDLE_RESTITUTION = -0.9;
 const PUSH_NORMAL = normalize({x:0, y:1, z:-0.2});
-const PUSH_TANGENTIAL_RETAIN = -0.80;
+const PUSH_TANGENTIAL_RETAIN = -0.60;
 
 const DEFAULT_TECHNIQUES = {
   forehand_attack: {label:'\u6b63\u624b\u653b\u7403', model:'attack', techniqueVel:{x:0, y:0, z:-0.5}, spin:{topspin:0,sidespin:0}, bounceBoost:0},
   backhand_attack: {label:'\u53cd\u624b\u653b\u7403', model:'attack', techniqueVel:{x:0, y:0, z:-0.5}, spin:{topspin:0,sidespin:0}, bounceBoost:0},
-  push: {label:'\u5207\u7403', model:'push', techniqueVel:{x:0, y:0.15, z:-0.35}, spin:{topspin:-1.05,sidespin:0}, bounceBoost:0},
+  push: {label:'\u5207\u7403', model:'push', techniqueVel:{x:0, y:0, z:-0.35}, spin:{topspin:-1.05,sidespin:0}, bounceBoost:0},
   loop: {label:'\u62c9\u7403', model:'direct', techniqueVel:{x:-0.6, y:1.0, z:-1.65}, spin:{topspin:0.9,sidespin:0}, bounceBoost:0.3}
 };
 
@@ -395,6 +395,18 @@ function findHitIndex(path){
   const fallback = path.points.findIndex(p=>p.z > 0.45 && p.y > TABLE.top);
   return fallback >= 0 ? fallback : Math.min(path.points.length - 1, 90);
 }
+function findPushHitIndex(path){
+  const receiverBounceIdx = path.bounces.findIndex(b=>b.z > 0);
+  if(receiverBounceIdx >= 0){
+    const nextBounce = path.bounces[receiverBounceIdx + 1];
+    const hardStop = nextBounce ? nextBounce.index : path.points.length;
+    const start = path.bounces[receiverBounceIdx].index + 1;
+    for(let i = start; i < Math.min(hardStop, path.points.length - 1); i++){
+      if(path.points[i].y > TABLE.top && path.velocities[i]?.y < -0.15) return i;
+    }
+  }
+  return findHitIndex(path);
+}
 // ── 回擊（跟 game4.html 的 makeReturnVelocity 一致）
 // 攻球/拉球走直向反彈；切球拆成拍面法向量反彈與切向摩擦衰減。
 function makeDirectReturnVelocity(incomingVel, techniqueVel){
@@ -417,7 +429,7 @@ function makeReturnVelocity(incomingVel, tech){
 }
 function simulateReturnForPreset(preset, side, techniqueKey){
   const serve = simulateServe(preset);
-  const hitIndex = findHitIndex(serve);
+  const hitIndex = techniqueKey === 'push' ? findPushHitIndex(serve) : findHitIndex(serve);
   const servePathPoints = serve.points.slice(0, hitIndex + 1);
   const hitPoint = servePathPoints[servePathPoints.length - 1];
   const hitVel = serve.velocities[hitIndex];
