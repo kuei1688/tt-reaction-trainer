@@ -183,6 +183,677 @@
         },
         "bounce": 0.95
       }
+    },
+    {
+      "id": "sidebackspin_half_long_forehand",
+      "label": "側下半出台到正手",
+      "type": "serve",
+      "mode": "cheat_solve",
+      "tags": {
+        "spinType": "sidebackspin",
+        "length": "half_long",
+        "placement": "forehand"
+      },
+      "tagLabels": {
+        "spinType": "側下",
+        "length": "半出台",
+        "placement": "正手"
+      },
+      "start": {
+        "x": 0.29,
+        "y": 0.95,
+        "z": -1.52
+      },
+      "serveLine": {
+        "height": 0.95,
+        "baselineOffset": 0.15,
+        "lateralOffset": 0
+      },
+      "firstBounce": {
+        "x": 0.29,
+        "y": 0.78,
+        "z": -0.93
+      },
+      "secondBounce": {
+        "x": 0.29,
+        "y": 0.78,
+        "z": 0.44
+      },
+      "target": {
+        "x": 0.29,
+        "y": 0.78,
+        "z": 0.44
+      },
+      "solve": {
+        "targetMode": "serve_bounces",
+        "flightTime": 0.74,
+        "secondLegTime": 0.74,
+        "netClearance": 0.03,
+        "gravity": -4.2,
+        "timeToFirst": 0.74
+      },
+      "variation": {
+        "velocity": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "spin": {
+          "topspin": -1.15,
+          "sidespin": -1.23
+        },
+        "bounce": 0.95
+      }
+    },
+    {
+      "id": "sidebackspin_half_long_backhand",
+      "label": "側下半出台到反手",
+      "type": "serve",
+      "mode": "cheat_solve",
+      "tags": {
+        "spinType": "sidebackspin",
+        "length": "half_long",
+        "placement": "backhand"
+      },
+      "tagLabels": {
+        "spinType": "側下",
+        "length": "半出台",
+        "placement": "反手"
+      },
+      "start": {
+        "x": 0.613921568627451,
+        "y": 0.95,
+        "z": -1.52
+      },
+      "serveLine": {
+        "height": 0.95,
+        "baselineOffset": 0.15,
+        "lateralOffset": 0
+      },
+      "firstBounce": {
+        "x": 0.29,
+        "y": 0.78,
+        "z": -0.93
+      },
+      "secondBounce": {
+        "x": -0.27,
+        "y": 0.78,
+        "z": 0.09
+      },
+      "target": {
+        "x": -0.27,
+        "y": 0.78,
+        "z": 0.09
+      },
+      "solve": {
+        "targetMode": "serve_bounces",
+        "flightTime": 0.74,
+        "secondLegTime": 0.74,
+        "netClearance": 0.03,
+        "gravity": -4.2,
+        "timeToFirst": 0.74
+      },
+      "variation": {
+        "velocity": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "spin": {
+          "topspin": -1.15,
+          "sidespin": -1.23
+        },
+        "bounce": 0.95
+      }
+    },
+    {
+      "id": "sidebackspin_long_backhand",
+      "label": "側下長球到反手",
+      "type": "serve",
+      "mode": "cheat_solve",
+      "tags": {
+        "spinType": "sidebackspin",
+        "length": "long",
+        "placement": "backhand"
+      },
+      "tagLabels": {
+        "spinType": "側下",
+        "length": "長球",
+        "placement": "反手"
+      },
+      "start": {
+        "x": 0.5197894736842106,
+        "y": 0.95,
+        "z": -1.52
+      },
+      "serveLine": {
+        "height": 0.95,
+        "baselineOffset": 0.15,
+        "lateralOffset": 0
+      },
+      "firstBounce": {
+        "x": 0.29,
+        "y": 0.78,
+        "z": -0.93
+      },
+      "secondBounce": {
+        "x": -0.45,
+        "y": 0.78,
+        "z": 0.97
+      },
+      "target": {
+        "x": -0.45,
+        "y": 0.78,
+        "z": 0.97
+      },
+      "solve": {
+        "targetMode": "serve_bounces",
+        "flightTime": 0.74,
+        "secondLegTime": 0.74,
+        "netClearance": 0.03,
+        "gravity": -4.2,
+        "timeToFirst": 0.74
+      },
+      "variation": {
+        "velocity": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "spin": {
+          "topspin": -1.15,
+          "sidespin": -1.23
+        },
+        "bounce": 0.95
+      }
+    },
+    {
+      "id": "sidebackspin_long_forehand_2",
+      "label": "側下長球到正手-2",
+      "type": "serve",
+      "mode": "cheat_solve",
+      "tags": {
+        "spinType": "sidebackspin",
+        "length": "long",
+        "placement": "forehand"
+      },
+      "tagLabels": {
+        "spinType": "側下",
+        "length": "長球",
+        "placement": "正手"
+      },
+      "start": {
+        "x": 0.24742268041237112,
+        "y": 0.95,
+        "z": -1.52
+      },
+      "serveLine": {
+        "height": 0.95,
+        "baselineOffset": 0.15,
+        "lateralOffset": 0
+      },
+      "firstBounce": {
+        "x": 0.29,
+        "y": 0.78,
+        "z": -0.93
+      },
+      "secondBounce": {
+        "x": 0.43,
+        "y": 0.78,
+        "z": 1.01
+      },
+      "target": {
+        "x": 0.43,
+        "y": 0.78,
+        "z": 1.01
+      },
+      "solve": {
+        "targetMode": "serve_bounces",
+        "flightTime": 0.74,
+        "secondLegTime": 0.74,
+        "netClearance": 0.03,
+        "gravity": -4.2,
+        "timeToFirst": 0.74
+      },
+      "variation": {
+        "velocity": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "spin": {
+          "topspin": -1.15,
+          "sidespin": -1
+        },
+        "bounce": 0.95
+      }
+    },
+    {
+      "id": "sidebackspin_long_forehand_3",
+      "label": "側下長球到正手-3",
+      "type": "serve",
+      "mode": "cheat_solve",
+      "tags": {
+        "spinType": "sidebackspin",
+        "length": "long",
+        "placement": "forehand"
+      },
+      "tagLabels": {
+        "spinType": "側下",
+        "length": "長球",
+        "placement": "正手"
+      },
+      "start": {
+        "x": 0.23897297297297296,
+        "y": 0.95,
+        "z": -1.52
+      },
+      "serveLine": {
+        "height": 0.95,
+        "baselineOffset": 0.15,
+        "lateralOffset": 0
+      },
+      "firstBounce": {
+        "x": 0.29,
+        "y": 0.78,
+        "z": -0.93
+      },
+      "secondBounce": {
+        "x": 0.45,
+        "y": 0.78,
+        "z": 0.92
+      },
+      "target": {
+        "x": 0.45,
+        "y": 0.78,
+        "z": 0.92
+      },
+      "solve": {
+        "targetMode": "serve_bounces",
+        "flightTime": 0.74,
+        "secondLegTime": 0.74,
+        "netClearance": 0.03,
+        "gravity": -4.2,
+        "timeToFirst": 0.74
+      },
+      "variation": {
+        "velocity": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "spin": {
+          "topspin": -1.15,
+          "sidespin": -1.23
+        },
+        "bounce": 0.95
+      }
+    },
+    {
+      "id": "backspin_long_forehand",
+      "label": "下旋長球到正手",
+      "type": "serve",
+      "mode": "cheat_solve",
+      "tags": {
+        "spinType": "backspin",
+        "length": "long",
+        "placement": "forehand"
+      },
+      "tagLabels": {
+        "spinType": "下旋",
+        "length": "長球",
+        "placement": "正手"
+      },
+      "start": {
+        "x": 0.24742268041237112,
+        "y": 0.95,
+        "z": -1.52
+      },
+      "serveLine": {
+        "height": 0.95,
+        "baselineOffset": 0.15,
+        "lateralOffset": 0
+      },
+      "firstBounce": {
+        "x": 0.29,
+        "y": 0.78,
+        "z": -0.93
+      },
+      "secondBounce": {
+        "x": 0.43,
+        "y": 0.78,
+        "z": 1.01
+      },
+      "target": {
+        "x": 0.43,
+        "y": 0.78,
+        "z": 1.01
+      },
+      "solve": {
+        "targetMode": "serve_bounces",
+        "flightTime": 0.74,
+        "secondLegTime": 0.74,
+        "netClearance": 0.03,
+        "gravity": -4.2,
+        "timeToFirst": 0.74
+      },
+      "variation": {
+        "velocity": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "spin": {
+          "topspin": -1.15,
+          "sidespin": 0
+        },
+        "bounce": 0.95
+      }
+    },
+    {
+      "id": "backspin_long_forehand_2",
+      "label": "下旋長球到正手-2",
+      "type": "serve",
+      "mode": "cheat_solve",
+      "tags": {
+        "spinType": "backspin",
+        "length": "long",
+        "placement": "forehand"
+      },
+      "tagLabels": {
+        "spinType": "下旋",
+        "length": "長球",
+        "placement": "正手"
+      },
+      "start": {
+        "x": 0.12580645161290321,
+        "y": 0.95,
+        "z": -1.52
+      },
+      "serveLine": {
+        "height": 0.95,
+        "baselineOffset": 0.15,
+        "lateralOffset": 0
+      },
+      "firstBounce": {
+        "x": 0.2,
+        "y": 0.78,
+        "z": -1.06
+      },
+      "secondBounce": {
+        "x": 0.55,
+        "y": 0.78,
+        "z": 1.11
+      },
+      "target": {
+        "x": 0.55,
+        "y": 0.78,
+        "z": 1.11
+      },
+      "solve": {
+        "targetMode": "serve_bounces",
+        "flightTime": 0.74,
+        "secondLegTime": 0.74,
+        "netClearance": 0.03,
+        "gravity": -4.2,
+        "timeToFirst": 0.74
+      },
+      "variation": {
+        "velocity": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "spin": {
+          "topspin": -1.15,
+          "sidespin": 0
+        },
+        "bounce": 0.95
+      }
+    },
+    {
+      "id": "backspin_short_forehand",
+      "label": "下旋短球到正手",
+      "type": "serve",
+      "mode": "cheat_solve",
+      "tags": {
+        "spinType": "backspin",
+        "length": "short",
+        "placement": "forehand"
+      },
+      "tagLabels": {
+        "spinType": "下旋",
+        "length": "短球",
+        "placement": "正手"
+      },
+      "start": {
+        "x": 0.04096774193548386,
+        "y": 0.95,
+        "z": -1.52
+      },
+      "serveLine": {
+        "height": 0.95,
+        "baselineOffset": 0.15,
+        "lateralOffset": 0
+      },
+      "firstBounce": {
+        "x": 0.19,
+        "y": 0.78,
+        "z": -0.75
+      },
+      "secondBounce": {
+        "x": 0.55,
+        "y": 0.78,
+        "z": 1.11
+      },
+      "target": {
+        "x": 0.55,
+        "y": 0.78,
+        "z": 1.11
+      },
+      "solve": {
+        "targetMode": "serve_bounces",
+        "flightTime": 0.74,
+        "secondLegTime": 0.74,
+        "netClearance": 0.03,
+        "gravity": -4.2,
+        "timeToFirst": 0.74
+      },
+      "variation": {
+        "velocity": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "spin": {
+          "topspin": -1.15,
+          "sidespin": 0
+        },
+        "bounce": 0.95
+      }
+    },
+    {
+      "id": "backspin_short_forehand_2",
+      "label": "下旋短球到正手-2",
+      "type": "serve",
+      "mode": "cheat_solve",
+      "tags": {
+        "spinType": "backspin",
+        "length": "short",
+        "placement": "forehand"
+      },
+      "tagLabels": {
+        "spinType": "下旋",
+        "length": "短球",
+        "placement": "正手"
+      },
+      "start": {
+        "x": 0.3272527472527472,
+        "y": 0.95,
+        "z": -1.52
+      },
+      "serveLine": {
+        "height": 0.95,
+        "baselineOffset": 0.15,
+        "lateralOffset": 0
+      },
+      "firstBounce": {
+        "x": 0.43,
+        "y": 0.78,
+        "z": -0.67
+      },
+      "secondBounce": {
+        "x": 0.54,
+        "y": 0.78,
+        "z": 0.24
+      },
+      "target": {
+        "x": 0.54,
+        "y": 0.78,
+        "z": 0.24
+      },
+      "solve": {
+        "targetMode": "serve_bounces",
+        "flightTime": 0.74,
+        "secondLegTime": 0.74,
+        "netClearance": 0.03,
+        "gravity": -4.2,
+        "timeToFirst": 0.74
+      },
+      "variation": {
+        "velocity": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "spin": {
+          "topspin": -1.15,
+          "sidespin": 0
+        },
+        "bounce": 0.95
+      }
+    },
+    {
+      "id": "backspin_short_backhand",
+      "label": "下旋短球到反手",
+      "type": "serve",
+      "mode": "cheat_solve",
+      "tags": {
+        "spinType": "backspin",
+        "length": "short",
+        "placement": "backhand"
+      },
+      "tagLabels": {
+        "spinType": "下旋",
+        "length": "短球",
+        "placement": "反手"
+      },
+      "start": {
+        "x": 0.5757894736842105,
+        "y": 0.95,
+        "z": -1.52
+      },
+      "serveLine": {
+        "height": 0.95,
+        "baselineOffset": 0.15,
+        "lateralOffset": 0
+      },
+      "firstBounce": {
+        "x": 0.14,
+        "y": 0.78,
+        "z": -0.6
+      },
+      "secondBounce": {
+        "x": -0.4,
+        "y": 0.78,
+        "z": 0.54
+      },
+      "target": {
+        "x": -0.4,
+        "y": 0.78,
+        "z": 0.54
+      },
+      "solve": {
+        "targetMode": "serve_bounces",
+        "flightTime": 0.74,
+        "secondLegTime": 0.74,
+        "netClearance": 0.03,
+        "gravity": -4.2,
+        "timeToFirst": 0.74
+      },
+      "variation": {
+        "velocity": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "spin": {
+          "topspin": -1.15,
+          "sidespin": 0
+        },
+        "bounce": 0.95
+      }
+    },
+    {
+      "id": "sidebackspin_short_forehand",
+      "label": "側下短球到正手",
+      "type": "serve",
+      "mode": "cheat_solve",
+      "tags": {
+        "spinType": "sidebackspin",
+        "length": "short",
+        "placement": "forehand"
+      },
+      "tagLabels": {
+        "spinType": "側下",
+        "length": "短球",
+        "placement": "正手"
+      },
+      "start": {
+        "x": -0.13438596491228066,
+        "y": 0.95,
+        "z": -1.52
+      },
+      "serveLine": {
+        "height": 0.95,
+        "baselineOffset": 0.15,
+        "lateralOffset": 0
+      },
+      "firstBounce": {
+        "x": 0.14,
+        "y": 0.78,
+        "z": -0.6
+      },
+      "secondBounce": {
+        "x": 0.48,
+        "y": 0.78,
+        "z": 0.54
+      },
+      "target": {
+        "x": 0.48,
+        "y": 0.78,
+        "z": 0.54
+      },
+      "solve": {
+        "targetMode": "serve_bounces",
+        "flightTime": 0.74,
+        "secondLegTime": 0.74,
+        "netClearance": 0.03,
+        "gravity": -4.2,
+        "timeToFirst": 0.74
+      },
+      "variation": {
+        "velocity": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "spin": {
+          "topspin": -1.15,
+          "sidespin": -1
+        },
+        "bounce": 0.95
+      }
     }
   ]
 }
