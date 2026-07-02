@@ -180,6 +180,14 @@ button:disabled{opacity:.45;cursor:not-allowed}
             <option value="match">match（關閉提示）</option>
           </select>
         </div>
+        <div class="field-row" id="returnSkillRow">
+          <label for="returnSkillControl" style="font-size:12px;font-weight:800;color:var(--muted)">回擊技術等級</label>
+          <select id="returnSkillControl">
+            <option value="beginner">初階（側旋補償常常不足或失手）</option>
+            <option value="intermediate">中階（側旋完全修正）</option>
+            <option value="advanced" selected>熟練（側旋完全修正）</option>
+          </select>
+        </div>
       </div>
     </div>
     <div class="section">
@@ -264,6 +272,9 @@ let score = {ok:0, fail:0};
 let showTrajectories = false;
 let GAME_SPEED = 1; // 動畫播放速度倍率，只影響球的播放節奏，不影響物理／落點
 let DIFFICULTY_MODE = 'beginner';
+// 回擊技術等級：獨立於 DIFFICULTY_MODE（那個是發球時機提示），這個是回擊時
+// 側旋/側移補償的好壞，見 makeRacketReturnVelocity() 附近的 RETURN_SKILL 定義。
+let RETURN_SKILL_LEVEL = 'advanced';
 let currentServePoint = null;
 let currentServeVel = null;
 let currentTimingPhase = 'unknown';
@@ -1227,13 +1238,40 @@ function dynamicPaddleEpsilon(incomingVel, planeVel, planeNormal){
   const t = clamp((normalSpeed - PADDLE_SPEED_LOW) / (PADDLE_SPEED_HIGH - PADDLE_SPEED_LOW), 0, 1);
   return PADDLE_RESTITUTION_LOW + (PADDLE_RESTITUTION_HIGH - PADDLE_RESTITUTION_LOW) * t;
 }
+// 回擊技術等級：側向補償（瞄準修正）的完成度依玩家等級而不同。
+// correctionMean/Spread：補償掉多少比例的自然側向偏移（1=完全修正、0=完全不修正）。
+// failureChance/failureCorrectionRange：模擬「來不及反應/判斷錯誤」的失手，機率觸發時
+// 改用一個明顯更差（甚至修正方向錯誤）的補償比例，而不是常態的補償品質。
+// 中階直接視為完全修正成功（跟熟練一樣），只有初階會有補償不足/失手的機率——
+// 使用者明確要求不要把中階也搞得這麼複雜。中階/熟練之後如果要再拉開差異
+// （例如熟練加上「刻意打對手最遠端」的主動放球），再回來擴充。
+const RETURN_SKILL = {
+  beginner:     {label:'初階', correctionMean:0.3, correctionSpread:0.15, failureChance:0.35, failureCorrectionRange:[-0.1, 0.15]},
+  intermediate: {label:'中階', correctionMean:1.0, correctionSpread:0,    failureChance:0,    failureCorrectionRange:[1, 1]},
+  advanced:     {label:'熟練', correctionMean:1.0, correctionSpread:0,    failureChance:0,    failureCorrectionRange:[1, 1]}
+};
+function sampleReturnCorrectionFraction(skillLevel){
+  const cfg = RETURN_SKILL[skillLevel] || RETURN_SKILL.advanced;
+  if(cfg.failureChance > 0 && Math.random() < cfg.failureChance){
+    const [lo, hi] = cfg.failureCorrectionRange;
+    return lo + Math.random() * (hi - lo);
+  }
+  const spread = cfg.correctionSpread || 0;
+  const raw = cfg.correctionMean + (Math.random() * 2 - 1) * spread;
+  return clamp(raw, 0, 1);
+}
 // 攻球/切球：用球拍接觸力學（bounceOffPlane）計算回擊，來球的旋轉會真的影響結果。
 // tech.techniqueVel 現在代表「揮拍速度」（拍面本身的移動速度），tech.racketNormal 是拍面朝向。
+// 補償品質：先解出「完全修正側向」所需的球拍 x 分量 aimedX（= 現有已驗證的預設行為，
+// correction=1 時就是這個值），技術等級較低時只用一部分 aimedX，模擬補償不足/沒修好，
+// 側向誤差沒清乾淨的球在落桌瞬間可能已經飄出桌寬側邊，直接飛出界（這是真實的物理結果，
+// 不是要另外模擬的失敗分支）。
 function makeRacketReturnVelocity(incomingVel, incomingSpin, tech){
   const spin = incomingSpin || {topspin:0, sidespin:0};
   const epsilon = dynamicPaddleEpsilon(incomingVel, tech.techniqueVel, tech.racketNormal);
   const aimedX = solveRacketVelXForTargetOutX(incomingVel, spin, tech.racketNormal, tech.techniqueVel, epsilon, PADDLE_FRICTION, 0);
-  const planeVel = {x:aimedX, y:tech.techniqueVel.y, z:tech.techniqueVel.z};
+  const correction = sampleReturnCorrectionFraction(RETURN_SKILL_LEVEL); // 1=完全修正（現有已驗證的預設行為），0=完全不修正
+  const planeVel = {x:aimedX * correction, y:tech.techniqueVel.y, z:tech.techniqueVel.z};
   return bounceOffPlane(incomingVel, spin, tech.racketNormal, planeVel, epsilon, PADDLE_FRICTION);
 }
 function makeReturnVelocity(incomingVel, incomingSpin, tech){
@@ -1314,6 +1352,9 @@ document.getElementById('speedControl').addEventListener('change', event=>{
 document.getElementById('difficultyControl').addEventListener('change', event=>{
   DIFFICULTY_MODE = event.target.value || 'beginner';
   updateTimingHint(currentServeVel);
+});
+document.getElementById('returnSkillControl').addEventListener('change', event=>{
+  RETURN_SKILL_LEVEL = event.target.value || 'advanced';
 });
 document.getElementById('nextBtn').addEventListener('click', ()=>{
   selectedServeIndex = (selectedServeIndex + 1) % Math.max(1, presets.length);

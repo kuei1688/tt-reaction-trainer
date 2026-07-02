@@ -329,11 +329,32 @@ function dynamicPaddleEpsilon(incomingVel, planeVel, planeNormal){
   const t = clamp((normalSpeed - PADDLE_SPEED_LOW) / (PADDLE_SPEED_HIGH - PADDLE_SPEED_LOW), 0, 1);
   return PADDLE_RESTITUTION_LOW + (PADDLE_RESTITUTION_HIGH - PADDLE_RESTITUTION_LOW) * t;
 }
+// 回擊技術等級：側向補償（瞄準修正）的完成度依玩家等級而不同，逐字對齊 game4.html。
+let RETURN_SKILL_LEVEL = 'advanced';
+// 中階直接視為完全修正成功（跟熟練一樣），只有初階會有補償不足/失手的機率——
+// 使用者明確要求不要把中階也搞得這麼複雜。中階/熟練之後如果要再拉開差異
+// （例如熟練加上「刻意打對手最遠端」的主動放球），再回來擴充。
+const RETURN_SKILL = {
+  beginner:     {label:'初階', correctionMean:0.3, correctionSpread:0.15, failureChance:0.35, failureCorrectionRange:[-0.1, 0.15]},
+  intermediate: {label:'中階', correctionMean:1.0, correctionSpread:0,    failureChance:0,    failureCorrectionRange:[1, 1]},
+  advanced:     {label:'熟練', correctionMean:1.0, correctionSpread:0,    failureChance:0,    failureCorrectionRange:[1, 1]}
+};
+function sampleReturnCorrectionFraction(skillLevel){
+  const cfg = RETURN_SKILL[skillLevel] || RETURN_SKILL.advanced;
+  if(cfg.failureChance > 0 && Math.random() < cfg.failureChance){
+    const [lo, hi] = cfg.failureCorrectionRange;
+    return lo + Math.random() * (hi - lo);
+  }
+  const spread = cfg.correctionSpread || 0;
+  const raw = cfg.correctionMean + (Math.random() * 2 - 1) * spread;
+  return clamp(raw, 0, 1);
+}
 function makeRacketReturnVelocity(incomingVel, incomingSpin, tech){
   const spin = incomingSpin || {topspin:0, sidespin:0};
   const epsilon = dynamicPaddleEpsilon(incomingVel, tech.techniqueVel, tech.racketNormal);
   const aimedX = solveRacketVelXForTargetOutX(incomingVel, spin, tech.racketNormal, tech.techniqueVel, epsilon, PADDLE_FRICTION, 0);
-  const planeVel = {x:aimedX, y:tech.techniqueVel.y, z:tech.techniqueVel.z};
+  const correction = sampleReturnCorrectionFraction(RETURN_SKILL_LEVEL);
+  const planeVel = {x:aimedX * correction, y:tech.techniqueVel.y, z:tech.techniqueVel.z};
   return bounceOffPlane(incomingVel, spin, tech.racketNormal, planeVel, epsilon, PADDLE_FRICTION);
 }
 function simulatePath(start, velocity, options){
