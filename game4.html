@@ -188,6 +188,20 @@ button:disabled{opacity:.45;cursor:not-allowed}
             <option value="advanced" selected>熟練（側旋完全修正）</option>
           </select>
         </div>
+        <div class="field-row" id="autoTimingRow">
+          <label style="font-size:12px;font-weight:800;color:var(--muted)">
+            <input type="checkbox" id="autoTimingToggle" />
+            自動最佳時機回擊（測試用）
+          </label>
+          <select id="autoTimingTechnique">
+            <option value="forehand:push" selected>正手切球</option>
+            <option value="backhand:push">反手切球</option>
+            <option value="forehand:forehand_attack">正手攻球</option>
+            <option value="backhand:backhand_attack">反手攻球</option>
+            <option value="forehand:loop">正手拉球</option>
+            <option value="backhand:loop">反手拉球</option>
+          </select>
+        </div>
       </div>
     </div>
     <div class="section">
@@ -280,6 +294,12 @@ let DIFFICULTY_MODE = 'beginner';
 // 回擊技術等級：獨立於 DIFFICULTY_MODE（那個是發球時機提示），這個是回擊時
 // 側旋/側移補償的好壞，見 makeRacketReturnVelocity() 附近的 RETURN_SKILL 定義。
 let RETURN_SKILL_LEVEL = 'advanced';
+// 自動最佳時機回擊（測試用）：勾選後不用手動反應，球到達預先算好的最佳擊球點
+// （findHitIndex/findPushHitIndex）時自動觸發回擊，方便批次測試特定技術的表現。
+let AUTO_BEST_TIMING = false;
+let AUTO_TIMING_SIDE = 'forehand';
+let AUTO_TIMING_TECHNIQUE = 'push';
+let autoFireIndex = null;
 let currentServePoint = null;
 let currentServeVel = null;
 let currentTimingPhase = 'unknown';
@@ -1025,6 +1045,7 @@ function prepareServe(){
   pushHitPoint = serve.points[pushHitIndex];
   pushHitVel = serve.velocities[pushHitIndex];
   pushHitSpin = serve.spins[pushHitIndex];
+  autoFireIndex = AUTO_TIMING_TECHNIQUE === 'push' ? pushHitIndex : hitIndex;
   // 觸發門檻：對方桌面第一跳之後（z < 0 的 bounce + margin）
   const serverBounce = serve.bounces.find(b => b.z < 0);
   camTriggerZ = serverBounce ? serverBounce.z + 0.12 : -TABLE.length / 2;
@@ -1063,6 +1084,9 @@ function playServe(){
     timingHintActive = index >= returnHintStartIndex && index <= returnMissIndex;
     updateTimingHint(currentServeVel);
     if(index >= returnAppearIndex) openReturnInput();
+    if(AUTO_BEST_TIMING && inputWindowOpen && !pendingReturn && !missResolved && autoFireIndex != null && index >= autoFireIndex){
+      chooseReturn(AUTO_TIMING_SIDE, AUTO_TIMING_TECHNIQUE);
+    }
     if(point?.y < MISS_Y && !pendingReturn) missReturn();
   }, serveVelocities);
 }
@@ -1360,6 +1384,15 @@ document.getElementById('difficultyControl').addEventListener('change', event=>{
 });
 document.getElementById('returnSkillControl').addEventListener('change', event=>{
   RETURN_SKILL_LEVEL = event.target.value || 'advanced';
+});
+document.getElementById('autoTimingToggle').addEventListener('change', event=>{
+  AUTO_BEST_TIMING = event.target.checked;
+});
+document.getElementById('autoTimingTechnique').addEventListener('change', event=>{
+  const [side, techniqueKey] = (event.target.value || 'forehand:push').split(':');
+  AUTO_TIMING_SIDE = side;
+  AUTO_TIMING_TECHNIQUE = techniqueKey;
+  if(phase === 'idle') prepareServe(); // 重新計算 autoFireIndex（依新選的技術），發球中不打斷
 });
 document.getElementById('nextBtn').addEventListener('click', ()=>{
   selectedServeIndex = (selectedServeIndex + 1) % Math.max(1, presets.length);
