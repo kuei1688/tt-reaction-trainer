@@ -242,7 +242,7 @@
     </aside>
   </main>
   <script>
-const BUILD_VERSION = 'v2c02';
+const BUILD_VERSION = 'v2c03';
 const R = 0.02;
 const M = 0.0027;
 const ALPHA = 2 / 3;
@@ -250,6 +250,7 @@ const I = ALPHA * M * R * R;
 const EPSILON = 0.876;
 const EPSILON_OBLIQUE = 0.57;
 const OBLIQUE_ANGLE_DEG = 83;
+const SPIN_EPSILON_REFERENCE = 6.0;
 const TABLE_Y = 0.781;
 const GRAVITY = -4.2;
 const DT = 1 / 120;
@@ -272,17 +273,21 @@ function contactSlipSpeed(vel, spin){
   const slipX = vel.x + (spin.sidespin || 0) * R;
   return Math.hypot(slipX, slipZ);
 }
+function horizontalImpactSpeed(vel){
+  return Math.hypot(vel.x || 0, vel.z || 0);
+}
+function spinSurfaceSpeed(spin){
+  return R * Math.hypot(spin?.topspin || 0, spin?.sidespin || 0);
+}
 function dynamicEpsilon(vel, spin){
   const normalSpeed = Math.abs(vel.y);
   if(normalSpeed < 1e-9) return EPSILON_MIN;
-  const slip = contactSlipSpeed(vel, spin || {topspin:0, sidespin:0});
-  const obliqueSlip = normalSpeed / Math.tan(OBLIQUE_ANGLE_DEG * Math.PI / 180);
-  if(slip <= obliqueSlip){
-    const t = clamp(slip / obliqueSlip, 0, 1);
-    return EPSILON + (EPSILON_OBLIQUE - EPSILON) * t;
-  }
-  const extra = clamp((slip - obliqueSlip) / (obliqueSlip * 3), 0, 1);
-  return EPSILON_OBLIQUE + (EPSILON_MIN - EPSILON_OBLIQUE) * extra;
+  const obliqueHorizontalSpeed = normalSpeed * Math.tan(OBLIQUE_ANGLE_DEG * Math.PI / 180);
+  const baselineT = clamp(horizontalImpactSpeed(vel) / obliqueHorizontalSpeed, 0, 1);
+  const baselineEpsilon = EPSILON + (EPSILON_OBLIQUE - EPSILON) * baselineT;
+  const spinT = clamp(spinSurfaceSpeed(spin || {topspin:0, sidespin:0}) / SPIN_EPSILON_REFERENCE, 0, 1);
+  const spinPenalty = (EPSILON_OBLIQUE - EPSILON_MIN) * spinT;
+  return clamp(baselineEpsilon - spinPenalty, EPSILON_MIN, EPSILON);
 }
 function bounceTangentialAxis(v, omega, normalImpulse, mu){
   const slip = v - omega * R;

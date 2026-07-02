@@ -1,6 +1,6 @@
 # 物理引擎 v2 工程規劃：真實觸桌接觸力學模型
 
-**狀態：Phase 0、Phase 1 已完成（2026-07-02），Phase 2 進行中；已確認並初步實作動態 `ε`，下一步回到 `μ` 校準**
+**狀態：Phase 0、Phase 1 已完成（2026-07-02），Phase 2 進行中；動態 `ε` 已修正 `vz` 飽和問題，下一步回到 `μ` 與水平落點校準**
 **目的：** 把落桌反彈時的旋轉處理，從現在的「感覺係數」（`topspin`/`sidespin` 是 -1.15 這種湊出來的數字，`applyBounceSpin()` 用固定係數 `topspinKick=0.30`）換成真正的剛體接觸力學模型，讓旋轉數值有真實物理單位（rad/s），行為有物理推導依據。
 
 **給接手者的提醒：** 這份文件是跨多次對話、跨 Claude Code / Codex 的共用計畫。每次做完一個階段，**在這份文件裡打勾、寫下實際做了什麼、驗證結果、還有遇到的問題**，不要只在對話裡口頭交接，因為切換工具時對話記憶不會帶過去。改完這份文件本身也要 commit。
@@ -131,7 +131,7 @@
 - 入射角 90°（正對垂直落下，無水平分量）→ `ε=0.876`
 - 入射角 83°（有明顯水平分量的斜向撞擊）→ `ε=0.57`
 
-目前實作在 `tools/physics-v2-contact-mechanics.js`，仍然沒有動 `game4.html`。實作選擇不是只看球心入射角，而是看**接觸點切向滑動速度**：
+最初實作在 `tools/physics-v2-contact-mechanics.js`，仍然沒有動 `game4.html`。第一版選擇不是只看球心入射角，而是看**接觸點切向滑動速度**：
 
 ```
 slipZ = vz - ωxR
@@ -139,15 +139,25 @@ slipX = vx + ωzR
 slipSpeed = sqrt(slipX² + slipZ²)
 ```
 
-這樣同樣球心速度下，下旋會因為接觸點滑動更劇烈而得到較低的動態 `ε`，才能做出使用者描述的「弧線壓扁/壓低」。目前使用 `ε=0.876`、`ε=0.57` 兩點做分段線性插值，並先加了一個保守下限 `EPSILON_MIN=0.45`，避免資料不足時劇烈滑動直接讓垂直反彈歸零。這個下限不是最終物理常數，之後 Phase 2 校準 `μ` 時需要一起檢討。
+這樣同樣球心速度下，下旋會因為接觸點滑動更劇烈而得到較低的動態 `ε`，才能做出使用者描述的「弧線壓扁/壓低」。但第一版把 83° 的斜向撞擊換算成 `normalSpeed / tan(83°)`，導致 `vz=1.5` 這種正常前進速度也被誤判成極端擦撞；不轉、20rps、40rps 都會直接掉到 `EPSILON_MIN=0.45`，高度完全一樣。
+
+修正後的模型改成兩層：
+
+```
+baselineEpsilon = f(horizontalImpactSpeed / (normalSpeed * tan(83°)))
+spinPenalty = f(spinSurfaceSpeed)
+epsilon = clamp(baselineEpsilon - spinPenalty, EPSILON_MIN, EPSILON)
+```
+
+也就是：正常水平前進速度只影響「入射角基準反彈」，旋轉球面速度才額外壓低 `ε`。這樣 `vz=1.5` 的不轉球不會被誤殺，下旋仍會因 20/40rps 產生較低彈跳。
 
 **本輪實作與驗證（2026-07-02）：**
 1. 使用者已確認採用「動態 `ε`」方向。
 2. `tools/physics-v2-contact-mechanics.js` 新增 `dynamicEpsilon()`、`contactSlipSpeed()`、`bounceApexHeight()`，`bounceWithSpinPhysical()` 改用動態 `ε` 並回傳實際 `epsilon`。
-3. 重新跑 `node tools/physics-v2-contact-mechanics.js`，結果 `9 通過 / 0 失敗`。
-4. 新增測試：「同樣球心速度下，20rps 下旋撞桌後最高點低於不轉球」。測試數值：不轉 `ε≈0.627`、apex≈`1.202m`；20rps 下旋 `ε=0.45`、apex≈`0.998m`，已能做出弧線壓低效果。
+3. 重新跑 `node tools/physics-v2-contact-mechanics.js`，第一版結果 `9 通過 / 0 失敗`；修正 `vz` 飽和後結果 `13 通過 / 0 失敗`。
+4. 新增測試：「同樣球心速度下，20rps 下旋撞桌後最高點低於不轉球」。修正後另新增 `vz=1.5` 實戰基準回歸測試：不轉 `ε≈0.857`、apex≈`1.568m`；20rps 下旋 `ε≈0.807`、apex≈`1.479m`；40rps 下旋 `ε≈0.757`、apex≈`1.394m`，且 20/40rps 第二跳仍維持往前，不常態回彈。
 5. 新增 `physics-v2-calibration.html` 作為視覺化校準頁，讓使用者直接比較不轉、20rps 下旋、40rps 下旋的彈跳弧線，並可調 `μ`、`EPSILON_MIN`、入射 `vy/vz` 與 rps。這個頁面只用於 Phase 2 校準，不影響 Game 4。
-6. 下一步才回頭處理 `μ`（原本 Phase 2 的摩擦係數校準），同時要注意目前 `EPSILON_MIN=0.45` 仍是暫定工程下限，不是最終校準值。
+6. 下一步才回頭處理 `μ`（原本 Phase 2 的摩擦係數校準），同時要注意目前 `EPSILON_MIN=0.45` 與 `SPIN_EPSILON_REFERENCE=6.0` 仍是暫定工程常數，不是最終校準值。
 
 ---
 
