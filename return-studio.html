@@ -191,10 +191,12 @@ const PADDLE_RESTITUTION = -0.9;    // 舊模型殘留常數，目前只有 loop
 const DEFAULT_TECHNIQUES = {
   forehand_attack: {label:'正手攻球', model:'attack', techniqueVel:{x:0, y:-0.234, z:-1}, racketNormal:normalize({x:0, y:0.1, z:-1}), bounceBoost:0},
   backhand_attack: {label:'反手攻球', model:'attack', techniqueVel:{x:0, y:-0.234, z:-1}, racketNormal:normalize({x:0, y:0.1, z:-1}), bounceBoost:0},
-  // 切球：拍面角度加大、力道減弱，讓彈跳後下降期的整個時機窗口都能成功，落點會隨
-  // 切球時機變晚而越靠近網。已知殘留問題：短球下旋掛網、部分側下旋長球在窗口後段
-  // 出界，見 docs/physics-engine-v2-plan.md Phase 6。
-  push: {label:'切球', model:'push', techniqueVel:{x:0, y:0, z:-0.2}, racketNormal:normalize({x:0, y:0.6, z:-1}), bounceBoost:0},
+  // 切球：拍面角度加大，讓彈跳後下降期的整個時機窗口都能成功，落點會隨切球時機
+  // 變晚而越靠近網。力道（z）依來球水平速度動態調整（speedScaledZ）：長球速度快
+  // 力道偏被動（輕輕切，維持摩擦為主，力道太多會變碰撞為主，準確度變差），短球
+  // 速度慢需要比較主動的力道才能順順送過網，見 docs/physics-engine-v2-plan.md Phase 6。
+  push: {label:'切球', model:'push', techniqueVel:{x:0, y:0, z:0}, racketNormal:normalize({x:0, y:0.6, z:-1}), bounceBoost:0,
+    speedScaledZ:{low:-0.6, high:-0.2, speedLow:1.2, speedHigh:4.2}},
   loop: {label:'拉球', model:'direct', techniqueVel:{x:-0.6, y:1.0, z:-1.65}, spin:{topspin:0.9,sidespin:0}, bounceBoost:0.3}
 };
 
@@ -352,12 +354,24 @@ function sampleReturnCorrectionFraction(skillLevel){
   const raw = cfg.correctionMean + (Math.random() * 2 - 1) * spread;
   return clamp(raw, 0, 1);
 }
+// 依來球水平速度動態調整揮拍力道（目前只有切球在用，見 DEFAULT_TECHNIQUES.push.speedScaledZ）。
+// 用水平速度（vx/vz）而不是含 vy 的總速度——水平速度在同一條拋物線上全程不變，
+// 才能真正只反映「長短球」，不會被「切球時機多晚」混進去。
+function speedScaledTechniqueVel(incomingVel, tech){
+  if(!tech.speedScaledZ) return tech.techniqueVel;
+  const cfg = tech.speedScaledZ;
+  const speed = Math.hypot(incomingVel.x, incomingVel.z);
+  const t = clamp((speed - cfg.speedLow) / (cfg.speedHigh - cfg.speedLow), 0, 1);
+  const z = cfg.low + (cfg.high - cfg.low) * t;
+  return {x:tech.techniqueVel.x, y:tech.techniqueVel.y, z};
+}
 function makeRacketReturnVelocity(incomingVel, incomingSpin, tech){
   const spin = incomingSpin || {topspin:0, sidespin:0};
-  const epsilon = dynamicPaddleEpsilon(incomingVel, tech.techniqueVel, tech.racketNormal);
-  const aimedX = solveRacketVelXForTargetOutX(incomingVel, spin, tech.racketNormal, tech.techniqueVel, epsilon, PADDLE_FRICTION, 0);
+  const techVel = speedScaledTechniqueVel(incomingVel, tech);
+  const epsilon = dynamicPaddleEpsilon(incomingVel, techVel, tech.racketNormal);
+  const aimedX = solveRacketVelXForTargetOutX(incomingVel, spin, tech.racketNormal, techVel, epsilon, PADDLE_FRICTION, 0);
   const correction = sampleReturnCorrectionFraction(RETURN_SKILL_LEVEL);
-  const planeVel = {x:aimedX * correction, y:tech.techniqueVel.y, z:tech.techniqueVel.z};
+  const planeVel = {x:aimedX * correction, y:techVel.y, z:techVel.z};
   return bounceOffPlane(incomingVel, spin, tech.racketNormal, planeVel, epsilon, PADDLE_FRICTION);
 }
 function simulatePath(start, velocity, options){
