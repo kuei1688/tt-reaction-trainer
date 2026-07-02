@@ -196,17 +196,18 @@ const RETURN_INPUT = {topspinExpireMs:1200, chargeTimeMs:600, slideThresholdPx:3
 const BALL_COLORS = {default:0xffd84d, rising:0x4488ff, sideRising:0x66bbff, apex:0xffffff, falling:0xef9f27};
 const TIMING_HINT = {threshold:0.05, flashMs:100, sideRisingHoldMs:220};
 const MISS_Y = TABLE.top - BALL_RADIUS;
-const BUILD_VERSION = 'v8h70';
+const BUILD_VERSION = 'v8h71';
 const BOUNCE_PHYSICS = {horizontalRestitution:0.98, topspinKick:0.30, sidespinKick:0.22};
 const NET_COLLISION = {depth:0.012, zRestitution:0.16, xDamping:0.55, yDamping:0.35};
-// 回擊公式：finalVel = incomingVel * PADDLE_RESTITUTION + techniqueVel
-// incomingVel 是球到達擊球點當下的真實速度向量（來自發球模擬），techniqueVel 是固定的揮拍向量（方向/力量/旋轉修正）
+// 回擊公式：攻球/拉球走直向反彈；切球拆成拍面法向量反彈與切向摩擦衰減。
 const PADDLE_RESTITUTION = -0.9;
+const PUSH_NORMAL = normalize({x:0, y:1, z:0.2});
+const PUSH_TANGENTIAL_RETAIN = -0.3;
 const TECHNIQUES = {
-  forehand_attack: {label:'正手攻球', techniqueVel:{x:-1.4, y:0.65, z:-2.95}, spin:{topspin:0.15,sidespin:0.05}},
-  backhand_attack: {label:'反手攻球', techniqueVel:{x:-0.2, y:1.05, z:-1.45}, spin:{topspin:0.15,sidespin:-0.05}},
-  push: {label:'切球', techniqueVel:{x:-0.6, y:1.18, z:-0.65}, spin:{topspin:-0.8,sidespin:0}},
-  loop: {label:'拉球', techniqueVel:{x:-0.6, y:1.0, z:-1.65}, spin:{topspin:0.9,sidespin:0}, bounceBoost:0.3}
+  forehand_attack: {label:'\u6b63\u624b\u653b\u7403', model:'attack', techniqueVel:{x:0, y:0, z:-0.5}, spin:{topspin:0,sidespin:0}},
+  backhand_attack: {label:'\u53cd\u624b\u653b\u7403', model:'attack', techniqueVel:{x:0, y:0, z:-0.5}, spin:{topspin:0,sidespin:0}},
+  push: {label:'\u5207\u7403', model:'push', techniqueVel:{x:0, y:-0.15, z:-0.25}, spin:{topspin:-1.05,sidespin:0}},
+  loop: {label:'\u62c9\u7403', model:'direct', techniqueVel:{x:-0.6, y:1.0, z:-1.65}, spin:{topspin:0.9,sidespin:0}, bounceBoost:0.3}
 };
 let presets = [];
 let selectedServeIndex = 0;
@@ -1019,7 +1020,7 @@ function returnBall(techniqueKey){
   }
   const start = {...contactPoint, y:Math.max(contactPoint.y + 0.12, TABLE.top + 0.12)};
   const gravity = currentPreset().solve?.gravity ?? -4.2;
-  const baseVel = makeReturnVelocity(contactVel, tech.techniqueVel);
+  const baseVel = makeReturnVelocity(contactVel, tech);
   const result = simulatePath(start, baseVel, {
     gravity,
     spin:tech.spin,
@@ -1040,12 +1041,36 @@ function returnBall(techniqueKey){
   }
   animatePath(returnPath, ()=>judgeReturn(result, contactPhase), 7 / GAME_SPEED);
 }
-function makeReturnVelocity(incomingVel, techniqueVel){
+function dot(a, b){
+  return a.x * b.x + a.y * b.y + a.z * b.z;
+}
+function addVec(a, b){
+  return {x:a.x + b.x, y:a.y + b.y, z:a.z + b.z};
+}
+function scaleVec(v, scalar){
+  return {x:v.x * scalar, y:v.y * scalar, z:v.z * scalar};
+}
+function normalize(v){
+  const length = Math.hypot(v.x, v.y, v.z) || 1;
+  return scaleVec(v, 1 / length);
+}
+function makeDirectReturnVelocity(incomingVel, techniqueVel){
   return {
     x: incomingVel.x * PADDLE_RESTITUTION + techniqueVel.x,
     y: incomingVel.y * PADDLE_RESTITUTION + techniqueVel.y,
     z: incomingVel.z * PADDLE_RESTITUTION + techniqueVel.z
   };
+}
+function makePushReturnVelocity(incomingVel, techniqueVel){
+  const normalDot = dot(incomingVel, PUSH_NORMAL);
+  const normalComponent = scaleVec(PUSH_NORMAL, normalDot * PADDLE_RESTITUTION);
+  const tangential = addVec(incomingVel, scaleVec(PUSH_NORMAL, -normalDot));
+  const frictionComponent = scaleVec(tangential, PUSH_TANGENTIAL_RETAIN);
+  return addVec(addVec(normalComponent, frictionComponent), techniqueVel);
+}
+function makeReturnVelocity(incomingVel, tech){
+  if(tech.model === 'push') return makePushReturnVelocity(incomingVel, tech.techniqueVel);
+  return makeDirectReturnVelocity(incomingVel, tech.techniqueVel);
 }
 function judgeReturn(result, contactPhase){
   const firstBounce = result.bounces[0] || null;
