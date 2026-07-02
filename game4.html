@@ -61,6 +61,8 @@ button:disabled{opacity:.45;cursor:not-allowed}
 .field-row{display:flex;align-items:center;gap:9px;padding:9px 10px;border:1px solid var(--border);border-radius:7px;background:rgba(13,17,23,.45)}
 .field-row label{white-space:nowrap}
 .field-row select{flex:1}
+.serve-picker-row{align-items:stretch}
+#serveSelect{min-width:0;width:100%;font-weight:900}
 .meta{font-size:12px;color:var(--muted);line-height:1.55;white-space:pre-wrap}
 .result{font-size:16px;font-weight:900;line-height:1.45}
 .result.ok{color:var(--green)}
@@ -140,7 +142,11 @@ button:disabled{opacity:.45;cursor:not-allowed}
   <aside>
     <div class="section">
       <h2>發球 Preset</h2>
-      <div class="list" id="serveList"></div>
+      <div class="field-row serve-picker-row">
+        <label for="serveSelect" style="font-size:12px;font-weight:800;color:var(--muted)">發球</label>
+        <select id="serveSelect"></select>
+      </div>
+      <div id="serveCount" class="small" style="margin-top:6px"></div>
     </div>
     <div class="section">
       <h2>回擊技術</h2>
@@ -196,7 +202,7 @@ const RETURN_INPUT = {topspinExpireMs:1200, chargeTimeMs:600, slideThresholdPx:3
 const BALL_COLORS = {default:0xffd84d, rising:0x4488ff, sideRising:0x66bbff, apex:0xffffff, falling:0xef9f27};
 const TIMING_HINT = {threshold:0.05, flashMs:100, sideRisingHoldMs:220};
 const MISS_Y = TABLE.top - BALL_RADIUS;
-const BUILD_VERSION = 'v8h71';
+const BUILD_VERSION = 'v8h72';
 const BOUNCE_PHYSICS = {horizontalRestitution:0.98, topspinKick:0.30, sidespinKick:0.22};
 const NET_COLLISION = {depth:0.012, zRestitution:0.16, xDamping:0.55, yDamping:0.35};
 // 回擊公式：攻球/拉球走直向反彈；切球拆成拍面法向量反彈與切向摩擦衰減。
@@ -1106,19 +1112,11 @@ function judgeReturn(result, contactPhase){
   }
 }
 function renderServeButtons(){
-  const wrap = document.getElementById('serveList');
-  wrap.innerHTML = presets.map((preset, index)=>`
-    <button type="button" data-serve-index="${index}" class="${index === selectedServeIndex ? 'active' : ''}">
-      ${preset.label}
-    </button>
+  const select = document.getElementById('serveSelect');
+  select.innerHTML = presets.map((preset, index)=>`
+    <option value="${index}" ${index === selectedServeIndex ? 'selected' : ''}>${preset.label}</option>
   `).join('');
-  wrap.querySelectorAll('[data-serve-index]').forEach(btn=>{
-    btn.addEventListener('click', ()=>{
-      selectedServeIndex = parseInt(btn.dataset.serveIndex, 10);
-      renderServeButtons();
-      prepareServe();
-    });
-  });
+  document.getElementById('serveCount').textContent = presets.length ? `共 ${presets.length} 顆發球` : '尚未載入發球';
 }
 async function loadPresets(){
   // 同時載入 physics-presets.json 和 camera-config.json
@@ -1137,6 +1135,11 @@ async function loadPresets(){
   prepareServe();
 }
 document.getElementById('playBtn').addEventListener('click', playServe);
+document.getElementById('serveSelect').addEventListener('change', event=>{
+  selectedServeIndex = parseInt(event.target.value, 10) || 0;
+  renderServeButtons();
+  prepareServe();
+});
 document.getElementById('trajectoryToggle').addEventListener('change', event=>{
   showTrajectories = event.target.checked;
   setTrajectoryVisibility();
