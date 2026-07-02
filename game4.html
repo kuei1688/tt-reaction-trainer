@@ -1060,6 +1060,29 @@ function prepareServe(){
   document.getElementById('centerTip').textContent = '按「開始發球」看球飛來';
   setPhase('idle');
 }
+// 拋球動作：純演出用（不影響 servePath 的物理計算），從手部位置拋起、經過頂點、
+// 落回發球起始點 preset.start，再無縫接上原本的發球流程。用簡單的重力拋物線
+// （不套完整接觸力學，這裡只是演出，沒有旋轉/落桌判定的需求）。
+const TOSS_CONFIG = {dropHeight:0.22, riseHeight:0.18, gravity:-3.2, steps:36};
+function buildTossPath(start){
+  const handY = start.y - TOSS_CONFIG.dropHeight;
+  const peakY = start.y + TOSS_CONFIG.riseHeight;
+  const g = TOSS_CONFIG.gravity;
+  const points = [];
+  const v0 = Math.sqrt(2 * Math.abs(g) * (peakY - handY));
+  const t1 = v0 / Math.abs(g);
+  for(let i=0;i<=TOSS_CONFIG.steps;i++){
+    const t = (i / TOSS_CONFIG.steps) * t1;
+    points.push({x:start.x, y:handY + v0 * t + 0.5 * g * t * t, z:start.z});
+  }
+  const dropDist = peakY - start.y;
+  const t2 = Math.sqrt(2 * dropDist / Math.abs(g));
+  for(let i=1;i<=TOSS_CONFIG.steps;i++){
+    const t = (i / TOSS_CONFIG.steps) * t2;
+    points.push({x:start.x, y:peakY - 0.5 * Math.abs(g) * t * t, z:start.z});
+  }
+  return points;
+}
 function playServe(){
   if(!presets.length) return;
   document.activeElement?.blur?.();
@@ -1073,6 +1096,12 @@ function playServe(){
   document.getElementById('resultText').textContent = '準備中';
   document.getElementById('resultText').className = 'result';
   document.getElementById('detailText').textContent = '';
+  document.getElementById('centerTip').textContent = '拋球中';
+  const preset = currentPreset();
+  const tossPath = buildTossPath(preset.start);
+  animatePath(tossPath, beginServeFlight, 9 / GAME_SPEED);
+}
+function beginServeFlight(){
   document.getElementById('centerTip').textContent = '發球中';
   animatePath(servePath, ()=>{
     if(pendingReturn && !missResolved){
