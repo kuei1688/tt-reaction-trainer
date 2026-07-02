@@ -854,6 +854,128 @@
         },
         "bounce": 0.95
       }
+    },
+    {
+      "id": "no_spin_long_forehand",
+      "label": "不轉長球到正手",
+      "type": "serve",
+      "mode": "cheat_solve",
+      "tags": {
+        "spinType": "no_spin",
+        "length": "long",
+        "placement": "forehand"
+      },
+      "tagLabels": {
+        "spinType": "不轉",
+        "length": "長球",
+        "placement": "正手"
+      },
+      "start": {
+        "x": 0.5528712871287129,
+        "y": 0.95,
+        "z": -1.52
+      },
+      "serveLine": {
+        "height": 0.95,
+        "baselineOffset": 0.15,
+        "lateralOffset": 0
+      },
+      "firstBounce": {
+        "x": 0.55,
+        "y": 0.78,
+        "z": -0.94
+      },
+      "secondBounce": {
+        "x": 0.54,
+        "y": 0.78,
+        "z": 1.08
+      },
+      "target": {
+        "x": 0.54,
+        "y": 0.78,
+        "z": 1.08
+      },
+      "solve": {
+        "targetMode": "serve_bounces",
+        "timeToFirst": 0.74,
+        "flightTime": 0.74,
+        "secondLegTime": 0.74,
+        "netClearance": 0.03,
+        "gravity": -4.2
+      },
+      "variation": {
+        "velocity": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "spin": {
+          "topspin": 0,
+          "sidespin": 0
+        },
+        "bounce": 0.95
+      }
+    },
+    {
+      "id": "no_spin_long_backhand",
+      "label": "不轉長球到反手",
+      "type": "serve",
+      "mode": "cheat_solve",
+      "tags": {
+        "spinType": "no_spin",
+        "length": "long",
+        "placement": "backhand"
+      },
+      "tagLabels": {
+        "spinType": "不轉",
+        "length": "長球",
+        "placement": "反手"
+      },
+      "start": {
+        "x": 0.336375,
+        "y": 0.95,
+        "z": -1.52
+      },
+      "serveLine": {
+        "height": 0.95,
+        "baselineOffset": 0.15,
+        "lateralOffset": 0
+      },
+      "firstBounce": {
+        "x": 0.09,
+        "y": 0.78,
+        "z": -0.79
+      },
+      "secondBounce": {
+        "x": -0.45,
+        "y": 0.78,
+        "z": 0.81
+      },
+      "target": {
+        "x": -0.45,
+        "y": 0.78,
+        "z": 0.81
+      },
+      "solve": {
+        "targetMode": "serve_bounces",
+        "timeToFirst": 0.74,
+        "flightTime": 0.74,
+        "secondLegTime": 0.74,
+        "netClearance": 0.03,
+        "gravity": -4.2
+      },
+      "variation": {
+        "velocity": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "spin": {
+          "topspin": 0,
+          "sidespin": 0
+        },
+        "bounce": 0.95
+      }
     }
   ]
 }

@@ -14,6 +14,7 @@ if(!inputPath){
 
 const TAG_LABELS = {
   spinType: {
+    no_spin: '\u4e0d\u8f49',
     backspin: '下旋',
     sidebackspin: '側下',
     sidespin: '側旋',
