@@ -219,10 +219,13 @@ const NET_COLLISION = {depth:0.012, zRestitution:0.16, xDamping:0.55, yDamping:0
 const PADDLE_RESTITUTION = -0.9;
 const PUSH_NORMAL = normalize({x:0, y:1, z:-0.2});
 const PUSH_TANGENTIAL_RETAIN = -0.60;
+// Phase 5\uff1atechniqueVel \u5df2\u91dd\u5c0d\u7269\u7406\u5f15\u64ce v2 \u91cd\u65b0\u81ea\u52d5\u641c\u5c0b\u6821\u6e96\uff082026-07-02\uff09\uff0c
+// \u5c0d 13 \u9846\u6709\u6548\u767c\u7403\uff08\u6392\u9664 3 \u9846\u5df2\u77e5\u904e\u4e0d\u4e86\u7db2\u7684\u91cd\u4e0b\u65cb preset\uff09\u8a55\u5206\u512a\u5316\uff0c
+// \u8a73\u898b docs/physics-engine-v2-plan.md Phase 5\u3002
 const TECHNIQUES = {
-  forehand_attack: {label:'\u6b63\u624b\u653b\u7403', model:'attack', techniqueVel:{x:0, y:0, z:-0.5}, spin:{topspin:0,sidespin:0}},
-  backhand_attack: {label:'\u53cd\u624b\u653b\u7403', model:'attack', techniqueVel:{x:0, y:0, z:-0.5}, spin:{topspin:0,sidespin:0}},
-  push: {label:'\u5207\u7403', model:'push', techniqueVel:{x:0, y:0, z:-0.35}, spin:{topspin:-1.05,sidespin:0}},
+  forehand_attack: {label:'\u6b63\u624b\u653b\u7403', model:'attack', techniqueVel:{x:0, y:0.4, z:-3.52}, spin:{topspin:0,sidespin:0}},
+  backhand_attack: {label:'\u53cd\u624b\u653b\u7403', model:'attack', techniqueVel:{x:0, y:0.4, z:-3.52}, spin:{topspin:0,sidespin:0}},
+  push: {label:'\u5207\u7403', model:'push', techniqueVel:{x:0, y:0.74, z:-2.0}, spin:{topspin:-1.05,sidespin:0}},
   loop: {label:'\u62c9\u7403', model:'direct', techniqueVel:{x:-0.6, y:1.0, z:-1.65}, spin:{topspin:0.9,sidespin:0}, bounceBoost:0.3}
 };
 let presets = [];

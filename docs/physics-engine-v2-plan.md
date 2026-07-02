@@ -207,20 +207,30 @@ epsilon = clamp(baselineEpsilon - spinPenalty, EPSILON_MIN, EPSILON)
 ### Phase 5：全面重新驗證 ☐（進行中）
 **目標：** 今天做的所有批次驗證，在新引擎上全部重跑一次。
 
-- [ ] 發球落點驗證（比照 commit `138d84b` 前後做的那種 firstMiss/secondMiss/netClearance 檢查）
-- [ ] 切球（push）對 16 顆發球的過網高度/成功率驗證
-- [ ] 攻球（forehand_attack/backhand_attack）對 16 顆發球驗證，**特別注意：新引擎下，旋轉補償應該是物理模型自然產生的結果，不需要再額外乘一個 `penaltyCoeff` 人工係数**——如果新模型算出來的結果，長球下旋還是打不回去、短球下旋還打得回去，那代表物理模型本身就達到這個效果了，不用再疊加人工修正
-- [ ] 重新調整 `techniqueVel`（攻球/切球）如果新的反彈行為導致舊數字不再適用
+- [x] 發球落點驗證（firstMiss/secondMiss/netClearance 檢查）——見下方「軌跡解法驗證」筆記
+- [x] 切球（push）對 13 顆有效發球的過網高度/成功率驗證，並自動搜尋重新校準 `techniqueVel`
+- [x] 攻球（forehand_attack/backhand_attack）對 13 顆有效發球驗證，並自動搜尋重新校準 `techniqueVel`
+- [ ] 重新調整 `techniqueVel` 讓短球 preset 也能成功（目前短球會 overshoot，見下方筆記）
 - [ ] 拉球（loop）：延續之前決議，理論依據不足前先不處理，等這輪主體穩定後再說
 
 **驗收標準：** 16 顆發球 × 3 種技術（攻球/切球，拉球先跳過）的批次驗證結果都合理，記錄到這份文件。
 
-**已知問題（Phase 4 驗證時發現，尚未修）：** 用 `simulateServe()` 批次跑過 16 顆 preset 的 `bounces` 陣列後發現，3 顆重下旋 preset 在新的真實接觸力學下，第一跳之後水平動能衰減太多，**球完全過不了網**（在自己這側反覆微彈到幾乎靜止）：
+**已知問題 1（3 顆發球在新引擎下過不了網，使用者已確認暫不處理）：** 用 `simulateServe()` 批次跑過 16 顆 preset 的 `bounces` 陣列後發現，3 顆重下旋 preset 在新的真實接觸力學下，第一跳之後水平動能衰減太多，**球完全過不了網**（在自己這側反覆微彈到幾乎靜止）：
   - `backspin_long_backhand`（長球）：第二跳目標 z=1.25，實際卡在 z≈-0.02（死在網前）
   - `backspin_short_forehand`（短球）：第二跳目標 z=1.11，實際卡在 z≈-0.75
   - `backspin_short_forehand_2`（短球）：第二跳目標 z=0.24，實際卡在 z≈-0.79
 
-  **原因分析：** 這 3 顆用 `cheat_solve` 模式，只解「觸桌前」的拋物線初速去命中第一跳目標；第一跳之後完全交給真實反彈力學決定走向。新引擎的下旋摩擦衰減（`μ=0.13` + 20rps 下旋）比舊的線性模型（`topspin*0.30`）強得多，導致 Phase 3 沿用舊模型邏輯算出的初速已經不夠讓球維持到第二跳目標。**這不是引擎本身的 bug，是 `solveServeBounceVelocity` 需要針對新引擎重新求解**——這正是 Phase 5 要處理的核心項目，不應該用調低旋轉值這種回頭路解決（除非重新求解後仍不合理，才考慮回頭檢討旋轉值）。
+**軌跡解法（trajectory solving）驗證結果——確認不是解算器的 bug：** 針對 `backspin_long_backhand` 手動暴力測試，把初速拉到 12.4 m/s（遠超真實發球速度）並用最佳 `time`/`yNudge` 組合，球撞桌一次後水平動能還是被下旋摩擦力完全吃光，**無法到達第二跳目標**（`bounces` 陣列只有一筆，代表沒有第二次撞桌）。同時對其餘 13 顆有效發球確認 `solveServeBounceVelocity` 找到的初速都能精準命中第一跳（firstMiss 多在 0.001~0.08 之間）。**結論：`solveServeBounceVelocity` 本身運作正常，這 3 顆是 preset 設計層級的物理不可行問題（20rps 下旋 + 目標第二跳距離的組合，在真實物理下就是打不到那麼遠），不是軌跡解法的 bug，不需要修解算器**。使用者決定這 3 顆先不處理。
+
+**已知問題 2（`techniqueVel` 重新校準，已完成大部分，短球仍有殘留問題）：** 排除上述 3 顆壞掉的 preset 後，用舊引擎校準的 `techniqueVel`（攻球 z=-0.5、切球 z=-0.35，`PADDLE_RESTITUTION=-0.9` 不變）幾乎對所有其餘 13 顆發球「掛網」——因為新引擎的摩擦力讓球到接發點時的水平速度普遍比舊引擎低，同樣的出手力道推力不夠。
+
+**校準方法（自動化搜尋，非手動微調）：** 先快取 13 顆有效發球的擊球點/擊球速度（避免重複跑 `solveServeBounceVelocity` 的昂貴迭代），對 `techniqueVel.{x,y,z}` 用「粗網格搜尋起點 + coordinate hill-climbing 精修」找出最小化「掛網懲罰 + 出界懲罰 + 落點深度懲罰」的參數組合。**踩坑：** 第一版評分函式有漏洞——只要路徑「曾經」穿越 z=0 平面就算「有過網」，優化器因此鑽漏洞，找到一組大幅往下壓的 `y`（球直接砸在接球方自己這側先落地，落地後的亂彈路徑又剛好穿越 z=0，被誤判成功）。修正為「z=0 穿越事件必須發生在第一次落桌之前才算過網」後，搜尋才收斂到合理解。
+
+**最終校準結果（已套用到 game4.html 與 return-studio.html 的 `TECHNIQUES`/`DEFAULT_TECHNIQUES`）：**
+  - 攻球（forehand/backhand，共用同一組）：`techniqueVel = {x:0, y:0.4, z:-3.52}`（原本 `{x:0,y:0,z:-0.5}`）
+  - 切球：`techniqueVel = {x:0, y:0.74, z:-2.0}`（原本 `{x:0,y:0,z:-0.35}`）
+  - 結果：攻球 11/13、切球 12/13 顆有效發球能成功過網並落在界內（netClearance 多在 0.001~0.17 之間，落點深度 z≈-0.7~-1.3，符合合理的桌面範圍）。
+  - **殘留問題（結構性限制，非參數搜尋問題）：** `backspin_short_backhand`（攻球）、`sidebackspin_short_forehand`（攻球+切球）失敗，原因是這些「短球」preset 的接發點離網很近，同一組固定 `techniqueVel` 打過去會 overshoot（飛出桌面）。這是「單一組回擊參數不分球的遠近」的模型限制——真實選手會依來球距離調整揮拍力道，現在的模型沒有這個機制。**留給之後決定**：要不要依 preset 的 `tags.length`（長/半長/短）分別給不同的 `techniqueVel`（類似 `getServeLengthProfile` 對發球的做法），或是接受現況（大多數情況能用，短球是已知例外）。
 
 ---
 
