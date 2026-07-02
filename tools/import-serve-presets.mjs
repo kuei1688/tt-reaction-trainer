@@ -89,8 +89,11 @@ function normalizedTags(preset){
     else if(secondX >= 0.05) tags.placement = 'forehand';
     else tags.placement = 'middle';
   }
-  if((!tags.spinType || tags.spinType === 'backspin') && spin.topspin < -0.2 && Math.abs(spin.sidespin || 0) >= 0.6){
+  const sideAmount = Math.abs(spin.sidespin || 0);
+  if(spin.topspin < -0.2 && sideAmount >= 0.6 && (!tags.spinType || tags.spinType === 'backspin' || tags.spinType === 'sidebackspin')){
     tags.spinType = 'sidebackspin';
+  }else if(spin.topspin < -0.2 && sideAmount < 0.6 && (!tags.spinType || tags.spinType === 'sidebackspin')){
+    tags.spinType = 'backspin';
   }
   return tags;
 }

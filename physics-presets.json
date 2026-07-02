@@ -63,17 +63,17 @@
       }
     },
     {
-      "id": "sidebackspin_short_backhand",
-      "label": "短側下反手",
+      "id": "backspin_short_backhand_2",
+      "label": "下旋短球到反手-2",
       "type": "serve",
       "mode": "cheat_solve",
       "tags": {
-        "spinType": "sidebackspin",
+        "spinType": "backspin",
         "length": "short",
         "placement": "backhand"
       },
       "tagLabels": {
-        "spinType": "側下",
+        "spinType": "下旋",
         "length": "短球",
         "placement": "反手"
       },
