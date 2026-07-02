@@ -188,15 +188,16 @@ const PADDLE_SPEED_HIGH = 12.0;
 const PADDLE_FRICTION = 0.4;        // 拍面切向摩擦係數，工程估計值（無精確文獻，之後可依膠皮種類覆寫）
 const PADDLE_RESTITUTION = -0.9;    // 舊模型殘留常數，目前只有 loop（拉球）還在用，尚未套用球拍接觸力學
 
+// executionVariance：範圍解模式（RANGE_SOLUTION_MODE）用的動作抖動幅度，逐字對齊 game4.html。
 const DEFAULT_TECHNIQUES = {
-  forehand_attack: {label:'正手攻球', model:'attack', techniqueVel:{x:0, y:-0.234, z:-1}, racketNormal:normalize({x:0, y:0.1, z:-1}), bounceBoost:0},
-  backhand_attack: {label:'反手攻球', model:'attack', techniqueVel:{x:0, y:-0.234, z:-1}, racketNormal:normalize({x:0, y:0.1, z:-1}), bounceBoost:0},
+  forehand_attack: {label:'正手攻球', model:'attack', techniqueVel:{x:0, y:-0.234, z:-1}, racketNormal:normalize({x:0, y:0.1, z:-1}), bounceBoost:0, executionVariance:{vel:0.08, normal:0.024}},
+  backhand_attack: {label:'反手攻球', model:'attack', techniqueVel:{x:0, y:-0.234, z:-1}, racketNormal:normalize({x:0, y:0.1, z:-1}), bounceBoost:0, executionVariance:{vel:0.08, normal:0.024}},
   // 切球：拍面角度加大，讓彈跳後下降期的整個時機窗口都能成功，落點會隨切球時機
   // 變晚而越靠近網。力道（z）依來球水平速度動態調整（speedScaledZ）：長球速度快
   // 力道偏被動（輕輕切，維持摩擦為主，力道太多會變碰撞為主，準確度變差），短球
   // 速度慢需要比較主動的力道才能順順送過網，見 docs/physics-engine-v2-plan.md Phase 6。
   push: {label:'切球', model:'push', techniqueVel:{x:0, y:0, z:0}, racketNormal:normalize({x:0, y:0.6, z:-1}), bounceBoost:0,
-    speedScaledZ:{low:-0.6, high:-0.2, speedLow:1.2, speedHigh:4.2}},
+    speedScaledZ:{low:-0.6, high:-0.2, speedLow:1.2, speedHigh:4.2}, executionVariance:{vel:0.12, normal:0.036}},
   loop: {label:'拉球', model:'direct', techniqueVel:{x:-0.6, y:1.0, z:-1.65}, spin:{topspin:0.9,sidespin:0}, bounceBoost:0.3}
 };
 
@@ -336,6 +337,8 @@ function dynamicPaddleEpsilon(incomingVel, planeVel, planeNormal){
 }
 // 回擊技術等級：側向補償（瞄準修正）的完成度依玩家等級而不同，逐字對齊 game4.html。
 let RETURN_SKILL_LEVEL = 'advanced';
+// 範圍解模式：呈現桌球動作的多樣性，逐字對齊 game4.html。
+let RANGE_SOLUTION_MODE = false;
 // 中階直接視為完全修正成功（跟熟練一樣），只有初階會有補償不足/失手的機率——
 // 使用者明確要求不要把中階也搞得這麼複雜。中階/熟練之後如果要再拉開差異
 // （例如熟練加上「刻意打對手最遠端」的主動放球），再回來擴充。
@@ -365,14 +368,31 @@ function speedScaledTechniqueVel(incomingVel, tech){
   const z = cfg.low + (cfg.high - cfg.low) * t;
   return {x:tech.techniqueVel.x, y:tech.techniqueVel.y, z};
 }
+// 範圍解模式：小幅隨機抖動 techniqueVel/racketNormal，逐字對齊 game4.html。
+function applyExecutionVariance(techVel, racketNormal, tech){
+  if(!RANGE_SOLUTION_MODE || !tech.executionVariance) return {techVel, racketNormal};
+  const v = tech.executionVariance;
+  const jitteredVel = {
+    x: techVel.x + (Math.random() * 2 - 1) * v.vel,
+    y: techVel.y + (Math.random() * 2 - 1) * v.vel * 0.5,
+    z: techVel.z + (Math.random() * 2 - 1) * v.vel
+  };
+  const jitteredNormal = normalize({
+    x: (racketNormal.x || 0) + (Math.random() * 2 - 1) * v.normal,
+    y: racketNormal.y + (Math.random() * 2 - 1) * v.normal,
+    z: racketNormal.z
+  });
+  return {techVel: jitteredVel, racketNormal: jitteredNormal};
+}
 function makeRacketReturnVelocity(incomingVel, incomingSpin, tech){
   const spin = incomingSpin || {topspin:0, sidespin:0};
-  const techVel = speedScaledTechniqueVel(incomingVel, tech);
-  const epsilon = dynamicPaddleEpsilon(incomingVel, techVel, tech.racketNormal);
-  const aimedX = solveRacketVelXForTargetOutX(incomingVel, spin, tech.racketNormal, techVel, epsilon, PADDLE_FRICTION, 0);
+  const baseTechVel = speedScaledTechniqueVel(incomingVel, tech);
+  const {techVel, racketNormal} = applyExecutionVariance(baseTechVel, tech.racketNormal, tech);
+  const epsilon = dynamicPaddleEpsilon(incomingVel, techVel, racketNormal);
+  const aimedX = solveRacketVelXForTargetOutX(incomingVel, spin, racketNormal, techVel, epsilon, PADDLE_FRICTION, 0);
   const correction = sampleReturnCorrectionFraction(RETURN_SKILL_LEVEL);
   const planeVel = {x:aimedX * correction, y:techVel.y, z:techVel.z};
-  return bounceOffPlane(incomingVel, spin, tech.racketNormal, planeVel, epsilon, PADDLE_FRICTION);
+  return bounceOffPlane(incomingVel, spin, racketNormal, planeVel, epsilon, PADDLE_FRICTION);
 }
 function simulatePath(start, velocity, options){
   const gravity = options.gravity ?? -4.2;

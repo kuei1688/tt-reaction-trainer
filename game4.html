@@ -202,6 +202,12 @@ button:disabled{opacity:.45;cursor:not-allowed}
             <option value="backhand:loop">反手拉球</option>
           </select>
         </div>
+        <div class="field-row" id="rangeSolutionRow">
+          <label style="font-size:12px;font-weight:800;color:var(--muted)">
+            <input type="checkbox" id="rangeSolutionToggle" />
+            範圍解模式（呈現動作多樣性，非套招）
+          </label>
+        </div>
       </div>
     </div>
     <div class="section">
@@ -250,9 +256,13 @@ const PADDLE_SPEED_LOW = 2.0;
 const PADDLE_SPEED_HIGH = 12.0;
 const PADDLE_FRICTION = 0.4;        // 拍面切向摩擦係數，工程估計值（無精確文獻，之後可依膠皮種類覆寫）
 const PADDLE_RESTITUTION = -0.9;    // 舊模型殘留常數，目前只有 loop（拉球）還在用，尚未套用球拍接觸力學
+// executionVariance：範圍解模式（RANGE_SOLUTION_MODE）用的動作抖動幅度，模擬人手每次
+// 揮拍不會一模一樣。數值是校準過的安全範圍（用 13 顆有效發球批次測試，確保抖動後
+// 大部分情況仍然成功，不會做出明知不可行的動作）：push 容錯空間大用 0.12，
+// attack 容錯空間較窄用 0.08。見 docs/physics-engine-v2-plan.md Phase 6。
 const TECHNIQUES = {
-  forehand_attack: {label:'正手攻球', model:'attack', techniqueVel:{x:0, y:-0.234, z:-1}, racketNormal:normalize({x:0, y:0.1, z:-1})},
-  backhand_attack: {label:'反手攻球', model:'attack', techniqueVel:{x:0, y:-0.234, z:-1}, racketNormal:normalize({x:0, y:0.1, z:-1})},
+  forehand_attack: {label:'正手攻球', model:'attack', techniqueVel:{x:0, y:-0.234, z:-1}, racketNormal:normalize({x:0, y:0.1, z:-1}), executionVariance:{vel:0.08, normal:0.024}},
+  backhand_attack: {label:'反手攻球', model:'attack', techniqueVel:{x:0, y:-0.234, z:-1}, racketNormal:normalize({x:0, y:0.1, z:-1}), executionVariance:{vel:0.08, normal:0.024}},
   // 切球：拍面角度加大，讓彈跳後下降期的整個時機窗口都能成功，且落點會隨切球時機
   // 變晚而越靠近網，符合「越晚切效果越好」的設計。
   // 力道（z）依來球速度動態調整（speedScaledZ，見 makeRacketReturnVelocity()）：
@@ -260,7 +270,7 @@ const TECHNIQUES = {
   // 準確度會變差）；短球速度慢，需要比較主動的力道才能順順地送過網——這是使用者
   // 依實際打球經驗指出的方向，見 docs/physics-engine-v2-plan.md Phase 6。
   push: {label:'切球', model:'push', techniqueVel:{x:0, y:0, z:0}, racketNormal:normalize({x:0, y:0.6, z:-1}),
-    speedScaledZ:{low:-0.6, high:-0.2, speedLow:1.2, speedHigh:4.2}},
+    speedScaledZ:{low:-0.6, high:-0.2, speedLow:1.2, speedHigh:4.2}, executionVariance:{vel:0.12, normal:0.036}},
   loop: {label:'拉球', model:'direct', techniqueVel:{x:-0.6, y:1.0, z:-1.65}, spin:{topspin:0.9,sidespin:0}, bounceBoost:0.3}
 };
 let presets = [];
@@ -302,6 +312,11 @@ let AUTO_BEST_TIMING = false;
 let AUTO_TIMING_SIDE = 'forehand';
 let AUTO_TIMING_TECHNIQUE = 'push';
 let autoFireIndex = null;
+// 範圍解模式：呈現桌球動作的多樣性（像生態箱，不是套招）。開啟後每次回擊的
+// techniqueVel/racketNormal 會加上小幅隨機抖動（見 TECHNIQUES.*.executionVariance），
+// 模擬人手每次揮拍不會一模一樣，但方向依然正確——不是隨機亂打，抖動幅度已校準過，
+// 確保仍落在「合理、可行」的範圍內。見 docs/physics-engine-v2-plan.md Phase 6。
+let RANGE_SOLUTION_MODE = false;
 let currentServePoint = null;
 let currentServeVel = null;
 let currentTimingPhase = 'unknown';
@@ -1339,14 +1354,32 @@ function speedScaledTechniqueVel(incomingVel, tech){
   const z = cfg.low + (cfg.high - cfg.low) * t;
   return {x:tech.techniqueVel.x, y:tech.techniqueVel.y, z};
 }
+// 範圍解模式：小幅隨機抖動 techniqueVel/racketNormal，模擬人手每次揮拍的自然變異。
+// 抖動幅度用 tech.executionVariance（已用批次測試校準過安全範圍）。
+function applyExecutionVariance(techVel, racketNormal, tech){
+  if(!RANGE_SOLUTION_MODE || !tech.executionVariance) return {techVel, racketNormal};
+  const v = tech.executionVariance;
+  const jitteredVel = {
+    x: techVel.x + (Math.random() * 2 - 1) * v.vel,
+    y: techVel.y + (Math.random() * 2 - 1) * v.vel * 0.5,
+    z: techVel.z + (Math.random() * 2 - 1) * v.vel
+  };
+  const jitteredNormal = normalize({
+    x: (racketNormal.x || 0) + (Math.random() * 2 - 1) * v.normal,
+    y: racketNormal.y + (Math.random() * 2 - 1) * v.normal,
+    z: racketNormal.z
+  });
+  return {techVel: jitteredVel, racketNormal: jitteredNormal};
+}
 function makeRacketReturnVelocity(incomingVel, incomingSpin, tech){
   const spin = incomingSpin || {topspin:0, sidespin:0};
-  const techVel = speedScaledTechniqueVel(incomingVel, tech);
-  const epsilon = dynamicPaddleEpsilon(incomingVel, techVel, tech.racketNormal);
-  const aimedX = solveRacketVelXForTargetOutX(incomingVel, spin, tech.racketNormal, techVel, epsilon, PADDLE_FRICTION, 0);
+  const baseTechVel = speedScaledTechniqueVel(incomingVel, tech);
+  const {techVel, racketNormal} = applyExecutionVariance(baseTechVel, tech.racketNormal, tech);
+  const epsilon = dynamicPaddleEpsilon(incomingVel, techVel, racketNormal);
+  const aimedX = solveRacketVelXForTargetOutX(incomingVel, spin, racketNormal, techVel, epsilon, PADDLE_FRICTION, 0);
   const correction = sampleReturnCorrectionFraction(RETURN_SKILL_LEVEL); // 1=完全修正（現有已驗證的預設行為），0=完全不修正
   const planeVel = {x:aimedX * correction, y:techVel.y, z:techVel.z};
-  return bounceOffPlane(incomingVel, spin, tech.racketNormal, planeVel, epsilon, PADDLE_FRICTION);
+  return bounceOffPlane(incomingVel, spin, racketNormal, planeVel, epsilon, PADDLE_FRICTION);
 }
 function makeReturnVelocity(incomingVel, incomingSpin, tech){
   if(tech.model === 'push' || tech.model === 'attack') return makeRacketReturnVelocity(incomingVel, incomingSpin, tech);
@@ -1438,6 +1471,9 @@ document.getElementById('autoTimingTechnique').addEventListener('change', event=
   AUTO_TIMING_SIDE = side;
   AUTO_TIMING_TECHNIQUE = techniqueKey;
   if(phase === 'idle') prepareServe(); // 重新計算 autoFireIndex（依新選的技術），發球中不打斷
+});
+document.getElementById('rangeSolutionToggle').addEventListener('change', event=>{
+  RANGE_SOLUTION_MODE = event.target.checked;
 });
 document.getElementById('nextBtn').addEventListener('click', ()=>{
   selectedServeIndex = (selectedServeIndex + 1) % Math.max(1, presets.length);
