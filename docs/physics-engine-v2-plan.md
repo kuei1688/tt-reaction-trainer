@@ -1,6 +1,6 @@
 # 物理引擎 v2 工程規劃：真實觸桌接觸力學模型
 
-**狀態：Phase 0、Phase 1、Phase 2 已完成（2026-07-02，`μ=0.13` 定案），Phase 3 進行中（16 顆發球換算成真實 rad/s）**
+**狀態：Phase 0～Phase 4 已完成（2026-07-02）。Phase 5（全面重新驗證）進行中，已發現一個需要處理的已知問題：3 顆重下旋 preset 在新引擎下過不了網，詳見 Phase 5 筆記。**
 **目的：** 把落桌反彈時的旋轉處理，從現在的「感覺係數」（`topspin`/`sidespin` 是 -1.15 這種湊出來的數字，`applyBounceSpin()` 用固定係數 `topspinKick=0.30`）換成真正的剛體接觸力學模型，讓旋轉數值有真實物理單位（rad/s），行為有物理推導依據。
 
 **給接手者的提醒：** 這份文件是跨多次對話、跨 Claude Code / Codex 的共用計畫。每次做完一個階段，**在這份文件裡打勾、寫下實際做了什麼、驗證結果、還有遇到的問題**，不要只在對話裡口頭交接，因為切換工具時對話記憶不會帶過去。改完這份文件本身也要 commit。
@@ -177,30 +177,34 @@ epsilon = clamp(baselineEpsilon - spinPenalty, EPSILON_MIN, EPSILON)
 
 ---
 
-### Phase 3：既有 16 顆發球換算成真實單位 ☐
+### Phase 3：既有 16 顆發球換算成真實單位 ✅
 **目標：** `physics-presets.json` 的 `topspin`/`sidespin` 從「感覺數字」換成真實 `rad/s`。
 
-- [ ] 依 Phase 0 使用者提供的相對強度意圖，配合 13.7~62.5 rps 的真實範圍，給每顆發球指定實際轉速
-- [ ] 更新 `physics-presets.json`
-- [ ] 註記：這一步會讓舊的 `topspin=-1.15` 這種數字完全作廢，不是線性換算，是重新指定
+- [x] 依 Phase 0 使用者提供的相對強度意圖，配合 13.7~62.5 rps 的真實範圍，給每顆發球指定實際轉速
+- [x] 更新 `physics-presets.json`
+- [x] 註記：這一步會讓舊的 `topspin=-1.15` 這種數字完全作廢，不是線性換算，是重新指定
 
-**驗收標準：** 16 顆發球都有新的、有物理意義的旋轉數值，使用者確認合理。
+**驗收標準：** 16 顆發球都有新的、有物理意義的旋轉數值，使用者確認合理。✅ **已達成**——主群集統一 `topspin=-125.66`（20rps 下旋錨點）；側旋依長短球分級（長球 -125.66、短球 `sidebackspin_short_forehand` -150.80）；3 顆早期測試遺留的例外（`backspin_long_backhand`、`backspin_short_backhand_2`、`sidebackspin_long_forehand`）校正到跟主群集一致；`backspin_short_backhand_2` 錯誤方向的 sidespin（+0.37）修正為 0。使用者確認：「我覺得可以，繼續」。
+
+**遺留待觀察項：** `sidebackspin_short_forehand` 的 -150.80（24rps）是工程判斷（+20%），沒有實測依據，使用者可能之後要重新檢視。
 
 ---
 
-### Phase 4：整合進 game4.html + return-studio.html ☐
+### Phase 4：整合進 game4.html + return-studio.html ✅
 **目標：** 正式換上新引擎，**兩個檔案要同步改**（這是本專案一直以來的規則，避免兩邊物理引擎不一致）。
 
-- [ ] `game4.html`：用 Phase 1 驗證過的函式取代 `applyBounceSpin()`
-- [ ] `return-studio.html`：同步更新，維持「逐字對齊 game4.html 引擎」的慣例
-- [ ] 更新 `BOUNCE_PHYSICS` 相關常數（`topspinKick`/`sidespinKick` 應該會整個被取代，不再需要）
-- [ ] 瀏覽器實測：確認球還能正常飛行、落桌、不會出現 NaN 或飛出天際的異常軌跡
+- [x] `game4.html`：用 Phase 1 驗證過的函式取代 `applyBounceSpin()`
+- [x] `return-studio.html`：同步更新，維持「逐字對齊 game4.html 引擎」的慣例
+- [x] 更新 `BOUNCE_PHYSICS` 相關常數（`topspinKick`/`sidespinKick` 整個被取代，不再需要）
+- [x] 瀏覽器實測：確認球還能正常飛行、落桌、不會出現 NaN 或飛出天際的異常軌跡
 
-**驗收標準：** 兩個檔案都能在瀏覽器正常跑完一輪發球+回擊，沒有明顯物理異常。
+**驗收標準：** 兩個檔案都能在瀏覽器正常跑完一輪發球+回擊，沒有明顯物理異常。✅ **已達成**——16 顆 preset（game4.html）與 16 顆 preset × 4 種技術（return-studio.html）全部批次跑過，`points`/`velocities` 均無 NaN、無例外。
+
+**踩坑記錄（給後續接手者）：** 用 preview 瀏覽器測試時一度以為動畫「凍結」是程式碼 bug（`requestAnimationFrame` 只觸發一次、`ball.position` 卡在起點不動、無任何 console 錯誤）。花了不少時間排查（監聽 `window.onerror`、monkey-patch `requestAnimationFrame` 計數）後才發現：**根因是預覽分頁被瀏覽器判定為背景分頁（`document.hidden === true`），瀏覽器會完全暫停該分頁的 rAF/render 迴圈**，連 `preview_screenshot` 都會逾時。這跟物理引擎程式碼完全無關。之後改用直接呼叫 `simulateServe()`/`simulateReturnForPreset()`/`bounceWithSpinPhysical()` 等函式做批次驗證（不依賴 rAF 動畫），才確認引擎邏輯本身是對的。**教訓：以後若又遇到「動畫完全不動但無錯誤」的情況，先檢查 `document.hidden`，不要預設是程式碼問題。**
 
 ---
 
-### Phase 5：全面重新驗證 ☐
+### Phase 5：全面重新驗證 ☐（進行中）
 **目標：** 今天做的所有批次驗證，在新引擎上全部重跑一次。
 
 - [ ] 發球落點驗證（比照 commit `138d84b` 前後做的那種 firstMiss/secondMiss/netClearance 檢查）
@@ -210,6 +214,13 @@ epsilon = clamp(baselineEpsilon - spinPenalty, EPSILON_MIN, EPSILON)
 - [ ] 拉球（loop）：延續之前決議，理論依據不足前先不處理，等這輪主體穩定後再說
 
 **驗收標準：** 16 顆發球 × 3 種技術（攻球/切球，拉球先跳過）的批次驗證結果都合理，記錄到這份文件。
+
+**已知問題（Phase 4 驗證時發現，尚未修）：** 用 `simulateServe()` 批次跑過 16 顆 preset 的 `bounces` 陣列後發現，3 顆重下旋 preset 在新的真實接觸力學下，第一跳之後水平動能衰減太多，**球完全過不了網**（在自己這側反覆微彈到幾乎靜止）：
+  - `backspin_long_backhand`（長球）：第二跳目標 z=1.25，實際卡在 z≈-0.02（死在網前）
+  - `backspin_short_forehand`（短球）：第二跳目標 z=1.11，實際卡在 z≈-0.75
+  - `backspin_short_forehand_2`（短球）：第二跳目標 z=0.24，實際卡在 z≈-0.79
+
+  **原因分析：** 這 3 顆用 `cheat_solve` 模式，只解「觸桌前」的拋物線初速去命中第一跳目標；第一跳之後完全交給真實反彈力學決定走向。新引擎的下旋摩擦衰減（`μ=0.13` + 20rps 下旋）比舊的線性模型（`topspin*0.30`）強得多，導致 Phase 3 沿用舊模型邏輯算出的初速已經不夠讓球維持到第二跳目標。**這不是引擎本身的 bug，是 `solveServeBounceVelocity` 需要針對新引擎重新求解**——這正是 Phase 5 要處理的核心項目，不應該用調低旋轉值這種回頭路解決（除非重新求解後仍不合理，才考慮回頭檢討旋轉值）。
 
 ---
 

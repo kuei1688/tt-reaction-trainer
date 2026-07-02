@@ -202,8 +202,18 @@ const RETURN_INPUT = {topspinExpireMs:1200, chargeTimeMs:600, slideThresholdPx:3
 const BALL_COLORS = {default:0xffd84d, rising:0x4488ff, sideRising:0x66bbff, apex:0xffffff, falling:0xef9f27};
 const TIMING_HINT = {threshold:0.05, flashMs:100, sideRisingHoldMs:220};
 const MISS_Y = TABLE.top - BALL_RADIUS;
-const BUILD_VERSION = 'v8h80';
-const BOUNCE_PHYSICS = {horizontalRestitution:0.98, topspinKick:0.30, sidespinKick:0.22};
+const BUILD_VERSION = 'v9j21';
+// ── 物理引擎 v2：真實觸桌接觸力學（docs/physics-engine-v2-plan.md Phase 1-4）──
+// 逐字對齊 tools/physics-v2-contact-mechanics.js，取代舊的 BOUNCE_PHYSICS/applyBounceSpin。
+const BALL_MASS = 0.0027;      // kg，ITTF 2.7g
+const BALL_INERTIA_ALPHA = 2 / 3; // 薄殼球轉動慣量係數：I = ALPHA * M * R²
+const BALL_INERTIA = BALL_INERTIA_ALPHA * BALL_MASS * BALL_RADIUS * BALL_RADIUS;
+const EPSILON_VERTICAL = 0.876;   // ITTF 球桌反彈測試（30cm 落下彈回 23cm）
+const EPSILON_OBLIQUE = 0.57;     // 斜向撞擊（入射角 ~83°）實測反彈係數
+const EPSILON_MIN = 0.45;         // 旋轉/斜向撞擊劇烈時的保守下限
+const OBLIQUE_ANGLE_DEG = 83;
+const SPIN_EPSILON_REFERENCE = 6.0; // 球面旋轉速度達到此值時，套用完整額外反彈損失
+const CONTACT_FRICTION_MU = 0.13;   // Phase 2 校準定案值
 const NET_COLLISION = {depth:0.012, zRestitution:0.16, xDamping:0.55, yDamping:0.35};
 // 回擊公式：攻球/拉球走直向反彈；切球拆成拍面法向量反彈與切向摩擦衰減。
 const PADDLE_RESTITUTION = -0.9;
@@ -411,21 +421,60 @@ function clamp(value,min,max){ return Math.max(min, Math.min(max, value)); }
 function isValidPoint(point){
   return point && Number.isFinite(point.x) && Number.isFinite(point.y) && Number.isFinite(point.z);
 }
-function applyBounceSpin(vel, spin, bounce){
-  const speed = Math.hypot(vel.x, vel.z);
-  const forward = speed > 0.001 ? {x:vel.x/speed, z:vel.z/speed} : {x:0,z:1};
-  const side = {x:-forward.z, z:forward.x};
-  let forwardSpeed = speed * BOUNCE_PHYSICS.horizontalRestitution + (spin.topspin || 0) * BOUNCE_PHYSICS.topspinKick;
-  const sideSpeed = clamp((spin.sidespin || 0) * BOUNCE_PHYSICS.sidespinKick, -speed * 0.75, speed * 0.75);
-  forwardSpeed = clamp(forwardSpeed, -speed * 0.55, speed * 1.35);
-  vel.x = forward.x * forwardSpeed + side.x * sideSpeed;
-  vel.z = forward.z * forwardSpeed + side.z * sideSpeed;
-  vel.y = Math.abs(vel.y) * bounce;
+// ── 物理引擎 v2：接觸力學（逐字對齊 tools/physics-v2-contact-mechanics.js）──
+function contactSlipSpeed(vel, spin){
+  const slipZ = vel.z - (spin.topspin || 0) * BALL_RADIUS;
+  const slipX = vel.x + (spin.sidespin || 0) * BALL_RADIUS;
+  return Math.hypot(slipX, slipZ);
+}
+function horizontalImpactSpeed(vel){
+  return Math.hypot(vel.x || 0, vel.z || 0);
+}
+function spinSurfaceSpeed(spin){
+  return BALL_RADIUS * Math.hypot((spin && spin.topspin) || 0, (spin && spin.sidespin) || 0);
+}
+function dynamicEpsilon(vel, spin){
+  const normalSpeed = Math.abs(vel.y);
+  if(normalSpeed < 1e-9) return EPSILON_MIN;
+  const obliqueHorizontalSpeed = normalSpeed * Math.tan(OBLIQUE_ANGLE_DEG * Math.PI / 180);
+  const baselineT = clamp(horizontalImpactSpeed(vel) / obliqueHorizontalSpeed, 0, 1);
+  const baselineEpsilon = EPSILON_VERTICAL + (EPSILON_OBLIQUE - EPSILON_VERTICAL) * baselineT;
+  const spinT = clamp(spinSurfaceSpeed(spin || {topspin:0,sidespin:0}) / SPIN_EPSILON_REFERENCE, 0, 1);
+  const spinPenalty = (EPSILON_OBLIQUE - EPSILON_MIN) * spinT;
+  return clamp(baselineEpsilon - spinPenalty, EPSILON_MIN, EPSILON_VERTICAL);
+}
+// 一維「球撞桌 + 旋轉」問題的通用解（打滑 / 純滾動判斷）
+function bounceTangentialAxis(v, omega, normalImpulse, mu){
+  const slip = v - omega * BALL_RADIUS;
+  if(Math.abs(slip) < 1e-9) return {v2:v, omega2:omega, regime:'rolling'};
+  const omega2Roll = (BALL_MASS * v * BALL_RADIUS + BALL_INERTIA * omega) / (BALL_MASS * BALL_RADIUS * BALL_RADIUS + BALL_INERTIA);
+  const v2Roll = omega2Roll * BALL_RADIUS;
+  const jNeededForRoll = BALL_MASS * (v2Roll - v);
+  const jAvailable = mu * normalImpulse;
+  if(Math.abs(jNeededForRoll) <= jAvailable) return {v2:v2Roll, omega2:omega2Roll, regime:'rolling'};
+  const jFriction = -Math.sign(slip) * jAvailable;
+  const v2 = v + jFriction / BALL_MASS;
+  const omega2 = omega - jFriction / (BALL_INERTIA / BALL_RADIUS);
+  return {v2, omega2, regime:'sliding'};
+}
+// 完整一次觸桌反彈：回傳新的 vel/spin（spin 現在會隨每次觸桌真的改變，不再是常數）
+function bounceWithSpinPhysical(vel, spin, mu){
+  const epsilon = dynamicEpsilon(vel, spin);
+  const normalImpulse = BALL_MASS * (1 + epsilon) * Math.abs(vel.y);
+  const vyAfter = -epsilon * vel.y;
+  const zResult = bounceTangentialAxis(vel.z, spin.topspin || 0, normalImpulse, mu);
+  const xResult = bounceTangentialAxis(vel.x, -(spin.sidespin || 0), normalImpulse, mu);
+  return {
+    vel:{x:xResult.v2, y:vyAfter, z:zResult.v2},
+    spin:{topspin:zResult.omega2, sidespin:-xResult.omega2},
+    epsilon,
+    regime:{topspin:zResult.regime, sidespin:xResult.regime}
+  };
 }
 function simulatePath(start, velocity, options){
   const gravity = options.gravity ?? -4.2;
-  const spin = options.spin || {topspin:0,sidespin:0};
-  const bounce = options.bounce ?? 0.95;
+  // spin 現在是可變狀態：物理引擎 v2 下，每次觸桌旋轉都會真的改變（不再是套用整段路徑的常數）
+  let spin = {topspin:(options.spin && options.spin.topspin) || 0, sidespin:(options.spin && options.spin.sidespin) || 0};
   const bounceBoost = options.bounceBoost ?? 0;
   const pos = clone(start);
   const vel = clone(velocity);
@@ -488,7 +537,9 @@ function simulatePath(start, velocity, options){
         points.push(clone(pos));
         velocities.push(clone(vel));
         if(bounces.length > MAX_TABLE_BOUNCES) break;
-        applyBounceSpin(vel, spin, bounce);
+        const bounced = bounceWithSpinPhysical(vel, spin, CONTACT_FRICTION_MU);
+        vel.x = bounced.vel.x; vel.y = bounced.vel.y; vel.z = bounced.vel.z;
+        spin = bounced.spin;
         if(bounceBoost){
           const forwardZ = Math.sign(vel.z || velocity.z || -1);
           vel.z += forwardZ * bounceBoost;
@@ -637,8 +688,7 @@ function serveBounceScore(preset, baseVel){
   const profile = getServeLengthProfile(preset);
   const result = simulatePath(preset.start, baseVel, {
     gravity:preset.solve?.gravity ?? -4.2,
-    spin:preset.variation?.spin,
-    bounce:preset.variation?.bounce
+    spin:preset.variation?.spin
   });
   const firstTarget = preset.firstBounce || preset.target;
   const secondTarget = preset.secondBounce || preset.target;
@@ -682,8 +732,7 @@ function simulateServe(preset){
   const velocity = solveBaseVelocity(preset);
   return simulatePath(preset.start, velocity, {
     gravity,
-    spin:preset.variation?.spin,
-    bounce:preset.variation?.bounce
+    spin:preset.variation?.spin
   });
 }
 function findHitIndex(path){
@@ -1048,7 +1097,6 @@ function returnBall(techniqueKey){
   const result = simulatePath(start, baseVel, {
     gravity,
     spin:tech.spin,
-    bounce:0.88,
     bounceBoost:tech.bounceBoost ?? 0
   });
   returnPath = result.points.filter(isValidPoint);
