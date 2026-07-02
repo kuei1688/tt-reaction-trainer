@@ -202,17 +202,17 @@ const RETURN_INPUT = {topspinExpireMs:1200, chargeTimeMs:600, slideThresholdPx:3
 const BALL_COLORS = {default:0xffd84d, rising:0x4488ff, sideRising:0x66bbff, apex:0xffffff, falling:0xef9f27};
 const TIMING_HINT = {threshold:0.05, flashMs:100, sideRisingHoldMs:220};
 const MISS_Y = TABLE.top - BALL_RADIUS;
-const BUILD_VERSION = 'v8h77';
+const BUILD_VERSION = 'v8h78';
 const BOUNCE_PHYSICS = {horizontalRestitution:0.98, topspinKick:0.30, sidespinKick:0.22};
 const NET_COLLISION = {depth:0.012, zRestitution:0.16, xDamping:0.55, yDamping:0.35};
 // 回擊公式：攻球/拉球走直向反彈；切球拆成拍面法向量反彈與切向摩擦衰減。
 const PADDLE_RESTITUTION = -0.9;
 const PUSH_NORMAL = normalize({x:0, y:1, z:-0.2});
-const PUSH_TANGENTIAL_RETAIN = -0.45;
+const PUSH_TANGENTIAL_RETAIN = -0.60;
 const TECHNIQUES = {
   forehand_attack: {label:'\u6b63\u624b\u653b\u7403', model:'attack', techniqueVel:{x:0, y:0, z:-0.5}, spin:{topspin:0,sidespin:0}},
   backhand_attack: {label:'\u53cd\u624b\u653b\u7403', model:'attack', techniqueVel:{x:0, y:0, z:-0.5}, spin:{topspin:0,sidespin:0}},
-  push: {label:'\u5207\u7403', model:'push', techniqueVel:{x:0, y:0.15, z:-0.25}, spin:{topspin:-1.05,sidespin:0}},
+  push: {label:'\u5207\u7403', model:'push', techniqueVel:{x:0, y:0.15, z:-0.35}, spin:{topspin:-1.05,sidespin:0}},
   loop: {label:'\u62c9\u7403', model:'direct', techniqueVel:{x:-0.6, y:1.0, z:-1.65}, spin:{topspin:0.9,sidespin:0}, bounceBoost:0.3}
 };
 let presets = [];
