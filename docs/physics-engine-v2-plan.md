@@ -146,7 +146,8 @@ slipSpeed = sqrt(slipX² + slipZ²)
 2. `tools/physics-v2-contact-mechanics.js` 新增 `dynamicEpsilon()`、`contactSlipSpeed()`、`bounceApexHeight()`，`bounceWithSpinPhysical()` 改用動態 `ε` 並回傳實際 `epsilon`。
 3. 重新跑 `node tools/physics-v2-contact-mechanics.js`，結果 `9 通過 / 0 失敗`。
 4. 新增測試：「同樣球心速度下，20rps 下旋撞桌後最高點低於不轉球」。測試數值：不轉 `ε≈0.627`、apex≈`1.202m`；20rps 下旋 `ε=0.45`、apex≈`0.998m`，已能做出弧線壓低效果。
-5. 下一步才回頭處理 `μ`（原本 Phase 2 的摩擦係數校準），同時要注意目前 `EPSILON_MIN=0.45` 仍是暫定工程下限，不是最終校準值。
+5. 新增 `physics-v2-calibration.html` 作為視覺化校準頁，讓使用者直接比較不轉、20rps 下旋、40rps 下旋的彈跳弧線，並可調 `μ`、`EPSILON_MIN`、入射 `vy/vz` 與 rps。這個頁面只用於 Phase 2 校準，不影響 Game 4。
+6. 下一步才回頭處理 `μ`（原本 Phase 2 的摩擦係數校準），同時要注意目前 `EPSILON_MIN=0.45` 仍是暫定工程下限，不是最終校準值。
 
 ---
 

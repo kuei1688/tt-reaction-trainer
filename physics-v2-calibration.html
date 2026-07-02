@@ -1,0 +1,515 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Physics v2 Calibration</title>
+  <style>
+    :root{
+      color-scheme:dark;
+      --bg:#0b0f14;
+      --panel:#151b23;
+      --panel-2:#1c2530;
+      --line:#2f3b49;
+      --text:#e8edf3;
+      --muted:#9aa8b7;
+      --accent:#59a6ff;
+      --green:#4cc38a;
+      --orange:#f0a53a;
+      --pink:#ff6b9a;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      background:var(--bg);
+      color:var(--text);
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    }
+    header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      padding:14px 18px;
+      border-bottom:1px solid var(--line);
+      background:#10161d;
+    }
+    h1{
+      margin:0;
+      font-size:18px;
+      line-height:1.2;
+      letter-spacing:0;
+    }
+    .build{
+      color:var(--muted);
+      font-family:ui-monospace,SFMono-Regular,Consolas,monospace;
+      font-size:12px;
+      white-space:nowrap;
+    }
+    main{
+      display:grid;
+      grid-template-columns:minmax(0,1fr) 340px;
+      min-height:calc(100vh - 52px);
+    }
+    .stage{
+      min-width:0;
+      padding:14px;
+      display:grid;
+      grid-template-rows:minmax(320px,1fr) auto;
+      gap:12px;
+    }
+    canvas{
+      width:100%;
+      height:100%;
+      min-height:420px;
+      display:block;
+      background:#081018;
+      border:1px solid var(--line);
+      border-radius:8px;
+    }
+    aside{
+      border-left:1px solid var(--line);
+      background:var(--panel);
+      padding:14px;
+      overflow:auto;
+    }
+    .controls{
+      display:grid;
+      gap:12px;
+    }
+    .field{
+      display:grid;
+      gap:6px;
+    }
+    label{
+      color:var(--muted);
+      font-size:12px;
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+    }
+    input[type="range"]{
+      width:100%;
+      accent-color:var(--accent);
+    }
+    .buttons{
+      display:flex;
+      gap:8px;
+    }
+    button{
+      appearance:none;
+      border:1px solid #334154;
+      background:var(--panel-2);
+      color:var(--text);
+      padding:9px 12px;
+      border-radius:7px;
+      font-weight:700;
+      cursor:pointer;
+    }
+    button:hover{border-color:var(--accent)}
+    .legend{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      color:var(--muted);
+      font-size:13px;
+    }
+    .swatch{
+      display:inline-block;
+      width:12px;
+      height:12px;
+      border-radius:50%;
+      margin-right:5px;
+      vertical-align:-1px;
+    }
+    .readout{
+      width:100%;
+      border-collapse:collapse;
+      margin-top:14px;
+      font-size:12px;
+    }
+    .readout th,
+    .readout td{
+      border-bottom:1px solid var(--line);
+      padding:7px 5px;
+      text-align:right;
+      white-space:nowrap;
+    }
+    .readout th:first-child,
+    .readout td:first-child{text-align:left}
+    .note{
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.5;
+      padding:10px 0 0;
+    }
+    .metric-strip{
+      display:grid;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:10px;
+    }
+    .metric{
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:8px;
+      padding:10px;
+    }
+    .metric span{
+      display:block;
+      color:var(--muted);
+      font-size:11px;
+      margin-bottom:4px;
+    }
+    .metric strong{
+      font-family:ui-monospace,SFMono-Regular,Consolas,monospace;
+      font-size:15px;
+    }
+    @media (max-width:860px){
+      main{grid-template-columns:1fr}
+      aside{border-left:0;border-top:1px solid var(--line)}
+      .metric-strip{grid-template-columns:repeat(2,minmax(0,1fr))}
+      canvas{min-height:330px}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Physics v2 Calibration</h1>
+    <div class="build" id="buildCode">-----</div>
+  </header>
+  <main>
+    <section class="stage">
+      <canvas id="canvas"></canvas>
+      <div class="metric-strip" id="metrics"></div>
+    </section>
+    <aside>
+      <div class="controls">
+        <div class="buttons">
+          <button id="playBtn" type="button">播放</button>
+          <button id="resetBtn" type="button">重播</button>
+        </div>
+        <div class="field">
+          <label for="mu"><span>μ 摩擦係數</span><strong id="muText"></strong></label>
+          <input id="mu" type="range" min="0.05" max="0.8" step="0.01" value="0.25">
+        </div>
+        <div class="field">
+          <label for="epsilonMin"><span>EPSILON_MIN</span><strong id="epsilonMinText"></strong></label>
+          <input id="epsilonMin" type="range" min="0.25" max="0.75" step="0.01" value="0.45">
+        </div>
+        <div class="field">
+          <label for="vy"><span>入射 vy</span><strong id="vyText"></strong></label>
+          <input id="vy" type="range" min="0.5" max="5" step="0.1" value="3">
+        </div>
+        <div class="field">
+          <label for="vz"><span>入射 vz</span><strong id="vzText"></strong></label>
+          <input id="vz" type="range" min="0" max="5" step="0.1" value="0.3">
+        </div>
+        <div class="field">
+          <label for="rpsA"><span>下旋 A rps</span><strong id="rpsAText"></strong></label>
+          <input id="rpsA" type="range" min="0" max="70" step="1" value="20">
+        </div>
+        <div class="field">
+          <label for="rpsB"><span>下旋 B rps</span><strong id="rpsBText"></strong></label>
+          <input id="rpsB" type="range" min="0" max="70" step="1" value="40">
+        </div>
+      </div>
+      <div class="legend" id="legend"></div>
+      <table class="readout" id="readout"></table>
+      <div class="note">
+        這個頁面只校準 Phase 2 獨立模型，不會影響 Game 4。視覺重點是比較同一組入射速度下，不轉與下旋的第二跳弧線高度。
+      </div>
+    </aside>
+  </main>
+  <script>
+const BUILD_VERSION = 'v2c01';
+const R = 0.02;
+const M = 0.0027;
+const ALPHA = 2 / 3;
+const I = ALPHA * M * R * R;
+const EPSILON = 0.876;
+const EPSILON_OBLIQUE = 0.57;
+const OBLIQUE_ANGLE_DEG = 83;
+const TABLE_Y = 0.781;
+const GRAVITY = -4.2;
+const DT = 1 / 120;
+const COLORS = {
+  noSpin:'#4cc38a',
+  backspinA:'#59a6ff',
+  backspinB:'#ff6b9a',
+};
+
+let EPSILON_MIN = 0.45;
+let animation = null;
+let playStart = performance.now();
+let isPlaying = true;
+
+function clamp(value, min, max){
+  return Math.max(min, Math.min(max, value));
+}
+function contactSlipSpeed(vel, spin){
+  const slipZ = vel.z - (spin.topspin || 0) * R;
+  const slipX = vel.x + (spin.sidespin || 0) * R;
+  return Math.hypot(slipX, slipZ);
+}
+function dynamicEpsilon(vel, spin){
+  const normalSpeed = Math.abs(vel.y);
+  if(normalSpeed < 1e-9) return EPSILON_MIN;
+  const slip = contactSlipSpeed(vel, spin || {topspin:0, sidespin:0});
+  const obliqueSlip = normalSpeed / Math.tan(OBLIQUE_ANGLE_DEG * Math.PI / 180);
+  if(slip <= obliqueSlip){
+    const t = clamp(slip / obliqueSlip, 0, 1);
+    return EPSILON + (EPSILON_OBLIQUE - EPSILON) * t;
+  }
+  const extra = clamp((slip - obliqueSlip) / (obliqueSlip * 3), 0, 1);
+  return EPSILON_OBLIQUE + (EPSILON_MIN - EPSILON_OBLIQUE) * extra;
+}
+function bounceTangentialAxis(v, omega, normalImpulse, mu){
+  const slip = v - omega * R;
+  if(Math.abs(slip) < 1e-9) return {v2:v, omega2:omega, regime:'rolling'};
+  const omega2Roll = (M * v * R + I * omega) / (M * R * R + I);
+  const v2Roll = omega2Roll * R;
+  const jNeededForRoll = M * (v2Roll - v);
+  const jAvailable = mu * normalImpulse;
+  if(Math.abs(jNeededForRoll) <= jAvailable){
+    return {v2:v2Roll, omega2:omega2Roll, regime:'rolling'};
+  }
+  const jFriction = -Math.sign(slip) * jAvailable;
+  const v2 = v + jFriction / M;
+  const omega2 = omega - jFriction / (I / R);
+  return {v2, omega2, regime:'sliding'};
+}
+function bounceWithSpinPhysical(vel, spin, mu){
+  const epsilon = dynamicEpsilon(vel, spin);
+  const normalImpulse = M * (1 + epsilon) * Math.abs(vel.y);
+  const vyAfter = -epsilon * vel.y;
+  const zResult = bounceTangentialAxis(vel.z, spin.topspin, normalImpulse, mu);
+  const xResult = bounceTangentialAxis(vel.x, -spin.sidespin, normalImpulse, mu);
+  return {
+    vel:{x:xResult.v2, y:vyAfter, z:zResult.v2},
+    spin:{topspin:zResult.omega2, sidespin:-xResult.omega2},
+    epsilon,
+    regime:{topspin:zResult.regime, sidespin:xResult.regime},
+  };
+}
+function bounceApexHeight(startY, vyAfter){
+  return startY + (vyAfter * vyAfter) / (2 * Math.abs(GRAVITY));
+}
+function rpsToRad(rps){
+  return 2 * Math.PI * rps;
+}
+function readControls(){
+  const values = {
+    mu:Number(document.getElementById('mu').value),
+    epsilonMin:Number(document.getElementById('epsilonMin').value),
+    vy:Number(document.getElementById('vy').value),
+    vz:Number(document.getElementById('vz').value),
+    rpsA:Number(document.getElementById('rpsA').value),
+    rpsB:Number(document.getElementById('rpsB').value),
+  };
+  EPSILON_MIN = values.epsilonMin;
+  document.getElementById('muText').textContent = values.mu.toFixed(2);
+  document.getElementById('epsilonMinText').textContent = values.epsilonMin.toFixed(2);
+  document.getElementById('vyText').textContent = (-values.vy).toFixed(1);
+  document.getElementById('vzText').textContent = values.vz.toFixed(1);
+  document.getElementById('rpsAText').textContent = values.rpsA.toFixed(0);
+  document.getElementById('rpsBText').textContent = values.rpsB.toFixed(0);
+  return values;
+}
+function simulateCase(config, controls){
+  const incomingVel = {x:0, y:-controls.vy, z:controls.vz};
+  const spin = {topspin:-rpsToRad(config.rps), sidespin:0};
+  const bounce = bounceWithSpinPhysical(incomingVel, spin, controls.mu);
+  const points = [{z:0, y:TABLE_Y}];
+  const pos = {z:0, y:TABLE_Y};
+  const vel = {z:bounce.vel.z, y:bounce.vel.y};
+  let apex = TABLE_Y;
+  let land = null;
+  for(let i = 0; i < 500; i++){
+    vel.y += GRAVITY * DT;
+    pos.z += vel.z * DT;
+    pos.y += vel.y * DT;
+    apex = Math.max(apex, pos.y);
+    points.push({z:pos.z, y:pos.y});
+    if(i > 2 && pos.y <= TABLE_Y){
+      land = {z:pos.z, y:TABLE_Y};
+      points[points.length - 1] = land;
+      break;
+    }
+    if(pos.y < 0 || pos.z > 4) break;
+  }
+  return {
+    ...config,
+    incomingVel,
+    spin,
+    bounce,
+    points,
+    apex,
+    apexFormula:bounceApexHeight(TABLE_Y, bounce.vel.y),
+    land,
+  };
+}
+function buildCases(){
+  const controls = readControls();
+  const configs = [
+    {key:'noSpin', label:'不轉', rps:0, color:COLORS.noSpin},
+    {key:'backspinA', label:`${controls.rpsA.toFixed(0)}rps 下旋`, rps:controls.rpsA, color:COLORS.backspinA},
+    {key:'backspinB', label:`${controls.rpsB.toFixed(0)}rps 下旋`, rps:controls.rpsB, color:COLORS.backspinB},
+  ];
+  return {controls, cases:configs.map(config=>simulateCase(config, controls))};
+}
+function resizeCanvas(canvas){
+  const rect = canvas.getBoundingClientRect();
+  const scale = window.devicePixelRatio || 1;
+  canvas.width = Math.max(1, Math.floor(rect.width * scale));
+  canvas.height = Math.max(1, Math.floor(rect.height * scale));
+  const ctx = canvas.getContext('2d');
+  ctx.setTransform(scale, 0, 0, scale, 0, 0);
+  return {width:rect.width, height:rect.height};
+}
+function drawGrid(ctx, size){
+  ctx.clearRect(0, 0, size.width, size.height);
+  ctx.fillStyle = '#081018';
+  ctx.fillRect(0, 0, size.width, size.height);
+  ctx.strokeStyle = '#1b2a37';
+  ctx.lineWidth = 1;
+  for(let x = 0; x <= size.width; x += 80){
+    ctx.beginPath();
+    ctx.moveTo(x, 0);
+    ctx.lineTo(x, size.height);
+    ctx.stroke();
+  }
+  for(let y = 0; y <= size.height; y += 60){
+    ctx.beginPath();
+    ctx.moveTo(0, y);
+    ctx.lineTo(size.width, y);
+    ctx.stroke();
+  }
+}
+function makeProjector(cases, size){
+  const all = cases.flatMap(item=>item.points);
+  const maxZ = Math.max(1.2, ...all.map(point=>point.z)) + 0.25;
+  const maxY = Math.max(1.15, ...all.map(point=>point.y)) + 0.1;
+  const pad = {left:54, right:22, top:22, bottom:48};
+  const w = size.width - pad.left - pad.right;
+  const h = size.height - pad.top - pad.bottom;
+  return point => ({
+    x:pad.left + (point.z / maxZ) * w,
+    y:pad.top + (1 - ((point.y - TABLE_Y) / (maxY - TABLE_Y))) * h,
+  });
+}
+function drawScene(cases){
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+  const size = resizeCanvas(canvas);
+  const project = makeProjector(cases, size);
+  drawGrid(ctx, size);
+
+  const tableA = project({z:0, y:TABLE_Y});
+  const tableB = project({z:4, y:TABLE_Y});
+  ctx.strokeStyle = '#516b82';
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.moveTo(tableA.x, tableA.y);
+  ctx.lineTo(tableB.x, tableB.y);
+  ctx.stroke();
+  ctx.fillStyle = '#9aa8b7';
+  ctx.font = '12px system-ui';
+  ctx.fillText('桌面高度', tableA.x, tableA.y - 8);
+
+  const elapsed = isPlaying ? (performance.now() - playStart) / 1000 : 0;
+  const progress = isPlaying ? (elapsed % 2.4) / 2.4 : 0;
+
+  for(const item of cases){
+    ctx.strokeStyle = item.color;
+    ctx.lineWidth = 3;
+    ctx.globalAlpha = 0.9;
+    ctx.beginPath();
+    item.points.forEach((point, index)=>{
+      const p = project(point);
+      if(index === 0) ctx.moveTo(p.x, p.y);
+      else ctx.lineTo(p.x, p.y);
+    });
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+
+    const apexPoint = item.points.reduce((best, point)=>point.y > best.y ? point : best, item.points[0]);
+    const apex = project(apexPoint);
+    ctx.fillStyle = item.color;
+    ctx.beginPath();
+    ctx.arc(apex.x, apex.y, 4, 0, Math.PI * 2);
+    ctx.fill();
+
+    const index = Math.min(item.points.length - 1, Math.floor(progress * (item.points.length - 1)));
+    const ball = project(item.points[index]);
+    ctx.fillStyle = item.color;
+    ctx.beginPath();
+    ctx.arc(ball.x, ball.y, 8, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#ffffff';
+    ctx.globalAlpha = 0.75;
+    ctx.beginPath();
+    ctx.arc(ball.x - 3, ball.y - 3, 2.2, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.globalAlpha = 1;
+  }
+}
+function updateReadout(cases){
+  const legend = document.getElementById('legend');
+  legend.innerHTML = cases.map(item=>`<span><i class="swatch" style="background:${item.color}"></i>${item.label}</span>`).join('');
+
+  const readout = document.getElementById('readout');
+  readout.innerHTML = `
+    <tr><th>球種</th><th>ε</th><th>最高點</th><th>落點 z</th><th>出射 vz</th><th>regime</th></tr>
+    ${cases.map(item=>`
+      <tr>
+        <td>${item.label}</td>
+        <td>${item.bounce.epsilon.toFixed(3)}</td>
+        <td>${item.apex.toFixed(3)}</td>
+        <td>${item.land ? item.land.z.toFixed(3) : '-'}</td>
+        <td>${item.bounce.vel.z.toFixed(3)}</td>
+        <td>${item.bounce.regime.topspin}</td>
+      </tr>
+    `).join('')}
+  `;
+
+  const noSpin = cases[0];
+  const a = cases[1];
+  const b = cases[2];
+  document.getElementById('metrics').innerHTML = [
+    ['A 高度差', `${(a.apex - noSpin.apex).toFixed(3)} m`],
+    ['B 高度差', `${(b.apex - noSpin.apex).toFixed(3)} m`],
+    ['A 落點差', `${((a.land?.z ?? 0) - (noSpin.land?.z ?? 0)).toFixed(3)} m`],
+    ['B 落點差', `${((b.land?.z ?? 0) - (noSpin.land?.z ?? 0)).toFixed(3)} m`],
+  ].map(([label, value])=>`<div class="metric"><span>${label}</span><strong>${value}</strong></div>`).join('');
+}
+function refresh(){
+  const {cases} = buildCases();
+  drawScene(cases);
+  updateReadout(cases);
+}
+function loop(){
+  refresh();
+  animation = requestAnimationFrame(loop);
+}
+
+document.getElementById('buildCode').textContent = Math.random().toString(36).slice(2, 7);
+document.getElementById('buildCode').title = BUILD_VERSION;
+document.querySelectorAll('input[type="range"]').forEach(input=>{
+  input.addEventListener('input', refresh);
+});
+document.getElementById('playBtn').addEventListener('click', ()=>{
+  isPlaying = !isPlaying;
+  document.getElementById('playBtn').textContent = isPlaying ? '暫停' : '播放';
+  if(isPlaying) playStart = performance.now();
+});
+document.getElementById('resetBtn').addEventListener('click', ()=>{
+  isPlaying = true;
+  playStart = performance.now();
+  document.getElementById('playBtn').textContent = '暫停';
+});
+window.addEventListener('resize', refresh);
+document.getElementById('playBtn').textContent = '暫停';
+loop();
+  </script>
+</body>
+</html>
