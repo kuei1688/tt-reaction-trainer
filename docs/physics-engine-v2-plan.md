@@ -444,6 +444,20 @@ magnitude ≈ 0.0942 − 0.4069×球速(m/s) + 0.4183×擊球點到網距離(m) 
 
 ---
 
+### 攝影棚再修一輪：拍面角度被自動瞄準遮蔽、揮拍箭頭、相機縮放/環繞
+
+**使用者回報的 bug：** 調整拍面平面角度（`racketNormalX`）時，球的落點左右完全沒有變化。追查後發現根因是 `makeRacketReturnVelocity()` 裡的 `solveRacketVelXForTargetOutX`——這個「自動瞄準」機制原本是為了讓球固定打直，會主動去解一個球拍 X 方向速度，把任何 X 方向的偏移抵銷掉，副作用是連 `racketNormal.x` 造成的偏移也一起被蓋掉了，導致在攝影棚裡完全看不出拍面角度的效果。
+
+**修法：** 新增全域旗標 `DISABLE_AIM_CORRECTION` + 攝影棚勾選框「停用側向自動瞄準修正」，勾選後直接跳過 `solveRacketVelXForTargetOutX`，讓 `racketNormal`/`swingDirection` 的原始物理效果顯現出來。驗證：`racketNormalX` 從 -0.3 掃到 0.6，`bounceX` 從 0.049 一路變到 0.543，確認角度真的會影響落點。**注意：這個開關只是攝影棚的觀察工具，`game4.html` 正式對戰仍然保留自動瞄準（沒有這個開關），行為不受影響。**
+
+**新增可拖拉的 3D 揮拍方向箭頭：** 使用者指出用數字欄位調揮拍方向不夠直覺，希望能像拉箭頭一樣直接在 3D 空間裡設定方向跟力道。實作用 `THREE.ArrowHelper` 畫箭頭本體、疊一顆看不見的手把小球（`swingHandles[]`）接收滑鼠事件，用 `THREE.Raycaster` 打一個面向攝影機、通過手把的平面（`THREE.Plane`）算出滑鼠拖曳對應的 3D 世界座標，再換算成方向向量+力道大小寫回 `tech`：切球開 `adaptivePush` 時只寫 `swingDirection`（力道由公式算），關掉時直接寫 `techniqueVel`（方向+力道都手動）。已用真實 `pointerdown`/`pointermove`/`pointerup` 事件（不是直接呼叫函式）驗證兩種模式都會正確更新對應的技術參數跟輸入框數值。
+
+**新增相機環繞＋縮放：** 原本視角是寫死的，使用者想要能放大縮小、轉角度方便觀察軌跡。專案沒有引入 `OrbitControls.js`（`vendor/` 只有裸的 `three.r128.min.js`），所以自己用球座標（`radius/theta/phi`，繞固定的 `CAM_TARGET`）手刻：滾輪縮放（`radius` 夾在 0.6~14 之間）、按住拖曳環繞（改 `theta`/`phi`）。已用真實 `wheel`/`pointerdown`/`pointermove` 事件驗證會正確改變相機球座標跟實際 `camera.position`。
+
+**驗證：** 手機版（375px）確認無元素溢出，箭頭在側面視角跟我方視角都正常顯示、正常拖曳。
+
+---
+
 ### Phase 7：收尾與文件化 ☐
 - [ ] 這份文件補上「最終採用的公式」「最終 μ 值」「换算後的旋轉數值表」
 - [ ] 更新 README 或相關說明，讓後續開發者知道旋轉數值現在代表真實 rad/s，不是任意數字
