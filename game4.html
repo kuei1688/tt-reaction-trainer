@@ -1268,7 +1268,7 @@ function returnBall(techniqueKey){
   }
   const start = {...contactPoint};
   const gravity = currentPreset().solve?.gravity ?? -4.2;
-  const returnHit = makeReturnVelocity(contactVel, contactSpin, tech, contactPoint.z);
+  const returnHit = makeReturnVelocity(contactVel, contactSpin, tech, contactPoint, gravity);
   const result = simulatePath(start, returnHit.vel, {
     gravity,
     spin:returnHit.spin,
@@ -1325,6 +1325,41 @@ function solveRacketVelXForTargetOutX(incomingVel, incomingSpin, racketNormal, t
     const x2 = x1 - f1 * (x1 - x0) / denom;
     x0 = x1; f0 = f1;
     x1 = x2; f1 = outXFor(x1) - targetOutX;
+  }
+  return x1;
+}
+// 使用者指出調切球時遵守的原則：揮拍方向（球拍移動方向）要對準想打的落點，
+// 不是打直而已。用「球例校正資料庫」的資料驗證過：手動調的 techniqueVel.x
+// 跟擊球點 x 座標相關係數 -0.82，而且這批資料的實際落點 x 幾乎都收斂在 0
+// 附近——代表使用者的原則其實是「瞄準桌面中央」。把原本「瞄準出球速度=0
+// （打直）」升級成「瞄準真正的落地點 x 座標」，讓回擊技術具備真正瞄準任意
+// 位置的能力，不再只能打直。實測 16 顆發球驗證：sidebackspin 從 2/7 進步
+// 到 5/7，backspin/no_spin 維持不變。見 docs/physics-engine-v2-plan.md。
+const RETURN_TARGET_X = 0; // 預設瞄準對手桌面中央，之後可依技術等級/站位擴充成可變目標
+function estimateFlightTimeToTable(startY, vy, gravity){
+  const a = 0.5 * gravity, b = vy, c = startY - TABLE.top;
+  const disc = b*b - 4*a*c;
+  if(disc < 0 || Math.abs(a) < 1e-9) return 0.3;
+  const sq = Math.sqrt(disc);
+  const candidates = [(-b+sq)/(2*a), (-b-sq)/(2*a)].filter(t=>t>0.01);
+  return candidates.length ? Math.min(...candidates) : 0.3;
+}
+function solveRacketVelXForTargetLandingX(incomingVel, incomingSpin, racketNormal, techVel, restitution, friction, hitPoint, gravity, targetLandingX){
+  function landingXFor(rx){
+    const planeVel = {x:rx, y:techVel.y, z:techVel.z};
+    const bounced = bounceOffPlane(incomingVel, incomingSpin, racketNormal, planeVel, restitution, friction);
+    const t = estimateFlightTimeToTable(hitPoint.y, bounced.vel.y, gravity);
+    return hitPoint.x + bounced.vel.x * t;
+  }
+  let x0 = 0, x1 = -incomingVel.x;
+  let f0 = landingXFor(x0) - targetLandingX;
+  let f1 = landingXFor(x1) - targetLandingX;
+  for(let i=0;i<20;i++){
+    if(Math.abs(f1) < 1e-4) break;
+    const denom = (f1 - f0) || 1e-9;
+    const x2 = x1 - f1 * (x1 - x0) / denom;
+    x0 = x1; f0 = f1;
+    x1 = x2; f1 = landingXFor(x1) - targetLandingX;
   }
   return x1;
 }
@@ -1419,8 +1454,9 @@ function computeAdaptivePushMagnitude(incomingVel, contactZ, topspin){
 function computeAdaptivePushTiltX(incomingVel){
   return clamp(-0.1436 - 0.5376 * (incomingVel.x || 0), -1.2, 1.2);
 }
-function makeRacketReturnVelocity(incomingVel, incomingSpin, tech, contactZ){
+function makeRacketReturnVelocity(incomingVel, incomingSpin, tech, hitPoint, gravity){
   const spin = incomingSpin || {topspin:0, sidespin:0};
+  const contactZ = hitPoint?.z;
   let baseTechVel = speedScaledTechniqueVel(incomingVel, tech);
   if(tech.adaptivePush){
     const magnitude = computeAdaptivePushMagnitude(incomingVel, contactZ, spin.topspin);
@@ -1435,13 +1471,13 @@ function makeRacketReturnVelocity(incomingVel, incomingSpin, tech, contactZ){
   const racketNormalBase = computeRacketNormal(tech.racketNormalTiltY, tiltX, swingDirRef);
   const {techVel, racketNormal} = applyExecutionVariance(baseTechVel, racketNormalBase, tech);
   const epsilon = dynamicPaddleEpsilon(incomingVel, techVel, racketNormal);
-  const aimedX = solveRacketVelXForTargetOutX(incomingVel, spin, racketNormal, techVel, epsilon, PADDLE_FRICTION, 0);
+  const aimedX = solveRacketVelXForTargetLandingX(incomingVel, spin, racketNormal, techVel, epsilon, PADDLE_FRICTION, hitPoint, gravity, RETURN_TARGET_X);
   const correction = sampleReturnCorrectionFraction(RETURN_SKILL_LEVEL); // 1=完全修正（現有已驗證的預設行為），0=完全不修正
   const planeVel = {x:aimedX * correction, y:techVel.y, z:techVel.z};
   return bounceOffPlane(incomingVel, spin, racketNormal, planeVel, epsilon, PADDLE_FRICTION);
 }
-function makeReturnVelocity(incomingVel, incomingSpin, tech, contactZ){
-  if(tech.model === 'push' || tech.model === 'attack') return makeRacketReturnVelocity(incomingVel, incomingSpin, tech, contactZ);
+function makeReturnVelocity(incomingVel, incomingSpin, tech, hitPoint, gravity){
+  if(tech.model === 'push' || tech.model === 'attack') return makeRacketReturnVelocity(incomingVel, incomingSpin, tech, hitPoint, gravity);
   // loop（拉球，model:'direct'）尚未套用球拍接觸力學，維持舊公式（Phase 6 待辦）
   return {vel: makeDirectReturnVelocity(incomingVel, tech.techniqueVel), spin: tech.spin || {topspin:0,sidespin:0}};
 }
