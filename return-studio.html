@@ -139,6 +139,12 @@ table.check th{color:var(--muted);font-weight:800}
           切球使用自適應力道公式（勾選：力道由 swingDirection+球況自動算出；不勾：直接用上面的 techniqueVel 當成完整揮拍速度，方便手動湊參數）
         </label>
       </div>
+      <div class="field" style="margin-top:6px">
+        <label style="display:flex;align-items:center;gap:6px">
+          <input id="disableAimCorrectionToggle" type="checkbox" style="width:auto" />
+          停用側向自動瞄準修正（測試拍面角度用——正式遊戲會自動抵銷側向偏移，導致調拍面平面角度看不出效果，勾選這個才能看到角度本身真正造成的左右落點差異）
+        </label>
+      </div>
     </div>
 
     <div class="section">
@@ -366,6 +372,8 @@ function dynamicPaddleEpsilon(incomingVel, planeVel, planeNormal){
 let RETURN_SKILL_LEVEL = 'advanced';
 // 範圍解模式：呈現桌球動作的多樣性，逐字對齊 game4.html。
 let RANGE_SOLUTION_MODE = false;
+// 攝影棚專用（game4.html 沒有這個變數）：停用側向自動瞄準修正，方便測試拍面角度。
+let DISABLE_AIM_CORRECTION = false;
 // 中階直接視為完全修正成功（跟熟練一樣），只有初階會有補償不足/失手的機率——
 // 使用者明確要求不要把中階也搞得這麼複雜。中階/熟練之後如果要再拉開差異
 // （例如熟練加上「刻意打對手最遠端」的主動放球），再回來擴充。
@@ -431,6 +439,12 @@ function makeRacketReturnVelocity(incomingVel, incomingSpin, tech, contactZ){
   }
   const {techVel, racketNormal} = applyExecutionVariance(baseTechVel, racketNormalBase, tech);
   const epsilon = dynamicPaddleEpsilon(incomingVel, techVel, racketNormal);
+  // 攝影棚測試用：停用側向自動瞄準修正，讓拍面角度/揮拍方向本身對左右落點的
+  // 真實影響顯示出來，不被 solveRacketVelXForTargetOutX 的自動抵銷蓋掉。
+  if(typeof DISABLE_AIM_CORRECTION !== 'undefined' && DISABLE_AIM_CORRECTION){
+    const planeVel = {x:techVel.x, y:techVel.y, z:techVel.z};
+    return bounceOffPlane(incomingVel, spin, racketNormal, planeVel, epsilon, PADDLE_FRICTION);
+  }
   const aimedX = solveRacketVelXForTargetOutX(incomingVel, spin, racketNormal, techVel, epsilon, PADDLE_FRICTION, 0);
   const correction = sampleReturnCorrectionFraction(RETURN_SKILL_LEVEL);
   const planeVel = {x:aimedX * correction, y:techVel.y, z:techVel.z};
@@ -745,13 +759,15 @@ function readTechniqueFieldsIntoState(){
 
 // ── 3D 視圖 ──────────────────────────────────────────────────────────────
 const scenes = [], cameras = [], renderers = [], incomingLines = [], returnLines = [], balls = [], markers = [];
+const swingArrows = [], swingHandles = [], cameraStates = [];
+const CAM_TARGET = new THREE.Vector3(0, 0.85, 0.5);
 function initScene(canvas, kind){
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0x05070a);
   const camera = new THREE.PerspectiveCamera(46, 1, 0.01, 30);
   if(kind === 'side') camera.position.set(5.2, 1.7, -0.3);
   else camera.position.set(0, 3.0, 5.0);
-  camera.lookAt(0, 0.85, 0.5);
+  camera.lookAt(CAM_TARGET);
   const renderer = new THREE.WebGLRenderer({canvas, antialias:true});
   renderer.setPixelRatio(window.devicePixelRatio || 1);
   scene.add(new THREE.HemisphereLight(0xffffff, 0x111722, 1.1));
@@ -766,8 +782,135 @@ function initScene(canvas, kind){
   scene.add(ball);
   const markerSet = {hit:makeMarker(0xffd166), target:makeMarker(0x3fb950), landing:makeMarker(0xf85149)};
   Object.values(markerSet).forEach(m=>scene.add(m));
+  // 揮拍方向箭頭：可拖曳箭頭頭部設定方向＋力量（長度＝力量大小）
+  const arrow = new THREE.ArrowHelper(new THREE.Vector3(0,0,-1), new THREE.Vector3(), 0.3, 0xff6b6b, 0.06, 0.04);
+  scene.add(arrow);
+  const handle = new THREE.Mesh(new THREE.SphereGeometry(.045, 16, 12), new THREE.MeshStandardMaterial({color:0xff6b6b, emissive:0xff6b6b, emissiveIntensity:.3}));
+  scene.add(handle);
   scenes.push(scene); cameras.push(camera); renderers.push(renderer);
   incomingLines.push(incoming); returnLines.push(outgoing); balls.push(ball); markers.push(markerSet);
+  swingArrows.push(arrow); swingHandles.push(handle);
+  const index = scenes.length - 1;
+  const offset = camera.position.clone().sub(CAM_TARGET);
+  cameraStates.push({
+    radius: offset.length(),
+    theta: Math.atan2(offset.x, offset.z),
+    phi: Math.acos(clamp(offset.y / offset.length(), -1, 1))
+  });
+  initCameraAndArrowControls(canvas, index);
+}
+function updateCameraFromState(index){
+  const camera = cameras[index];
+  const state = cameraStates[index];
+  camera.position.set(
+    CAM_TARGET.x + state.radius * Math.sin(state.phi) * Math.sin(state.theta),
+    CAM_TARGET.y + state.radius * Math.cos(state.phi),
+    CAM_TARGET.z + state.radius * Math.sin(state.phi) * Math.cos(state.theta)
+  );
+  camera.lookAt(CAM_TARGET);
+}
+// 視角縮放（滾輪）＋旋轉（拖曳空白處）；拖曳箭頭頭部（紅色球）則是設定揮拍方向＋力量。
+const dragRaycaster = new THREE.Raycaster();
+const dragPlane = new THREE.Plane();
+const dragPoint = new THREE.Vector3();
+function initCameraAndArrowControls(canvas, index){
+  let mode = null; // 'orbit' | 'arrow'
+  let lastX = 0, lastY = 0;
+  function mouseNDC(event){
+    const rect = canvas.getBoundingClientRect();
+    return new THREE.Vector2(
+      ((event.clientX - rect.left) / rect.width) * 2 - 1,
+      -((event.clientY - rect.top) / rect.height) * 2 + 1
+    );
+  }
+  canvas.addEventListener('wheel', event=>{
+    event.preventDefault();
+    const state = cameraStates[index];
+    state.radius = clamp(state.radius * (1 + event.deltaY * 0.0012), 0.6, 14);
+    updateCameraFromState(index);
+    renderAll();
+  }, {passive:false});
+  canvas.addEventListener('pointerdown', event=>{
+    const ndc = mouseNDC(event);
+    dragRaycaster.setFromCamera(ndc, cameras[index]);
+    const hit = dragRaycaster.intersectObject(swingHandles[index])[0];
+    if(hit){
+      mode = 'arrow';
+      const camDir = new THREE.Vector3();
+      cameras[index].getWorldDirection(camDir);
+      dragPlane.setFromNormalAndCoplanarPoint(camDir, swingHandles[index].position);
+    } else {
+      mode = 'orbit';
+    }
+    lastX = event.clientX; lastY = event.clientY;
+    canvas.setPointerCapture(event.pointerId);
+  });
+  canvas.addEventListener('pointermove', event=>{
+    if(!mode) return;
+    if(mode === 'arrow'){
+      const ndc = mouseNDC(event);
+      dragRaycaster.setFromCamera(ndc, cameras[index]);
+      if(dragRaycaster.ray.intersectPlane(dragPlane, dragPoint)){
+        applyArrowDrag(dragPoint);
+      }
+    } else {
+      const dx = event.clientX - lastX, dy = event.clientY - lastY;
+      lastX = event.clientX; lastY = event.clientY;
+      const state = cameraStates[index];
+      state.theta -= dx * 0.006;
+      state.phi = clamp(state.phi - dy * 0.006, 0.05, Math.PI - 0.05);
+      updateCameraFromState(index);
+      renderAll();
+    }
+  });
+  function endDrag(){ mode = null; }
+  canvas.addEventListener('pointerup', endDrag);
+  canvas.addEventListener('pointerleave', endDrag);
+}
+// 拖曳箭頭頭部到 dragPoint：反推出「揮拍方向」跟「力量大小」，寫回目前技術的狀態＋UI 欄位。
+function applyArrowDrag(worldPoint){
+  const key = currentTechniqueKey();
+  const tech = TECHNIQUES[key];
+  if(!tech || !swingArrowOrigin) return;
+  const rel = worldPoint.clone().sub(swingArrowOrigin);
+  const magnitude = clamp(rel.length() / ARROW_VISUAL_SCALE, 0.02, 2.5);
+  const dir = rel.lengthSq() > 1e-8 ? rel.clone().normalize() : new THREE.Vector3(0,0,-1);
+  if(tech.adaptivePush){
+    tech.swingDirection = {x:dir.x, y:dir.y, z:dir.z};
+    setValue('swingDirX', dir.x.toFixed(3));
+    setValue('swingDirY', dir.y.toFixed(3));
+    setValue('swingDirZ', dir.z.toFixed(3));
+  } else {
+    tech.techniqueVel = {x:dir.x*magnitude, y:dir.y*magnitude, z:dir.z*magnitude};
+    setValue('techVelX', tech.techniqueVel.x.toFixed(3));
+    setValue('techVelY', tech.techniqueVel.y.toFixed(3));
+    setValue('techVelZ', tech.techniqueVel.z.toFixed(3));
+  }
+  refresh();
+}
+let swingArrowOrigin = null;
+const ARROW_VISUAL_SCALE = 0.5; // 力量 1 個單位畫成 0.5 公尺長，純視覺縮放，不影響物理
+function updateSwingArrows(hitPoint, tech){
+  if(!tech) return;
+  swingArrowOrigin = new THREE.Vector3(hitPoint.x, hitPoint.y, hitPoint.z);
+  let dir, magnitude;
+  if(tech.adaptivePush){
+    dir = tech.swingDirection || {x:0,y:0.3,z:-1};
+    // 只是視覺參考長度，實際力量由公式依球況決定，這裡固定畫一個中等長度
+    magnitude = 0.6;
+  } else {
+    const v = tech.techniqueVel;
+    magnitude = Math.max(0.05, Math.hypot(v.x, v.y, v.z));
+    dir = magnitude > 0.001 ? {x:v.x/magnitude, y:v.y/magnitude, z:v.z/magnitude} : {x:0,y:0,z:-1};
+  }
+  const dirVec = new THREE.Vector3(dir.x, dir.y, dir.z).normalize();
+  const length = magnitude * ARROW_VISUAL_SCALE;
+  swingArrows.forEach((arrow, i)=>{
+    arrow.position.copy(swingArrowOrigin);
+    arrow.setDirection(dirVec);
+    arrow.setLength(length, length*0.25, length*0.15);
+    swingHandles[i].position.copy(swingArrowOrigin).addScaledVector(dirVec, length);
+  });
 }
 function addTable(scene){
   const table = new THREE.Mesh(new THREE.BoxGeometry(TABLE.width, .045, TABLE.length), new THREE.MeshStandardMaterial({color:0x19713d, roughness:.72}));
@@ -828,6 +971,7 @@ function refresh(){
     const p = currentIncoming[0] || hitPoint;
     balls[index].position.set(p.x, p.y, p.z);
   });
+  updateSwingArrows(hitPoint, TECHNIQUES[techniqueKey]);
   const judged = judgeResult(result);
   document.getElementById('serveStatus').innerHTML = `
     <div>發球：<strong>${preset.label}</strong>　旋轉：<strong>${(preset.variation?.spin?.topspin ?? 0).toFixed(2)} / ${(preset.variation?.spin?.sidespin ?? 0).toFixed(2)}</strong></div>
@@ -980,6 +1124,10 @@ document.getElementById('techniqueKey').addEventListener('change', ()=>{
 });
 document.getElementById('adaptivePushToggle').addEventListener('change', ()=>{
   readTechniqueFieldsIntoState();
+  refresh();
+});
+document.getElementById('disableAimCorrectionToggle').addEventListener('change', event=>{
+  DISABLE_AIM_CORRECTION = event.target.checked;
   refresh();
 });
 document.getElementById('playBtn').addEventListener('click', play);
