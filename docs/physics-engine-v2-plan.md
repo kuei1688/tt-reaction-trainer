@@ -513,6 +513,45 @@ RMSE≈0.104（跟修正前的舊公式 RMSE≈0.106 同一個量級）。已套
 
 ---
 
+### Codex 交接後的一輪災難排查與收拾
+
+**背景：** 這一輪交接給 Codex（在另一個本機資料夾 `2026-07-01/tt-reaction-trainer-game-4-github`）處理發球 preset 校準，結果使用者回報「發生大災難」。排查後發現是好幾個獨立問題疊在一起，逐一釐清、修復如下。
+
+**1. `physics-studio.html` 的旋轉數值換算比例錯誤，導致每顆球都無法發球成功。**
+`physics-studio.html` 是專案早期就有的「發球 preset 製作工具」，內部用的 `applyBounceSpin()`／`BOUNCE_PHYSICS.topspinKick` 是在專案還沒把旋轉改成真實 `rad/s` 儲存**之前**、針對舊版「隨手調」的旋轉數字（範圍約 -1.23~1）校準的——不是 rps，也不是 rad/s（用 git 歷史比對過：`781dda8^` 版本 `backspin_long_backhand` 的 topspin 是 `-0.8`，現在真實版本是 `-125.66`）。Codex 把 rad/s 換算成 rps（除以 2π≈20），量級還是差了約 20 倍，導致 `forwardSpeed` 整個變號、球彈跳後直接往反方向飛。第一輪先改成除以 `LEGACY_BOUNCE_SPIN_SCALE=125.66`（對回舊版校準基準量級）暫時解決，讓球至少能正常發出去；根本解法見下面第 4 點（整個換成真實引擎，不用再猜換算比例）。
+
+**2. `physics-studio.html` 開頁畫面跟任何 preset 都對不上。**
+開頁時 HTML 裡寫死的欄位預設值（起點/第一跳/第二跳座標）跟 `presetName` 輸入框的預設文字，是兩次不同編輯留下的殘影，彼此對不上、也不對應任何真實 preset。修法：`fetchRepoPresets()` 讀到 repo 資料後，如果目前沒有選定的 preset，自動載入第一顆。
+
+**3. GitHub Pages 部署卡住。**
+Push 之後 GitHub Pages 一直沒更新，`gh run list` 查到 10 個 `pages build and deployment` workflow 卡在 `queued` 好幾天（有的甚至卡了兩天），`gh run cancel` 對這些卡住的 run 回報「已完成」自相矛盾（GitHub Pages 這個自動 workflow 的顯示狀態本身有問題）。用 `gh api -X POST repos/OWNER/REPO/pages/builds` 手動觸發新建置後，第一次還遇到後端回傳 `Deployment failed, try again later.`（GitHub 自己的暫時性問題），重試一次後才成功。**這是這次修復流程一路上會反覆用到的手法**：每次 push 完都手動戳一次 `pages/builds` API、輪詢 `pages/builds/latest` 的 `status` 直到變成 `built`，不要只看 push 完就假設會自動部署好。
+
+**4. 4 顆發球在真實 v2 引擎下永遠過不了網（不是這次任何人造成的，是更早就存在的問題）。**
+`findHitIndex()` 找不到合法擊球點時會退回一個備援heuristic（用球的位置/高度猜一個接觸點），這個備援長期把「發球本身根本沒有合法過網」這件事蓋住了，導致這幾輪的回擊驗證看起來正常，但其實從沒真正檢查過發球本身是否完整。實測 `simulateServe()` 找出 4 顆球（`backspin_long_backhand`、`backspin_short_forehand_2`、`sidebackspin_long_forehand`、`sidebackspin_short_forehand`）在自己這側連續碎跳（最多到 9 次），從未真正越過網。
+
+根本原因：這 4 顆球的拋球高度（`start.y`）太低，配上強旋轉，真實接觸力學下每次觸桌垂直反彈的能量遞減太快（每次約剩 75%），球沒有足夠滯空時間飛越剩下的距離。用真實引擎（`simulatePath`＋`solveServeBounceVelocity`）搜尋找出可行解：提高這 4 顆的拋球高度，其中 2 顆再微調第一跳 Z 座標：
+
+| Preset | 拋球高度 | 第一跳 Z | 落點誤差 |
+|---|---|---|---|
+| backspin_long_backhand | 0.87→1.33 | 不變 | 0.109m |
+| backspin_short_forehand_2 | 0.95→1.55 | 不變 | 0.003m |
+| sidebackspin_long_forehand | 0.88→0.95 | -1.03→-0.89 | 0.137m |
+| sidebackspin_short_forehand | 0.95→1.03 | -0.6→-0.45 | 0.162m |
+
+驗證：16 顆發球現在全部都能真正過網、落在對手半場（原本只有 12 顆），回擊技術驗證維持水準（backspin 6/7、no_spin 2/2、sidebackspin 2/7，backspin 甚至變好）。**已知取捨：** 這 4 顆修好之後拋球高度明顯比其他球高（例如 1.55 vs 其他球的 0.87~0.95），視覺上拋球動作會比較誇張，之後如果覺得太怪，可以考慮改成「降低這幾顆的旋轉強度」的方向重做。
+
+**5. `physics-studio.html` 整個換成真實 v2 引擎（根本解決「兩套物理」的問題）。**
+使用者指出：手動調發球參數這件事應該由人來做，不該透過 AI 對話來回調——這需要一個好用的工具，而不是聊天視窗。順著這個方向，先把工具本身的物理引擎換成跟 `game4.html`/`return-studio.html` 完全一致的真實接觸力學（`bounceWithSpinPhysical`，取代舊的 `BOUNCE_PHYSICS`/`applyBounceSpin`），從根本上消除「攝影棚預覽對，遊戲裡卻不對」這整類問題，不用再猜換算比例。已用全部 16 顆 repo 發球重新驗證，跟 `return-studio.html` 算出來的落點一致。
+
+**6. 攝影棚互動性擴充：**
+- 起點（`start`）新增可直接在 3D 畫面拖曳（原本只有第一跳/第二跳可以拖）。起點在資料模型裡是由「底線外距離／左右偏移／發球高度」三個參數推導出來的（`computeServeStart()`），拖曳時用反推公式換算回這三個參數，不是直接寫死座標。
+- 新增發球高度滑桿（`startYSlider`），跟數字輸入框雙向同步、即時預覽——這是今天修 4 顆壞球時最關鍵的調整維度。
+- 新增「儲存這顆到待處理檔案」：用 File System Access API（Chrome/Edge）直接寫入本機一個 `pending-serve-changes.json`，取代「調完用複製貼上交接」的流程，同一顆球重複存會覆蓋、不會疊加；不支援的瀏覽器改用 localStorage 備援 + 複製功能。
+
+**下一步（使用者提出，尚未開始）：** 之後接手可以讀 `pending-serve-changes.json`，直接把裡面存的 preset 資料合併進 `physics-presets.json`（覆蓋對應 id 的欄位），不用再靠使用者口述調了什麼。
+
+---
+
 ### Phase 7：收尾與文件化 ☐
 - [ ] 這份文件補上「最終採用的公式」「最終 μ 值」「换算後的旋轉數值表」
 - [ ] 更新 README 或相關說明，讓後續開發者知道旋轉數值現在代表真實 rad/s，不是任意數字
