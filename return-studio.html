@@ -42,6 +42,25 @@ button.warn{background:rgba(210,153,34,.12);color:var(--yellow);border-color:var
 .ok{color:var(--green)}
 .bad{color:var(--red)}
 .hint{font-size:10px;color:var(--muted);line-height:1.35}
+.stack{display:grid;gap:8px}
+.toolbar{display:grid;grid-template-columns:1fr auto auto;gap:6px;align-items:end}
+.select-list{width:100%;min-height:160px;background:#080b10;color:var(--text);border:1px solid var(--border);border-radius:7px;padding:4px}
+.queue-list{display:grid;gap:6px;max-height:230px;overflow:auto}
+.queue-item{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px;align-items:center;padding:8px;border:1px solid var(--border);border-radius:8px;background:#111720}
+.queue-item.current{border-color:var(--blue);box-shadow:0 0 0 1px rgba(88,166,255,.24) inset}
+.queue-title{font-size:12px;font-weight:800;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.queue-meta{display:flex;flex-wrap:wrap;gap:5px;margin-top:4px}
+.chip{display:inline-flex;align-items:center;padding:2px 6px;border-radius:999px;font-size:10px;font-weight:800;border:1px solid var(--border);background:#0b1016;color:var(--muted)}
+.chip.saved{border-color:rgba(63,185,80,.45);color:var(--green);background:rgba(63,185,80,.1)}
+.chip.pending{border-color:rgba(210,153,34,.45);color:var(--yellow);background:rgba(210,153,34,.1)}
+.chip.current{border-color:rgba(88,166,255,.5);color:var(--blue);background:rgba(88,166,255,.12)}
+.chip.repo{border-color:rgba(139,148,158,.42)}
+.inline-actions{display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end}
+.inline-actions button{padding:6px 8px}
+.toast{position:fixed;right:12px;top:12px;z-index:40;max-width:min(360px,calc(100vw - 24px));padding:10px 12px;border:1px solid var(--border);border-radius:8px;background:rgba(22,27,34,.97);box-shadow:0 12px 32px rgba(0,0,0,.35);font-size:12px;font-weight:800;opacity:0;pointer-events:none;transform:translateY(-6px);transition:opacity .16s ease,transform .16s ease}
+.toast.show{opacity:1;transform:translateY(0)}
+.toast.ok{border-color:rgba(63,185,80,.45);color:var(--green)}
+.toast.warn{border-color:rgba(210,153,34,.45);color:var(--yellow)}
 table.check{width:100%;border-collapse:collapse;font-size:10.5px}
 table.check th,table.check td{border-bottom:1px solid var(--border);padding:4px 3px;text-align:left}
 table.check th{color:var(--muted);font-weight:800}
@@ -51,13 +70,17 @@ table.check th{color:var(--muted);font-weight:800}
   .panel{border-left:0;border-top:1px solid var(--border);max-height:none}
   .views{position:sticky;top:0;z-index:5;height:54vh;min-height:380px;background:var(--bg)}
   .grid{grid-template-columns:repeat(2,1fr)}
+  .toolbar{grid-template-columns:1fr 1fr}
+  .toolbar .field{grid-column:1 / -1}
+  .queue-item{grid-template-columns:1fr}
+  .inline-actions{justify-content:flex-start}
 }
 </style>
 </head>
 <body translate="no" class="notranslate">
 <header>
   <h1>桌球回擊攝影棚</h1>
-  <div class="badge">對齊 Game 4 物理引擎 v2（paddle restitution 模型）</div>
+  <div class="badge">對齊 Game 4 物理引擎 v2（paddle restitution 模型） s4m8q</div>
 </header>
 
 <main class="stage">
@@ -77,9 +100,29 @@ table.check th{color:var(--muted);font-weight:800}
       <h2>發球（讀取 physics-presets.json，跟 Game 4 同一份資料）</h2>
       <div class="field">
         <label>選擇發球</label>
+        <div class="stack" style="margin-bottom:8px">
+          <div class="toolbar">
+            <div class="field">
+              <label>搜尋球例</label>
+              <input id="serveSearch" placeholder="可用名稱 / id / spin / length / placement 搜尋">
+            </div>
+            <button id="loadServePickerBtn" type="button" class="secondary">載入選取</button>
+            <button id="queueServeBtn" type="button" class="warn">加入分析</button>
+          </div>
+          <div class="field">
+            <label>發球清單（可多選）</label>
+            <select id="servePresetPicker" class="select-list" size="8" multiple></select>
+          </div>
+          <div class="hint">先把你覺得 solver 不合理的球加入分析清單，再逐顆調整、保存、比較。</div>
+        </div>
         <select id="servePreset"></select>
       </div>
       <div class="status" id="serveStatus" style="margin-top:6px"></div>
+      <div class="status" id="reviewStatus" style="margin-top:6px"></div>
+      <div class="field" style="margin-top:8px">
+        <label>分析清單</label>
+        <div id="reviewQueue" class="queue-list"></div>
+      </div>
     </div>
 
     <div class="section">
@@ -163,6 +206,10 @@ table.check th{color:var(--muted);font-weight:800}
         <button id="saveBtn" type="button" class="secondary">儲存修改（本機）</button>
         <button id="restoreBtn" type="button" class="warn">重置為目前 Game 4 內建值</button>
       </div>
+      <div class="actions" style="margin-top:6px">
+        <button id="saveReviewBtn" type="button" class="warn">保存這顆球的調整</button>
+        <button id="loadReviewBtn" type="button" class="secondary">套用已存調整</button>
+      </div>
     </div>
 
     <div class="section">
@@ -179,8 +226,18 @@ table.check th{color:var(--muted);font-weight:800}
       <h2>快速同步（複製目前發球+全部參數，貼到對話裡討論用）</h2>
       <div class="actions">
         <button id="copyStateBtn" type="button">複製目前完整狀態</button>
+        <button id="copyReviewBtn" type="button" class="secondary">複製這顆比較</button>
       </div>
       <textarea id="stateText" readonly style="margin-top:6px;min-height:120px"></textarea>
+    </div>
+
+    <div class="section">
+      <h2>球例校正資料庫</h2>
+      <div class="actions">
+        <button id="copyReviewBatchBtn" type="button" class="secondary">複製全部校正</button>
+        <button id="copyDiffSummaryBtn" type="button" class="secondary">複製差異摘要</button>
+      </div>
+      <textarea id="diffSummaryText" readonly style="margin-top:6px;min-height:180px"></textarea>
     </div>
 
     <div class="section">
@@ -192,6 +249,7 @@ table.check th{color:var(--muted);font-weight:800}
     </div>
   </aside>
 </main>
+<div id="toast" class="toast" aria-live="polite"></div>
 
 <script src="vendor/three.r128.min.js"></script>
 <script>
@@ -215,6 +273,7 @@ const SPIN_EPSILON_REFERENCE = 6.0; // 球面旋轉速度達到此值時，套�
 const CONTACT_FRICTION_MU = 0.13;   // Phase 2 校準定案值
 const NET_COLLISION = {depth:0.012, zRestitution:0.16, xDamping:0.55, yDamping:0.35};
 const STORAGE_KEY = 'tt-return-studio-tuning-v2';
+const REVIEW_STORAGE_KEY = 'tt-return-studio-review-v1';
 // 回擊：球拍接觸力學（Phase 6，docs/physics-engine-v2-plan.md）。
 // 攻球/切球改用跟球對桌面同一套接觸力學（bounceOffPlane，見上方），球拍視為
 // 一個有自己法向量、自己揮拍速度的「移動中的平面」。球拍材質（膠皮/底板）
@@ -731,9 +790,22 @@ let selectedPresetIndex = 0;
 let animation = null;
 let currentIncoming = [];
 let currentReturn = [];
+let reviewQueue = [];
+let reviewEntries = {};
+let currentReviewKey = '';
+let toastTimer = null;
 
 function num(id){ return parseFloat(document.getElementById(id).value); }
 function setValue(id, value){ document.getElementById(id).value = value; }
+function deepCloneJson(value){ return JSON.parse(JSON.stringify(value)); }
+function showToast(message, tone='ok'){
+  const toast = document.getElementById('toast');
+  if(!toast) return;
+  toast.textContent = message;
+  toast.className = `toast ${tone} show`;
+  if(toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>toast.className = `toast ${tone}`, 1700);
+}
 
 async function loadServePresets(){
   const res = await fetch('physics-presets.json?v=' + Date.now());
@@ -741,10 +813,180 @@ async function loadServePresets(){
   servePresets = (data.serves || []);
   const select = document.getElementById('servePreset');
   select.innerHTML = servePresets.map((p,i)=>`<option value="${i}">${p.label}</option>`).join('');
+  renderServePicker();
 }
 function currentPreset(){ return servePresets[selectedPresetIndex]; }
 function currentSide(){ return document.getElementById('side').value; }
 function currentTechniqueKey(){ return document.getElementById('techniqueKey').value; }
+function currentReviewIdentity(){
+  const preset = currentPreset();
+  const side = currentSide();
+  const techniqueKey = currentTechniqueKey();
+  return {
+    key: `${preset?.id || 'unknown'}__${side}__${techniqueKey}`,
+    serveId: preset?.id || '',
+    side,
+    techniqueKey
+  };
+}
+function formatServeMeta(preset){
+  const spin = preset?.tagLabels?.spinType || preset?.tags?.spinType || '';
+  const length = preset?.tagLabels?.length || preset?.tags?.length || '';
+  const placement = preset?.tagLabels?.placement || preset?.tags?.placement || '';
+  return [spin, length, placement].filter(Boolean).join(' / ');
+}
+function loadReviewStore(){
+  try{
+    const parsed = JSON.parse(localStorage.getItem(REVIEW_STORAGE_KEY) || '{}');
+    reviewQueue = Array.isArray(parsed.queue) ? parsed.queue : [];
+    reviewEntries = parsed.entries && typeof parsed.entries === 'object' ? parsed.entries : {};
+  }catch(err){
+    reviewQueue = [];
+    reviewEntries = {};
+  }
+}
+function saveReviewStore(){
+  localStorage.setItem(REVIEW_STORAGE_KEY, JSON.stringify({queue:reviewQueue, entries:reviewEntries}));
+}
+function getSelectedPickerServeIds(){
+  return Array.from(document.getElementById('servePresetPicker').selectedOptions).map(option=>option.value).filter(Boolean);
+}
+function renderServePicker(){
+  const select = document.getElementById('servePresetPicker');
+  if(!select) return;
+  const query = (document.getElementById('serveSearch')?.value || '').trim().toLowerCase();
+  const selected = new Set(Array.from(select.selectedOptions).map(option=>option.value));
+  const filtered = servePresets.filter(preset=>{
+    if(!query) return true;
+    const text = [preset.id, preset.label, formatServeMeta(preset), preset.tags?.spinType, preset.tags?.length, preset.tags?.placement].filter(Boolean).join(' ').toLowerCase();
+    return text.includes(query);
+  });
+  select.innerHTML = filtered.length
+    ? filtered.map(preset=>`<option value="${preset.id}">${preset.label} | ${formatServeMeta(preset)}</option>`).join('')
+    : '<option value="">沒有符合的球例</option>';
+  Array.from(select.options).forEach(option=>{
+    if(selected.has(option.value)) option.selected = true;
+  });
+}
+function getPresetById(id){
+  return servePresets.find(preset=>preset.id === id) || null;
+}
+function setCurrentPresetById(id){
+  const index = servePresets.findIndex(preset=>preset.id === id);
+  if(index >= 0){
+    selectedPresetIndex = index;
+    document.getElementById('servePreset').value = String(index);
+  }
+}
+function captureCurrentSnapshot(){
+  const preset = currentPreset();
+  const side = currentSide();
+  const techniqueKey = currentTechniqueKey();
+  const tech = deepCloneJson(TECHNIQUES[techniqueKey]);
+  const sim = simulateReturnForPreset(preset, side, techniqueKey);
+  const judged = judgeResult(sim.result);
+  return {
+    savedAt: new Date().toISOString(),
+    side,
+    techniqueKey,
+    techniqueLabel: tech.label,
+    serve: {
+      id: preset.id,
+      label: preset.label,
+      tags: deepCloneJson(preset.tags || {}),
+      tagLabels: deepCloneJson(preset.tagLabels || {}),
+      variation: deepCloneJson(preset.variation || {}),
+      solve: deepCloneJson(preset.solve || {})
+    },
+    hitPoint: deepCloneJson(sim.hitPoint),
+    incomingVel: deepCloneJson(sim.hitVel),
+    technique: tech,
+    judged: {
+      ok: judged.ok,
+      reason: judged.reason,
+      netClearance: judged.netClearance,
+      firstBounce: judged.firstBounce ? deepCloneJson(judged.firstBounce) : null
+    }
+  };
+}
+function ensureReviewEntry(identity, options={}){
+  const preset = getPresetById(identity.serveId);
+  if(!preset) return null;
+  let entry = reviewEntries[identity.key];
+  if(!entry){
+    entry = {
+      key: identity.key,
+      serveId: identity.serveId,
+      serveLabel: preset.label,
+      serveMeta: formatServeMeta(preset),
+      side: identity.side,
+      techniqueKey: identity.techniqueKey,
+      original: options.original || captureCurrentSnapshot(),
+      adjusted: null,
+      updatedAt: null
+    };
+    reviewEntries[identity.key] = entry;
+  }
+  if(!reviewQueue.includes(identity.key)) reviewQueue.push(identity.key);
+  saveReviewStore();
+  return entry;
+}
+function ensureCurrentReviewEntry(){
+  const identity = currentReviewIdentity();
+  if(!identity.serveId) return null;
+  if(reviewEntries[identity.key]) return reviewEntries[identity.key];
+  const entry = ensureReviewEntry(identity, {original:captureCurrentSnapshot()});
+  renderReviewQueue();
+  updateDiffSummary();
+  return entry;
+}
+function renderReviewQueue(){
+  const box = document.getElementById('reviewQueue');
+  if(!box) return;
+  if(!reviewQueue.length){
+    box.innerHTML = '<div class="hint">還沒有加入分析的球。先從上面的球例清單多選，按「加入分析」。</div>';
+    return;
+  }
+  box.innerHTML = reviewQueue.map(key=>{
+    const entry = reviewEntries[key];
+    if(!entry) return '';
+    const saved = !!entry.adjusted;
+    return `
+      <div class="queue-item ${currentReviewKey === key ? 'current' : ''}">
+        <div>
+          <div class="queue-title">${entry.serveLabel}</div>
+          <div class="hint">${entry.serveMeta} | ${entry.side === 'forehand' ? '正手' : '反手'} | ${entry.techniqueKey}</div>
+          <div class="queue-meta">
+            ${currentReviewKey === key ? '<span class="chip current">目前編輯</span>' : ''}
+            <span class="chip ${saved ? 'saved' : 'pending'}">${saved ? '已保存調整' : '待調整'}</span>
+          </div>
+        </div>
+        <div class="inline-actions">
+          <button type="button" class="secondary" data-review-action="load" data-key="${key}">載入</button>
+          <button type="button" class="secondary" data-review-action="remove" data-key="${key}">移除</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+function renderReviewStatus(){
+  const box = document.getElementById('reviewStatus');
+  if(!box) return;
+  const identity = currentReviewIdentity();
+  currentReviewKey = identity.key;
+  const entry = reviewEntries[identity.key];
+  const saveChip = entry?.adjusted
+    ? `<span class="chip saved">已保存 ${new Date(entry.updatedAt).toLocaleTimeString('zh-TW', {hour:'2-digit', minute:'2-digit'})}</span>`
+    : '<span class="chip pending">尚未保存這顆球的調整</span>';
+  box.innerHTML = `
+    <div><strong>${currentPreset()?.label || '未選球'}</strong></div>
+    <div class="queue-meta">
+      <span class="chip repo">${identity.side === 'forehand' ? '正手' : '反手'}</span>
+      <span class="chip">${identity.techniqueKey}</span>
+      ${saveChip}
+    </div>
+  `;
+}
 
 function syncSideLock(){
   const key = currentTechniqueKey();
@@ -988,6 +1230,7 @@ function renderAll(){ renderers.forEach((renderer,index)=>renderer.render(scenes
 // ── 主流程 ──────────────────────────────────────────────────────────────
 function refresh(){
   if(!servePresets.length) return;
+  ensureCurrentReviewEntry();
   const preset = currentPreset();
   const side = currentSide();
   const techniqueKey = currentTechniqueKey();
@@ -1016,8 +1259,11 @@ function refresh(){
     <div>第一落點：<strong>${judged.firstBounce ? `${judged.firstBounce.x.toFixed(2)}, ${judged.firstBounce.z.toFixed(2)}` : '無'}</strong></div>
     <div>判定：<strong class="${judged.ok ? 'ok' : 'bad'}">${judged.reason}</strong></div>
   `;
+  renderReviewStatus();
+  renderReviewQueue();
   updateCheckTable(side, techniqueKey);
   updateExport();
+  updateDiffSummary();
   updateStateText();
   renderAll();
   if(document.getElementById('autoPlayToggle')?.checked) animateCurrentPath();
@@ -1081,6 +1327,138 @@ function hydrateTechniqueModels(source){
     next[key] = {...next[key], ...tech, model:tech.model || next[key]?.model || 'direct'};
   }
   return next;
+}
+function applyTechniqueSnapshot(snapshot){
+  if(!snapshot?.techniqueKey || !snapshot?.technique) return;
+  TECHNIQUES[snapshot.techniqueKey] = deepCloneJson(snapshot.technique);
+  document.getElementById('techniqueKey').value = snapshot.techniqueKey;
+  syncSideLock();
+  if(!document.getElementById('side').disabled) document.getElementById('side').value = snapshot.side || 'backhand';
+  loadTechniqueFields();
+}
+function diffTechniqueFields(originalTech, adjustedTech){
+  if(!originalTech || !adjustedTech) return null;
+  const out = {
+    techVel: {
+      x: (adjustedTech.techniqueVel?.x ?? 0) - (originalTech.techniqueVel?.x ?? 0),
+      y: (adjustedTech.techniqueVel?.y ?? 0) - (originalTech.techniqueVel?.y ?? 0),
+      z: (adjustedTech.techniqueVel?.z ?? 0) - (originalTech.techniqueVel?.z ?? 0)
+    },
+    racketNormalTiltY: (adjustedTech.racketNormalTiltY ?? 0) - (originalTech.racketNormalTiltY ?? 0),
+    racketNormalTiltX: (adjustedTech.racketNormalTiltX ?? 0) - (originalTech.racketNormalTiltX ?? 0),
+    bounceBoost: (adjustedTech.bounceBoost ?? 0) - (originalTech.bounceBoost ?? 0),
+    adaptivePushChanged: !!adjustedTech.adaptivePush !== !!originalTech.adaptivePush
+  };
+  if(originalTech.spin || adjustedTech.spin){
+    out.spin = {
+      topspin: (adjustedTech.spin?.topspin ?? 0) - (originalTech.spin?.topspin ?? 0),
+      sidespin: (adjustedTech.spin?.sidespin ?? 0) - (originalTech.spin?.sidespin ?? 0)
+    };
+  }
+  if(originalTech.swingDirection || adjustedTech.swingDirection){
+    out.swingDirection = {
+      x: (adjustedTech.swingDirection?.x ?? 0) - (originalTech.swingDirection?.x ?? 0),
+      y: (adjustedTech.swingDirection?.y ?? 0) - (originalTech.swingDirection?.y ?? 0),
+      z: (adjustedTech.swingDirection?.z ?? 0) - (originalTech.swingDirection?.z ?? 0)
+    };
+  }
+  return out;
+}
+function saveCurrentReview(){
+  const identity = currentReviewIdentity();
+  const entry = ensureReviewEntry(identity);
+  if(!entry) return;
+  entry.adjusted = captureCurrentSnapshot();
+  entry.updatedAt = new Date().toISOString();
+  reviewEntries[identity.key] = entry;
+  saveReviewStore();
+  renderReviewQueue();
+  renderReviewStatus();
+  updateDiffSummary();
+  updateStateText();
+  showToast(`已保存 ${entry.serveLabel} 的調整`);
+}
+function loadSavedReview(){
+  const identity = currentReviewIdentity();
+  const entry = reviewEntries[identity.key];
+  if(!entry?.adjusted){
+    showToast('這顆球還沒有已保存的調整', 'warn');
+    return;
+  }
+  applyTechniqueSnapshot(entry.adjusted);
+  refresh();
+  showToast(`已套用 ${entry.serveLabel} 的已存調整`);
+}
+function queueSelectedServes(){
+  const ids = getSelectedPickerServeIds();
+  if(!ids.length){
+    showToast('請先多選要分析的球', 'warn');
+    return;
+  }
+  ids.forEach(id=>{
+    const serveId = id;
+    const side = currentSide();
+    const techniqueKey = currentTechniqueKey();
+    const preset = getPresetById(serveId);
+    if(!preset) return;
+    const key = `${serveId}__${side}__${techniqueKey}`;
+    if(!reviewEntries[key]){
+      const prevPresetIndex = selectedPresetIndex;
+      setCurrentPresetById(serveId);
+      const original = captureCurrentSnapshot();
+      selectedPresetIndex = prevPresetIndex;
+      document.getElementById('servePreset').value = String(prevPresetIndex);
+      reviewEntries[key] = {
+        key,
+        serveId,
+        serveLabel: preset.label,
+        serveMeta: formatServeMeta(preset),
+        side,
+        techniqueKey,
+        original,
+        adjusted: null,
+        updatedAt: null
+      };
+    }
+    if(!reviewQueue.includes(key)) reviewQueue.push(key);
+  });
+  saveReviewStore();
+  renderReviewQueue();
+  updateDiffSummary();
+  showToast(`已加入分析 ${ids.length} 顆`);
+}
+function loadSelectedServeFromPicker(){
+  const ids = getSelectedPickerServeIds();
+  if(!ids.length){
+    showToast('請先選一顆球', 'warn');
+    return;
+  }
+  const serveId = ids[0];
+  setCurrentPresetById(serveId);
+  const identity = currentReviewIdentity();
+  ensureReviewEntry(identity, {original:captureCurrentSnapshot()});
+  refresh();
+  renderReviewQueue();
+  renderReviewStatus();
+  updateDiffSummary();
+  showToast(`已載入 ${currentPreset().label}`);
+}
+function loadReviewQueueItem(key){
+  const entry = reviewEntries[key];
+  if(!entry) return;
+  setCurrentPresetById(entry.serveId);
+  document.getElementById('techniqueKey').value = entry.techniqueKey;
+  syncSideLock();
+  if(!document.getElementById('side').disabled) document.getElementById('side').value = entry.side;
+  if(entry.adjusted) applyTechniqueSnapshot(entry.adjusted);
+  else if(entry.original) applyTechniqueSnapshot(entry.original);
+  refresh();
+}
+function removeReviewQueueItem(key){
+  reviewQueue = reviewQueue.filter(item=>item !== key);
+  saveReviewStore();
+  renderReviewQueue();
+  updateDiffSummary();
 }
 
 // ── 儲存 / 還原 / 匯出 ──────────────────────────────────────────────────
@@ -1154,9 +1532,88 @@ function formatFullStateForCopy(){
     formatTechniquesForExport()
   ].join('\n');
 }
+function buildCurrentReviewPayload(){
+  const identity = currentReviewIdentity();
+  const entry = reviewEntries[identity.key];
+  if(!entry) return null;
+  return {
+    key: entry.key,
+    serveId: entry.serveId,
+    serveLabel: entry.serveLabel,
+    serveMeta: entry.serveMeta,
+    side: entry.side,
+    techniqueKey: entry.techniqueKey,
+    updatedAt: entry.updatedAt,
+    original: entry.original,
+    adjusted: entry.adjusted,
+    diff: entry.adjusted ? diffTechniqueFields(entry.original?.technique, entry.adjusted?.technique) : null
+  };
+}
+function formatCurrentReviewForCopy(){
+  const payload = buildCurrentReviewPayload();
+  if(!payload) return '目前這顆球還沒有保存比較資料。';
+  return JSON.stringify(payload, null, 2);
+}
+function summarizeReviewDiffs(){
+  const lines = [];
+  const aggregates = {};
+  const entries = Object.values(reviewEntries).filter(entry=>entry.adjusted);
+  if(!entries.length){
+    return '目前還沒有已保存的球例校正資料。';
+  }
+  for(const entry of entries){
+    const diff = diffTechniqueFields(entry.original?.technique, entry.adjusted?.technique);
+    if(!diff) continue;
+    const bucket = aggregates[entry.techniqueKey] || (aggregates[entry.techniqueKey] = {count:0, vel:{x:0,y:0,z:0}, normalY:0, normalX:0, bounceBoost:0, spinTop:0, spinSide:0, swingX:0, swingY:0, swingZ:0, adaptiveChanged:0});
+    bucket.count += 1;
+    bucket.vel.x += diff.techVel.x;
+    bucket.vel.y += diff.techVel.y;
+    bucket.vel.z += diff.techVel.z;
+    bucket.normalY += diff.racketNormalTiltY;
+    bucket.normalX += diff.racketNormalTiltX;
+    bucket.bounceBoost += diff.bounceBoost;
+    bucket.spinTop += diff.spin?.topspin || 0;
+    bucket.spinSide += diff.spin?.sidespin || 0;
+    bucket.swingX += diff.swingDirection?.x || 0;
+    bucket.swingY += diff.swingDirection?.y || 0;
+    bucket.swingZ += diff.swingDirection?.z || 0;
+    bucket.adaptiveChanged += diff.adaptivePushChanged ? 1 : 0;
+  }
+  lines.push(`已保存球例 ${entries.length} 顆`);
+  Object.entries(aggregates).forEach(([techniqueKey, bucket])=>{
+    const c = bucket.count || 1;
+    lines.push('');
+    lines.push(`[${techniqueKey}] 平均調整方向（${bucket.count} 顆）`);
+    lines.push(`techVel: x ${ (bucket.vel.x/c).toFixed(3) }, y ${ (bucket.vel.y/c).toFixed(3) }, z ${ (bucket.vel.z/c).toFixed(3) }`);
+    lines.push(`racketNormal: y ${ (bucket.normalY/c).toFixed(3) }, x ${ (bucket.normalX/c).toFixed(3) }`);
+    lines.push(`bounceBoost: ${ (bucket.bounceBoost/c).toFixed(3) }`);
+    if(bucket.spinTop || bucket.spinSide){
+      lines.push(`spin: topspin ${ (bucket.spinTop/c).toFixed(3) }, sidespin ${ (bucket.spinSide/c).toFixed(3) }`);
+    }
+    if(bucket.swingX || bucket.swingY || bucket.swingZ){
+      lines.push(`swingDirection: x ${ (bucket.swingX/c).toFixed(3) }, y ${ (bucket.swingY/c).toFixed(3) }, z ${ (bucket.swingZ/c).toFixed(3) }`);
+    }
+    if(bucket.adaptiveChanged){
+      lines.push(`adaptivePush 改動次數: ${bucket.adaptiveChanged}/${bucket.count}`);
+    }
+  });
+  lines.push('');
+  lines.push('逐球列表：');
+  entries.forEach(entry=>{
+    const diff = diffTechniqueFields(entry.original?.technique, entry.adjusted?.technique);
+    lines.push(`- ${entry.serveLabel} | ${entry.side === 'forehand' ? '正手' : '反手'} | ${entry.techniqueKey} | ${entry.adjusted?.judged?.reason || '未判定'} | dVel(${diff.techVel.x.toFixed(2)}, ${diff.techVel.y.toFixed(2)}, ${diff.techVel.z.toFixed(2)})`);
+  });
+  return lines.join('\n');
+}
+function updateDiffSummary(){
+  const box = document.getElementById('diffSummaryText');
+  if(box) box.value = summarizeReviewDiffs();
+}
 function updateStateText(){
   const el = document.getElementById('stateText');
-  if(el) el.value = formatFullStateForCopy();
+  if(!el) return;
+  const reviewText = formatCurrentReviewForCopy();
+  el.value = `${formatFullStateForCopy()}\n\n===== 這顆球的原解 / 調整後比較 =====\n${reviewText}`;
 }
 async function copyState(){
   updateStateText();
@@ -1169,6 +1626,51 @@ async function copyState(){
   }
   flashButton('copyStateBtn');
 }
+async function copyCurrentReview(){
+  const text = formatCurrentReviewForCopy();
+  try{ await navigator.clipboard.writeText(text); }
+  catch(err){
+    const area = document.getElementById('stateText');
+    area.value = text;
+    area.select();
+    document.execCommand('copy');
+  }
+  showToast('已複製這顆球的比較');
+}
+async function copyReviewBatch(){
+  const payload = Object.values(reviewEntries).filter(entry=>entry.adjusted).map(entry=>({
+    key: entry.key,
+    serveId: entry.serveId,
+    serveLabel: entry.serveLabel,
+    serveMeta: entry.serveMeta,
+    side: entry.side,
+    techniqueKey: entry.techniqueKey,
+    updatedAt: entry.updatedAt,
+    original: entry.original,
+    adjusted: entry.adjusted,
+    diff: diffTechniqueFields(entry.original?.technique, entry.adjusted?.technique)
+  }));
+  const text = JSON.stringify({type:'returnStudioReviewBatch', count:payload.length, reviews:payload}, null, 2);
+  try{ await navigator.clipboard.writeText(text); }
+  catch(err){
+    const area = document.getElementById('diffSummaryText');
+    area.value = text;
+    area.select();
+    document.execCommand('copy');
+  }
+  showToast(`已複製全部校正 ${payload.length} 筆`);
+}
+async function copyDiffSummary(){
+  updateDiffSummary();
+  const text = document.getElementById('diffSummaryText').value;
+  try{ await navigator.clipboard.writeText(text); }
+  catch(err){
+    const area = document.getElementById('diffSummaryText');
+    area.select();
+    document.execCommand('copy');
+  }
+  showToast('已複製差異摘要');
+}
 function flashButton(id){
   const btn = document.getElementById(id);
   const old = btn.textContent;
@@ -1178,6 +1680,9 @@ function flashButton(id){
 
 // ── 綁定事件 ──────────────────────────────────────────────────────────────
 document.querySelectorAll('canvas').forEach((canvas,index)=>initScene(canvas, index === 0 ? 'side' : 'front'));
+document.getElementById('serveSearch').addEventListener('input', renderServePicker);
+document.getElementById('loadServePickerBtn').addEventListener('click', loadSelectedServeFromPicker);
+document.getElementById('queueServeBtn').addEventListener('click', queueSelectedServes);
 document.getElementById('servePreset').addEventListener('change', event=>{
   selectedPresetIndex = parseInt(event.target.value, 10) || 0;
   refresh();
@@ -1207,15 +1712,33 @@ document.getElementById('playBtn').addEventListener('click', play);
 document.getElementById('resetBtn').addEventListener('click', replay);
 document.getElementById('saveBtn').addEventListener('click', saveTuning);
 document.getElementById('restoreBtn').addEventListener('click', restoreDefaults);
+document.getElementById('saveReviewBtn').addEventListener('click', saveCurrentReview);
+document.getElementById('loadReviewBtn').addEventListener('click', loadSavedReview);
 document.getElementById('copyBtn').addEventListener('click', copyExport);
 document.getElementById('copyStateBtn').addEventListener('click', copyState);
+document.getElementById('copyReviewBtn').addEventListener('click', copyCurrentReview);
+document.getElementById('copyReviewBatchBtn').addEventListener('click', copyReviewBatch);
+document.getElementById('copyDiffSummaryBtn').addEventListener('click', copyDiffSummary);
+document.getElementById('reviewQueue').addEventListener('click', event=>{
+  const button = event.target.closest('[data-review-action]');
+  if(!button) return;
+  const key = button.dataset.key;
+  if(button.dataset.reviewAction === 'load') loadReviewQueueItem(key);
+  if(button.dataset.reviewAction === 'remove'){
+    removeReviewQueueItem(key);
+    showToast('已從分析清單移除');
+  }
+});
 window.addEventListener('resize', resize);
 
 (async function init(){
   loadTuning();
+  loadReviewStore();
   await loadServePresets();
   syncSideLock();
   loadTechniqueFields();
+  renderReviewQueue();
+  updateDiffSummary();
   resize();
   refresh();
 })();
