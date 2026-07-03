@@ -150,6 +150,11 @@ button.warn{background:rgba(210,153,34,.12);color:var(--yellow);border-color:var
         <div class="field"><label>第二跳 Y</label><input id="targetY" type="number" step="0.01" value="0.78"></div>
         <div class="field"><label>第二跳 Z</label><input id="targetZ" type="number" step="0.01" value="0.88"></div>
       </div>
+      <div class="hint" style="margin-top:6px">起點/第一跳/第二跳三個點都可以直接在下面的 3D 畫面裡拖曳（藍/黃/綠球）；發球高度也可以用下面的滑桿直接拖，即時看軌跡變化。</div>
+      <div class="field" style="margin-top:6px">
+        <label>發球高度（拖曳滑桿即時預覽）</label>
+        <input id="startYSlider" type="range" min="0.7" max="2.2" step="0.01" value="1.03" style="width:100%">
+      </div>
       <div class="grid" style="margin-top:8px">
         <div class="field"><label>底線外距離</label><input id="baselineOffset" type="number" step="0.01" value="0.15"></div>
         <div class="field"><label>左右偏移</label><input id="lateralOffset" type="number" step="0.01" value="0.00"></div>
@@ -302,6 +307,16 @@ button.warn{background:rgba(210,153,34,.12);color:var(--yellow);border-color:var
     </div>
 
     <div class="section">
+      <h2>同步給 Claude（存到本機待處理檔案）</h2>
+      <div class="hint" style="margin-bottom:6px">調好一顆球後按「儲存這顆到待處理檔案」，會直接寫進你本機選定的 pending-serve-changes.json（第一次會跳出選檔案視窗，之後同一頁面內都會直接寫入，不用重複選）。這個功能需要 Chrome/Edge（File System Access API），如果瀏覽器不支援會改成下面的複製備援。</div>
+      <div class="actions">
+        <button id="saveToPendingFileBtn" type="button">儲存這顆到待處理檔案</button>
+        <button id="copyPendingFallbackBtn" type="button" class="secondary">複製待處理內容（備援）</button>
+      </div>
+      <textarea id="pendingFallbackText" readonly style="margin-top:6px;min-height:80px"></textarea>
+    </div>
+
+    <div class="section">
       <h2>匯出</h2>
       <textarea id="exportText" readonly></textarea>
     </div>
@@ -337,11 +352,19 @@ const SPIN_UNIT_KEY = 'tt-physics-studio-spin-unit-v1';
 const RAD_PER_RPS = Math.PI * 2;
 const PLAY_MIN_DURATION_MS = 3000;
 const MAX_TABLE_BOUNCES = 8;
-const BOUNCE_PHYSICS = {
-  horizontalRestitution: 0.98,
-  topspinKick: 0.30,
-  sidespinKick: 0.22
-};
+// ── 物理引擎 v2：真實觸桌接觸力學（docs/physics-engine-v2-plan.md Phase 1-4）──
+// 逐字對齊 game4.html / return-studio.html，取代舊的 BOUNCE_PHYSICS/applyBounceSpin
+// 簡化模型——那一版是專案還沒換算成真實 rad/s 之前校準的，跟正式引擎不同步，
+// 是這次「每顆球都無法發球成功」的根本原因，現在整個換掉，不再用近似模型。
+const BALL_MASS = 0.0027;
+const BALL_INERTIA_ALPHA = 2 / 3;
+const BALL_INERTIA = BALL_INERTIA_ALPHA * BALL_MASS * BALL_RADIUS * BALL_RADIUS;
+const EPSILON_VERTICAL = 0.876;
+const EPSILON_OBLIQUE = 0.57;
+const EPSILON_MIN = 0.45;
+const OBLIQUE_ANGLE_DEG = 83;
+const SPIN_EPSILON_REFERENCE = 6.0;
+const CONTACT_FRICTION_MU = 0.13;
 const ids = ['solveTarget','startY','baselineOffset','lateralOffset','firstX','firstY','firstZ','targetX','targetY','targetZ','flightTime','netClearance','gravity','varX','varY','varZ','topspin','sidespin','bounce','presetSpinType','presetLength','presetPlacement','presetName'];
 const PRESET_TAG_LABELS = {
   spinType: {sidebackspin:'側下', sidespin:'側旋', backspin:'下旋', topspin:'上旋', no_spin:'不轉'},
@@ -627,6 +650,7 @@ function applyState(state){
     setValue('target' + axis.toUpperCase(), secondBounce[axis] ?? 0);
   });
   setValue('startY', serveLine.height);
+  setValue('startYSlider', serveLine.height);
   setValue('baselineOffset', serveLine.baselineOffset);
   setValue('lateralOffset', serveLine.lateralOffset);
   setValue('flightTime', state.solve?.secondLegTime ?? state.solve?.flightTime ?? 0.74);
@@ -655,30 +679,41 @@ function solveVelocity(start, target, time, gravity){
 function addVec(a,b){ return {x:a.x+b.x, y:a.y+b.y, z:a.z+b.z}; }
 function cloneVec(v){ return {x:v.x, y:v.y, z:v.z}; }
 function clamp(value, min, max){ return Math.max(min, Math.min(max, value)); }
-function applyBounceSpin(vel, spin, bounce){
-  const incomingX = vel.x;
-  const incomingZ = vel.z;
-  const speed = Math.hypot(incomingX, incomingZ);
-  const forward = speed > 0.001
-    ? {x:incomingX / speed, z:incomingZ / speed}
-    : {x:0, z:1};
-  const side = {x:-forward.z, z:forward.x};
-  // topspinKick/sidespinKick 這組係數，是在專案還沒換算成真實 rad/s 之前，
-  // 針對舊版「隨手調」的旋轉數字（範圍大約 -1.23~1）校準的——不是 rps，也不是
-  // rad/s。用 git 歷史比對過（781dda8^ 版本 backspin_long_backhand 的
-  // topspin 是 -0.8，現在真實 rad/s 版本是 -125.66），兩者只是「量級都在 1
-  // 附近」，不是同一個物理量，換算成 rps（除以 2π≈6.28，得到約 -20）還是差了
-  // 20 倍，會讓 forwardSpeed 整個變號、球彈回去，這正是使用者回報的「每顆球
-  // 都無法發球成功」。改成除以 LEGACY_BOUNCE_SPIN_SCALE，量級對回舊版校準基準。
-  const LEGACY_BOUNCE_SPIN_SCALE = 125.66;
-  const topspinLegacy = (spin.topspin || 0) / LEGACY_BOUNCE_SPIN_SCALE;
-  const sidespinLegacy = (spin.sidespin || 0) / LEGACY_BOUNCE_SPIN_SCALE;
-  let forwardSpeed = speed * BOUNCE_PHYSICS.horizontalRestitution + topspinLegacy * BOUNCE_PHYSICS.topspinKick;
-  const sideSpeed = clamp(sidespinLegacy * BOUNCE_PHYSICS.sidespinKick, -speed * 0.75, speed * 0.75);
-  forwardSpeed = clamp(forwardSpeed, -speed * 0.55, speed * 1.35);
-  vel.x = forward.x * forwardSpeed + side.x * sideSpeed;
-  vel.z = forward.z * forwardSpeed + side.z * sideSpeed;
-  vel.y = Math.abs(vel.y) * bounce;
+function horizontalImpactSpeed(vel){ return Math.hypot(vel.x || 0, vel.z || 0); }
+function spinSurfaceSpeed(spin){ return BALL_RADIUS * Math.hypot((spin && spin.topspin) || 0, (spin && spin.sidespin) || 0); }
+function dynamicEpsilon(vel, spin){
+  const normalSpeed = Math.abs(vel.y);
+  if(normalSpeed < 1e-9) return EPSILON_MIN;
+  const obliqueHorizontalSpeed = normalSpeed * Math.tan(OBLIQUE_ANGLE_DEG * Math.PI / 180);
+  const baselineT = clamp(horizontalImpactSpeed(vel) / obliqueHorizontalSpeed, 0, 1);
+  const baselineEpsilon = EPSILON_VERTICAL + (EPSILON_OBLIQUE - EPSILON_VERTICAL) * baselineT;
+  const spinT = clamp(spinSurfaceSpeed(spin || {topspin:0,sidespin:0}) / SPIN_EPSILON_REFERENCE, 0, 1);
+  const spinPenalty = (EPSILON_OBLIQUE - EPSILON_MIN) * spinT;
+  return clamp(baselineEpsilon - spinPenalty, EPSILON_MIN, EPSILON_VERTICAL);
+}
+function bounceTangentialAxis(v, omega, normalImpulse, mu){
+  const slip = v - omega * BALL_RADIUS;
+  if(Math.abs(slip) < 1e-9) return {v2:v, omega2:omega, regime:'rolling'};
+  const omega2Roll = (BALL_MASS * v * BALL_RADIUS + BALL_INERTIA * omega) / (BALL_MASS * BALL_RADIUS * BALL_RADIUS + BALL_INERTIA);
+  const v2Roll = omega2Roll * BALL_RADIUS;
+  const jNeededForRoll = BALL_MASS * (v2Roll - v);
+  const jAvailable = mu * normalImpulse;
+  if(Math.abs(jNeededForRoll) <= jAvailable) return {v2:v2Roll, omega2:omega2Roll, regime:'rolling'};
+  const jFriction = -Math.sign(slip) * jAvailable;
+  const v2 = v + jFriction / BALL_MASS;
+  const omega2 = omega - jFriction / (BALL_INERTIA / BALL_RADIUS);
+  return {v2, omega2, regime:'sliding'};
+}
+function bounceWithSpinPhysical(vel, spin, mu){
+  const epsilon = dynamicEpsilon(vel, spin);
+  const normalImpulse = BALL_MASS * (1 + epsilon) * Math.abs(vel.y);
+  const vyAfter = -epsilon * vel.y;
+  const zResult = bounceTangentialAxis(vel.z, spin.topspin || 0, normalImpulse, mu);
+  const xResult = bounceTangentialAxis(vel.x, -(spin.sidespin || 0), normalImpulse, mu);
+  return {
+    vel:{x:xResult.v2, y:vyAfter, z:zResult.v2},
+    spin:{topspin:zResult.omega2, sidespin:-xResult.omega2}
+  };
 }
 
 function solveBaseVelocity(state){
@@ -939,8 +974,7 @@ function simulate(state, variant){
 }
 function simulateWithBaseVelocity(state, baseVel, variant){
   const velocity = addVec(baseVel, variant || {x:0,y:0,z:0});
-  const spin = state.variation.spin;
-  const bounce = state.variation.bounce;
+  let spin = {topspin:state.variation.spin.topspin || 0, sidespin:state.variation.spin.sidespin || 0};
   const gravity = state.solve.gravity;
   const pos = cloneVec(state.start);
   const vel = cloneVec(velocity);
@@ -983,7 +1017,9 @@ function simulateWithBaseVelocity(state, baseVel, variant){
           points.push(bouncePoint);
           break;
         }
-        applyBounceSpin(vel, spin, bounce);
+        const bounced = bounceWithSpinPhysical(vel, spin, CONTACT_FRICTION_MU);
+        vel.x = bounced.vel.x; vel.y = bounced.vel.y; vel.z = bounced.vel.z;
+        spin = bounced.spin;
       }
     }
     if(pos.y <= BALL_RADIUS && prev.y > BALL_RADIUS){
@@ -1068,6 +1104,7 @@ const markers = scenes.map(scene=>{
   const start = new THREE.Mesh(new THREE.SphereGeometry(0.035,16,16), new THREE.MeshBasicMaterial({color:0x58a6ff}));
   const first = new THREE.Mesh(new THREE.SphereGeometry(0.035,16,16), new THREE.MeshBasicMaterial({color:0xd29922}));
   const target = new THREE.Mesh(new THREE.SphereGeometry(0.035,16,16), new THREE.MeshBasicMaterial({color:0x3fb950}));
+  start.userData.dragPoint = 'start';
   first.userData.dragPoint = 'first';
   target.userData.dragPoint = 'target';
   scene.add(start, first, target);
@@ -1133,16 +1170,42 @@ function nearestDragPoint(event, canvasIndex){
   const canvas = canvases[canvasIndex];
   eventToNdc(event, canvas);
   raycaster.setFromCamera(pointer, cameras[canvasIndex]);
-  const hits = raycaster.intersectObjects([markers[canvasIndex].first, markers[canvasIndex].target], false);
+  const hits = raycaster.intersectObjects([markers[canvasIndex].start, markers[canvasIndex].first, markers[canvasIndex].target], false);
   if(hits[0]?.object?.userData?.dragPoint) return hits[0].object.userData.dragPoint;
   const point = pointFromCanvas(event, canvasIndex);
   if(!point) return null;
-  const firstDistance = Math.hypot(point.x - num('firstX'), point.z - num('firstZ'));
-  const targetDistance = Math.hypot(point.x - num('targetX'), point.z - num('targetZ'));
-  const nearest = firstDistance <= targetDistance ? 'first' : 'target';
-  return Math.min(firstDistance, targetDistance) <= 0.22 ? nearest : null;
+  const distances = {
+    start: Math.hypot(point.x - num('startX'), point.z - num('startZ')),
+    first: Math.hypot(point.x - num('firstX'), point.z - num('firstZ')),
+    target: Math.hypot(point.x - num('targetX'), point.z - num('targetZ'))
+  };
+  const nearest = Object.entries(distances).sort((a,b)=>a[1]-b[1])[0];
+  return nearest[1] <= 0.22 ? nearest[0] : null;
+}
+// 起點（start）在資料模型裡不是獨立座標，是由「底線外距離／左右偏移／發球高度」
+// 三個參數（見 computeServeStart()）推導出來的，拖動起點等於反推這三個參數。
+function applyStartDrag(x, z){
+  const firstBounce = {x:num('firstX'), z:num('firstZ')};
+  const target = {x:num('targetX'), z:num('targetZ')};
+  const baselineOffset = Math.max(0, -z - TABLE.length / 2);
+  const dx = target.x - firstBounce.x;
+  const dz = target.z - firstBounce.z;
+  const length = Math.hypot(dx, dz) || 1;
+  const perpX = -dz / length;
+  const startZ = -TABLE.length / 2 - baselineOffset;
+  const t = Math.abs(dz) < 0.001 ? 0 : (startZ - firstBounce.z) / dz;
+  const lineX = firstBounce.x + dx * t;
+  const lateralOffset = Math.abs(perpX) > 0.001 ? (x - lineX) / perpX : 0;
+  setValue('baselineOffset', baselineOffset.toFixed(2));
+  setValue('lateralOffset', lateralOffset.toFixed(2));
 }
 function applyDragPoint(pointName, point){
+  if(pointName === 'start'){
+    // 起點通常在球桌後方（超出底線），不夾在球桌範圍內。
+    applyStartDrag(point.x, point.z);
+    updateStudio();
+    return;
+  }
   const x = Math.max(-TABLE.width / 2, Math.min(TABLE.width / 2, point.x));
   const z = Math.max(-TABLE.length / 2, Math.min(TABLE.length / 2, point.z));
   if(pointName === 'first'){
@@ -1754,12 +1817,103 @@ async function fetchRepoPresets(){
   }
 }
 
+// ── 同步給 Claude：把調好的球直接存進本機一個「待處理」JSON 檔 ──────────────
+// 使用 File System Access API（Chrome/Edge），第一次存檔會跳出選檔案視窗，
+// 之後同一頁面內都直接寫入同一個檔案（累積成一個陣列，同一顆球重複存會覆蓋
+// 舊的那筆，不會一直疊加）。不支援的瀏覽器（Firefox/Safari）改用複製備援。
+let pendingFileHandle = null;
+const PENDING_FALLBACK_KEY = 'tt-physics-studio-pending-fallback-v1';
+async function ensurePendingFileHandle(){
+  if(pendingFileHandle) return pendingFileHandle;
+  if(!window.showSaveFilePicker) return null;
+  try{
+    pendingFileHandle = await window.showSaveFilePicker({
+      suggestedName: 'pending-serve-changes.json',
+      types: [{description:'JSON', accept:{'application/json':['.json']}}]
+    });
+    return pendingFileHandle;
+  }catch(err){
+    return null; // 使用者取消選檔案
+  }
+}
+async function readPendingList(handle){
+  try{
+    const file = await handle.getFile();
+    const text = await file.text();
+    const parsed = text ? JSON.parse(text) : [];
+    return Array.isArray(parsed) ? parsed : [];
+  }catch(err){
+    return [];
+  }
+}
+function buildPendingEntry(){
+  const state = readState();
+  const id = currentPresetId || normalizePresetId(state.label);
+  return {id, label: state.label, savedAt: new Date().toISOString(), preset: state};
+}
+function upsertPendingEntry(list, entry){
+  const idx = list.findIndex(e=>e.id === entry.id);
+  if(idx >= 0) list[idx] = entry; else list.push(entry);
+  return list;
+}
+async function saveToPendingFile(){
+  const entry = buildPendingEntry();
+  if(!window.showSaveFilePicker){
+    // 備援：存進 localStorage，累積起來讓使用者用複製功能貼給我。
+    const list = upsertPendingEntry(loadPendingFallback(), entry);
+    localStorage.setItem(PENDING_FALLBACK_KEY, JSON.stringify(list));
+    renderPendingFallback();
+    showToast(`瀏覽器不支援直接存檔，已改存到備援清單：${entry.label}`, 'warn');
+    return;
+  }
+  const handle = await ensurePendingFileHandle();
+  if(!handle){ showToast('沒有選擇檔案，取消儲存', 'warn'); return; }
+  const list = upsertPendingEntry(await readPendingList(handle), entry);
+  const writable = await handle.createWritable();
+  await writable.write(JSON.stringify(list, null, 2));
+  await writable.close();
+  showToast(`已存到待處理檔案：${entry.label}（共 ${list.length} 顆）`);
+}
+function loadPendingFallback(){
+  try{ return JSON.parse(localStorage.getItem(PENDING_FALLBACK_KEY) || '[]'); }
+  catch(err){ return []; }
+}
+function renderPendingFallback(){
+  const list = loadPendingFallback();
+  document.getElementById('pendingFallbackText').value = list.length
+    ? JSON.stringify(list, null, 2)
+    : '（目前沒有備援清單，先按「儲存這顆到待處理檔案」）';
+}
+async function copyPendingFallback(){
+  renderPendingFallback();
+  const text = document.getElementById('pendingFallbackText').value;
+  try{ await navigator.clipboard.writeText(text); }
+  catch(err){
+    const area = document.getElementById('pendingFallbackText');
+    area.select();
+    document.execCommand('copy');
+  }
+  showToast('已複製待處理內容');
+}
+document.getElementById('saveToPendingFileBtn').addEventListener('click', saveToPendingFile);
+document.getElementById('copyPendingFallbackBtn').addEventListener('click', copyPendingFallback);
+
 ids.forEach(id=>{
   const el = document.getElementById(id);
   if(el) el.addEventListener('input', ()=>{
     renderEditStatus();
     updateStudio();
   });
+});
+// 發球高度滑桿跟數字輸入框雙向同步，兩邊都能即時觸發重新模擬。
+const startYSlider = document.getElementById('startYSlider');
+startYSlider.addEventListener('input', ()=>{
+  setValue('startY', startYSlider.value);
+  renderEditStatus();
+  updateStudio();
+});
+document.getElementById('startY').addEventListener('input', event=>{
+  startYSlider.value = event.target.value;
 });
 document.getElementById('spinUnit').addEventListener('change', handleSpinUnitChange);
 document.getElementById('spinTemplateSelect').addEventListener('change', updateSpinTemplateStatus);
