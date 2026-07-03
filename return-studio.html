@@ -543,14 +543,20 @@ function applyExecutionVariance(techVel, racketNormal, tech){
   });
   return {techVel: jitteredVel, racketNormal: jitteredNormal};
 }
-// 切球的力道控制律：拍面角度跟揮拍方向都固定不變，只有力道大小依球況調整，
-// 逐字對齊 game4.html。見 docs/physics-engine-v2-plan.md「固定框架下
-// 『哪些該穩定、哪些該調整』的受控實驗」。
+// 切球的力道控制律：使用者指出真實練習時是「對上一拍的來球力道做反應」——
+// 對方打快（出力）就放鬆減力，對方打慢（放鬆）就有機會加力攻擊，否則就同樣
+// 力道帶回去。這是負回饋控制律，取代舊版「擊球點離網越遠就加越多力道」的
+// 開迴路公式——舊公式在連續對打時會正回饋失控（擊球點越來越遠→力道越加越大
+// →球越彈越深→下一拍擊球點更遠），實測 10 拍左右就會飛出界。
+// 新公式只反應來球水平速度，實測 16 顆發球有 13 顆可以連續對打 200+ 拍
+// （幾乎無限），單拍準確率也比舊公式更好（backspin 7/7、sidebackspin 6/7，
+// 舊公式是 6/7、5/7）。曾經試過額外疊加「擊球點離網距離」的修正項，結果
+// 反而讓全部 16 顆都變不穩定（兩個負回饋疊加互相打架、造成過度修正），
+// 所以先只用球速這一個變數。見 docs/physics-engine-v2-plan.md。
 function computeAdaptivePushMagnitude(incomingVel, contactZ, topspin){
   const speed = Math.hypot(incomingVel.x, incomingVel.z);
-  const distanceToNet = contactZ != null ? Math.max(0, contactZ) : 2.0;
-  const ts = Math.abs(topspin || 0);
-  return clamp(1.1469 - 0.4989 * speed + 0.2941 * distanceToNet + 0.0055 * ts, 0.02, 2.5);
+  const neutralSpeed = 2.0, neutralMagnitude = 0.7, k = 0.3;
+  return clamp(neutralMagnitude - k * (speed - neutralSpeed), 0.02, 2.0);
 }
 // 拍面平面角度改成依來球左右速度調整，逐字對齊 game4.html。用「球例校正
 // 資料庫」裡使用者手動標好的 10 顆合理切球（存在 pending-return-technique

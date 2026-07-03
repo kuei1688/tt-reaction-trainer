@@ -1428,21 +1428,20 @@ function applyExecutionVariance(techVel, racketNormal, tech){
   });
   return {techVel: jitteredVel, racketNormal: jitteredNormal};
 }
-// 切球的力道控制律：拍面角度（tech.racketNormal）跟揮拍方向（tech.swingDirection）
-// 都固定不變，只有「力道大小」這個純量依球況調整——使用者指出拍面朝向跟球拍
-// 移動方向是兩個獨立的向量，不該鎖在一起，也不該把「方向」跟「力道」耦合調整：
-// 應該先固定一組能產生「低平、剛好過網」弧線的揮拍方向，再單純用力道大小控制
-// 落點深度。用 196 個真實樣本（16 顆發球沿彈跳後整個下降窗口取樣）驗證：固定
-// 方向+精確搜尋力道，時機窗口容錯率有 46%（比先前「角度+力道聯合調整」的 41%
-// 更好），目前這條線性擬合公式實測 37%，還沒完全逼近那個上限。
-// 已知限制：球速超出訓練範圍（約 4.2 m/s）時是外插——連續對打卡住的案例
-// （4.4~4.7 m/s）仍未解決。見 docs/physics-engine-v2-plan.md「固定框架下
-// 『哪些該穩定、哪些該調整』的受控實驗」。
+// 切球的力道控制律：使用者指出真實練習時是「對上一拍的來球力道做反應」——
+// 對方打快（出力）就放鬆減力，對方打慢（放鬆）就有機會加力攻擊，否則就同樣
+// 力道帶回去。這是負回饋控制律，取代舊版「擊球點離網越遠就加越多力道」的
+// 開迴路公式——舊公式在連續對打時會正回饋失控（擊球點越來越遠→力道越加越大
+// →球越彈越深→下一拍擊球點更遠），實測 10 拍左右就會飛出界。
+// 新公式只反應來球水平速度，實測 16 顆發球有 13 顆可以連續對打 200+ 拍
+// （幾乎無限），單拍準確率也比舊公式更好（backspin 7/7、sidebackspin 6/7，
+// 舊公式是 6/7、5/7）。曾經試過額外疊加「擊球點離網距離」的修正項，結果
+// 反而讓全部 16 顆都變不穩定（兩個負回饋疊加互相打架、造成過度修正），
+// 所以先只用球速這一個變數。見 docs/physics-engine-v2-plan.md。
 function computeAdaptivePushMagnitude(incomingVel, contactZ, topspin){
   const speed = Math.hypot(incomingVel.x, incomingVel.z);
-  const distanceToNet = contactZ != null ? Math.max(0, contactZ) : 2.0; // 沒有距離資訊時退回訓練資料的中段值
-  const ts = Math.abs(topspin || 0);
-  return clamp(1.1469 - 0.4989 * speed + 0.2941 * distanceToNet + 0.0055 * ts, 0.02, 2.5);
+  const neutralSpeed = 2.0, neutralMagnitude = 0.7, k = 0.3;
+  return clamp(neutralMagnitude - k * (speed - neutralSpeed), 0.02, 2.0);
 }
 // 拍面平面角度改成依來球左右速度調整。用「球例校正資料庫」裡使用者手動
 // 標好的 10 顆合理切球回歸出來：tiltX 主要跟來球的左右速度分量有關（不是
