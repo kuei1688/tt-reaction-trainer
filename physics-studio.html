@@ -663,10 +663,18 @@ function applyBounceSpin(vel, spin, bounce){
     ? {x:incomingX / speed, z:incomingZ / speed}
     : {x:0, z:1};
   const side = {x:-forward.z, z:forward.x};
-  const topspinRps = radToRps(spin.topspin || 0);
-  const sidespinRps = radToRps(spin.sidespin || 0);
-  let forwardSpeed = speed * BOUNCE_PHYSICS.horizontalRestitution + topspinRps * BOUNCE_PHYSICS.topspinKick;
-  const sideSpeed = clamp(sidespinRps * BOUNCE_PHYSICS.sidespinKick, -speed * 0.75, speed * 0.75);
+  // topspinKick/sidespinKick 這組係數，是在專案還沒換算成真實 rad/s 之前，
+  // 針對舊版「隨手調」的旋轉數字（範圍大約 -1.23~1）校準的——不是 rps，也不是
+  // rad/s。用 git 歷史比對過（781dda8^ 版本 backspin_long_backhand 的
+  // topspin 是 -0.8，現在真實 rad/s 版本是 -125.66），兩者只是「量級都在 1
+  // 附近」，不是同一個物理量，換算成 rps（除以 2π≈6.28，得到約 -20）還是差了
+  // 20 倍，會讓 forwardSpeed 整個變號、球彈回去，這正是使用者回報的「每顆球
+  // 都無法發球成功」。改成除以 LEGACY_BOUNCE_SPIN_SCALE，量級對回舊版校準基準。
+  const LEGACY_BOUNCE_SPIN_SCALE = 125.66;
+  const topspinLegacy = (spin.topspin || 0) / LEGACY_BOUNCE_SPIN_SCALE;
+  const sidespinLegacy = (spin.sidespin || 0) / LEGACY_BOUNCE_SPIN_SCALE;
+  let forwardSpeed = speed * BOUNCE_PHYSICS.horizontalRestitution + topspinLegacy * BOUNCE_PHYSICS.topspinKick;
+  const sideSpeed = clamp(sidespinLegacy * BOUNCE_PHYSICS.sidespinKick, -speed * 0.75, speed * 0.75);
   forwardSpeed = clamp(forwardSpeed, -speed * 0.55, speed * 1.35);
   vel.x = forward.x * forwardSpeed + side.x * sideSpeed;
   vel.z = forward.z * forwardSpeed + side.z * sideSpeed;
