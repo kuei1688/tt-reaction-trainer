@@ -1550,19 +1550,6 @@ function renderEditStatus(){
     </div>
   `;
 }
-function getSavedPresetMap(){
-  return new Map(loadPresets().map(p=>[p.id, p]));
-}
-function getRepoPresetMap(){
-  return new Map(repoPresets.map(p=>[p.id, p]));
-}
-function getPresetById(id){
-  if(!id) return null;
-  const saved = getSavedPresetMap().get(id);
-  if(saved) return cloneJson(saved);
-  const repo = getRepoPresetMap().get(id);
-  return repo ? cloneJson(repo) : null;
-}
 function renderIssueQueue(){
   const box = document.getElementById('issueQueue');
   if(!box) return;
