@@ -359,6 +359,7 @@ const MAX_TABLE_BOUNCES = 8;
 const BALL_MASS = 0.0027;
 const BALL_INERTIA_ALPHA = 2 / 3;
 const BALL_INERTIA = BALL_INERTIA_ALPHA * BALL_MASS * BALL_RADIUS * BALL_RADIUS;
+const NET_COLLISION = {depth:0.012, zRestitution:0.16, xDamping:0.55, yDamping:0.35};
 const EPSILON_VERTICAL = 0.876;
 const EPSILON_OBLIQUE = 0.57;
 const EPSILON_MIN = 0.45;
@@ -972,6 +973,12 @@ function simulate(state, variant){
   const baseVel = solveBaseVelocity(state);
   return simulateWithBaseVelocity(state, baseVel, variant || {x:0,y:0,z:0});
 }
+// 逐字對齊 return-studio.html/game4.html 的 simulatePath()：包含真實的
+// 網子碰撞反應（不只是記錄過網高度），跟固定 520 步的上限。之前這裡是一份
+// 獨立、簡化的模擬迴圈（沒有網子碰撞、只跑 360 步），跟正式引擎在邊界案例
+// （球剛好貼著網高飛過）會算出不同的軌跡，導致攝影棚 solver 找到的解在
+// 攝影棚裡看起來過網成功，換到 game4.html 卻過不了網。整個換成一致的實作，
+// 徹底消除這個落差，不要再各自維護一份「差不多」的模擬迴圈。
 function simulateWithBaseVelocity(state, baseVel, variant){
   const velocity = addVec(baseVel, variant || {x:0,y:0,z:0});
   let spin = {topspin:state.variation.spin.topspin || 0, sidespin:state.variation.spin.sidespin || 0};
@@ -981,20 +988,32 @@ function simulateWithBaseVelocity(state, baseVel, variant){
   const points = [];
   const bounces = [];
   let netY = null;
+  let netHit = null;
   let firstLanding = null;
   let groundLanding = null;
   let crossedNet = false;
-  for(let i=0;i<360;i++){
-    const dt = 1/120;
-    const t = (i + 1) * dt;
+  const DT_SIM = 1 / 120;
+  for(let i=0;i<520;i++){
+    const t = (i + 1) * DT_SIM;
     const prev = cloneVec(pos);
-    vel.y += gravity * dt;
-    pos.x += vel.x * dt;
-    pos.y += vel.y * dt;
-    pos.z += vel.z * dt;
-    if(!crossedNet && prev.z < 0 && pos.z >= 0){
+    vel.y += gravity * DT_SIM;
+    pos.x += vel.x * DT_SIM;
+    pos.y += vel.y * DT_SIM;
+    pos.z += vel.z * DT_SIM;
+    if(!crossedNet && ((prev.z < 0 && pos.z >= 0) || (prev.z > 0 && pos.z <= 0))){
       const ratio = (0 - prev.z) / (pos.z - prev.z || 1);
       netY = prev.y + (pos.y - prev.y) * ratio;
+      const netTop = TABLE.height + TABLE.net;
+      if(netY < netTop){
+        const incomingZ = Math.sign(vel.z) || Math.sign(pos.z - prev.z) || 1;
+        const impact = {x:prev.x + (pos.x - prev.x) * ratio, y:netY, z:0, t: t - DT_SIM + DT_SIM * ratio};
+        netHit = impact;
+        pos.x = impact.x; pos.y = impact.y; pos.z = -incomingZ * NET_COLLISION.depth;
+        points.push({...impact});
+        vel.x *= NET_COLLISION.xDamping;
+        vel.y *= NET_COLLISION.yDamping;
+        vel.z = -vel.z * NET_COLLISION.zRestitution;
+      }
       crossedNet = true;
     }
     const crossedTableTop = prev.y >= TABLE.top && pos.y <= TABLE.top;
@@ -1010,11 +1029,11 @@ function simulateWithBaseVelocity(state, baseVel, variant){
         pos.x = impact.x;
         pos.y = impact.y;
         pos.z = impact.z;
-        const bouncePoint = {...cloneVec(pos), t: t - dt + dt * ratio};
+        const bouncePoint = {...cloneVec(pos), t: t - DT_SIM + DT_SIM * ratio};
         if(!firstLanding) firstLanding = bouncePoint;
         bounces.push(bouncePoint);
+        points.push(cloneVec(pos));
         if(bounces.length > MAX_TABLE_BOUNCES){
-          points.push(bouncePoint);
           break;
         }
         const bounced = bounceWithSpinPhysical(vel, spin, CONTACT_FRICTION_MU);
@@ -1028,7 +1047,7 @@ function simulateWithBaseVelocity(state, baseVel, variant){
         x: prev.x + (pos.x - prev.x) * ratio,
         y: BALL_RADIUS,
         z: prev.z + (pos.z - prev.z) * ratio,
-        t: t - dt + dt * ratio
+        t: t - DT_SIM + DT_SIM * ratio
       };
       points.push(groundLanding);
       break;
@@ -1036,7 +1055,7 @@ function simulateWithBaseVelocity(state, baseVel, variant){
     points.push(cloneVec(pos));
     if(Math.abs(pos.x) > 3 || Math.abs(pos.z) > 4) break;
   }
-  return {points, baseVel, velocity, netY, firstLanding, groundLanding, bounces};
+  return {points, baseVel, velocity, netY, netHit, firstLanding, groundLanding, bounces};
 }
 
 function buildScene(){

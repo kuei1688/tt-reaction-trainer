@@ -18,11 +18,11 @@
       },
       "start": {
         "x": 0.7917622950819673,
-        "y": 1.33,
+        "y": 0.91,
         "z": -1.52
       },
       "serveLine": {
-        "height": 1.33,
+        "height": 0.91,
         "baselineOffset": 0.15,
         "lateralOffset": 0
       },
@@ -43,7 +43,6 @@
       },
       "solve": {
         "targetMode": "serve_bounces",
-        "timeToFirst": 0.74,
         "flightTime": 0.74,
         "secondLegTime": 0.74,
         "netClearance": 0.03,
@@ -56,7 +55,7 @@
           "z": 0
         },
         "spin": {
-          "topspin": -125.66,
+          "topspin": -125.66370614359172,
           "sidespin": 0
         },
         "bounce": 0.88
@@ -717,8 +716,7 @@
         "flightTime": 0.74,
         "secondLegTime": 0.74,
         "netClearance": 0.03,
-        "gravity": -4.2,
-        "timeToFirst": 0.74
+        "gravity": -4.2
       },
       "variation": {
         "velocity": {
@@ -727,7 +725,7 @@
           "z": 0
         },
         "spin": {
-          "topspin": -125.66,
+          "topspin": -125.66370614359172,
           "sidespin": 0
         },
         "bounce": 0.88
