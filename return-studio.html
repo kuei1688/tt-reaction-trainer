@@ -233,7 +233,9 @@ table.check th{color:var(--muted);font-weight:800}
 
     <div class="section">
       <h2>球例校正資料庫</h2>
+      <div class="hint" style="margin-bottom:6px">每標好一顆球的合理切球參數，記得先按上面「保存這顆球的調整」，全部標完後按「儲存全部校正到待處理檔案」，會直接寫進本機一個 pending-return-technique-changes.json，不用再手動複製貼上。</div>
       <div class="actions">
+        <button id="saveReviewBatchToPendingFileBtn" type="button">儲存全部校正到待處理檔案</button>
         <button id="copyReviewBatchBtn" type="button" class="secondary">複製全部校正</button>
         <button id="copyDiffSummaryBtn" type="button" class="secondary">複製差異摘要</button>
       </div>
@@ -1637,8 +1639,8 @@ async function copyCurrentReview(){
   }
   showToast('已複製這顆球的比較');
 }
-async function copyReviewBatch(){
-  const payload = Object.values(reviewEntries).filter(entry=>entry.adjusted).map(entry=>({
+function buildReviewBatchPayload(){
+  return Object.values(reviewEntries).filter(entry=>entry.adjusted).map(entry=>({
     key: entry.key,
     serveId: entry.serveId,
     serveLabel: entry.serveLabel,
@@ -1650,6 +1652,9 @@ async function copyReviewBatch(){
     adjusted: entry.adjusted,
     diff: diffTechniqueFields(entry.original?.technique, entry.adjusted?.technique)
   }));
+}
+async function copyReviewBatch(){
+  const payload = buildReviewBatchPayload();
   const text = JSON.stringify({type:'returnStudioReviewBatch', count:payload.length, reviews:payload}, null, 2);
   try{ await navigator.clipboard.writeText(text); }
   catch(err){
@@ -1659,6 +1664,45 @@ async function copyReviewBatch(){
     document.execCommand('copy');
   }
   showToast(`已複製全部校正 ${payload.length} 筆`);
+}
+// ── 同步給 Claude：把「球例校正資料庫」整批直接存進本機一個待處理檔案 ────────
+// 跟 physics-studio.html 的「儲存這顆到待處理檔案」同一套模式（File System
+// Access API，Chrome/Edge），每次按下去都是把目前累積的全部校正完整覆蓋寫入，
+// 不用再手動複製貼上。不支援的瀏覽器改用 localStorage 備援 + 複製功能。
+let reviewPendingFileHandle = null;
+const REVIEW_PENDING_FALLBACK_KEY = 'tt-return-studio-review-pending-fallback-v1';
+async function ensureReviewPendingFileHandle(){
+  if(reviewPendingFileHandle) return reviewPendingFileHandle;
+  if(!window.showSaveFilePicker) return null;
+  try{
+    reviewPendingFileHandle = await window.showSaveFilePicker({
+      suggestedName: 'pending-return-technique-changes.json',
+      types: [{description:'JSON', accept:{'application/json':['.json']}}]
+    });
+    return reviewPendingFileHandle;
+  }catch(err){
+    return null; // 使用者取消選檔案
+  }
+}
+async function saveReviewBatchToPendingFile(){
+  const payload = buildReviewBatchPayload();
+  if(!payload.length){
+    showToast('目前還沒有已保存的校正，先標幾顆球再存', 'warn');
+    return;
+  }
+  const content = {type:'returnStudioReviewBatch', count:payload.length, savedAt:new Date().toISOString(), reviews:payload};
+  if(!window.showSaveFilePicker){
+    localStorage.setItem(REVIEW_PENDING_FALLBACK_KEY, JSON.stringify(content, null, 2));
+    document.getElementById('diffSummaryText').value = JSON.stringify(content, null, 2);
+    showToast(`瀏覽器不支援直接存檔，已改存到備援清單（共 ${payload.length} 筆）`, 'warn');
+    return;
+  }
+  const handle = await ensureReviewPendingFileHandle();
+  if(!handle){ showToast('沒有選擇檔案，取消儲存', 'warn'); return; }
+  const writable = await handle.createWritable();
+  await writable.write(JSON.stringify(content, null, 2));
+  await writable.close();
+  showToast(`已存到待處理檔案（共 ${payload.length} 筆）`);
 }
 async function copyDiffSummary(){
   updateDiffSummary();
@@ -1718,6 +1762,7 @@ document.getElementById('copyBtn').addEventListener('click', copyExport);
 document.getElementById('copyStateBtn').addEventListener('click', copyState);
 document.getElementById('copyReviewBtn').addEventListener('click', copyCurrentReview);
 document.getElementById('copyReviewBatchBtn').addEventListener('click', copyReviewBatch);
+document.getElementById('saveReviewBatchToPendingFileBtn').addEventListener('click', saveReviewBatchToPendingFile);
 document.getElementById('copyDiffSummaryBtn').addEventListener('click', copyDiffSummary);
 document.getElementById('reviewQueue').addEventListener('click', event=>{
   const button = event.target.closest('[data-review-action]');
