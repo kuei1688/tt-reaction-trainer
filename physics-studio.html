@@ -1734,6 +1734,13 @@ async function fetchRepoPresets(){
     renderRepoPresetOptions();
     renderIssueQueue();
     renderEditStatus();
+    // 開頁預設畫面（HTML 裡寫死的 value）不對應任何一顆真正的 preset，
+    // 名稱欄位跟數值欄位甚至是兩次不同編輯留下的殘影，兜不起來，
+    // 使用者反應「所有參數都亂掉」就是這個。載入 repo 資料後自動選取
+    // 第一顆，確保畫面一開始就是跟某一顆真實 preset 完全對得上的狀態。
+    if(!currentPresetId && repoPresets.length){
+      loadPresetForEditing(repoPresets[0].id, 'repo');
+    }
   }catch(err){
     showToast(`讀取 physics-presets.json 失敗: ${err.message}`, 'warn');
   }
