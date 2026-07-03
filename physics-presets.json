@@ -78,7 +78,7 @@
         "placement": "反手"
       },
       "start": {
-        "x": 0.6257894736842105,
+        "x": 0.4443421052631579,
         "y": 0.9,
         "z": -1.52
       },
@@ -88,9 +88,9 @@
         "lateralOffset": 0
       },
       "firstBounce": {
-        "x": 0.25,
+        "x": 0.11,
         "y": 0.78,
-        "z": -0.5
+        "z": -0.31
       },
       "secondBounce": {
         "x": -0.1,
@@ -104,11 +104,11 @@
       },
       "solve": {
         "targetMode": "serve_bounces",
-        "timeToFirst": 0.74,
         "flightTime": 0.74,
         "secondLegTime": 0.74,
         "netClearance": 0.03,
-        "gravity": -4.2
+        "gravity": -4.2,
+        "timeToFirst": 0.74
       },
       "variation": {
         "velocity": {
@@ -117,7 +117,7 @@
           "z": 0
         },
         "spin": {
-          "topspin": -125.66,
+          "topspin": -1.5,
           "sidespin": 0
         },
         "bounce": 0.88
@@ -139,12 +139,12 @@
         "placement": "正手"
       },
       "start": {
-        "x": 0.3184375,
-        "y": 0.93,
+        "x": 0.3176818181818182,
+        "y": 0.88,
         "z": -1.52
       },
       "serveLine": {
-        "height": 0.93,
+        "height": 0.88,
         "baselineOffset": 0.15,
         "lateralOffset": 0
       },
@@ -156,20 +156,20 @@
       "secondBounce": {
         "x": 0.55,
         "y": 0.78,
-        "z": 1.21
+        "z": 1.17
       },
       "target": {
         "x": 0.55,
         "y": 0.78,
-        "z": 1.21
+        "z": 1.17
       },
       "solve": {
         "targetMode": "serve_bounces",
-        "timeToFirst": 0.74,
         "flightTime": 0.74,
         "secondLegTime": 0.74,
         "netClearance": 0.3,
-        "gravity": -4.2
+        "gravity": -4.2,
+        "timeToFirst": 0.74
       },
       "variation": {
         "velocity": {
@@ -178,8 +178,8 @@
           "z": 0
         },
         "spin": {
-          "topspin": -125.66,
-          "sidespin": -125.66
+          "topspin": -5,
+          "sidespin": -0.8
         },
         "bounce": 0.88
       }
@@ -239,8 +239,8 @@
           "z": 0
         },
         "spin": {
-          "topspin": -125.66,
-          "sidespin": -125.66
+          "topspin": -1.8,
+          "sidespin": -1.5
         },
         "bounce": 0.88
       }
@@ -261,7 +261,7 @@
         "placement": "反手"
       },
       "start": {
-        "x": 0.613921568627451,
+        "x": 0.6489510489510488,
         "y": 0.95,
         "z": -1.52
       },
@@ -276,14 +276,14 @@
         "z": -0.93
       },
       "secondBounce": {
-        "x": -0.27,
+        "x": -0.58,
         "y": 0.78,
-        "z": 0.09
+        "z": 0.5
       },
       "target": {
-        "x": -0.27,
+        "x": -0.58,
         "y": 0.78,
-        "z": 0.09
+        "z": 0.5
       },
       "solve": {
         "targetMode": "serve_bounces",
@@ -300,8 +300,8 @@
           "z": 0
         },
         "spin": {
-          "topspin": -125.66,
-          "sidespin": -125.66
+          "topspin": -2.5,
+          "sidespin": -1.5
         },
         "bounce": 0.88
       }
@@ -322,7 +322,7 @@
         "placement": "反手"
       },
       "start": {
-        "x": 0.5197894736842106,
+        "x": 0.5725789473684211,
         "y": 0.95,
         "z": -1.52
       },
@@ -337,12 +337,12 @@
         "z": -0.93
       },
       "secondBounce": {
-        "x": -0.45,
+        "x": -0.62,
         "y": 0.78,
         "z": 0.97
       },
       "target": {
-        "x": -0.45,
+        "x": -0.62,
         "y": 0.78,
         "z": 0.97
       },
@@ -361,8 +361,8 @@
           "z": 0
         },
         "spin": {
-          "topspin": -125.66,
-          "sidespin": -125.66
+          "topspin": -2.5,
+          "sidespin": -2
         },
         "bounce": 0.88
       }
@@ -383,7 +383,7 @@
         "placement": "正手"
       },
       "start": {
-        "x": 0.24742268041237112,
+        "x": 0.3391666666666666,
         "y": 0.95,
         "z": -1.52
       },
@@ -398,14 +398,14 @@
         "z": -0.93
       },
       "secondBounce": {
-        "x": 0.43,
+        "x": 0.13,
         "y": 0.78,
-        "z": 1.01
+        "z": 0.99
       },
       "target": {
-        "x": 0.43,
+        "x": 0.13,
         "y": 0.78,
-        "z": 1.01
+        "z": 0.99
       },
       "solve": {
         "targetMode": "serve_bounces",
@@ -422,8 +422,8 @@
           "z": 0
         },
         "spin": {
-          "topspin": -125.66,
-          "sidespin": -125.66
+          "topspin": -3,
+          "sidespin": -2
         },
         "bounce": 0.88
       }
@@ -483,8 +483,8 @@
           "z": 0
         },
         "spin": {
-          "topspin": -125.66,
-          "sidespin": -125.66
+          "topspin": -3,
+          "sidespin": -2
         },
         "bounce": 0.88
       }
@@ -544,7 +544,7 @@
           "z": 0
         },
         "spin": {
-          "topspin": -125.66,
+          "topspin": -3,
           "sidespin": 0
         },
         "bounce": 0.88
@@ -605,7 +605,7 @@
           "z": 0
         },
         "spin": {
-          "topspin": -125.66,
+          "topspin": -3,
           "sidespin": 0
         },
         "bounce": 0.88
@@ -627,7 +627,7 @@
         "placement": "正手"
       },
       "start": {
-        "x": 0.04096774193548386,
+        "x": 0.17011111111111105,
         "y": 0.95,
         "z": -1.52
       },
@@ -637,9 +637,9 @@
         "lateralOffset": 0
       },
       "firstBounce": {
-        "x": 0.19,
+        "x": 0.29,
         "y": 0.78,
-        "z": -0.75
+        "z": -0.69
       },
       "secondBounce": {
         "x": 0.55,
@@ -666,7 +666,7 @@
           "z": 0
         },
         "spin": {
-          "topspin": -125.66,
+          "topspin": -1.5,
           "sidespin": 0
         },
         "bounce": 0.88
@@ -727,7 +727,7 @@
           "z": 0
         },
         "spin": {
-          "topspin": -125.66,
+          "topspin": -1,
           "sidespin": 0
         },
         "bounce": 0.88
@@ -788,7 +788,7 @@
           "z": 0
         },
         "spin": {
-          "topspin": -125.66,
+          "topspin": -1,
           "sidespin": 0
         },
         "bounce": 0.88
@@ -849,8 +849,8 @@
           "z": 0
         },
         "spin": {
-          "topspin": -125.66,
-          "sidespin": -150.8
+          "topspin": -1,
+          "sidespin": -1.5
         },
         "bounce": 0.88
       }
