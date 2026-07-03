@@ -484,6 +484,23 @@ RMSE≈0.104（跟修正前的舊公式 RMSE≈0.106 同一個量級）。已套
 
 ---
 
+### 拍面平面角度改為相對揮拍方向（使用者觀察到的架構問題）
+
+**使用者的觀察：** 拍面法向量（racketNormal）的垂直角度（開合幅度）是世界座標的絕對概念（因為「上下」有桌面/重力當固定參考），但平面角度（左右偏轉）其實應該是**相對於揮拍方向**的概念——現實中「開/合拍面」講的是相對於你揮拍路徑的偏轉，不是相對於球桌座標系的絕對偏轉。但舊實作把兩者都當成世界座標的絕對分量（`racketNormal:normalize({x, y, z:-1})`，x 是絕對世界左右偏移），這是錯的。
+
+**連帶發現的 bug：** 使用者實測回報「不管怎麼調參數都無法把球打回來球方向」。查出根因是 `makeRacketReturnVelocity()` 裡的 `solveRacketVelXForTargetOutX(..., 0)`——最後一個參數（目標出球 X 速度）寫死是 0，只要「停用側向自動瞄準修正」關閉（正式遊戲的預設行為），系統就會完全無視 `techniqueVel.x`/`swingDirection.x`/`racketNormal.x`，直接反算一個讓出球方向強制打直的球拍 X 速度。實測驗證：修正修正開啟時，不管 `techniqueVel.x` 設 0/0.4/0.8/-0.4，出球 X 速度永遠鎖在 ~0、落點 X 完全不變；關掉之後才會隨參數變化。**這不是這次的新 bug，是原本就存在的行為**，攝影棚的「停用側向自動瞄準修正」開關就是設計來測試方向用的。
+
+**修法（拍面角度重新參數化）：** `racketNormal` 不再是技術設定裡的靜態向量，改成兩個純量 + 動態計算：
+- `racketNormalTiltY`：垂直開合角度，世界座標絕對值，跟以前語意相同。
+- `racketNormalTiltX`：平面偏轉角度，改成**繞揮拍方向這個軸旋轉**的相對角度（Rodrigues 旋轉公式）。
+- 新函式 `computeRacketNormal(tiltY, tiltX, swingDirRef)`：先算出 `normalize({x:0, y:tiltY, z:-1})`（絕對垂直開合），再繞 `normalize(swingDirRef)` 這個軸轉 `tiltX` 弳度。`swingDirRef` 在切球自適應力道公式開啟時用 `tech.swingDirection`，其他情況（攻球、切球手動模式）用實際要打出去的球拍速度方向本身。
+- `tiltX = 0` 時直接回傳垂直開合結果、跳過旋轉，確保跟舊行為完全一致（不需要重新校準）——已驗證 16 顆發球單點測試維持 backspin 4/7、no_spin 2/2、sidebackspin 2/7，跟修正前一模一樣。
+- `game4.html`/`return-studio.html` 的 `TECHNIQUES`/`DEFAULT_TECHNIQUES` 都已改成 `racketNormalTiltY`/`racketNormalTiltX` 兩個欄位；攝影棚的 UI 讀寫、匯出程式碼片段也都同步改掉。
+
+**驗證：** 用真實 `input`/`change` DOM 事件（不是直接呼叫函式）測試：固定 `swingDirection.x=0.3`、開啟「停用側向自動瞄準修正」，`racketNormalTiltX` 從 -0.2 掃到 0.4，落點 X 從 -0.24 一路變到 -0.10，確認角度確實會影響方向，而且是相對揮拍方向轉動（不同的 `swingDirection` 對同一個 `tiltX` 會產生不同的絕對法向量，用直接呼叫 `computeRacketNormal()` 驗證過）。手機版面確認無元素溢出。
+
+---
+
 ### 攝影棚新增「快速同步」功能：一鍵複製目前發球+全部參數
 
 使用者希望能夠很快速地跟我討論發球+回擊參數，不用每次都用文字描述調了什麼。新增「複製目前完整狀態」按鈕（`return-studio.html` 專用，`game4.html` 不需要），按下後會把以下內容組成一段文字複製到剪貼簿：

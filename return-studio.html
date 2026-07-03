@@ -122,7 +122,7 @@ table.check th{color:var(--muted);font-weight:800}
 
     <div class="section">
       <h2>球拍角度＋揮拍方向（攻球/切球適用，拍面朝向跟球拍移動方向是兩個獨立向量）</h2>
-      <div class="hint" style="margin-bottom:6px">拍面法向量（racketNormal）：決定球被彈開的方向。垂直角度是拍面往上/下開合的幅度；平面角度是拍面往左/右偏轉的幅度（目前正常情況下應該是 0）。</div>
+      <div class="hint" style="margin-bottom:6px">拍面法向量：決定球被彈開的方向。垂直角度是世界座標的絕對開合幅度（跟揮拍方向無關）；平面角度是「相對於揮拍方向」旋轉的偏轉幅度（不是世界座標的絕對左右偏移），目前正常情況下應該是 0。</div>
       <div class="grid two">
         <div class="field"><label>拍面垂直角度（racketNormal Y）</label><input id="racketNormalY" type="number" step="0.02"></div>
         <div class="field"><label>拍面平面角度（racketNormal X）</label><input id="racketNormalX" type="number" step="0.02"></div>
@@ -230,14 +230,17 @@ const PADDLE_FRICTION = 0.4;        // 拍面切向摩擦係數，工程估計�
 const PADDLE_RESTITUTION = -0.9;    // 舊模型殘留常數，目前只有 loop（拉球）還在用，尚未套用球拍接觸力學
 
 // executionVariance：範圍解模式（RANGE_SOLUTION_MODE）用的動作抖動幅度，逐字對齊 game4.html。
+// racketNormalTiltY：拍面垂直開合角度，世界座標絕對值（跟揮拍方向無關）。
+// racketNormalTiltX：拍面平面偏轉角度，繞「揮拍方向」這個軸旋轉的相對角度
+// （見上方 computeRacketNormal()）——不是世界座標的絕對左右偏移。
 const DEFAULT_TECHNIQUES = {
-  forehand_attack: {label:'正手攻球', model:'attack', techniqueVel:{x:0, y:-0.234, z:-1}, racketNormal:normalize({x:0, y:0.1, z:-1}), bounceBoost:0, executionVariance:{vel:0.08, normal:0.024}},
-  backhand_attack: {label:'反手攻球', model:'attack', techniqueVel:{x:0, y:-0.234, z:-1}, racketNormal:normalize({x:0, y:0.1, z:-1}), bounceBoost:0, executionVariance:{vel:0.08, normal:0.024}},
-  // 切球：拍面角度（racketNormal）跟揮拍方向（swingDirection）固定不變、獨立於彼此，
+  forehand_attack: {label:'正手攻球', model:'attack', techniqueVel:{x:0, y:-0.234, z:-1}, racketNormalTiltY:0.1, racketNormalTiltX:0, bounceBoost:0, executionVariance:{vel:0.08, normal:0.024}},
+  backhand_attack: {label:'反手攻球', model:'attack', techniqueVel:{x:0, y:-0.234, z:-1}, racketNormalTiltY:0.1, racketNormalTiltX:0, bounceBoost:0, executionVariance:{vel:0.08, normal:0.024}},
+  // 切球：拍面角度（racketNormalTiltY/X）跟揮拍方向（swingDirection）固定不變、獨立於彼此，
   // 只有力道大小依球況調整（adaptivePush，見 computeAdaptivePushMagnitude()），
   // 逐字對齊 game4.html。見 docs/physics-engine-v2-plan.md Phase 6。
   push: {label:'切球', model:'push', techniqueVel:{x:0, y:0, z:-0.4},
-    racketNormal:normalize({x:0, y:0.5, z:-1}), swingDirection:normalize({x:0, y:0.3, z:-1}), bounceBoost:0,
+    racketNormalTiltY:0.5, racketNormalTiltX:0, swingDirection:normalize({x:0, y:0.3, z:-1}), bounceBoost:0,
     adaptivePush:true, executionVariance:{vel:0.12, normal:0.036}},
   loop: {label:'拉球', model:'direct', techniqueVel:{x:-0.6, y:1.0, z:-1.65}, spin:{topspin:0.9,sidespin:0}, bounceBoost:0.3}
 };
@@ -320,6 +323,24 @@ function crossVec3(a, b){
 function subVec3(a, b){ return {x:a.x-b.x, y:a.y-b.y, z:a.z-b.z}; }
 function scaleVec3(v, s){ return {x:v.x*s, y:v.y*s, z:v.z*s}; }
 function dotVec3(a, b){ return a.x*b.x + a.y*b.y + a.z*b.z; }
+// Rodrigues 旋轉公式：把向量 v 繞單位軸 axis 轉 angle 弳度。
+function rotateAroundAxis(v, axis, angle){
+  const cosA = Math.cos(angle), sinA = Math.sin(angle);
+  const crossTerm = crossVec3(axis, v);
+  const dotTerm = dotVec3(axis, v);
+  return addVec(addVec(scaleVec3(v, cosA), scaleVec3(crossTerm, sinA)), scaleVec3(axis, dotTerm * (1 - cosA)));
+}
+// 拍面法向量：垂直角度（tiltY）是世界座標的絕對開合角度（跟揮拍方向無關，
+// 因為「上下」有桌面/重力當固定參考）；平面角度（tiltX）改成繞「揮拍方向」
+// 這個軸旋轉的相對角度，而不是世界座標的絕對左右偏移——因為現實中「拍面
+// 左右偏轉」講的是相對於揮拍路徑的偏轉，不是相對於球桌座標系的偏轉。
+// 見 docs/physics-engine-v2-plan.md「拍面平面角度改為相對揮拍方向」。
+function computeRacketNormal(tiltY, tiltX, swingDirRef){
+  const verticalTilted = normalize({x:0, y:tiltY || 0, z:-1});
+  if(!tiltX) return verticalTilted;
+  const axis = normalize(swingDirRef);
+  return rotateAroundAxis(verticalTilted, axis, tiltX);
+}
 function bounceOffPlane(vel, spin, planeNormal, planeVel, restitution, friction){
   const omega = {x:(spin && spin.topspin) || 0, y:0, z:(spin && spin.sidespin) || 0};
   const relVel = subVec3(vel, planeVel);
@@ -439,12 +460,16 @@ function computeAdaptivePushMagnitude(incomingVel, contactZ, topspin){
 function makeRacketReturnVelocity(incomingVel, incomingSpin, tech, contactZ){
   const spin = incomingSpin || {topspin:0, sidespin:0};
   let baseTechVel = speedScaledTechniqueVel(incomingVel, tech);
-  let racketNormalBase = tech.racketNormal;
   if(tech.adaptivePush){
     const magnitude = computeAdaptivePushMagnitude(incomingVel, contactZ, spin.topspin);
     const dir = tech.swingDirection;
     baseTechVel = {x:0, y:dir.y*magnitude, z:dir.z*magnitude};
   }
+  // 平面角度是相對揮拍方向的旋轉，所以要先知道實際的揮拍方向參考向量：
+  // 切球自適應力道公式開啟時用 swingDirection；其他情況（手動模式/攻球）
+  // 就用實際要打出去的球拍速度方向本身。
+  const swingDirRef = tech.adaptivePush ? tech.swingDirection : baseTechVel;
+  const racketNormalBase = computeRacketNormal(tech.racketNormalTiltY, tech.racketNormalTiltX, swingDirRef);
   const {techVel, racketNormal} = applyExecutionVariance(baseTechVel, racketNormalBase, tech);
   const epsilon = dynamicPaddleEpsilon(incomingVel, techVel, racketNormal);
   // 攝影棚測試用：停用側向自動瞄準修正，讓拍面角度/揮拍方向本身對左右落點的
@@ -738,9 +763,8 @@ function loadTechniqueFields(){
   setValue('techTopspin', spin.topspin);
   setValue('techSidespin', spin.sidespin);
   setValue('bounceBoost', tech.bounceBoost ?? 0);
-  const normal = tech.racketNormal || {x:0, y:0, z:-1};
-  setValue('racketNormalY', normal.y ?? 0);
-  setValue('racketNormalX', normal.x ?? 0);
+  setValue('racketNormalY', tech.racketNormalTiltY ?? 0);
+  setValue('racketNormalX', tech.racketNormalTiltX ?? 0);
   const dir = tech.swingDirection || {x:0, y:0, z:-1};
   setValue('swingDirX', dir.x ?? 0);
   setValue('swingDirY', dir.y ?? 0);
@@ -760,7 +784,8 @@ function readTechniqueFieldsIntoState(){
     tech.spin.sidespin = num('techSidespin');
   }
   tech.bounceBoost = num('bounceBoost');
-  tech.racketNormal = normalize({x:num('racketNormalX'), y:num('racketNormalY'), z:-1});
+  tech.racketNormalTiltY = num('racketNormalY');
+  tech.racketNormalTiltX = num('racketNormalX');
   tech.swingDirection = normalize({x:num('swingDirX'), y:num('swingDirY'), z:num('swingDirZ')});
   tech.adaptivePush = document.getElementById('adaptivePushToggle').checked;
 }
@@ -1083,8 +1108,7 @@ function formatTechniquesForExport(){
     const spinStr = tech.spin ? `, spin:{topspin:${tech.spin.topspin},sidespin:${tech.spin.sidespin}}` : '';
     const boostStr = tech.bounceBoost ? `, bounceBoost:${tech.bounceBoost}` : '';
     const modelStr = tech.model ? `, model:'${tech.model}'` : '';
-    const normal = tech.racketNormal;
-    const normalStr = normal ? `, racketNormal:normalize({x:${normal.x.toFixed(4)}, y:${normal.y.toFixed(4)}, z:${normal.z.toFixed(4)}})` : '';
+    const normalStr = tech.racketNormalTiltY != null ? `, racketNormalTiltY:${tech.racketNormalTiltY}, racketNormalTiltX:${tech.racketNormalTiltX || 0}` : '';
     const dir = tech.swingDirection;
     const dirStr = dir ? `, swingDirection:normalize({x:${dir.x.toFixed(4)}, y:${dir.y.toFixed(4)}, z:${dir.z.toFixed(4)}})` : '';
     const adaptiveStr = tech.adaptivePush ? `, adaptivePush:true` : '';
