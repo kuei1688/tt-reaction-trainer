@@ -263,13 +263,16 @@ const PADDLE_RESTITUTION = -0.9;    // 舊模型殘留常數，目前只有 loop
 const TECHNIQUES = {
   forehand_attack: {label:'正手攻球', model:'attack', techniqueVel:{x:0, y:-0.234, z:-1}, racketNormal:normalize({x:0, y:0.1, z:-1}), executionVariance:{vel:0.08, normal:0.024}},
   backhand_attack: {label:'反手攻球', model:'attack', techniqueVel:{x:0, y:-0.234, z:-1}, racketNormal:normalize({x:0, y:0.1, z:-1}), executionVariance:{vel:0.08, normal:0.024}},
-  // 切球：拍面角度跟力道都依「球速、擊球點到網距離、下旋量」動態調整
-  // （adaptivePush，見 computeAdaptivePushTiltZ()）。這組公式是用真實 16 顆發球、
-  // 沿彈跳後整個下降窗口取樣（196 個真實樣本）聯合擬合角度+力道兩個輸出得出的，
-  // 比單純依球速調整力道（舊版 speedScaledZ）更準：時機窗口整體成功率從 6%
-  // 提升到 41%。racketNormal/techniqueVel 是拿不到擊球點距離時的備援值。
+  // 切球：拍面角度（racketNormal）跟揮拍方向（swingDirection）是兩個獨立的向量，
+  // 都固定不變（使用者指出這才是真實揮拍的邏輯：拍面朝向不等於球拍移動方向）；
+  // 只有「力道大小」（純量）依球速/擊球點到網距離/下旋量調整，用來控制落點深度
+  // （adaptivePush，見 computeAdaptivePushMagnitude()）。這個「方向固定、只調力道」
+  // 的設計比先前「角度+力道聯合調整」更簡單、容錯率更高（用精確搜尋逐點測時
+  // 46% vs 41%；目前這組線性擬合的力道公式實測是 37%，還沒完全逼近那個上限，
+  // 之後可以用非線性擬合或更多樣本改善）。
   // 見 docs/physics-engine-v2-plan.md「固定框架下『哪些該穩定、哪些該調整』的受控實驗」。
-  push: {label:'切球', model:'push', techniqueVel:{x:0, y:0, z:-0.4}, racketNormal:normalize({x:0, y:0.3, z:-1}),
+  push: {label:'切球', model:'push', techniqueVel:{x:0, y:0, z:-0.4},
+    racketNormal:normalize({x:0, y:0.5, z:-1}), swingDirection:normalize({x:0, y:0.3, z:-1}),
     adaptivePush:true, executionVariance:{vel:0.12, normal:0.036}},
   loop: {label:'拉球', model:'direct', techniqueVel:{x:-0.6, y:1.0, z:-1.65}, spin:{topspin:0.9,sidespin:0}, bounceBoost:0.3}
 };
@@ -1371,30 +1374,30 @@ function applyExecutionVariance(techVel, racketNormal, tech){
   });
   return {techVel: jitteredVel, racketNormal: jitteredNormal};
 }
-// 切球的拍面角度＋力道聯合控制律：用「固定框架下哪些該穩定、哪些該調整」的受控實驗
-// 發展出來。第一版只擬合角度、力道沿用舊的 speedScaledZ，套進真實引擎後反而變差
-// （角度跟力道是耦合的，不能只調一邊）；改用 196 個真實樣本（16 顆發球沿彈跳後
-// 整個下降窗口取樣）同時對角度、力道兩個輸出做線性回歸，時機窗口整體成功率從
-// 6%（固定角度）提升到 41%，且 16 顆發球單點驗證維持原本最佳的 4/4、2/2、3/7。
-// 已知限制：球速超出訓練範圍（約 4.2 m/s）時是外插，不保證可靠——連續對打模式
-// 卡住的案例球速 4.4~4.7 m/s 已經超出這個範圍，這條公式沒能解決那邊的問題。
-// 見 docs/physics-engine-v2-plan.md「固定框架下『哪些該穩定、哪些該調整』的受控實驗」。
-function computeAdaptivePushTiltZ(incomingVel, contactZ, topspin){
+// 切球的力道控制律：拍面角度（tech.racketNormal）跟揮拍方向（tech.swingDirection）
+// 都固定不變，只有「力道大小」這個純量依球況調整——使用者指出拍面朝向跟球拍
+// 移動方向是兩個獨立的向量，不該鎖在一起，也不該把「方向」跟「力道」耦合調整：
+// 應該先固定一組能產生「低平、剛好過網」弧線的揮拍方向，再單純用力道大小控制
+// 落點深度。用 196 個真實樣本（16 顆發球沿彈跳後整個下降窗口取樣）驗證：固定
+// 方向+精確搜尋力道，時機窗口容錯率有 46%（比先前「角度+力道聯合調整」的 41%
+// 更好），目前這條線性擬合公式實測 37%，還沒完全逼近那個上限。
+// 已知限制：球速超出訓練範圍（約 4.2 m/s）時是外插——連續對打卡住的案例
+// （4.4~4.7 m/s）仍未解決。見 docs/physics-engine-v2-plan.md「固定框架下
+// 『哪些該穩定、哪些該調整』的受控實驗」。
+function computeAdaptivePushMagnitude(incomingVel, contactZ, topspin){
   const speed = Math.hypot(incomingVel.x, incomingVel.z);
   const distanceToNet = contactZ != null ? Math.max(0, contactZ) : 2.0; // 沒有距離資訊時退回訓練資料的中段值
   const ts = Math.abs(topspin || 0);
-  const tiltY = clamp(0.198 - 0.1106 * speed + 0.1235 * distanceToNet + 0.005 * ts, 0.02, 0.7);
-  const z = clamp(-0.6737 + 0.2976 * speed - 0.2233 * distanceToNet - 0.0035 * ts, -1.0, 0.3);
-  return {tiltY, z};
+  return clamp(0.0942 - 0.4069 * speed + 0.4183 * distanceToNet + 0.0096 * ts, 0.02, 2.5);
 }
 function makeRacketReturnVelocity(incomingVel, incomingSpin, tech, contactZ){
   const spin = incomingSpin || {topspin:0, sidespin:0};
   let baseTechVel = speedScaledTechniqueVel(incomingVel, tech);
   let racketNormalBase = tech.racketNormal;
   if(tech.adaptivePush){
-    const {tiltY, z} = computeAdaptivePushTiltZ(incomingVel, contactZ, spin.topspin);
-    racketNormalBase = normalize({x:0, y:tiltY, z:-1});
-    baseTechVel = {x:0, y:0, z};
+    const magnitude = computeAdaptivePushMagnitude(incomingVel, contactZ, spin.topspin);
+    const dir = tech.swingDirection;
+    baseTechVel = {x:0, y:dir.y*magnitude, z:dir.z*magnitude};
   }
   const {techVel, racketNormal} = applyExecutionVariance(baseTechVel, racketNormalBase, tech);
   const epsilon = dynamicPaddleEpsilon(incomingVel, techVel, racketNormal);
