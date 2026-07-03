@@ -1409,6 +1409,16 @@ function computeAdaptivePushMagnitude(incomingVel, contactZ, topspin){
   const ts = Math.abs(topspin || 0);
   return clamp(1.1469 - 0.4989 * speed + 0.2941 * distanceToNet + 0.0055 * ts, 0.02, 2.5);
 }
+// 拍面平面角度改成依來球左右速度調整。用「球例校正資料庫」裡使用者手動
+// 標好的 10 顆合理切球回歸出來：tiltX 主要跟來球的左右速度分量有關（不是
+// 跟側旋本身，回歸係數顯示側旋幾乎沒有影響）。樣本只有 10 顆（其中 7 顆
+// 是真正自由調的），係數可能還不夠穩定，之後樣本變多可以再重新擬合。
+// tiltY 也用同一批資料試過回歸，但實測 16 顆發球驗證會讓 backspin/
+// sidebackspin 雙雙倒退，研判樣本量不足以擬合出穩定的 tiltY 關係，先維持
+// 固定值，只套用驗證過沒有退步的 tiltX/力道。見 docs/physics-engine-v2-plan.md。
+function computeAdaptivePushTiltX(incomingVel){
+  return clamp(-0.1436 - 0.5376 * (incomingVel.x || 0), -1.2, 1.2);
+}
 function makeRacketReturnVelocity(incomingVel, incomingSpin, tech, contactZ){
   const spin = incomingSpin || {topspin:0, sidespin:0};
   let baseTechVel = speedScaledTechniqueVel(incomingVel, tech);
@@ -1421,7 +1431,8 @@ function makeRacketReturnVelocity(incomingVel, incomingSpin, tech, contactZ){
   // 切球自適應力道公式開啟時用 swingDirection；其他情況（攻球）就用實際
   // 要打出去的球拍速度方向本身。
   const swingDirRef = tech.adaptivePush ? tech.swingDirection : baseTechVel;
-  const racketNormalBase = computeRacketNormal(tech.racketNormalTiltY, tech.racketNormalTiltX, swingDirRef);
+  const tiltX = tech.adaptivePush ? computeAdaptivePushTiltX(incomingVel) : tech.racketNormalTiltX;
+  const racketNormalBase = computeRacketNormal(tech.racketNormalTiltY, tiltX, swingDirRef);
   const {techVel, racketNormal} = applyExecutionVariance(baseTechVel, racketNormalBase, tech);
   const epsilon = dynamicPaddleEpsilon(incomingVel, techVel, racketNormal);
   const aimedX = solveRacketVelXForTargetOutX(incomingVel, spin, racketNormal, techVel, epsilon, PADDLE_FRICTION, 0);
