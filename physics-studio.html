@@ -663,8 +663,10 @@ function applyBounceSpin(vel, spin, bounce){
     ? {x:incomingX / speed, z:incomingZ / speed}
     : {x:0, z:1};
   const side = {x:-forward.z, z:forward.x};
-  let forwardSpeed = speed * BOUNCE_PHYSICS.horizontalRestitution + spin.topspin * BOUNCE_PHYSICS.topspinKick;
-  const sideSpeed = clamp(spin.sidespin * BOUNCE_PHYSICS.sidespinKick, -speed * 0.75, speed * 0.75);
+  const topspinRps = radToRps(spin.topspin || 0);
+  const sidespinRps = radToRps(spin.sidespin || 0);
+  let forwardSpeed = speed * BOUNCE_PHYSICS.horizontalRestitution + topspinRps * BOUNCE_PHYSICS.topspinKick;
+  const sideSpeed = clamp(sidespinRps * BOUNCE_PHYSICS.sidespinKick, -speed * 0.75, speed * 0.75);
   forwardSpeed = clamp(forwardSpeed, -speed * 0.55, speed * 1.35);
   vel.x = forward.x * forwardSpeed + side.x * sideSpeed;
   vel.z = forward.z * forwardSpeed + side.z * sideSpeed;
@@ -1251,7 +1253,10 @@ function analyze(base, variant, state){
     ? classifyServeLength(variant)
     : {key:'unknown', label:'未判定', z:null};
   const horizontalSpeed = Math.hypot(base.baseVel.x, base.baseVel.z);
-  const spinStrength = Math.hypot(state.variation.spin.topspin, state.variation.spin.sidespin);
+  const spinStrength = Math.hypot(
+    radToRps(state.variation.spin.topspin || 0),
+    radToRps(state.variation.spin.sidespin || 0)
+  );
   const solverIssues = [];
   if(state.solve.targetMode === 'serve_bounces'){
     if(base.baseVel.y > profile.vySoftMax + 0.08){
@@ -1315,7 +1320,7 @@ function analyze(base, variant, state){
     <div>平面共線誤差：<strong class="${serveLineError < 0.03 ? 'ok' : 'bad'}">${serveLineError.toFixed(3)} m</strong></div>
     <div>Length target: <strong>${profile.label}</strong> / actual: <strong class="${profile.key === actualLength.key || (profile.key === 'long' && actualLength.key === 'half_out') ? 'ok' : 'bad'}">${actualLength.label}${actualLength.z == null ? '' : ' ' + actualLength.z.toFixed(2)}</strong></div>
     <div>Horizontal speed: <strong class="${horizontalSpeed <= profile.speedHardMax ? 'ok' : 'bad'}">${horizontalSpeed.toFixed(2)} m/s</strong> / ideal ${profile.speedIdealMin.toFixed(1)}-${profile.speedIdealMax.toFixed(1)}</div>
-    <div>Spin strength: <strong class="${profile.key !== 'short' || spinStrength >= 0.45 ? 'ok' : 'bad'}">${spinStrength.toFixed(2)}</strong>${profile.key === 'short' ? ' / short serve >= 0.45' : ''}</div>
+    <div>Spin strength: <strong class="${profile.key !== 'short' || spinStrength >= 0.45 ? 'ok' : 'bad'}">${spinStrength.toFixed(2)} rps</strong>${profile.key === 'short' ? ' / short serve >= 0.45 rps' : ''}</div>
     <div>過網高度：<strong class="${netClearance == null || netClearance >= 0 ? 'ok' : 'bad'}">${netClearance == null ? '未過網' : netClearance.toFixed(3) + ' m'}</strong> / 目標 ${targetNetClearance.toFixed(3)} m</div>
     <div>第二段時間：<strong>${secondLegTime == null ? '未達第二跳' : secondLegTime.toFixed(3) + ' s'}</strong> / 目標 ${targetSecondLegTime.toFixed(3)} s</div>
     <div>Solver 目標：<strong class="${solverTargetOk ? 'ok' : 'bad'}">${solverIssueText}</strong></div>
