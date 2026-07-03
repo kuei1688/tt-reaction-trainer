@@ -191,6 +191,24 @@ button.warn{background:rgba(210,153,34,.12);color:var(--yellow);border-color:var
         <div class="field"><label id="sidespinLabel">側旋 (rps)</label><input id="sidespin" type="number" step="0.5" value="-20"></div>
         <div class="field"><label>彈跳</label><input id="bounce" type="number" step="0.01" value="0.95"></div>
       </div>
+      <div class="grid" style="margin-top:8px">
+        <div class="field">
+          <label>旋轉模板</label>
+          <select id="spinTemplateSelect">
+            <option value="backspin_standard">純下旋模板</option>
+            <option value="sidebackspin_standard">標準側下模板</option>
+            <option value="no_spin_standard">不轉模板</option>
+            <option value="sidebackspin_short_forehand">特殊側下模板</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>目前匹配</label>
+          <input id="spinTemplateStatus" readonly value="純下旋模板">
+        </div>
+        <div class="field" style="align-self:end">
+          <button id="applySpinTemplateBtn" type="button" class="secondary">套用模板</button>
+        </div>
+      </div>
     </div>
 
     <div class="section">
@@ -330,6 +348,12 @@ const PRESET_TAG_LABELS = {
   length: {short:'短球', half_long:'半出台', long:'長球'},
   placement: {backhand:'反手', middle:'中路', forehand:'正手', wide_forehand:'大角正手', wide_backhand:'大角反手'}
 };
+const SPIN_TEMPLATES = {
+  backspin_standard: {label:'純下旋模板', spinType:'backspin', topspin:-125.66, sidespin:0, bounce:0.88},
+  sidebackspin_standard: {label:'標準側下模板', spinType:'sidebackspin', topspin:-125.66, sidespin:-125.66, bounce:0.88},
+  no_spin_standard: {label:'不轉模板', spinType:'no_spin', topspin:0, sidespin:0, bounce:0.88},
+  sidebackspin_short_forehand: {label:'特殊側下模板', spinType:'sidebackspin', topspin:-125.66, sidespin:-150.8, bounce:0.88}
+};
 let animation = null;
 let playStart = 0;
 let isPlaying = false;
@@ -367,6 +391,48 @@ function writeSpinField(id, radValue){
 }
 function readSpinField(id){
   return storedSpinValue(num(id) || 0);
+}
+function almostEqual(a, b, epsilon=0.01){
+  return Math.abs((a || 0) - (b || 0)) <= epsilon;
+}
+function currentSpinTemplateKey(){
+  const topspin = readSpinField('topspin');
+  const sidespin = readSpinField('sidespin');
+  const bounce = num('bounce');
+  const spinType = document.getElementById('presetSpinType').value;
+  return Object.keys(SPIN_TEMPLATES).find(key=>{
+    const template = SPIN_TEMPLATES[key];
+    return template.spinType === spinType
+      && almostEqual(template.topspin, topspin)
+      && almostEqual(template.sidespin, sidespin)
+      && almostEqual(template.bounce, bounce);
+  }) || '';
+}
+function updateSpinTemplateStatus(){
+  const match = currentSpinTemplateKey();
+  const selectedKey = document.getElementById('spinTemplateSelect')?.value;
+  const selected = SPIN_TEMPLATES[selectedKey];
+  const statusEl = document.getElementById('spinTemplateStatus');
+  if(!statusEl) return;
+  if(match){
+    const template = SPIN_TEMPLATES[match];
+    statusEl.value = `${template.label} (${radToRps(template.topspin).toFixed(1)} / ${radToRps(template.sidespin).toFixed(1)} rps)`;
+    document.getElementById('spinTemplateSelect').value = match;
+    return;
+  }
+  statusEl.value = selected ? `自訂，目前選單停在 ${selected.label}` : '自訂';
+}
+function applySelectedSpinTemplate(){
+  const key = document.getElementById('spinTemplateSelect').value;
+  const template = SPIN_TEMPLATES[key];
+  if(!template) return;
+  writeSpinField('topspin', template.topspin);
+  writeSpinField('sidespin', template.sidespin);
+  setValue('bounce', template.bounce);
+  document.getElementById('presetSpinType').value = template.spinType;
+  updateSpinTemplateStatus();
+  updateStudio();
+  showToast(`已套用${template.label}`, 'ok');
 }
 function updateSpinUnitUI(){
   const unit = currentSpinUnit();
@@ -1273,6 +1339,7 @@ function updateExport(state){
 }
 function updateStudio(){
   const state = readState();
+  updateSpinTemplateStatus();
   const hints = {
     serve_bounces: '目標 = 第一跳 + 第二跳',
     second_bounce: '目標 = 第二跳',
@@ -1688,6 +1755,8 @@ ids.forEach(id=>{
   });
 });
 document.getElementById('spinUnit').addEventListener('change', handleSpinUnitChange);
+document.getElementById('spinTemplateSelect').addEventListener('change', updateSpinTemplateStatus);
+document.getElementById('applySpinTemplateBtn').addEventListener('click', applySelectedSpinTemplate);
 document.getElementById('presetSearch').addEventListener('input', renderRepoPresetOptions);
 document.getElementById('playBtn').addEventListener('click', play);
 document.getElementById('resetBtn').addEventListener('click', replay);
