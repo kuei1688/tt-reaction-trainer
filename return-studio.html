@@ -176,6 +176,14 @@ table.check th{color:var(--muted);font-weight:800}
     </div>
 
     <div class="section">
+      <h2>快速同步（複製目前發球+全部參數，貼到對話裡討論用）</h2>
+      <div class="actions">
+        <button id="copyStateBtn" type="button">複製目前完整狀態</button>
+      </div>
+      <textarea id="stateText" readonly style="margin-top:6px;min-height:120px"></textarea>
+    </div>
+
+    <div class="section">
       <h2>匯出（可直接貼回 game4.html 取代 TECHNIQUES）</h2>
       <div class="actions">
         <button id="copyBtn" type="button" class="secondary">複製程式碼片段</button>
@@ -426,7 +434,7 @@ function computeAdaptivePushMagnitude(incomingVel, contactZ, topspin){
   const speed = Math.hypot(incomingVel.x, incomingVel.z);
   const distanceToNet = contactZ != null ? Math.max(0, contactZ) : 2.0;
   const ts = Math.abs(topspin || 0);
-  return clamp(0.0942 - 0.4069 * speed + 0.4183 * distanceToNet + 0.0096 * ts, 0.02, 2.5);
+  return clamp(1.1469 - 0.4989 * speed + 0.2941 * distanceToNet + 0.0055 * ts, 0.02, 2.5);
 }
 function makeRacketReturnVelocity(incomingVel, incomingSpin, tech, contactZ){
   const spin = incomingSpin || {topspin:0, sidespin:0};
@@ -676,7 +684,7 @@ function simulateReturnForPreset(preset, side, techniqueKey){
   const hitVel = serve.velocities[hitIndex];
   const hitSpin = serve.spins[hitIndex];
   const tech = TECHNIQUES[techniqueKey];
-  const start = {...hitPoint, y:Math.max(hitPoint.y + 0.12, TABLE.top + 0.12)};
+  const start = {...hitPoint};
   const gravity = preset.solve?.gravity ?? -4.2;
   const returnHit = makeReturnVelocity(hitVel, hitSpin, tech, hitPoint.z);
   const result = simulatePath(start, returnHit.vel, {gravity, spin:returnHit.spin, bounceBoost:tech.bounceBoost ?? 0});
@@ -985,6 +993,7 @@ function refresh(){
   `;
   updateCheckTable(side, techniqueKey);
   updateExport();
+  updateStateText();
   renderAll();
   if(document.getElementById('autoPlayToggle')?.checked) animateCurrentPath();
 }
@@ -1096,6 +1105,46 @@ async function copyExport(){
   }
   flashButton('copyBtn');
 }
+// 快速同步：把「目前用哪顆發球 + 站位/技術 + 目前分析結果 + 全部技術參數」
+// 打包成一段文字，方便使用者調完參數後直接複製貼進對話討論，不用逐項口述。
+function formatFullStateForCopy(){
+  const preset = currentPreset();
+  const side = currentSide();
+  const techniqueKey = currentTechniqueKey();
+  const tech = TECHNIQUES[techniqueKey];
+  const serveStatusText = (document.getElementById('serveStatus').innerText || '').trim();
+  const statusText = (document.getElementById('status').innerText || '').trim();
+  const adaptiveState = tech.adaptivePush != null
+    ? (document.getElementById('adaptivePushToggle')?.checked ? '開（力道由公式自動算）' : '關（直接用 techniqueVel 當完整揮拍速度）')
+    : '（此技術沒有這個選項）';
+  const aimState = document.getElementById('disableAimCorrectionToggle')?.checked ? '開（拍面角度效果未被自動瞄準蓋掉）' : '關（正式遊戲行為）';
+  return [
+    '【目前狀態】',
+    `發球：${preset.label}　站位：${side === 'forehand' ? '正手' : '反手'}　技術：${tech.label}`,
+    serveStatusText,
+    statusText,
+    `切球自適應力道公式：${adaptiveState}`,
+    `停用側向自動瞄準修正：${aimState}`,
+    '',
+    '【技術參數（全部技術）】',
+    formatTechniquesForExport()
+  ].join('\n');
+}
+function updateStateText(){
+  const el = document.getElementById('stateText');
+  if(el) el.value = formatFullStateForCopy();
+}
+async function copyState(){
+  updateStateText();
+  const text = document.getElementById('stateText').value;
+  try{ await navigator.clipboard.writeText(text); }
+  catch(err){
+    const area = document.getElementById('stateText');
+    area.select();
+    document.execCommand('copy');
+  }
+  flashButton('copyStateBtn');
+}
 function flashButton(id){
   const btn = document.getElementById(id);
   const old = btn.textContent;
@@ -1135,6 +1184,7 @@ document.getElementById('resetBtn').addEventListener('click', replay);
 document.getElementById('saveBtn').addEventListener('click', saveTuning);
 document.getElementById('restoreBtn').addEventListener('click', restoreDefaults);
 document.getElementById('copyBtn').addEventListener('click', copyExport);
+document.getElementById('copyStateBtn').addEventListener('click', copyState);
 window.addEventListener('resize', resize);
 
 (async function init(){

@@ -1247,7 +1247,7 @@ function returnBall(techniqueKey){
     setPhase('result');
     return;
   }
-  const start = {...contactPoint, y:Math.max(contactPoint.y + 0.12, TABLE.top + 0.12)};
+  const start = {...contactPoint};
   const gravity = currentPreset().solve?.gravity ?? -4.2;
   const returnHit = makeReturnVelocity(contactVel, contactSpin, tech, contactPoint.z);
   const result = simulatePath(start, returnHit.vel, {
@@ -1388,7 +1388,7 @@ function computeAdaptivePushMagnitude(incomingVel, contactZ, topspin){
   const speed = Math.hypot(incomingVel.x, incomingVel.z);
   const distanceToNet = contactZ != null ? Math.max(0, contactZ) : 2.0; // 沒有距離資訊時退回訓練資料的中段值
   const ts = Math.abs(topspin || 0);
-  return clamp(0.0942 - 0.4069 * speed + 0.4183 * distanceToNet + 0.0096 * ts, 0.02, 2.5);
+  return clamp(1.1469 - 0.4989 * speed + 0.2941 * distanceToNet + 0.0055 * ts, 0.02, 2.5);
 }
 function makeRacketReturnVelocity(incomingVel, incomingSpin, tech, contactZ){
   const spin = incomingSpin || {topspin:0, sidespin:0};
