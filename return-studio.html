@@ -213,6 +213,16 @@ table.check th{color:var(--muted);font-weight:800}
     </div>
 
     <div class="section">
+      <h2>連續對打展示模式</h2>
+      <div class="hint" style="margin-bottom:6px">雙方都用目前的切球參數，一拍一拍連續回擊給對方看，直到掛網/出界為止（最多展示 60 拍）。用目前選的發球當開球。</div>
+      <div class="actions">
+        <button id="rallyBtn" type="button">開始連續對打</button>
+        <button id="rallyStopBtn" type="button" class="secondary">停止</button>
+      </div>
+      <div class="status" id="rallyStatus" style="margin-top:6px"></div>
+    </div>
+
+    <div class="section">
       <h2>分析（目前這一顆發球）</h2>
       <div class="status" id="status"></div>
     </div>
@@ -1092,7 +1102,7 @@ function readTechniqueFieldsIntoState(){
 
 // ── 3D 視圖 ──────────────────────────────────────────────────────────────
 const scenes = [], cameras = [], renderers = [], incomingLines = [], returnLines = [], balls = [], markers = [];
-const swingArrows = [], swingHandles = [], cameraStates = [];
+const swingArrows = [], swingHandles = [], cameraStates = [], rallyLines = [];
 const CAM_TARGET = new THREE.Vector3(0, 0.85, 0.5);
 function initScene(canvas, kind){
   const scene = new THREE.Scene();
@@ -1110,7 +1120,8 @@ function initScene(canvas, kind){
   addTable(scene);
   const incoming = makeLine(0x58a6ff, true);
   const outgoing = makeLine(0xd29922, false);
-  scene.add(incoming, outgoing);
+  const rally = makeLine(0x3fb950, false);
+  scene.add(incoming, outgoing, rally);
   const ball = new THREE.Mesh(new THREE.SphereGeometry(BALL_RENDER_RADIUS, 24, 16), new THREE.MeshStandardMaterial({color:0x58a6ff, roughness:.35}));
   scene.add(ball);
   const markerSet = {hit:makeMarker(0xffd166), target:makeMarker(0x3fb950), landing:makeMarker(0xf85149)};
@@ -1121,7 +1132,7 @@ function initScene(canvas, kind){
   const handle = new THREE.Mesh(new THREE.SphereGeometry(.045, 16, 12), new THREE.MeshStandardMaterial({color:0xff6b6b, emissive:0xff6b6b, emissiveIntensity:.3}));
   scene.add(handle);
   scenes.push(scene); cameras.push(camera); renderers.push(renderer);
-  incomingLines.push(incoming); returnLines.push(outgoing); balls.push(ball); markers.push(markerSet);
+  incomingLines.push(incoming); returnLines.push(outgoing); rallyLines.push(rally); balls.push(ball); markers.push(markerSet);
   swingArrows.push(arrow); swingHandles.push(handle);
   const index = scenes.length - 1;
   const offset = camera.position.clone().sub(CAM_TARGET);
@@ -1372,6 +1383,90 @@ function animateCurrentPath(){
     else stopPlayback();
   }
   animation = requestAnimationFrame(tick);
+}
+// ── 連續對打展示模式 ────────────────────────────────────────────────────
+// 雙方輪流用同一套切球技術對打，重複使用「鏡射座標系」技巧：push 技術固定
+// 往 z<0 方向送球（假設你是 z>0 那側的接球者），所以模擬「另一側」的人打球
+// 時，要先把整個狀態（位置/速度的 z、topspin）鏡射過去，套用同一套技術算出
+// 結果，再鏡射回來，才是真實世界該有的方向。見 docs/physics-engine-v2-plan.md
+// 「連續對打測試」。
+function mirrorVec(v){ return {x:v.x, y:v.y, z:-v.z}; }
+function mirrorSpin(s){ return {topspin:-s.topspin, sidespin:s.sidespin}; }
+function mirrorPathForDetection(path){
+  return {
+    points: path.points.map(p=>({x:p.x, y:p.y, z:-p.z})),
+    velocities: path.velocities.map(v=>mirrorVec(v)),
+    spins: path.spins.map(s=>mirrorSpin(s)),
+    bounces: path.bounces.map(b=>({...b, z:-b.z}))
+  };
+}
+function runRallyReal(preset, maxRounds){
+  const gravity = preset.solve?.gravity ?? -4.2;
+  const tech = TECHNIQUES.push;
+  const serve = simulateServe(preset);
+  const firstHitIndex = findPushHitIndex(serve);
+  const segments = [serve.points.slice(0, firstHitIndex + 1)];
+  let hitPoint = serve.points[firstHitIndex];
+  let hitVel = serve.velocities[firstHitIndex];
+  let hitSpin = serve.spins[firstHitIndex];
+  let flip = false;
+  let rounds = 0;
+  let failReason = null;
+  for(let round = 1; round <= maxRounds; round++){
+    const canonicalHitPoint = flip ? mirrorVec(hitPoint) : hitPoint;
+    const canonicalHitVel = flip ? mirrorVec(hitVel) : hitVel;
+    const canonicalHitSpin = flip ? mirrorSpin(hitSpin) : hitSpin;
+    const returnHitCanonical = makeReturnVelocity(canonicalHitVel, canonicalHitSpin, tech, canonicalHitPoint, gravity);
+    const returnVelReal = flip ? mirrorVec(returnHitCanonical.vel) : returnHitCanonical.vel;
+    const returnSpinReal = flip ? mirrorSpin(returnHitCanonical.spin) : returnHitCanonical.spin;
+    const outPath = simulatePath({...hitPoint}, returnVelReal, {gravity, spin:returnSpinReal, bounceBoost:tech.bounceBoost || 0});
+    const netClearance = outPath.netY == null ? null : outPath.netY - (TABLE.height + TABLE.net);
+    const firstBounce = outPath.bounces[0];
+    const expectedSign = flip ? 1 : -1;
+    const inBounds = firstBounce && Math.abs(firstBounce.x) <= TABLE.width / 2 && Math.abs(firstBounce.z) <= TABLE.length / 2 && Math.sign(firstBounce.z) === expectedSign;
+    const netOk = netClearance != null && netClearance >= 0;
+    segments.push(outPath.points);
+    if(!netOk || !inBounds){ failReason = !netOk ? '掛網' : '出界'; break; }
+    rounds = round;
+    const detectionPath = flip ? outPath : mirrorPathForDetection(outPath);
+    const nextIdx = findPushHitIndex(detectionPath);
+    if(nextIdx == null || nextIdx >= outPath.points.length || !outPath.velocities[nextIdx] || !outPath.spins[nextIdx]){ failReason = '找不到下一次擊球點'; break; }
+    hitPoint = outPath.points[nextIdx];
+    hitVel = outPath.velocities[nextIdx];
+    hitSpin = outPath.spins[nextIdx];
+    flip = !flip;
+  }
+  return {segments, rounds, failReason};
+}
+let rallyAnimation = null;
+function stopRally(){
+  if(rallyAnimation) cancelAnimationFrame(rallyAnimation);
+  rallyAnimation = null;
+}
+function startRally(){
+  stopPlayback();
+  stopRally();
+  const preset = currentPreset();
+  const {segments, rounds, failReason} = runRallyReal(preset, 60);
+  const fullPath = segments.flat().filter(isValidPoint);
+  scenes.forEach((s, i) => setLine(rallyLines[i], fullPath));
+  document.getElementById('rallyStatus').textContent = `連續對打播放中……`;
+  const start = performance.now();
+  const duration = Math.max(2500, fullPath.length * 4);
+  function tick(now){
+    const progress = Math.min(1, (now - start) / duration);
+    const idx = Math.floor(progress * (fullPath.length - 1));
+    setBallAtPathIndex(idx, fullPath);
+    if(progress < 1){
+      rallyAnimation = requestAnimationFrame(tick);
+    }else{
+      rallyAnimation = null;
+      document.getElementById('rallyStatus').innerHTML = failReason
+        ? `連續對打結束：<strong>撐了 ${rounds} 拍</strong>，最後一拍判定：<strong class="bad">${failReason}</strong>`
+        : `連續對打結束：<strong>已展示 ${rounds} 拍</strong>（達到展示上限，實際還能繼續打下去）`;
+    }
+  }
+  rallyAnimation = requestAnimationFrame(tick);
 }
 function play(){
   refresh();
@@ -1810,6 +1905,8 @@ document.getElementById('disableAimCorrectionToggle').addEventListener('change',
 });
 document.getElementById('playBtn').addEventListener('click', play);
 document.getElementById('resetBtn').addEventListener('click', replay);
+document.getElementById('rallyBtn').addEventListener('click', startRally);
+document.getElementById('rallyStopBtn').addEventListener('click', stopRally);
 document.getElementById('saveBtn').addEventListener('click', saveTuning);
 document.getElementById('restoreBtn').addEventListener('click', restoreDefaults);
 document.getElementById('saveReviewBtn').addEventListener('click', saveCurrentReview);
