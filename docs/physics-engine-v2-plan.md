@@ -552,6 +552,21 @@ Push 之後 GitHub Pages 一直沒更新，`gh run list` 查到 10 個 `pages bu
 
 ---
 
+### 用使用者手動標的切球資料，回歸出新的 tiltX 公式
+
+使用者用 `return-studio.html` 的「球例校正資料庫」逐顆標出 10 顆下旋/側下發球（其中 7 顆是關掉自適應力道公式、完全手動調的）他覺得合理的切球參數，透過「儲存全部校正到待處理檔案」存成 `pending-return-technique-changes.json` 交給我統計。
+
+**回歸發現：**
+- **`racketNormalTiltX`（拍面平面角度）**：跟來球的左右速度分量（`incomingVel.x`）有關，側旋幾乎沒有影響（回歸係數只有 0.0004）。`tiltX ≈ -0.144 − 0.538×incomingVel.x`。**這是全新加入的能力**——之前這個值在 `adaptivePush` 模式下一直固定是 0，從沒隨球況調整過。
+- **力道公式**：用同一批資料重新擬合出新係數，跟原本公式同一個形狀（`magnitude ≈ a − b×speed + c×z`），實測 16 顆發球驗證結果沒有變化。
+- **`racketNormalTiltY`（拍面垂直角度）**：也試著回歸過（`tiltY ≈ 0.453 − 0.217×speed + 0.348×z`），但套用後實測 16 顆發球驗證會讓 backspin/sidebackspin 雙雙倒退（6/7,2/7 → 4/7,0/7）。逐一拆解三個公式（力道／tiltY／tiltX 各自單獨套用測試）確認退步完全來自 tiltY 這個公式，另外兩個單獨套用都完全不影響、跟原本一樣好。研判樣本量不足（只有 10 顆、其中只有 7 顆是真正自由調的）不足以擬合出穩定的 tiltY 關係，所以維持原本固定值 0.5，只部署驗證過沒有退步的 tiltX 公式跟新力道公式。
+
+**已套用：** `game4.html`／`return-studio.html` 的 `makeRacketReturnVelocity()` 都改成 `adaptivePush` 時動態算 tiltX（非 adaptivePush 情況維持讀 `tech.racketNormalTiltX`），tiltY 維持固定不變。驗證：16 顆發球回擊技術驗證維持原本水準（backspin 6/7、no_spin 2/2、sidebackspin 2/7），兩個檔案結果一致。
+
+**已知限制：** 樣本量小（10 顆，其中 7 顆自由調），tiltX 公式只看了 `incomingVel.x` 一個變數，沒有機會驗證側旋單獨的影響（因為這批資料側旋幾乎都是同一個值 -125.66）。之後樣本變多、涵蓋更多樣的側旋強度後，可以重新擬合 tiltY，也可以驗證 tiltX 公式是否需要加入側旋項。
+
+---
+
 ### Phase 7：收尾與文件化 ☐
 - [ ] 這份文件補上「最終採用的公式」「最終 μ 值」「换算後的旋轉數值表」
 - [ ] 更新 README 或相關說明，讓後續開發者知道旋轉數值現在代表真實 rad/s，不是任意數字
