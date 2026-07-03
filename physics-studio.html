@@ -170,12 +170,25 @@ button.warn{background:rgba(210,153,34,.12);color:var(--yellow);border-color:var
 
     <div class="section">
       <h2>變因向量</h2>
+      <div class="grid" style="margin-bottom:8px">
+        <div class="field">
+          <label>旋轉顯示單位</label>
+          <select id="spinUnit">
+            <option value="rps" selected>rps（畫面調整）</option>
+            <option value="rad_s">rad/s（Game 4 儲存值）</option>
+          </select>
+        </div>
+        <div class="field" style="grid-column:span 2">
+          <label>單位說明</label>
+          <input id="spinUnitHint" readonly value="畫面用 rps 調整；儲存/匯出自動轉成 rad/s">
+        </div>
+      </div>
       <div class="grid">
         <div class="field"><label>ΔX 速度</label><input id="varX" type="number" step="0.01" value="0.00"></div>
         <div class="field"><label>ΔY 速度</label><input id="varY" type="number" step="0.01" value="0.00"></div>
         <div class="field"><label>ΔZ 速度</label><input id="varZ" type="number" step="0.01" value="0.00"></div>
-        <div class="field"><label>前後旋</label><input id="topspin" type="number" step="0.05" value="-0.35"></div>
-        <div class="field"><label>側旋</label><input id="sidespin" type="number" step="0.05" value="-0.18"></div>
+        <div class="field"><label id="topspinLabel">前後旋 (rps)</label><input id="topspin" type="number" step="0.5" value="-20"></div>
+        <div class="field"><label id="sidespinLabel">側旋 (rps)</label><input id="sidespin" type="number" step="0.5" value="-20"></div>
         <div class="field"><label>彈跳</label><input id="bounce" type="number" step="0.01" value="0.95"></div>
       </div>
     </div>
@@ -302,6 +315,8 @@ const BALL_RADIUS = 0.02;
 const BALL_RENDER_RADIUS = 0.034;
 const STORAGE_KEY = 'tt-physics-studio-presets-v1';
 const TRACKER_KEY = 'tt-physics-studio-tracker-v1';
+const SPIN_UNIT_KEY = 'tt-physics-studio-spin-unit-v1';
+const RAD_PER_RPS = Math.PI * 2;
 const PLAY_MIN_DURATION_MS = 3000;
 const MAX_TABLE_BOUNCES = 8;
 const BOUNCE_PHYSICS = {
@@ -327,6 +342,7 @@ let repoPresets = [];
 let currentPresetId = '';
 let currentPresetSource = 'manual';
 let toastTimer = null;
+let lastSpinUnit = 'rps';
 const raycaster = new THREE.Raycaster();
 const pointer = new THREE.Vector2();
 const dragPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), -TABLE.top);
@@ -334,6 +350,32 @@ const dragIntersection = new THREE.Vector3();
 
 function num(id){ return parseFloat(document.getElementById(id).value); }
 function setValue(id, value){ document.getElementById(id).value = value; }
+function currentSpinUnit(){
+  return document.getElementById('spinUnit')?.value || 'rps';
+}
+function radToRps(value){ return value / RAD_PER_RPS; }
+function rpsToRad(value){ return value * RAD_PER_RPS; }
+function displaySpinValue(rad){
+  return currentSpinUnit() === 'rps' ? radToRps(rad) : rad;
+}
+function storedSpinValue(display){
+  return currentSpinUnit() === 'rps' ? rpsToRad(display) : display;
+}
+function writeSpinField(id, radValue){
+  const display = displaySpinValue(radValue || 0);
+  setValue(id, Number.isFinite(display) ? Number(display.toFixed(currentSpinUnit() === 'rps' ? 2 : 3)) : 0);
+}
+function readSpinField(id){
+  return storedSpinValue(num(id) || 0);
+}
+function updateSpinUnitUI(){
+  const unit = currentSpinUnit();
+  document.getElementById('topspinLabel').textContent = unit === 'rps' ? '前後旋 (rps)' : '前後旋 (rad/s)';
+  document.getElementById('sidespinLabel').textContent = unit === 'rps' ? '側旋 (rps)' : '側旋 (rad/s)';
+  document.getElementById('spinUnitHint').value = unit === 'rps'
+    ? '畫面用 rps 調整；儲存/匯出自動轉成 rad/s'
+    : '你現在直接編輯 Game 4 實際儲存的 rad/s 值';
+}
 function normalizePresetId(label){
   return (label || 'untitled')
     .trim()
@@ -366,6 +408,32 @@ function loadTracker(){
 }
 function saveTracker(tracker){
   localStorage.setItem(TRACKER_KEY, JSON.stringify(tracker));
+}
+function saveSpinUnitPreference(){
+  localStorage.setItem(SPIN_UNIT_KEY, currentSpinUnit());
+}
+function loadSpinUnitPreference(){
+  const saved = localStorage.getItem(SPIN_UNIT_KEY);
+  const unit = saved === 'rad_s' ? 'rad_s' : 'rps';
+  document.getElementById('spinUnit').value = unit;
+  lastSpinUnit = unit;
+  updateSpinUnitUI();
+}
+function handleSpinUnitChange(){
+  const nextUnit = currentSpinUnit();
+  if(nextUnit === lastSpinUnit){
+    updateSpinUnitUI();
+    saveSpinUnitPreference();
+    return;
+  }
+  const topspinRad = lastSpinUnit === 'rps' ? rpsToRad(num('topspin') || 0) : (num('topspin') || 0);
+  const sidespinRad = lastSpinUnit === 'rps' ? rpsToRad(num('sidespin') || 0) : (num('sidespin') || 0);
+  lastSpinUnit = nextUnit;
+  updateSpinUnitUI();
+  writeSpinField('topspin', topspinRad);
+  writeSpinField('sidespin', sidespinRad);
+  saveSpinUnitPreference();
+  updateStudio();
 }
 function formatTagSummary(preset){
   const spin = preset.tagLabels?.spinType || PRESET_TAG_LABELS.spinType[preset.tags?.spinType] || preset.tags?.spinType || '';
@@ -474,7 +542,7 @@ function readState(){
     },
     variation: {
       velocity: {x:num('varX'), y:num('varY'), z:num('varZ')},
-      spin: {topspin:num('topspin'), sidespin:num('sidespin')},
+      spin: {topspin:readSpinField('topspin'), sidespin:readSpinField('sidespin')},
       bounce: num('bounce')
     }
   };
@@ -498,12 +566,13 @@ function applyState(state){
   setValue('varX', state.variation?.velocity?.x ?? 0);
   setValue('varY', state.variation?.velocity?.y ?? 0);
   setValue('varZ', state.variation?.velocity?.z ?? 0);
-  setValue('topspin', state.variation?.spin?.topspin ?? 0);
-  setValue('sidespin', state.variation?.spin?.sidespin ?? 0);
+  writeSpinField('topspin', state.variation?.spin?.topspin ?? 0);
+  writeSpinField('sidespin', state.variation?.spin?.sidespin ?? 0);
   setValue('bounce', state.variation?.bounce ?? 0.95);
   document.getElementById('presetSpinType').value = state.tags?.spinType || state.spinType || 'sidebackspin';
   document.getElementById('presetLength').value = state.tags?.length || state.length || 'short';
   document.getElementById('presetPlacement').value = state.tags?.placement || state.placement || 'backhand';
+  updateSpinUnitUI();
   updateStudio();
 }
 function solveVelocity(start, target, time, gravity){
@@ -1614,6 +1683,7 @@ ids.forEach(id=>{
     updateStudio();
   });
 });
+document.getElementById('spinUnit').addEventListener('change', handleSpinUnitChange);
 document.getElementById('presetSearch').addEventListener('input', renderRepoPresetOptions);
 document.getElementById('playBtn').addEventListener('click', play);
 document.getElementById('resetBtn').addEventListener('click', replay);
@@ -1647,6 +1717,7 @@ document.querySelectorAll('[data-view-target]').forEach(button=>{
 });
 
 renderPresetOptions();
+loadSpinUnitPreference();
 renderEditStatus();
 renderIssueQueue();
 fetchRepoPresets();

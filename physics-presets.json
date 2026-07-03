@@ -117,7 +117,7 @@
           "z": 0
         },
         "spin": {
-          "topspin": -1.5,
+          "topspin": -125.66,
           "sidespin": 0
         },
         "bounce": 0.88
@@ -178,8 +178,8 @@
           "z": 0
         },
         "spin": {
-          "topspin": -5,
-          "sidespin": -0.8
+          "topspin": -125.66,
+          "sidespin": -125.66
         },
         "bounce": 0.88
       }
@@ -239,8 +239,8 @@
           "z": 0
         },
         "spin": {
-          "topspin": -1.8,
-          "sidespin": -1.5
+          "topspin": -125.66,
+          "sidespin": -125.66
         },
         "bounce": 0.88
       }
@@ -300,8 +300,8 @@
           "z": 0
         },
         "spin": {
-          "topspin": -2.5,
-          "sidespin": -1.5
+          "topspin": -125.66,
+          "sidespin": -125.66
         },
         "bounce": 0.88
       }
@@ -361,8 +361,8 @@
           "z": 0
         },
         "spin": {
-          "topspin": -2.5,
-          "sidespin": -2
+          "topspin": -125.66,
+          "sidespin": -125.66
         },
         "bounce": 0.88
       }
@@ -422,8 +422,8 @@
           "z": 0
         },
         "spin": {
-          "topspin": -3,
-          "sidespin": -2
+          "topspin": -125.66,
+          "sidespin": -125.66
         },
         "bounce": 0.88
       }
@@ -483,8 +483,8 @@
           "z": 0
         },
         "spin": {
-          "topspin": -3,
-          "sidespin": -2
+          "topspin": -125.66,
+          "sidespin": -125.66
         },
         "bounce": 0.88
       }
@@ -544,7 +544,7 @@
           "z": 0
         },
         "spin": {
-          "topspin": -3,
+          "topspin": -125.66,
           "sidespin": 0
         },
         "bounce": 0.88
@@ -605,7 +605,7 @@
           "z": 0
         },
         "spin": {
-          "topspin": -3,
+          "topspin": -125.66,
           "sidespin": 0
         },
         "bounce": 0.88
@@ -666,7 +666,7 @@
           "z": 0
         },
         "spin": {
-          "topspin": -1.5,
+          "topspin": -125.66,
           "sidespin": 0
         },
         "bounce": 0.88
@@ -727,7 +727,7 @@
           "z": 0
         },
         "spin": {
-          "topspin": -1,
+          "topspin": -125.66,
           "sidespin": 0
         },
         "bounce": 0.88
@@ -788,7 +788,7 @@
           "z": 0
         },
         "spin": {
-          "topspin": -1,
+          "topspin": -125.66,
           "sidespin": 0
         },
         "bounce": 0.88
@@ -849,8 +849,8 @@
           "z": 0
         },
         "spin": {
-          "topspin": -1,
-          "sidespin": -1.5
+          "topspin": -125.66,
+          "sidespin": -150.8
         },
         "bounce": 0.88
       }
