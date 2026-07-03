@@ -447,11 +447,15 @@ function getSavedPresetMap(){
 function getRepoPresetMap(){
   return new Map(repoPresets.map(p=>[p.id, p]));
 }
-function getPresetById(id){
+function getPresetById(id, sourcePreference='saved_first'){
   if(!id) return null;
   const saved = getSavedPresetMap().get(id);
-  if(saved) return cloneJson(saved);
   const repo = getRepoPresetMap().get(id);
+  if(sourcePreference === 'repo_first'){
+    if(repo) return cloneJson(repo);
+    return saved ? cloneJson(saved) : null;
+  }
+  if(saved) return cloneJson(saved);
   return repo ? cloneJson(repo) : null;
 }
 function setCurrentPresetContext(id, source){
@@ -1550,7 +1554,7 @@ function getSelectedRepoIds(){
     .filter(Boolean);
 }
 function loadPresetForEditing(id, source='repo'){
-  const preset = getPresetById(id);
+  const preset = getPresetById(id, source === 'repo' ? 'repo_first' : 'saved_first');
   if(!preset){
     showToast(`找不到 preset: ${id}`, 'warn');
     return;
