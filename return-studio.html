@@ -579,6 +579,20 @@ function computeAdaptivePushMagnitude(incomingVel, contactZ, topspin){
 function computeAdaptivePushTiltX(incomingVel){
   return clamp(-0.1436 - 0.5376 * (incomingVel.x || 0), -1.2, 1.2);
 }
+// 使用者看連續對打展示時反映「弧線太高，希望能低低地互切」。固定
+// tiltY=0.5 對所有球一視同仁太保守——早於此的「拍面角度容錯窗口寬窄」實驗
+// 已經證實：強下旋球需要立起來的拍面（窗口窄，risk-avoidance），弱旋轉/
+// 不轉的球可以用比較平的拍面（窗口寬）。改成依接觸當下實際殘留的旋轉強度
+// （不是發球時的原始旋轉——真實碰撞後旋轉會衰減/反轉，backspin 落桌後在
+// 接觸點量測到的 |topspin| 大約只剩 45~83 rad/s，不是原始的 125.66，
+// no_spin 甚至會反轉成正的 42~45）內插：tiltY = 0.006×|topspin|。clamp
+// 下限試過 0.15（單拍準確率不變，但連續對打會因為旋轉逐拍衰減、tiltY 一路
+// 探底變太平，穩定顆數從 13/16 掉到 0/16）；改成 clamp 0.4~0.55 後單拍
+// 準確率跟固定 0.5 完全一樣（backspin 7/7、no_spin 2/2、sidebackspin 6/7），
+// 連續對打穩定顆數維持 13/16，平均弧線高度從桌面上方 ~1.0~1.1m 降到 ~0.81m。
+function computeAdaptivePushTiltY(topspin){
+  return clamp(0.006 * Math.abs(topspin || 0), 0.4, 0.55);
+}
 function makeRacketReturnVelocity(incomingVel, incomingSpin, tech, hitPoint, gravity){
   const spin = incomingSpin || {topspin:0, sidespin:0};
   const contactZ = hitPoint?.z;
@@ -593,7 +607,8 @@ function makeRacketReturnVelocity(incomingVel, incomingSpin, tech, hitPoint, gra
   // 就用實際要打出去的球拍速度方向本身。
   const swingDirRef = tech.adaptivePush ? tech.swingDirection : baseTechVel;
   const tiltX = tech.adaptivePush ? computeAdaptivePushTiltX(incomingVel) : tech.racketNormalTiltX;
-  const racketNormalBase = computeRacketNormal(tech.racketNormalTiltY, tiltX, swingDirRef);
+  const tiltY = tech.adaptivePush ? computeAdaptivePushTiltY(spin.topspin) : tech.racketNormalTiltY;
+  const racketNormalBase = computeRacketNormal(tiltY, tiltX, swingDirRef);
   const {techVel, racketNormal} = applyExecutionVariance(baseTechVel, racketNormalBase, tech);
   const epsilon = dynamicPaddleEpsilon(incomingVel, techVel, racketNormal);
   // 攝影棚測試用：停用側向自動瞄準修正，讓拍面角度/揮拍方向本身對左右落點的
