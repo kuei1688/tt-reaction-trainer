@@ -155,6 +155,10 @@ table.check th{color:var(--muted);font-weight:800}
         <div class="field"><label>techniqueVel Y（力量/弧度）</label><input id="techVelY" type="number" step="0.05"></div>
         <div class="field"><label>techniqueVel Z（前後）</label><input id="techVelZ" type="number" step="0.05"></div>
       </div>
+      <div class="hint" style="margin-top:6px">
+        球拍合成速度（3D 箭頭的長度）：<strong id="racketSpeedReadout">0.00</strong> 模擬單位
+        ≈ <strong id="racketSpeedRealReadout">0.00</strong> m/s（真實尺度，已還原時間拉長係數 ×1.528）
+      </div>
       <div class="grid" style="margin-top:8px">
         <div class="field"><label>技術上旋 topspin</label><input id="techTopspin" type="number" step="0.01"></div>
         <div class="field"><label>技術側旋 sidespin</label><input id="techSidespin" type="number" step="0.01"></div>
@@ -1249,6 +1253,11 @@ function applyArrowDrag(worldPoint){
 }
 let swingArrowOrigin = null;
 const ARROW_VISUAL_SCALE = 0.5; // 力量 1 個單位畫成 0.5 公尺長，純視覺縮放，不影響物理
+// 重力用 -4.2（不是真實的 -9.8），代表整個模擬的時間軸被刻意拉長了
+// √(9.8/4.2)≈1.528 倍（反應訓練遊戲需要球飛慢一點）。球拍速度數字本身是
+// 模擬尺度，要換算回真實 m/s 得再乘上這個時間拉長係數。見
+// docs/physics-engine-v2-plan.md「球拍速度尺度校準」。
+const SIM_TIME_DILATION = Math.sqrt(9.8 / 4.2);
 function updateSwingArrows(hitPoint, tech){
   if(!tech) return;
   swingArrowOrigin = new THREE.Vector3(hitPoint.x, hitPoint.y, hitPoint.z);
@@ -1270,6 +1279,10 @@ function updateSwingArrows(hitPoint, tech){
     arrow.setLength(length, length*0.25, length*0.15);
     swingHandles[i].position.copy(swingArrowOrigin).addScaledVector(dirVec, length);
   });
+  const speedEl = document.getElementById('racketSpeedReadout');
+  const speedRealEl = document.getElementById('racketSpeedRealReadout');
+  if(speedEl) speedEl.textContent = magnitude.toFixed(3);
+  if(speedRealEl) speedRealEl.textContent = (magnitude * SIM_TIME_DILATION).toFixed(3);
 }
 function addTable(scene){
   const table = new THREE.Mesh(new THREE.BoxGeometry(TABLE.width, .045, TABLE.length), new THREE.MeshStandardMaterial({color:0x19713d, roughness:.72}));
