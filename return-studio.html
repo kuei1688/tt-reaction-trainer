@@ -333,7 +333,7 @@ const BLADE_DAMPING_RATIO = 0.03;
 // 條件下），長顆粒膠皮在滑動速度超過~7m/s會出現飽和（顆粒本身變形有極限）。
 // TANGENT_KP 這裡的因次是「力/速度」（跟法向阻尼係數dampingC同一套寫法），
 // 不是論文原始的無因次kp，是套進我們自己單位系統後需要重新校準的工程估計值。
-const TANGENT_KP = 2.0;
+const TANGENT_KP = 1.0;
 // 反彈係數(COR)隨撞擊速度變化：同一篇論文量到「撞得越用力，相對彈回的比例越低」
 // （2~12 m/s之間COR可以差到0.15），這件事我們在 dynamicPaddleEpsilon()（攻球
 // 用的瞬時碰撞模型）已經有做，但切球的兩級彈簧模型之前完全沒有套用、固定用
@@ -767,8 +767,8 @@ function applyExecutionVariance(techVel, racketNormal, tech){
 // PUSH_LIFT：拖高分量，決定弧線高度/安全邊界（矯枉過正的話會變成很高的挑高球，
 // 使用者確認理想的過網高度大約落在網子上方15~30公分，太高的話馬上會被殺球）。
 // PUSH_DRIVE：往前送分量，決定球往前的推進力，才用來球速度做負回饋微調。
-const PUSH_LIFT_BASE = 0.6, PUSH_LIFT_K = 0, PUSH_LIFT_FLOOR = 0, PUSH_LIFT_NEUTRAL = 2, PUSH_LIFT_MAX = 3.0;
-const PUSH_DRIVE_BASE = 0.6, PUSH_DRIVE_K = 0, PUSH_DRIVE_FLOOR = 0.1, PUSH_DRIVE_NEUTRAL = 2, PUSH_DRIVE_MAX = 3.0;
+const PUSH_LIFT_BASE = 0.35, PUSH_LIFT_K = 0, PUSH_LIFT_FLOOR = 0, PUSH_LIFT_NEUTRAL = 2, PUSH_LIFT_MAX = 3.0;
+const PUSH_DRIVE_BASE = 0.7, PUSH_DRIVE_K = 0, PUSH_DRIVE_FLOOR = 0.1, PUSH_DRIVE_NEUTRAL = 2, PUSH_DRIVE_MAX = 3.0;
 function computeAdaptivePushLift(incomingVel){
   const speed = Math.hypot(incomingVel.x, incomingVel.z);
   return clamp(PUSH_LIFT_BASE - PUSH_LIFT_K * (speed - PUSH_LIFT_NEUTRAL), PUSH_LIFT_FLOOR, PUSH_LIFT_MAX);
@@ -788,7 +788,7 @@ function computeAdaptivePushTiltX(){
 // 還沒拆開、也還沒有 scale/outputRescale 這套內部放大機制之前校準的數字，
 // 物理意義已經不同，需要重新校準；固定值反而更符合「切球是固定揮拍動作」
 // 的設計原則（見 docs/physics-engine-v2-plan.md 的容錯設計討論）。
-const PUSH_TILT_Y = 0.6;
+const PUSH_TILT_Y = 0.8;
 function computeAdaptivePushTiltY(){
   return PUSH_TILT_Y;
 }
