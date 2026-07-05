@@ -300,13 +300,13 @@ const PADDLE_RESTITUTION_LOW = 0.9;   // 低速（~2m/s）反彈係數上限
 const PADDLE_RESTITUTION_HIGH = 0.75; // 高速（~12m/s）反彈係數下限
 const PADDLE_SPEED_LOW = 2.0;
 const PADDLE_SPEED_HIGH = 12.0;
-const PADDLE_FRICTION = 0.25;        // 拍面切向摩擦係數，膠皮/海綿工程估計值範圍內
+const PADDLE_FRICTION = 0.4;        // 拍面切向摩擦係數，膠皮/海綿工程估計值範圍內
 // PADDLE_BLEND：反彈方向跟切向滑動方向的耦合比例（0=純剛體法向量，1=完全順著球
 // 實際接近方向反彈），只在 push 技術套用（見 makeRacketReturnVelocity）。只用
 // Y-Z（垂直）分量算「接近方向」，刻意排除X分量——左右方向不該耦合進「切球到底是
 // 上旋還是下旋」這個判斷，這是 tiltX 補償公式（曾經需要~57°誇張拍面角度）被完全
 // 移除、改用這個機制取代之後的最終設計。見 docs/physics-engine-v2-plan.md。
-const PADDLE_BLEND = 0.9;
+const PADDLE_BLEND = 0.65;
 // 切球正式改用 Stage 4a 逐步積分接觸模型（彈簧-阻尼壓縮→釋放），取代原本「瞬時
 // 碰撞 + 事後倍率放大再縮小」的拼裝方案——使用者指出球陷入海綿、能量分配成
 // 「一部分轉旋轉、一部分沿拍面方向彈回去」這件事，本質上是海綿壓縮/釋放的動態
@@ -325,6 +325,29 @@ const PADDLE_DAMPING_RATIO = 0.0421;
 const BLADE_NODE_MASS = BALL_MASS * 0.15;
 const BLADE_SPRING_K = BLADE_NODE_MASS * (Math.PI / 0.0008) ** 2;
 const BLADE_DAMPING_RATIO = 0.03;
+// 切向反應：改用 Gossard et al.《Learning Racket-Ball Bounce Dynamics Across
+// Diverse Rubbers for Robotic Table Tennis》(arXiv:2604.11349) 量測出來的關係
+// Pxy = -kp·vs（切向反應正比於切向滑動速度，連續的黏性阻尼力，不是有記憶的
+// 彈簧），取代原本嘗試過的彈簧-阻尼「咬球」模型（結構上更複雜、搜尋出來的
+// 結果反而更差，已捨棄）。論文量到反貼膠皮 kp≈0.019（他們自己的無因次量測
+// 條件下），長顆粒膠皮在滑動速度超過~7m/s會出現飽和（顆粒本身變形有極限）。
+// TANGENT_KP 這裡的因次是「力/速度」（跟法向阻尼係數dampingC同一套寫法），
+// 不是論文原始的無因次kp，是套進我們自己單位系統後需要重新校準的工程估計值。
+const TANGENT_KP = 2.0;
+// 反彈係數(COR)隨撞擊速度變化：同一篇論文量到「撞得越用力，相對彈回的比例越低」
+// （2~12 m/s之間COR可以差到0.15），這件事我們在 dynamicPaddleEpsilon()（攻球
+// 用的瞬時碰撞模型）已經有做，但切球的兩級彈簧模型之前完全沒有套用、固定用
+// PADDLE_DAMPING_RATIO 對應固定的0.876。現在讓海綿那一級的阻尼比隨撞擊速度
+// 換算，共用同一組 PADDLE_RESTITUTION_LOW/HIGH/PADDLE_SPEED_LOW/HIGH 錨點。
+function restitutionToDampingRatio(e){
+  const L = Math.log(e);
+  return -L / Math.sqrt(Math.PI * Math.PI + L * L);
+}
+function speedDependentSpongeDampingRatio(impactSpeedReal){
+  const t = clamp((impactSpeedReal - PADDLE_SPEED_LOW) / (PADDLE_SPEED_HIGH - PADDLE_SPEED_LOW), 0, 1);
+  const e = PADDLE_RESTITUTION_LOW + (PADDLE_RESTITUTION_HIGH - PADDLE_RESTITUTION_LOW) * t;
+  return restitutionToDampingRatio(e);
+}
 
 // executionVariance：範圍解模式（RANGE_SOLUTION_MODE）用的動作抖動幅度，逐字對齊 game4.html。
 // racketNormalTiltY：拍面垂直開合角度，世界座標絕對值（跟揮拍方向無關）。
@@ -523,14 +546,18 @@ function bounceOffPlaneSubstepped(vel, spin, planeNormal, planeVel, springK, dam
   const maxSteps = opts.maxSteps || 3000;
   const wristBrakeRate = opts.wristBrakeRate || 0;
   const D = SIM_TIME_DILATION;
-  const dampingC = dampingRatio * 2 * Math.sqrt(springK * BALL_MASS);
-  const bladeDampingC = BLADE_DAMPING_RATIO * 2 * Math.sqrt(BLADE_SPRING_K * BLADE_NODE_MASS);
   const velLab = scaleVec3(vel, D);
   const wallVel0 = scaleVec3(planeVel, D);
   const relVelReal0 = subVec3(velLab, wallVel0);
   const rawNormalDot = dotVec3(relVelReal0, planeNormal);
   const normalSpeedReal = -rawNormalDot;
   if(normalSpeedReal <= 0) return bounceOffPlane(vel, spin, planeNormal, planeVel, 0, friction); // 沒在接近，直接不反彈
+  // 海綿的阻尼比隨撞擊速度變化（Gossard et al. 2604.11349：撞得越用力，相對
+  // 彈回比例越低），不再用固定的 dampingRatio 參數——傳進來的 dampingRatio
+  // 保留參數位置但不使用，避免動到呼叫端的函式簽名。
+  const effectiveDampingRatio = speedDependentSpongeDampingRatio(normalSpeedReal);
+  const dampingC = effectiveDampingRatio * 2 * Math.sqrt(springK * BALL_MASS);
+  const bladeDampingC = BLADE_DAMPING_RATIO * 2 * Math.sqrt(BLADE_SPRING_K * BLADE_NODE_MASS);
   const omega0 = scaleVec3({x:(spin && spin.topspin) || 0, y:0, z:(spin && spin.sidespin) || 0}, D);
   const r = scaleVec3(planeNormal, -BALL_RADIUS);
   const contactRelVel = addVec(relVelReal0, crossVec3(omega0, r));
@@ -554,6 +581,11 @@ function bounceOffPlaneSubstepped(vel, spin, planeNormal, planeVel, springK, dam
   let negBall = -dotVec3(velLab, planeNormal);
   let ballV1 = dotVec3(velLab, e1), ballV2 = dotVec3(velLab, e2);
   let negNode = -dotVec3(wallVel0, planeNormal); // 節點初始跟拍子一起動
+  // 切向反應改用 Pxy=-kp·vs（衝量正比於滑動速度，見上方 TANGENT_KP 說明），
+  // 取代原本的瞬時庫倫摩擦（bounceTangentialAxis）跟後來嘗試又捨棄的彈簧-
+  // 阻尼「咬球」模型。這是連續、平滑隨滑動速度變化的關係，沒有「先繃緊、
+  // 到臨界值才打滑」那種切換點，數值上也更穩定。仍然用庫倫上限（μ·法向力）
+  // 當作物理上的保險，避免滑動速度極端時衝量不合理地大。
   let x1 = 0, x2 = 0, t = 0;
   for(let i = 0; i < maxSteps; i++){
     const wallVelNow = wristBrakeRate ? scaleVec3(wallVel0, Math.exp(-wristBrakeRate * t)) : wallVel0;
@@ -565,13 +597,28 @@ function bounceOffPlaneSubstepped(vel, spin, planeNormal, planeVel, springK, dam
     negNode += ((-F1 + F2) / BLADE_NODE_MASS) * dt;
     x1 += (negBall - negNode) * dt;
     x2 += (negNode - negWallN) * dt;
-    const normalImpulseStep = Math.max(0, -F1) * dt;
-    if(normalImpulseStep > 0){
+    const normalForceNow = Math.max(0, -F1); // 這一瞬間海綿施加的法向力大小
+    if(normalForceNow > 0){
       const wallV1 = dotVec3(wallVelNow, e1), wallV2 = dotVec3(wallVelNow, e2);
-      const r1 = bounceTangentialAxis(ballV1 - wallV1, om1, normalImpulseStep, friction);
-      const r2 = bounceTangentialAxis(ballV2 - wallV2, om2, normalImpulseStep, friction);
-      ballV1 = r1.v2 + wallV1; om1 = r1.omega2;
-      ballV2 = r2.v2 + wallV2; om2 = r2.omega2;
+      const Fcap = friction * normalForceNow;
+      // e1 軸：F_t = -TANGENT_KP·vs，連續的黏性阻尼力（跟法向的dampingC同一套
+      // 寫法，不是瞬時衝量，TANGENT_KP 的因次是力/速度，不是論文原始的無因次kp）
+      {
+        const slip = (ballV1 - wallV1) - om1 * BALL_RADIUS;
+        const FtRaw = -TANGENT_KP * slip;
+        const Ft = clamp(FtRaw, -Fcap, Fcap);
+        ballV1 += (Ft / BALL_MASS) * dt;
+        om1 -= (Ft * BALL_RADIUS / BALL_INERTIA) * dt;
+      }
+      // e2 軸（跟e1用同一套公式——om1/om2的正負號慣例已經在賦值時處理過，
+      // 這裡不用再額外翻轉，翻轉是最後重建3D向量時才做的事）
+      {
+        const slip = (ballV2 - wallV2) - om2 * BALL_RADIUS;
+        const FtRaw = -TANGENT_KP * slip;
+        const Ft = clamp(FtRaw, -Fcap, Fcap);
+        ballV2 += (Ft / BALL_MASS) * dt;
+        om2 -= (Ft * BALL_RADIUS / BALL_INERTIA) * dt;
+      }
     }
     t += dt;
     if(x1 <= 0 && i > 5){
@@ -720,8 +767,8 @@ function applyExecutionVariance(techVel, racketNormal, tech){
 // PUSH_LIFT：拖高分量，決定弧線高度/安全邊界（矯枉過正的話會變成很高的挑高球，
 // 使用者確認理想的過網高度大約落在網子上方15~30公分，太高的話馬上會被殺球）。
 // PUSH_DRIVE：往前送分量，決定球往前的推進力，才用來球速度做負回饋微調。
-const PUSH_LIFT_BASE = 0.65, PUSH_LIFT_K = 0, PUSH_LIFT_FLOOR = 0, PUSH_LIFT_NEUTRAL = 2, PUSH_LIFT_MAX = 3.0;
-const PUSH_DRIVE_BASE = 1.2, PUSH_DRIVE_K = 0, PUSH_DRIVE_FLOOR = 0.1, PUSH_DRIVE_NEUTRAL = 2, PUSH_DRIVE_MAX = 3.0;
+const PUSH_LIFT_BASE = 0.6, PUSH_LIFT_K = 0, PUSH_LIFT_FLOOR = 0, PUSH_LIFT_NEUTRAL = 2, PUSH_LIFT_MAX = 3.0;
+const PUSH_DRIVE_BASE = 0.6, PUSH_DRIVE_K = 0, PUSH_DRIVE_FLOOR = 0.1, PUSH_DRIVE_NEUTRAL = 2, PUSH_DRIVE_MAX = 3.0;
 function computeAdaptivePushLift(incomingVel){
   const speed = Math.hypot(incomingVel.x, incomingVel.z);
   return clamp(PUSH_LIFT_BASE - PUSH_LIFT_K * (speed - PUSH_LIFT_NEUTRAL), PUSH_LIFT_FLOOR, PUSH_LIFT_MAX);
@@ -741,7 +788,7 @@ function computeAdaptivePushTiltX(){
 // 還沒拆開、也還沒有 scale/outputRescale 這套內部放大機制之前校準的數字，
 // 物理意義已經不同，需要重新校準；固定值反而更符合「切球是固定揮拍動作」
 // 的設計原則（見 docs/physics-engine-v2-plan.md 的容錯設計討論）。
-const PUSH_TILT_Y = 1.5;
+const PUSH_TILT_Y = 0.6;
 function computeAdaptivePushTiltY(){
   return PUSH_TILT_Y;
 }
@@ -785,7 +832,7 @@ function makeRacketReturnVelocity(incomingVel, incomingSpin, tech, hitPoint, gra
 // 減速、不是急停，接觸結束（~5.5ms）時應該還保留約4~5成速度，不是降到接近0
 // （急停量級的煞車只在指尖發球的獨立測試中用過，那個場景沒有寫成正式技術/
 // 常數，只是暫時的 preview_eval 手動測試，這裡不重複那組數字）。
-const PUSH_WRIST_BRAKE_RATE = 125;
+const PUSH_WRIST_BRAKE_RATE = 0;
 // push 技術改用 Stage 4a 逐步積分接觸模型（彈簧-阻尼壓縮→釋放），blend 先算出
 // 「等效法向量」（Y-Z-only，見 computeBlendedNormal），整個接觸期間固定用這個
 // 等效法向量做壓縮/釋放積分——不再需要 PADDLE_SCALE/OUTPUT_RESCALE 這種事後倍率，
