@@ -129,7 +129,7 @@ table.check th{color:var(--muted);font-weight:800}
       <h2>回擊選擇</h2>
       <div class="grid two">
         <div class="field">
-          <label>站位（進攻/切球/拉球可自由選；攻球會鎖定對應站位）</label>
+          <label>站位（進攻/切球可自由選；攻球會鎖定對應站位）</label>
           <select id="side">
             <option value="backhand">反手</option>
             <option value="forehand">正手</option>
@@ -141,7 +141,6 @@ table.check th{color:var(--muted);font-weight:800}
             <option value="forehand_attack">正手攻球</option>
             <option value="backhand_attack">反手攻球</option>
             <option value="push">切球</option>
-            <option value="loop">拉球</option>
           </select>
         </div>
       </div>
@@ -149,7 +148,7 @@ table.check th{color:var(--muted);font-weight:800}
 
     <div class="section">
       <h2>技術參數（會即時重新模擬）</h2>
-      <div class="hint" style="margin-bottom:6px">攻球/拉球使用直向反彈模型；切球使用拍面法向量反彈 + 切向摩擦衰減模型。</div>
+      <div class="hint" style="margin-bottom:6px">攻球使用直向反彈模型；切球使用拍面法向量反彈 + 切向摩擦衰減模型。</div>
       <div class="grid">
         <div class="field"><label>techniqueVel X</label><input id="techVelX" type="number" step="0.05"></div>
         <div class="field"><label>techniqueVel Y（力量/弧度）</label><input id="techVelY" type="number" step="0.05"></div>
@@ -164,7 +163,7 @@ table.check th{color:var(--muted);font-weight:800}
         <div class="field"><label>技術側旋 sidespin</label><input id="techSidespin" type="number" step="0.01"></div>
         <div class="field"><label>落桌加速 bounceBoost</label><input id="bounceBoost" type="number" step="0.01"></div>
       </div>
-      <div class="hint" style="margin-top:6px">正手攻球/反手攻球的站位是鎖定的（技術本身就代表站位）；切球/拉球兩邊站位共用同一組 techniqueVel，左右方向由 incomingVel 自然決定，不用手動加 offset。</div>
+      <div class="hint" style="margin-top:6px">正手攻球/反手攻球的站位是鎖定的（技術本身就代表站位）；切球兩邊站位共用同一組 techniqueVel，左右方向由 incomingVel 自然決定，不用手動加 offset。</div>
     </div>
 
     <div class="section">
@@ -301,13 +300,13 @@ const PADDLE_RESTITUTION_LOW = 0.9;   // 低速（~2m/s）反彈係數上限
 const PADDLE_RESTITUTION_HIGH = 0.75; // 高速（~12m/s）反彈係數下限
 const PADDLE_SPEED_LOW = 2.0;
 const PADDLE_SPEED_HIGH = 12.0;
-const PADDLE_FRICTION = 0.35;        // 拍面切向摩擦係數，膠皮/海綿工程估計值範圍內
+const PADDLE_FRICTION = 0.25;        // 拍面切向摩擦係數，膠皮/海綿工程估計值範圍內
 // PADDLE_BLEND：反彈方向跟切向滑動方向的耦合比例（0=純剛體法向量，1=完全順著球
 // 實際接近方向反彈），只在 push 技術套用（見 makeRacketReturnVelocity）。只用
 // Y-Z（垂直）分量算「接近方向」，刻意排除X分量——左右方向不該耦合進「切球到底是
 // 上旋還是下旋」這個判斷，這是 tiltX 補償公式（曾經需要~57°誇張拍面角度）被完全
 // 移除、改用這個機制取代之後的最終設計。見 docs/physics-engine-v2-plan.md。
-const PADDLE_BLEND = 0.8;
+const PADDLE_BLEND = 0.9;
 // 切球正式改用 Stage 4a 逐步積分接觸模型（彈簧-阻尼壓縮→釋放），取代原本「瞬時
 // 碰撞 + 事後倍率放大再縮小」的拼裝方案——使用者指出球陷入海綿、能量分配成
 // 「一部分轉旋轉、一部分沿拍面方向彈回去」這件事，本質上是海綿壓縮/釋放的動態
@@ -326,7 +325,6 @@ const PADDLE_DAMPING_RATIO = 0.0421;
 const BLADE_NODE_MASS = BALL_MASS * 0.15;
 const BLADE_SPRING_K = BLADE_NODE_MASS * (Math.PI / 0.0008) ** 2;
 const BLADE_DAMPING_RATIO = 0.03;
-const PADDLE_RESTITUTION = -0.9;    // 舊模型殘留常數，目前只有 loop（拉球）還在用，尚未套用球拍接觸力學
 
 // executionVariance：範圍解模式（RANGE_SOLUTION_MODE）用的動作抖動幅度，逐字對齊 game4.html。
 // racketNormalTiltY：拍面垂直開合角度，世界座標絕對值（跟揮拍方向無關）。
@@ -336,12 +334,15 @@ const DEFAULT_TECHNIQUES = {
   forehand_attack: {label:'正手攻球', model:'attack', techniqueVel:{x:0, y:-0.234, z:-1}, racketNormalTiltY:0.1, racketNormalTiltX:0, bounceBoost:0, executionVariance:{vel:0.08, normal:0.024}},
   backhand_attack: {label:'反手攻球', model:'attack', techniqueVel:{x:0, y:-0.234, z:-1}, racketNormalTiltY:0.1, racketNormalTiltX:0, bounceBoost:0, executionVariance:{vel:0.08, normal:0.024}},
   // 切球：拍面角度（racketNormalTiltY/X）跟揮拍方向（swingDirection）固定不變、獨立於彼此，
-  // 只有力道大小依球況調整（adaptivePush，見 computeAdaptivePushMagnitude()），
+  // 只有力道大小依球況調整（adaptivePush，見 computeAdaptivePushLift()/computeAdaptivePushDrive()），
   // 逐字對齊 game4.html。見 docs/physics-engine-v2-plan.md Phase 6。
+  // racketNormalTiltY/swingDirection 這兩個欄位只有在使用者手動關掉「自適應力道」
+  // checkbox 時才會被讀到（adaptivePush=true 時一律被 computeAdaptivePushTiltY()/
+  // computeAdaptivePushLift()+Drive() 蓋掉），數值上盡量跟目前真正在用的
+  // PUSH_TILT_Y/PUSH_LIFT_BASE/PUSH_DRIVE_BASE 對齊，避免手動模式下數字對不上。
   push: {label:'切球', model:'push', techniqueVel:{x:0, y:0, z:-0.4},
-    racketNormalTiltY:0.8, racketNormalTiltX:0, swingDirection:normalize({x:0, y:0.3, z:-1}), bounceBoost:0,
-    adaptivePush:true, executionVariance:{vel:0.12, normal:0.036}},
-  loop: {label:'拉球', model:'direct', techniqueVel:{x:-0.6, y:1.0, z:-1.65}, spin:{topspin:0.9,sidespin:0}, bounceBoost:0.3}
+    racketNormalTiltY:1.5, racketNormalTiltX:0, swingDirection:normalize({x:0, y:0.65, z:-1.2}), bounceBoost:0,
+    adaptivePush:true, executionVariance:{vel:0.12, normal:0.036}}
 };
 
 let TECHNIQUES = deepClone(DEFAULT_TECHNIQUES);
@@ -583,24 +584,6 @@ function bounceOffPlaneSubstepped(vel, spin, planeNormal, planeVel, springK, dam
   }
   return {vel, spin, dwellMs: t * 1000, regime: 'overdamped_no_exit'};
 }
-// 瞄準修正：割線法反推球拍速度的 x 分量，讓打出去的球側向速度趨近 targetOutX。
-function solveRacketVelXForTargetOutX(incomingVel, incomingSpin, racketNormal, techVel, restitution, friction, targetOutX){
-  function outXFor(rx){
-    const planeVel = {x:rx, y:techVel.y, z:techVel.z};
-    return bounceOffPlane(incomingVel, incomingSpin, racketNormal, planeVel, restitution, friction).vel.x;
-  }
-  let x0 = 0, x1 = -incomingVel.x;
-  let f0 = outXFor(x0) - targetOutX;
-  let f1 = outXFor(x1) - targetOutX;
-  for(let i=0;i<20;i++){
-    if(Math.abs(f1) < 1e-4) break;
-    const denom = (f1 - f0) || 1e-9;
-    const x2 = x1 - f1 * (x1 - x0) / denom;
-    x0 = x1; f0 = f1;
-    x1 = x2; f1 = outXFor(x1) - targetOutX;
-  }
-  return x1;
-}
 // 使用者指出調切球時遵守的原則：揮拍方向（球拍移動方向）要對準想打的落點，
 // 不是打直而已。用「球例校正資料庫」的資料驗證過：手動調的 techniqueVel.x
 // 跟擊球點 x 座標相關係數 -0.82，而且這批資料的實際落點 x 幾乎都收斂在 0
@@ -737,8 +720,8 @@ function applyExecutionVariance(techVel, racketNormal, tech){
 // PUSH_LIFT：拖高分量，決定弧線高度/安全邊界（矯枉過正的話會變成很高的挑高球，
 // 使用者確認理想的過網高度大約落在網子上方15~30公分，太高的話馬上會被殺球）。
 // PUSH_DRIVE：往前送分量，決定球往前的推進力，才用來球速度做負回饋微調。
-const PUSH_LIFT_BASE = 0.5, PUSH_LIFT_K = 0, PUSH_LIFT_FLOOR = 0, PUSH_LIFT_NEUTRAL = 2, PUSH_LIFT_MAX = 3.0;
-const PUSH_DRIVE_BASE = 0.8, PUSH_DRIVE_K = 0, PUSH_DRIVE_FLOOR = 0.1, PUSH_DRIVE_NEUTRAL = 2, PUSH_DRIVE_MAX = 3.0;
+const PUSH_LIFT_BASE = 0.65, PUSH_LIFT_K = 0, PUSH_LIFT_FLOOR = 0, PUSH_LIFT_NEUTRAL = 2, PUSH_LIFT_MAX = 3.0;
+const PUSH_DRIVE_BASE = 1.2, PUSH_DRIVE_K = 0, PUSH_DRIVE_FLOOR = 0.1, PUSH_DRIVE_NEUTRAL = 2, PUSH_DRIVE_MAX = 3.0;
 function computeAdaptivePushLift(incomingVel){
   const speed = Math.hypot(incomingVel.x, incomingVel.z);
   return clamp(PUSH_LIFT_BASE - PUSH_LIFT_K * (speed - PUSH_LIFT_NEUTRAL), PUSH_LIFT_FLOOR, PUSH_LIFT_MAX);
@@ -758,7 +741,7 @@ function computeAdaptivePushTiltX(){
 // 還沒拆開、也還沒有 scale/outputRescale 這套內部放大機制之前校準的數字，
 // 物理意義已經不同，需要重新校準；固定值反而更符合「切球是固定揮拍動作」
 // 的設計原則（見 docs/physics-engine-v2-plan.md 的容錯設計討論）。
-const PUSH_TILT_Y = 0.9;
+const PUSH_TILT_Y = 1.5;
 function computeAdaptivePushTiltY(){
   return PUSH_TILT_Y;
 }
@@ -800,13 +783,18 @@ function makeRacketReturnVelocity(incomingVel, incomingSpin, tech, hitPoint, gra
 // PUSH_WRIST_BRAKE_RATE：切球觸球瞬間手腕「自然減速」的速率（見
 // bounceOffPlaneSubstepped 的 wristBrakeRate 說明）——使用者確認切球該是自然
 // 減速、不是急停，接觸結束（~5.5ms）時應該還保留約4~5成速度，不是降到接近0
-// （那個急停的量級留給指尖發球用，見下方 FINGER_SPIN_WRIST_BRAKE_RATE）。
+// （急停量級的煞車只在指尖發球的獨立測試中用過，那個場景沒有寫成正式技術/
+// 常數，只是暫時的 preview_eval 手動測試，這裡不重複那組數字）。
 const PUSH_WRIST_BRAKE_RATE = 125;
 // push 技術改用 Stage 4a 逐步積分接觸模型（彈簧-阻尼壓縮→釋放），blend 先算出
 // 「等效法向量」（Y-Z-only，見 computeBlendedNormal），整個接觸期間固定用這個
 // 等效法向量做壓縮/釋放積分——不再需要 PADDLE_SCALE/OUTPUT_RESCALE 這種事後倍率，
 // 能量怎麼分配（旋轉 vs 沿法向彈回）完全由彈簧-阻尼動態 + 摩擦係數決定。
 // 其他技術（攻球等）維持原本的瞬時碰撞公式，不受影響。
+// 注意：epsilon（dynamicPaddleEpsilon 算出來的值）是為了非切球技術（攻球）準備的，
+// 切球這條分支完全不會用到它——呼叫端仍然每次都會算 epsilon 再傳進來，是可以省略
+// 的計算，但因為呼叫端（makeRacketReturnVelocity）也給攻球共用同一段邏輯，先不
+// 特別拆開來省這點計算。
 function applyPushContact(incomingVel, spin, racketNormal, planeVel, epsilon, tech, blend){
   if(tech.model === 'push'){
     const effNormal = computeBlendedNormal(incomingVel, planeVel, racketNormal, blend);
@@ -1019,18 +1007,10 @@ function findPushHitIndex(path){
   return findHitIndex(path);
 }
 // ── 回擊（跟 game4.html 的 makeReturnVelocity 一致）
-// 攻球/拉球走直向反彈；切球拆成拍面法向量反彈與切向摩擦衰減。
-function makeDirectReturnVelocity(incomingVel, techniqueVel){
-  return {
-    x: incomingVel.x * PADDLE_RESTITUTION + techniqueVel.x,
-    y: incomingVel.y * PADDLE_RESTITUTION + techniqueVel.y,
-    z: incomingVel.z * PADDLE_RESTITUTION + techniqueVel.z
-  };
-}
+// 攻球/切球都走球拍接觸力學（拍面法向量反彈，切球額外拆成彈簧-阻尼+切向摩擦衰減）。
+// 拉球（loop）技術先整個移除——使用者決定之後會重新設計，先拿掉避免舊版公式被誤用。
 function makeReturnVelocity(incomingVel, incomingSpin, tech, hitPoint, gravity){
-  if(tech.model === 'push' || tech.model === 'attack') return makeRacketReturnVelocity(incomingVel, incomingSpin, tech, hitPoint, gravity);
-  // loop（拉球，model:'direct'）尚未套用球拍接觸力學，維持舊公式（Phase 6 待辦）
-  return {vel: makeDirectReturnVelocity(incomingVel, tech.techniqueVel), spin: tech.spin || {topspin:0,sidespin:0}};
+  return makeRacketReturnVelocity(incomingVel, incomingSpin, tech, hitPoint, gravity);
 }
 function simulateReturnForPreset(preset, side, techniqueKey){
   const serve = simulateServe(preset);
@@ -1272,7 +1252,8 @@ function loadTechniqueFields(){
   setValue('techVelX', tech.techniqueVel.x);
   setValue('techVelY', tech.techniqueVel.y);
   setValue('techVelZ', tech.techniqueVel.z);
-  // attack/push 的旋轉是接觸力學動態算出來的，沒有靜態 spin 欄位（只有 loop 還在用）
+  // attack/push 的旋轉是接觸力學動態算出來的，沒有靜態 spin 欄位（拉球移除後，
+  // 現在沒有任何技術會用到 tech.spin，這裡保留防呆預設值）
   const spin = tech.spin || {topspin:0, sidespin:0};
   setValue('techTopspin', spin.topspin);
   setValue('techSidespin', spin.sidespin);
@@ -1291,7 +1272,7 @@ function readTechniqueFieldsIntoState(){
   tech.techniqueVel.x = num('techVelX');
   tech.techniqueVel.y = num('techVelY');
   tech.techniqueVel.z = num('techVelZ');
-  // 只有 loop（model:'direct'）還在用靜態 spin 欄位；attack/push 的旋轉是動態算出來的，
+  // 拉球移除後，現在沒有技術用靜態 spin 欄位；attack/push 的旋轉是動態算出來的，
   // 不寫回去，避免加了一個實際上沒作用、之後容易誤導的欄位。
   if(tech.spin){
     tech.spin.topspin = num('techTopspin');
