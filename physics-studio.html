@@ -342,6 +342,7 @@ button.warn{background:rgba(210,153,34,.12);color:var(--yellow);border-color:var
 </div>
 
 <script src="vendor/three.r128.min.js"></script>
+<script src="shared-physics-core.js"></script>
 <script>
 const TABLE = { length: 2.74, width: 1.525, height: 0.76, top: 0.781, net: 0.1525 };
 const BALL_RADIUS = 0.02;
@@ -360,12 +361,7 @@ const BALL_MASS = 0.0027;
 const BALL_INERTIA_ALPHA = 2 / 3;
 const BALL_INERTIA = BALL_INERTIA_ALPHA * BALL_MASS * BALL_RADIUS * BALL_RADIUS;
 const NET_COLLISION = {depth:0.012, zRestitution:0.16, xDamping:0.55, yDamping:0.35};
-const EPSILON_VERTICAL = 0.876;
-const EPSILON_OBLIQUE = 0.57;
-const EPSILON_MIN = 0.45;
 const OBLIQUE_ANGLE_DEG = 83;
-const SPIN_EPSILON_REFERENCE = 6.0;
-const CONTACT_FRICTION_MU = 0.13;
 const ids = ['solveTarget','startY','baselineOffset','lateralOffset','firstX','firstY','firstZ','targetX','targetY','targetZ','flightTime','netClearance','gravity','varX','varY','varZ','topspin','sidespin','bounce','presetSpinType','presetLength','presetPlacement','presetName'];
 const PRESET_TAG_LABELS = {
   spinType: {sidebackspin:'側下', sidespin:'側旋', backspin:'下旋', topspin:'上旋', no_spin:'不轉'},
@@ -682,29 +678,6 @@ function cloneVec(v){ return {x:v.x, y:v.y, z:v.z}; }
 function clamp(value, min, max){ return Math.max(min, Math.min(max, value)); }
 function horizontalImpactSpeed(vel){ return Math.hypot(vel.x || 0, vel.z || 0); }
 function spinSurfaceSpeed(spin){ return BALL_RADIUS * Math.hypot((spin && spin.topspin) || 0, (spin && spin.sidespin) || 0); }
-function dynamicEpsilon(vel, spin){
-  const normalSpeed = Math.abs(vel.y);
-  if(normalSpeed < 1e-9) return EPSILON_MIN;
-  const obliqueHorizontalSpeed = normalSpeed * Math.tan(OBLIQUE_ANGLE_DEG * Math.PI / 180);
-  const baselineT = clamp(horizontalImpactSpeed(vel) / obliqueHorizontalSpeed, 0, 1);
-  const baselineEpsilon = EPSILON_VERTICAL + (EPSILON_OBLIQUE - EPSILON_VERTICAL) * baselineT;
-  const spinT = clamp(spinSurfaceSpeed(spin || {topspin:0,sidespin:0}) / SPIN_EPSILON_REFERENCE, 0, 1);
-  const spinPenalty = (EPSILON_OBLIQUE - EPSILON_MIN) * spinT;
-  return clamp(baselineEpsilon - spinPenalty, EPSILON_MIN, EPSILON_VERTICAL);
-}
-function bounceTangentialAxis(v, omega, normalImpulse, mu){
-  const slip = v - omega * BALL_RADIUS;
-  if(Math.abs(slip) < 1e-9) return {v2:v, omega2:omega, regime:'rolling'};
-  const omega2Roll = (BALL_MASS * v * BALL_RADIUS + BALL_INERTIA * omega) / (BALL_MASS * BALL_RADIUS * BALL_RADIUS + BALL_INERTIA);
-  const v2Roll = omega2Roll * BALL_RADIUS;
-  const jNeededForRoll = BALL_MASS * (v2Roll - v);
-  const jAvailable = mu * normalImpulse;
-  if(Math.abs(jNeededForRoll) <= jAvailable) return {v2:v2Roll, omega2:omega2Roll, regime:'rolling'};
-  const jFriction = -Math.sign(slip) * jAvailable;
-  const v2 = v + jFriction / BALL_MASS;
-  const omega2 = omega - jFriction / (BALL_INERTIA / BALL_RADIUS);
-  return {v2, omega2, regime:'sliding'};
-}
 function bounceWithSpinPhysical(vel, spin, mu){
   const epsilon = dynamicEpsilon(vel, spin);
   const normalImpulse = BALL_MASS * (1 + epsilon) * Math.abs(vel.y);

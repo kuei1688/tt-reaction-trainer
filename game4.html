@@ -219,6 +219,7 @@ button:disabled{opacity:.45;cursor:not-allowed}
 </main>
 
 <script src="vendor/three.r128.min.js"></script>
+<script src="shared-physics-core.js"></script>
 <script>
 const TABLE = {length:2.74, width:1.525, height:0.76, top:0.781, net:0.1525};
 const BALL_RADIUS = 0.02;
@@ -236,12 +237,7 @@ const BUILD_VERSION = 'v9j21';
 const BALL_MASS = 0.0027;      // kg，ITTF 2.7g
 const BALL_INERTIA_ALPHA = 2 / 3; // 薄殼球轉動慣量係數：I = ALPHA * M * R²
 const BALL_INERTIA = BALL_INERTIA_ALPHA * BALL_MASS * BALL_RADIUS * BALL_RADIUS;
-const EPSILON_VERTICAL = 0.876;   // ITTF 球桌反彈測試（30cm 落下彈回 23cm）
-const EPSILON_OBLIQUE = 0.57;     // 斜向撞擊（入射角 ~83°）實測反彈係數
-const EPSILON_MIN = 0.45;         // 旋轉/斜向撞擊劇烈時的保守下限
 const OBLIQUE_ANGLE_DEG = 83;
-const SPIN_EPSILON_REFERENCE = 6.0; // 球面旋轉速度達到此值時，套用完整額外反彈損失
-const CONTACT_FRICTION_MU = 0.13;   // Phase 2 校準定案值
 const NET_COLLISION = {depth:0.012, zRestitution:0.16, xDamping:0.55, yDamping:0.35};
 // 回擊：球拍接觸力學（Phase 6，docs/physics-engine-v2-plan.md）。
 // 攻球/切球改用跟球對桌面同一套接觸力學（bounceOffPlane，見上方），球拍視為
@@ -502,30 +498,6 @@ function horizontalImpactSpeed(vel){
 }
 function spinSurfaceSpeed(spin){
   return BALL_RADIUS * Math.hypot((spin && spin.topspin) || 0, (spin && spin.sidespin) || 0);
-}
-function dynamicEpsilon(vel, spin){
-  const normalSpeed = Math.abs(vel.y);
-  if(normalSpeed < 1e-9) return EPSILON_MIN;
-  const obliqueHorizontalSpeed = normalSpeed * Math.tan(OBLIQUE_ANGLE_DEG * Math.PI / 180);
-  const baselineT = clamp(horizontalImpactSpeed(vel) / obliqueHorizontalSpeed, 0, 1);
-  const baselineEpsilon = EPSILON_VERTICAL + (EPSILON_OBLIQUE - EPSILON_VERTICAL) * baselineT;
-  const spinT = clamp(spinSurfaceSpeed(spin || {topspin:0,sidespin:0}) / SPIN_EPSILON_REFERENCE, 0, 1);
-  const spinPenalty = (EPSILON_OBLIQUE - EPSILON_MIN) * spinT;
-  return clamp(baselineEpsilon - spinPenalty, EPSILON_MIN, EPSILON_VERTICAL);
-}
-// 一維「球撞桌 + 旋轉」問題的通用解（打滑 / 純滾動判斷）
-function bounceTangentialAxis(v, omega, normalImpulse, mu){
-  const slip = v - omega * BALL_RADIUS;
-  if(Math.abs(slip) < 1e-9) return {v2:v, omega2:omega, regime:'rolling'};
-  const omega2Roll = (BALL_MASS * v * BALL_RADIUS + BALL_INERTIA * omega) / (BALL_MASS * BALL_RADIUS * BALL_RADIUS + BALL_INERTIA);
-  const v2Roll = omega2Roll * BALL_RADIUS;
-  const jNeededForRoll = BALL_MASS * (v2Roll - v);
-  const jAvailable = mu * normalImpulse;
-  if(Math.abs(jNeededForRoll) <= jAvailable) return {v2:v2Roll, omega2:omega2Roll, regime:'rolling'};
-  const jFriction = -Math.sign(slip) * jAvailable;
-  const v2 = v + jFriction / BALL_MASS;
-  const omega2 = omega - jFriction / (BALL_INERTIA / BALL_RADIUS);
-  return {v2, omega2, regime:'sliding'};
 }
 // 完整一次觸桌反彈：回傳新的 vel/spin（spin 現在會隨每次觸桌真的改變，不再是常數）
 function bounceWithSpinPhysical(vel, spin, mu){
