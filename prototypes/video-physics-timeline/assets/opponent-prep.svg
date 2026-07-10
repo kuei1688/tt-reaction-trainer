@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 260" role="img" aria-labelledby="title desc">
+  <title id="title">對手預備姿勢示意</title>
+  <desc id="desc">簡化人形以屈膝姿勢持拍準備回球</desc>
+  <defs>
+    <linearGradient id="shirt" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#38bdf8"/>
+      <stop offset="1" stop-color="#2563eb"/>
+    </linearGradient>
+  </defs>
+  <circle cx="132" cy="49" r="25" fill="#f1c7a5"/>
+  <path d="M104 78 Q132 65 159 80 L172 148 Q135 164 94 146 Z" fill="url(#shirt)"/>
+  <path d="M104 92 Q72 110 57 142" fill="none" stroke="#f1c7a5" stroke-width="18" stroke-linecap="round"/>
+  <path d="M155 91 Q181 111 192 137" fill="none" stroke="#f1c7a5" stroke-width="18" stroke-linecap="round"/>
+  <path d="M105 146 L75 218" fill="none" stroke="#172554" stroke-width="23" stroke-linecap="round"/>
+  <path d="M155 146 L190 216" fill="none" stroke="#172554" stroke-width="23" stroke-linecap="round"/>
+  <path d="M62 137 L111 125" fill="none" stroke="#7c2d12" stroke-width="9" stroke-linecap="round"/>
+  <ellipse cx="48" cy="141" rx="17" ry="26" transform="rotate(-75 48 141)" fill="#ef4444" stroke="#7f1d1d" stroke-width="5"/>
+  <path d="M62 223 H91 M178 222 H207" stroke="#e2e8f0" stroke-width="12" stroke-linecap="round"/>
+</svg>

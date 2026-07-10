@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "generated_at_utc": "2026-07-10T15:05:44.213Z",
+  "determinism_strategy": "decoded-content",
+  "bitexact_container_promised": false,
+  "timecode_renderer": "node-5x7-bitmap-font",
+  "centroid_method": "trigger-frame-rgb-threshold-roi",
+  "ffmpeg_version": "ffmpeg version 8.1.2-full_build-www.gyan.dev Copyright (c) 2000-2026 the FFmpeg developers",
+  "ffprobe_version": "ffprobe version 8.1.2-full_build-www.gyan.dev Copyright (c) 2007-2026 the FFmpeg developers",
+  "config_sha256": "7e0e2dc78cf16058c225b37b8755570e10d448f26c9449dc5e307f66aa08371c",
+  "render_settings_sha256": "4ff7f351aa6086f2a745aae628ed55354534e7c6783d9c4a5aeb32328ccde021",
+  "outputs": [
+    {
+      "serve_id": "prototype_short",
+      "path": "./assets/serve-short.webm",
+      "codec": "vp9",
+      "pixel_format": "yuv420p",
+      "width": 640,
+      "height": 360,
+      "fps": 60,
+      "duration_sec": 2,
+      "frame_count": 120,
+      "trigger_frame": 75,
+      "handoff_end_frame": 83,
+      "centroid": {
+        "count": 187,
+        "x": 409.5374,
+        "y": 151.0187,
+        "expected_x": 409.6,
+        "expected_y": 151.2,
+        "error_px": 0.1918
+      },
+      "post_handoff_ball_pixels": 0,
+      "file_sha256": "e49ab63a0e86bc48299f780857b6f16714e0ebe023aafbcf438c4f17225a3e89",
+      "decoded_frames_sha256": "691043495351bc4b59b5b5fdabccf095310ff6c346d79a61fac4187a245afdcf"
+    },
+    {
+      "serve_id": "prototype_long",
+      "path": "./assets/serve-long.webm",
+      "codec": "vp9",
+      "pixel_format": "yuv420p",
+      "width": 640,
+      "height": 360,
+      "fps": 60,
+      "duration_sec": 3.2,
+      "frame_count": 192,
+      "trigger_frame": 126,
+      "handoff_end_frame": 136,
+      "centroid": {
+        "count": 187,
+        "x": 294.6016,
+        "y": 136.8476,
+        "expected_x": 294.40000000000003,
+        "expected_y": 136.8,
+        "error_px": 0.2071
+      },
+      "post_handoff_ball_pixels": 0,
+      "file_sha256": "e0bf44637de76e075e53b37c8614fa46db14c94f4f0f3c1abe8a24a124b8bc54",
+      "decoded_frames_sha256": "17dfa9bdbe056243bec08d45dc5e87b0b0b2b5b593293adbc00b30e85bb3d230"
+    }
+  ]
+}

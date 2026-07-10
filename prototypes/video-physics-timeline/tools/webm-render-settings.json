@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "width": 640,
+  "height": 360,
+  "fps": 60,
+  "codec": "libvpx-vp9",
+  "pixel_format": "yuv420p",
+  "crf": 32,
+  "cpu_used": 0,
+  "ball": {
+    "rgb": [255, 186, 64],
+    "radius_px": 8,
+    "centroid_threshold": 86,
+    "centroid_roi_radius_px": 24
+  },
+  "background": {
+    "top_rgb": [7, 20, 38],
+    "horizon_rgb": [13, 40, 64],
+    "table_rgb": [7, 89, 133],
+    "line_rgb": [165, 202, 220],
+    "timecode_rgb": [190, 220, 235]
+  },
+  "determinism": {
+    "threads": 1,
+    "row_mt": 0,
+    "tile_columns": 0,
+    "frame_parallel": 0,
+    "auto_alt_ref": 0
+  }
+}
