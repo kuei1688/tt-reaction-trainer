@@ -18,6 +18,14 @@ const TABLE_PHYSICS_PATH = path.join(__dirname, "physics-v2-contact-mechanics.js
 const RACKET_PHYSICS_PATH = path.join(__dirname, "racket-contact-mechanics.js");
 
 const SHARED_CORE_CONSTANTS = [
+  "TABLE",
+  "BALL_RADIUS",
+  "BALL_MASS",
+  "BALL_INERTIA_ALPHA",
+  "BALL_INERTIA",
+  "MAX_TABLE_BOUNCES",
+  "NET_COLLISION",
+  "OBLIQUE_ANGLE_DEG",
   "EPSILON_VERTICAL",
   "EPSILON_OBLIQUE",
   "EPSILON_MIN",
@@ -26,11 +34,23 @@ const SHARED_CORE_CONSTANTS = [
 ];
 
 const SHARED_CORE_FUNCTIONS = [
+  "clamp",
+  "horizontalImpactSpeed",
+  "spinSurfaceSpeed",
+  "bounceWithSpinPhysical",
   "dynamicEpsilon",
   "bounceTangentialAxis",
 ];
 
 const SHARED_CORE_EXPECTED_VALUES = {
+  TABLE: {length:2.74, width:1.525, height:0.76, top:0.781, net:0.1525},
+  BALL_RADIUS: 0.02,
+  BALL_MASS: 0.0027,
+  BALL_INERTIA_ALPHA: 2 / 3,
+  BALL_INERTIA: (2 / 3) * 0.0027 * 0.02 * 0.02,
+  MAX_TABLE_BOUNCES: 8,
+  NET_COLLISION: {depth:0.012, zRestitution:0.16, xDamping:0.55, yDamping:0.35},
+  OBLIQUE_ANGLE_DEG: 83,
   EPSILON_VERTICAL: 0.876,
   EPSILON_OBLIQUE: 0.57,
   EPSILON_MIN: 0.45,
@@ -41,15 +61,11 @@ const SHARED_CORE_EXPECTED_VALUES = {
 const SHARED_CORE_EXPECTED_FINGERPRINTS = {
   dynamicEpsilon: "2ea0c04710",
   bounceTangentialAxis: "c2d211d423",
+  // Phase 2 functions: fingerprints not pinned
 };
 
 const SOURCE3_TARGETS = {
   constants: [
-    "TABLE",
-    "BALL_RADIUS",
-    "BALL_MASS",
-    "BALL_INERTIA_ALPHA",
-    "BALL_INERTIA",
     "PADDLE_RESTITUTION_LOW",
     "PADDLE_RESTITUTION_HIGH",
     "PADDLE_SPEED_LOW",
@@ -69,7 +85,6 @@ const SOURCE3_TARGETS = {
     "dotVec3",
     "rotateAroundAxis",
     "add",
-    "clamp",
     "addVec",
     "scaleVec",
     "normalize",
@@ -197,6 +212,24 @@ function requireValue(argv, index, flagName) {
   return value;
 }
 
+function evaluateSharedCoreValues() {
+  const text = fs.readFileSync(SHARED_CORE_PATH, "utf8");
+  const names = [
+    "TABLE", "BALL_RADIUS", "BALL_MASS", "BALL_INERTIA_ALPHA",
+    "BALL_INERTIA", "MAX_TABLE_BOUNCES", "NET_COLLISION", "OBLIQUE_ANGLE_DEG",
+    "clamp", "horizontalImpactSpeed", "spinSurfaceSpeed",
+    "CONTACT_FRICTION_MU", "EPSILON_VERTICAL", "EPSILON_OBLIQUE", "EPSILON_MIN", "SPIN_EPSILON_REFERENCE",
+  ];
+  // Wrap in a function to capture const values (vm context does not expose const declarations)
+  const nl = String.fromCharCode(10);
+  const wrapper = "(function() {" + nl + text + nl + "return { " + names.join(", ") + " };" + nl + "})()";
+  const sandbox = { Math, JSON, console };
+  const vm = require("vm");
+  const context = vm.createContext(sandbox);
+  const result = vm.runInContext(wrapper, context);
+  return result;
+}
+
 function loadGame4Physics(options = {}) {
   const sourceFile = resolveSourceFile(options.sourceFile);
   const htmlText = fs.readFileSync(sourceFile, "utf8");
@@ -209,11 +242,29 @@ function loadGame4Physics(options = {}) {
   const tablePhysics = loadProxyModule(TABLE_PHYSICS_PATH);
   const racketPhysics = loadProxyModule(RACKET_PHYSICS_PATH);
 
+  const sharedCoreValues = evaluateSharedCoreValues();
+
   const runtimeExternals = {
     bounceOffPlane: racketPhysics.exports.bounceOffPlane,
     bounceTangentialAxis: tablePhysics.exports.bounceTangentialAxis,
     bounceWithSpinPhysical: tablePhysics.exports.bounceWithSpinPhysical,
     dynamicEpsilon: tablePhysics.exports.dynamicEpsilon,
+    TABLE: sharedCoreValues.TABLE,
+    BALL_RADIUS: sharedCoreValues.BALL_RADIUS,
+    BALL_MASS: sharedCoreValues.BALL_MASS,
+    BALL_INERTIA_ALPHA: sharedCoreValues.BALL_INERTIA_ALPHA,
+    BALL_INERTIA: sharedCoreValues.BALL_INERTIA,
+    MAX_TABLE_BOUNCES: sharedCoreValues.MAX_TABLE_BOUNCES,
+    NET_COLLISION: sharedCoreValues.NET_COLLISION,
+    OBLIQUE_ANGLE_DEG: sharedCoreValues.OBLIQUE_ANGLE_DEG,
+    clamp: sharedCoreValues.clamp,
+    horizontalImpactSpeed: sharedCoreValues.horizontalImpactSpeed,
+    spinSurfaceSpeed: sharedCoreValues.spinSurfaceSpeed,
+    CONTACT_FRICTION_MU: sharedCoreValues.CONTACT_FRICTION_MU,
+    EPSILON_VERTICAL: sharedCoreValues.EPSILON_VERTICAL,
+    EPSILON_OBLIQUE: sharedCoreValues.EPSILON_OBLIQUE,
+    EPSILON_MIN: sharedCoreValues.EPSILON_MIN,
+    SPIN_EPSILON_REFERENCE: sharedCoreValues.SPIN_EPSILON_REFERENCE,
   };
 
   const localSymbolCache = new Map();
@@ -445,6 +496,8 @@ function resolveSourceFile(sourceFile) {
 }
 
 function loadSharedCore() {
+  let sharedCoreVmValues = null;
+  try { sharedCoreVmValues = evaluateSharedCoreValues(); } catch(e) { /* vm eval failed, fall back to evaluateLiteral */ }
   const text = fs.readFileSync(SHARED_CORE_PATH, "utf8");
   const exportsObject = requireFreshOrEmpty(SHARED_CORE_PATH);
   const exportKeys = Object.keys(exportsObject);
@@ -467,7 +520,7 @@ function loadSharedCore() {
       continue;
     }
 
-    const actualValue = evaluateLiteral(definition.valueSource);
+    const actualValue = sharedCoreVmValues != null && Object.prototype.hasOwnProperty.call(sharedCoreVmValues, name) ? sharedCoreVmValues[name] : evaluateLiteral(definition.valueSource);
     constants[name] = {
       found: true,
       source: "shared-physics-core.js",

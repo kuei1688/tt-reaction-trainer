@@ -69,6 +69,102 @@
         "game4.html",
         "physics-studio.html"
       ]
+    },
+    {
+      "name": "TABLE",
+      "files": [
+        "shared-physics-core.js"
+      ],
+      "must_not_appear_in": [
+        "game4.html",
+        "physics-studio.html",
+        "return-studio.html"
+      ],
+      "expected_match": true
+    },
+    {
+      "name": "BALL_RADIUS",
+      "files": [
+        "shared-physics-core.js"
+      ],
+      "must_not_appear_in": [
+        "game4.html",
+        "physics-studio.html",
+        "return-studio.html"
+      ],
+      "expected_match": true
+    },
+    {
+      "name": "BALL_MASS",
+      "files": [
+        "shared-physics-core.js"
+      ],
+      "must_not_appear_in": [
+        "game4.html",
+        "physics-studio.html",
+        "return-studio.html"
+      ],
+      "expected_match": true
+    },
+    {
+      "name": "BALL_INERTIA_ALPHA",
+      "files": [
+        "shared-physics-core.js"
+      ],
+      "must_not_appear_in": [
+        "game4.html",
+        "physics-studio.html",
+        "return-studio.html"
+      ],
+      "expected_match": true
+    },
+    {
+      "name": "BALL_INERTIA",
+      "files": [
+        "shared-physics-core.js"
+      ],
+      "must_not_appear_in": [
+        "game4.html",
+        "physics-studio.html",
+        "return-studio.html"
+      ],
+      "expected_match": true
+    },
+    {
+      "name": "MAX_TABLE_BOUNCES",
+      "files": [
+        "shared-physics-core.js"
+      ],
+      "must_not_appear_in": [
+        "game4.html",
+        "physics-studio.html",
+        "return-studio.html"
+      ],
+      "expected_match": true
+    },
+    {
+      "name": "NET_COLLISION",
+      "files": [
+        "shared-physics-core.js"
+      ],
+      "must_not_appear_in": [
+        "game4.html",
+        "physics-studio.html",
+        "return-studio.html"
+      ],
+      "expected_match": true
+    },
+    {
+      "name": "OBLIQUE_ANGLE_DEG",
+      "files": [
+        "shared-physics-core.js"
+      ],
+      "must_not_appear_in": [
+        "game4.html",
+        "physics-studio.html",
+        "return-studio.html"
+      ],
+      "expected_match": true
     }
   ],
   "functions": [
@@ -86,6 +182,54 @@
     },
     {
       "name": "bounceTangentialAxis",
+      "files": [
+        "shared-physics-core.js"
+      ],
+      "must_not_appear_in": [
+        "game4.html",
+        "physics-studio.html",
+        "return-studio.html"
+      ],
+      "expected_match": true
+    },
+    {
+      "name": "clamp",
+      "files": [
+        "shared-physics-core.js"
+      ],
+      "must_not_appear_in": [
+        "game4.html",
+        "physics-studio.html",
+        "return-studio.html"
+      ],
+      "expected_match": true
+    },
+    {
+      "name": "horizontalImpactSpeed",
+      "files": [
+        "shared-physics-core.js"
+      ],
+      "must_not_appear_in": [
+        "game4.html",
+        "physics-studio.html",
+        "return-studio.html"
+      ],
+      "expected_match": true
+    },
+    {
+      "name": "spinSurfaceSpeed",
+      "files": [
+        "shared-physics-core.js"
+      ],
+      "must_not_appear_in": [
+        "game4.html",
+        "physics-studio.html",
+        "return-studio.html"
+      ],
+      "expected_match": true
+    },
+    {
+      "name": "bounceWithSpinPhysical",
       "files": [
         "shared-physics-core.js"
       ],

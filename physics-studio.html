@@ -344,24 +344,16 @@ button.warn{background:rgba(210,153,34,.12);color:var(--yellow);border-color:var
 <script src="vendor/three.r128.min.js"></script>
 <script src="shared-physics-core.js"></script>
 <script>
-const TABLE = { length: 2.74, width: 1.525, height: 0.76, top: 0.781, net: 0.1525 };
-const BALL_RADIUS = 0.02;
 const BALL_RENDER_RADIUS = 0.034;
 const STORAGE_KEY = 'tt-physics-studio-presets-v1';
 const TRACKER_KEY = 'tt-physics-studio-tracker-v1';
 const SPIN_UNIT_KEY = 'tt-physics-studio-spin-unit-v1';
 const RAD_PER_RPS = Math.PI * 2;
 const PLAY_MIN_DURATION_MS = 3000;
-const MAX_TABLE_BOUNCES = 8;
 // ── 物理引擎 v2：真實觸桌接觸力學（docs/physics-engine-v2-plan.md Phase 1-4）──
 // 逐字對齊 game4.html / return-studio.html，取代舊的 BOUNCE_PHYSICS/applyBounceSpin
 // 簡化模型——那一版是專案還沒換算成真實 rad/s 之前校準的，跟正式引擎不同步，
 // 是這次「每顆球都無法發球成功」的根本原因，現在整個換掉，不再用近似模型。
-const BALL_MASS = 0.0027;
-const BALL_INERTIA_ALPHA = 2 / 3;
-const BALL_INERTIA = BALL_INERTIA_ALPHA * BALL_MASS * BALL_RADIUS * BALL_RADIUS;
-const NET_COLLISION = {depth:0.012, zRestitution:0.16, xDamping:0.55, yDamping:0.35};
-const OBLIQUE_ANGLE_DEG = 83;
 const ids = ['solveTarget','startY','baselineOffset','lateralOffset','firstX','firstY','firstZ','targetX','targetY','targetZ','flightTime','netClearance','gravity','varX','varY','varZ','topspin','sidespin','bounce','presetSpinType','presetLength','presetPlacement','presetName'];
 const PRESET_TAG_LABELS = {
   spinType: {sidebackspin:'側下', sidespin:'側旋', backspin:'下旋', topspin:'上旋', no_spin:'不轉'},
@@ -675,20 +667,6 @@ function solveVelocity(start, target, time, gravity){
 }
 function addVec(a,b){ return {x:a.x+b.x, y:a.y+b.y, z:a.z+b.z}; }
 function cloneVec(v){ return {x:v.x, y:v.y, z:v.z}; }
-function clamp(value, min, max){ return Math.max(min, Math.min(max, value)); }
-function horizontalImpactSpeed(vel){ return Math.hypot(vel.x || 0, vel.z || 0); }
-function spinSurfaceSpeed(spin){ return BALL_RADIUS * Math.hypot((spin && spin.topspin) || 0, (spin && spin.sidespin) || 0); }
-function bounceWithSpinPhysical(vel, spin, mu){
-  const epsilon = dynamicEpsilon(vel, spin);
-  const normalImpulse = BALL_MASS * (1 + epsilon) * Math.abs(vel.y);
-  const vyAfter = -epsilon * vel.y;
-  const zResult = bounceTangentialAxis(vel.z, spin.topspin || 0, normalImpulse, mu);
-  const xResult = bounceTangentialAxis(vel.x, -(spin.sidespin || 0), normalImpulse, mu);
-  return {
-    vel:{x:xResult.v2, y:vyAfter, z:zResult.v2},
-    spin:{topspin:zResult.omega2, sidespin:-xResult.omega2}
-  };
-}
 
 function solveBaseVelocity(state){
   if(state.solve.targetMode === 'serve_bounces'){
