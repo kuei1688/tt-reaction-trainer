@@ -31,8 +31,8 @@ FFmpeg 8.1.2 full build 已透過 WinGet 安裝，並確認包含 `libvpx-vp9` e
 ## 驗證結果
 
 - 純 Node renderer 測試：10/10 通過。
-- `prototype_short`：640×360、60 fps、2.000 秒、120 frames、trigger frame 75、質心誤差 0.1918 px、handoff 後球色像素 0。
-- `prototype_long`：640×360、60 fps、3.200 秒、192 frames、trigger frame 126、質心誤差 0.2071 px、handoff 後球色像素 0。
+- `prototype_short`：640×360、60 fps、2.000 秒、120 frames、trigger frame 75；修正桌面透視與球網後質心誤差 0.2162 px、handoff 後球色像素 0。
+- `prototype_long`：640×360、60 fps、3.200 秒、192 frames、trigger frame 126；修正桌面透視與球網後質心誤差 0.1912 px、handoff 後球色像素 0。
 - 完整 `--force` 重建一次後，兩支影片的 decoded-frame SHA-256 均與第一次相同；同一 FFmpeg 版本下 container SHA-256 也相同，但不列入跨版本契約。
 - 兩支檔案都是 VP9／yuv420p、無音訊。
 

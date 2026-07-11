@@ -77,3 +77,7 @@ git diff --check
 ## 下一個合法步驟
 
 先另行決定合成 WebM 的可重現產製契約，再產生兩支資產並執行真實 `<video>` 驗收。即使該驗收通過，也只能先建立主線接入評估／任務包，不能直接修改正式遊戲。
+
+## 後續進展（2026-07-11）
+
+合成 WebM 的產製契約已決定並完成，見 `AI_CONTEXT/CHECKPOINT_WEBM_GENERATOR.md`；shared-core physics bridge 已接上，見 `AI_CONTEXT/CHECKPOINT_VIDEO_PHYSICS_BRIDGE.md`；軌跡視覺化預覽器已建置，見 `AI_CONTEXT/CHECKPOINT_WEBM_PREVIEWER.md`。目前已開始「真實影片接上 physics handoff」的探索性實驗（單支題庫影片，尚未做 SPEC §8 定義的正式驗收），見 `AI_CONTEXT/CHECKPOINT_REAL_VIDEO_HANDOFF_EXPERIMENT.md`。主線接入評估仍未開始。
