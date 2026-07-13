@@ -2,7 +2,7 @@
 
 > 唯一的「現在狀態」入口。取代 `docs/PROJECT_OVERVIEW.md`、`CODEX_CONTEXT_SUMMARY.md`、舊 checkpoint 系列的即時資訊角色——那些文件已移入 `AI_CONTEXT/ARCHIVE/`,僅供追溯原始脈絡用,不再是必讀。
 >
-> 更新日期:2026-07-11
+> 更新日期:2026-07-13
 
 ## 專案是什麼
 
@@ -26,15 +26,17 @@
 - `733d5ce` shared-physics-core Phase 1:5 常數 + 2 函式
 - `273a254` shared-physics-core Phase 2:8 常數 + 4 函式(含 `bounceWithSpinPhysical`)+ VAL-003 發球批次驗證(16/16 通過)
 - `b870d53` Add isolated video timeline prototype and WebM tooling
+- `23fdb86` video-physics-timeline 原型更新：shared-core bridge、direction-c 探索、投影輔助與配套工具
 
 ## 目前活躍的工作支線:手機版影片→物理切鏡(prototype 限定)
 
 在 `prototypes/video-physics-timeline/` 隔離原型中探索「真人發球影片 + 物理模擬回合」如何在手機直式畫面呈現,**完全未接入正式 Trainer**。目前狀態:
 
 - 已建立時間軸引擎、WebM 產生器、投影/校準輔助工具、handoff-calibrator(見 `AI_CONTEXT/ARCHIVE/checkpoints/CHECKPOINT_WEBM_GENERATOR.md`、`CHECKPOINT_VIDEO_PHYSICS_BRIDGE.md`、`CHECKPOINT_WEBM_PREVIEWER.md`、`CHECKPOINT_HANDOFF_CALIBRATOR_PHASE1.md`)。
-- 已用單支真人影片 `real_backspin_001`(來源 `images/contact_backspin/001.mp4`)做探索性 handoff 實驗:觸球 anchor 與物理投影落差約 245–382px(不同工具測得數值略有差異),**尚未修正**,`generation_status: "ready"` 只是實驗操作性設定,不是正式驗收。
+- 已用單支真人影片 `real_backspin_001`(來源 `images/contact_backspin/contact_backspin_001.mp4`)做探索性 handoff 實驗:觸球 anchor 與物理投影落差約 245–382px(不同工具測得數值略有差異),**尚未修正**,`generation_status: "ready"` 只是實驗操作性設定,不是正式驗收。
 - 產品方向草案(方向 C:桌面持續可見、影片層明確切換退場)與 Claude 邊界審理仍在 `AI_CONTEXT/DRAFTS/mobile-video-to-physics-c-*.md`,停在 Gate 0(尚未獲使用者確認要不要進入視覺實驗)。
-- `prototypes/` 底下的檔案目前都還沒 commit(`b870d53` 之後的異動)。
+- `prototypes/` 底下的檔案已於 `23fdb86` commit（shared-core bridge、direction-c 探索、投影輔助、anchor 選點器、影片庫介面等）。
+- 2026-07-13 修掉 `tools/video-library-shell/library-app.js` 的黑屏 bug:`annEls`(以及類似的 `libEls`)是靠 `Object.fromEntries(idList.map(id => [id, $(id)]))` 從一份 id 字串陣列產生的,陣列漏列一個 HTML 裡實際存在的 id(這次是 `sourceName`)時,該屬性變成 `undefined`,之後任何 `annEls.xxx.value = ...` 會丟出 `TypeError`——而且是在 DOM event listener 內部丟的,不會被外層 try/catch 接住,主控台也不一定顯眼,容易被誤判成影片載入失敗。`direction-c-annotator`、`physics-studio` 等其他工具頁如果用同樣的 id-list 模式,改 HTML 時要記得同步改 JS 那份陣列。
 
 ## 兩層規則(取代舊的 Gate 0/1/2 審理流程)
 
