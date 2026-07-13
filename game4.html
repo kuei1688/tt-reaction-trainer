@@ -254,16 +254,16 @@ const PADDLE_RESTITUTION = -0.9;    // 舊模型殘留常數，目前只有 loop
 const TECHNIQUES = {
   forehand_attack: {label:'正手攻球', model:'attack', techniqueVel:{x:0, y:-0.234, z:-1}, racketNormalTiltY:0.1, racketNormalTiltX:0, executionVariance:{vel:0.08, normal:0.024}},
   backhand_attack: {label:'反手攻球', model:'attack', techniqueVel:{x:0, y:-0.234, z:-1}, racketNormalTiltY:0.1, racketNormalTiltX:0, executionVariance:{vel:0.08, normal:0.024}},
-  // 切球：拍面角度（racketNormalTiltY/X）跟揮拍方向（swingDirection）是兩個獨立的向量，
-  // 都固定不變（使用者指出這才是真實揮拍的邏輯：拍面朝向不等於球拍移動方向）；
-  // 只有「力道大小」（純量）依球速/擊球點到網距離/下旋量調整，用來控制落點深度
-  // （adaptivePush，見 computeAdaptivePushMagnitude()）。這個「方向固定、只調力道」
-  // 的設計比先前「角度+力道聯合調整」更簡單、容錯率更高（用精確搜尋逐點測時
-  // 46% vs 41%；目前這組線性擬合的力道公式實測是 37%，還沒完全逼近那個上限，
-  // 之後可以用非線性擬合或更多樣本改善）。
-  // 見 docs/physics-engine-v2-plan.md「固定框架下『哪些該穩定、哪些該調整』的受控實驗」。
+  // 切球：拍面角度（racketNormalTiltY/X）跟揮拍方向（swingDirection）固定不變、獨立於彼此，
+  // 只有力道大小依球況調整（adaptivePush，見 computeAdaptivePushLift()/computeAdaptivePushDrive()）。
+  // 2026-07-14 從舊的「單一 magnitude 乘固定方向」公式回寫成 return-studio.html 已驗證過的拆分版本
+  // （拖高/往前送兩個獨立分量，各自 clamp），修正舊公式把 Y/Z 分量綁死同一比例、搜尋空間裡沒有
+  // 「往前下」揮拍方向可選的問題。racketNormalTiltY/swingDirection 這兩個欄位只有在 adaptivePush
+  // 關閉時才會被讀到（目前沒有 UI 開關，adaptivePush 恆為 true），數值對齊
+  // PUSH_TILT_Y/PUSH_LIFT_BASE/PUSH_DRIVE_BASE，避免萬一之後加開關時數字對不上。
+  // 見 return-studio.html、docs/ARCHIVE/physics-engine-v2-plan.md。
   push: {label:'切球', model:'push', techniqueVel:{x:0, y:0, z:-0.4},
-    racketNormalTiltY:0.5, racketNormalTiltX:0, swingDirection:normalize({x:0, y:0.3, z:-1}),
+    racketNormalTiltY:1.0, racketNormalTiltX:0, swingDirection:normalize({x:0, y:0.28, z:-0.56}),
     adaptivePush:true, executionVariance:{vel:0.12, normal:0.036}},
   loop: {label:'拉球', model:'direct', techniqueVel:{x:-0.6, y:1.0, z:-1.65}, spin:{topspin:0.9,sidespin:0}, bounceBoost:0.3}
 };
@@ -1382,10 +1382,35 @@ function applyExecutionVariance(techVel, racketNormal, tech){
 // 舊公式是 6/7、5/7）。曾經試過額外疊加「擊球點離網距離」的修正項，結果
 // 反而讓全部 16 顆都變不穩定（兩個負回饋疊加互相打架、造成過度修正），
 // 所以先只用球速這一個變數。見 docs/physics-engine-v2-plan.md。
-function computeAdaptivePushMagnitude(incomingVel, contactZ, topspin){
+// 力道公式（2026-07-14 從 return-studio.html 回寫）：拖高（Y）跟往前送（Z）
+// 拆成兩個獨立分量，取代舊版單一 magnitude 乘固定方向向量的公式——舊公式把
+// Y/Z 分量綁死同一比例，搜尋空間裡沒有「往前下」這個揮拍方向可選，調任何
+// 參數都會讓一批球整批從能過網變成整批掛網。拆開後 return-studio.html 才
+// 第一次同時做到「14顆發球旋轉方向全對」+「14顆都有實測至少26公分落點
+// 安全邊界」。PUSH_LIFT_K/PUSH_DRIVE_K 目前都是 0——這不是刻意關閉，是還
+// 沒針對來球速度做負回饋微調的空接口（上面的控制律說明對這兩個分量一樣
+// 適用），回寫時先逐字對齊 return-studio.html 已驗證過的常數。
+// 見 return-studio.html、docs/ARCHIVE/physics-engine-v2-plan.md。
+// 拆成單獨的 const 宣告（不跟 return-studio.html 一樣逗號合併），因為
+// tools/load-game4-physics.js 的符號抽取器只認得每個宣告式的第一個變數，
+// 逗號合併的多重宣告會讓後面的名稱抽不到；數值跟 return-studio.html 逐一對齊。
+const PUSH_LIFT_BASE = 0.28;
+const PUSH_LIFT_K = 0;
+const PUSH_LIFT_FLOOR = 0;
+const PUSH_LIFT_NEUTRAL = 2;
+const PUSH_LIFT_MAX = 3.0;
+const PUSH_DRIVE_BASE = 0.56;
+const PUSH_DRIVE_K = 0;
+const PUSH_DRIVE_FLOOR = 0.1;
+const PUSH_DRIVE_NEUTRAL = 2;
+const PUSH_DRIVE_MAX = 3.0;
+function computeAdaptivePushLift(incomingVel){
   const speed = Math.hypot(incomingVel.x, incomingVel.z);
-  const neutralSpeed = 2.0, neutralMagnitude = 0.7, k = 0.3;
-  return clamp(neutralMagnitude - k * (speed - neutralSpeed), 0.02, 2.0);
+  return clamp(PUSH_LIFT_BASE - PUSH_LIFT_K * (speed - PUSH_LIFT_NEUTRAL), PUSH_LIFT_FLOOR, PUSH_LIFT_MAX);
+}
+function computeAdaptivePushDrive(incomingVel){
+  const speed = Math.hypot(incomingVel.x, incomingVel.z);
+  return clamp(PUSH_DRIVE_BASE - PUSH_DRIVE_K * (speed - PUSH_DRIVE_NEUTRAL), PUSH_DRIVE_FLOOR, PUSH_DRIVE_MAX);
 }
 // 拍面平面角度改成依來球左右速度調整。用「球例校正資料庫」裡使用者手動
 // 標好的 10 顆合理切球回歸出來：tiltX 主要跟來球的左右速度分量有關（不是
@@ -1397,35 +1422,30 @@ function computeAdaptivePushMagnitude(incomingVel, contactZ, topspin){
 function computeAdaptivePushTiltX(incomingVel){
   return clamp(-0.1436 - 0.5376 * (incomingVel.x || 0), -1.2, 1.2);
 }
-// 使用者看連續對打展示時反映「弧線太高，希望能低低地互切」。固定 tiltY=0.5
-// 對所有球一視同仁太保守——早於此的「拍面角度容錯窗口寬窄」實驗已證實：
-// 強下旋球需要立起來的拍面（窗口窄），弱旋轉/不轉的球可以用比較平的拍面
-// （窗口寬）。改成依接觸當下實際殘留的旋轉強度（不是發球時的原始旋轉——
-// 真實碰撞後旋轉會衰減/反轉，backspin 落桌後在接觸點量測到的 |topspin|
-// 大約只剩 45~83 rad/s，不是原始的 125.66，no_spin 甚至會反轉成正的
-// 42~45）內插：tiltY = 0.006×|topspin|。clamp 下限試過 0.15（單拍準確率
-// 不變，但連續對打會因為旋轉逐拍衰減、tiltY 一路探底變太平，穩定顆數從
-// 13/16 掉到 0/16）；改成 clamp 0.4~0.55 後單拍準確率跟固定 0.5 完全一樣
-// （backspin 7/7、no_spin 2/2、sidebackspin 6/7），連續對打穩定顆數維持
-// 13/16，平均弧線高度從桌面上方 ~1.0~1.1m 降到 ~0.81m。
-function computeAdaptivePushTiltY(topspin){
-  return clamp(0.006 * Math.abs(topspin || 0), 0.4, 0.55);
+// tiltY：固定拍面角度（2026-07-14 從 return-studio.html 回寫）。舊版依接觸
+// 當下殘留旋轉量內插（0.006×|topspin|，clamp 0.4~0.55），是拖高/往前送還
+// 沒拆開之前校準的數字，物理意義已經不同。return-studio.html 2026-07-13
+// 用 tools/push-tilty-*-sweep-calibration.js 重新掃描，搭配 PUSH_LIFT/DRIVE_BASE
+// 縮小成 0.8 倍，收斂到固定值 PUSH_TILT_Y=1.0（45°），11 顆校準發球全過網。
+const PUSH_TILT_Y = 1.0;
+function computeAdaptivePushTiltY(){
+  return PUSH_TILT_Y;
 }
 function makeRacketReturnVelocity(incomingVel, incomingSpin, tech, hitPoint, gravity){
   const spin = incomingSpin || {topspin:0, sidespin:0};
-  const contactZ = hitPoint?.z;
   let baseTechVel = speedScaledTechniqueVel(incomingVel, tech);
   if(tech.adaptivePush){
-    const magnitude = computeAdaptivePushMagnitude(incomingVel, contactZ, spin.topspin);
-    const dir = tech.swingDirection;
-    baseTechVel = {x:0, y:dir.y*magnitude, z:dir.z*magnitude};
+    const lift = computeAdaptivePushLift(incomingVel);
+    const drive = computeAdaptivePushDrive(incomingVel);
+    baseTechVel = {x:0, y:lift, z:-drive};
+    tech.swingDirection = baseTechVel;
   }
   // 平面角度是相對揮拍方向的旋轉，所以要先知道實際的揮拍方向參考向量：
   // 切球自適應力道公式開啟時用 swingDirection；其他情況（攻球）就用實際
   // 要打出去的球拍速度方向本身。
   const swingDirRef = tech.adaptivePush ? tech.swingDirection : baseTechVel;
   const tiltX = tech.adaptivePush ? computeAdaptivePushTiltX(incomingVel) : tech.racketNormalTiltX;
-  const tiltY = tech.adaptivePush ? computeAdaptivePushTiltY(spin.topspin) : tech.racketNormalTiltY;
+  const tiltY = tech.adaptivePush ? computeAdaptivePushTiltY() : tech.racketNormalTiltY;
   const racketNormalBase = computeRacketNormal(tiltY, tiltX, swingDirRef);
   const {techVel, racketNormal} = applyExecutionVariance(baseTechVel, racketNormalBase, tech);
   const epsilon = dynamicPaddleEpsilon(incomingVel, techVel, racketNormal);

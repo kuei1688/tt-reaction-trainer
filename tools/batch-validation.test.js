@@ -35,7 +35,8 @@ function main() {
     "RETURN_TARGET_X",
     "PADDLE_RESTITUTION",
     "bounceOffPlane",
-    "computeAdaptivePushMagnitude",
+    "computeAdaptivePushLift",
+    "computeAdaptivePushDrive",
     "computeAdaptivePushTiltX",
     "computeAdaptivePushTiltY",
     "estimateFlightTimeToTable",
@@ -354,45 +355,31 @@ function runAttackTests(context) {
 function runPushTests(context) {
   const { extracted, results } = context;
 
-  const magnitudeSlow = extracted.computeAdaptivePushMagnitude({ x: 0, y: -1, z: 1 }, 0.4, -120);
-  const magnitudeFast = extracted.computeAdaptivePushMagnitude({ x: 0, y: -1, z: 4 }, 1.8, 20);
+  // 2026-07-14：computeAdaptivePushMagnitude（單一耦合 magnitude）已回寫成
+  // return-studio.html 驗證過的拆分版本 computeAdaptivePushLift/Drive。
+  // PUSH_LIFT_K/PUSH_DRIVE_K 目前都是 0（尚未針對來球速度做負回饋微調的空
+  // 接口，見 game4.html 該常數上方註解），所以不管來球快慢，lift/drive
+  // 都恆等於各自的 BASE 值——這裡明確測出這個現況，之後把 K 調成非零值時
+  // 這條測試理應失敗，提醒要一併更新期望值。
+  const liftSlow = extracted.computeAdaptivePushLift({ x: 0, y: -1, z: 1 });
+  const liftFast = extracted.computeAdaptivePushLift({ x: 0, y: -1, z: 4 });
+  const driveSlow = extracted.computeAdaptivePushDrive({ x: 0, y: -1, z: 1 });
+  const driveFast = extracted.computeAdaptivePushDrive({ x: 0, y: -1, z: 4 });
   pushResult(results, {
     group: "push",
-    name: "computeAdaptivePushMagnitude-negative-feedback",
-    expected: { slowBall: 1, fastBall: 0.1 },
+    name: "computeAdaptivePushLiftDrive-currently-speed-independent",
+    expected: { liftSlow: 0.28, liftFast: 0.28, driveSlow: 0.56, driveFast: 0.56 },
     actual: {
-      slowBall: roundNumber(magnitudeSlow),
-      fastBall: roundNumber(magnitudeFast),
+      liftSlow: roundNumber(liftSlow),
+      liftFast: roundNumber(liftFast),
+      driveSlow: roundNumber(driveSlow),
+      driveFast: roundNumber(driveFast),
     },
     pass:
-      Math.abs(magnitudeSlow - 1) <= EPSILON &&
-      Math.abs(magnitudeFast - 0.1) <= EPSILON,
-  });
-
-  const magnitudeBySpeedOnlyA = extracted.computeAdaptivePushMagnitude(
-    { x: 0.6, y: -0.8, z: 2.4 },
-    0.2,
-    -150
-  );
-  const magnitudeBySpeedOnlyB = extracted.computeAdaptivePushMagnitude(
-    { x: 0.6, y: -2.8, z: 2.4 },
-    2.2,
-    80
-  );
-  pushResult(results, {
-    group: "push",
-    name: "computeAdaptivePushMagnitude-currently-ignores-contactZ-and-topspin",
-    expected: {
-      sameMagnitude: true,
-      value: 0.557841,
-    },
-    actual: {
-      first: roundNumber(magnitudeBySpeedOnlyA),
-      second: roundNumber(magnitudeBySpeedOnlyB),
-    },
-    pass:
-      Math.abs(magnitudeBySpeedOnlyA - magnitudeBySpeedOnlyB) <= EPSILON &&
-      Math.abs(magnitudeBySpeedOnlyA - 0.557841) <= 1e-6,
+      Math.abs(liftSlow - 0.28) <= EPSILON &&
+      Math.abs(liftFast - 0.28) <= EPSILON &&
+      Math.abs(driveSlow - 0.56) <= EPSILON &&
+      Math.abs(driveFast - 0.56) <= EPSILON,
   });
 
   const tiltXValues = {
@@ -416,25 +403,15 @@ function runPushTests(context) {
     }),
   });
 
-  const tiltYValues = {
-    zeroSpin: extracted.computeAdaptivePushTiltY(0),
-    mediumSpin: extracted.computeAdaptivePushTiltY(-80),
-    highSpinClamp: extracted.computeAdaptivePushTiltY(-200),
-  };
+  // 2026-07-14：computeAdaptivePushTiltY 已回寫成 return-studio.html 的固定值版本
+  // （不再依殘留旋轉量內插），現在不吃參數、恆回傳 PUSH_TILT_Y=1.0。
+  const tiltYValue = extracted.computeAdaptivePushTiltY();
   pushResult(results, {
     group: "push",
-    name: "computeAdaptivePushTiltY-abs-spin-and-clamp",
-    expected: {
-      zeroSpin: 0.4,
-      mediumSpin: 0.48,
-      highSpinClamp: 0.55,
-    },
-    actual: roundDeep(tiltYValues),
-    pass: deepRoundedEqual(tiltYValues, {
-      zeroSpin: 0.4,
-      mediumSpin: 0.48,
-      highSpinClamp: 0.55,
-    }),
+    name: "computeAdaptivePushTiltY-fixed-constant",
+    expected: { tiltY: 1.0 },
+    actual: { tiltY: roundNumber(tiltYValue) },
+    pass: Math.abs(tiltYValue - 1.0) <= EPSILON,
   });
 }
 

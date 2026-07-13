@@ -352,7 +352,7 @@ const DEFAULT_TECHNIQUES = {
   // computeAdaptivePushLift()+Drive() 蓋掉），數值上盡量跟目前真正在用的
   // PUSH_TILT_Y/PUSH_LIFT_BASE/PUSH_DRIVE_BASE 對齊，避免手動模式下數字對不上。
   push: {label:'切球', model:'push', techniqueVel:{x:0, y:0, z:-0.4},
-    racketNormalTiltY:1.5, racketNormalTiltX:0, swingDirection:normalize({x:0, y:0.65, z:-1.2}), bounceBoost:0,
+    racketNormalTiltY:1.0, racketNormalTiltX:0, swingDirection:normalize({x:0, y:0.28, z:-0.56}), bounceBoost:0,
     adaptivePush:true, executionVariance:{vel:0.12, normal:0.036}}
 };
 
@@ -712,8 +712,16 @@ function applyExecutionVariance(techVel, racketNormal, tech){
 // PUSH_LIFT：拖高分量，決定弧線高度/安全邊界（矯枉過正的話會變成很高的挑高球，
 // 使用者確認理想的過網高度大約落在網子上方15~30公分，太高的話馬上會被殺球）。
 // PUSH_DRIVE：往前送分量，決定球往前的推進力，才用來球速度做負回饋微調。
-const PUSH_LIFT_BASE = 0.35, PUSH_LIFT_K = 0, PUSH_LIFT_FLOOR = 0, PUSH_LIFT_NEUTRAL = 2, PUSH_LIFT_MAX = 3.0;
-const PUSH_DRIVE_BASE = 0.7, PUSH_DRIVE_K = 0, PUSH_DRIVE_FLOOR = 0.1, PUSH_DRIVE_NEUTRAL = 2, PUSH_DRIVE_MAX = 3.0;
+// 2026-07-13 重新校準：BASE 值乘 0.8（原本 0.35/0.7），搭配下面 PUSH_TILT_Y
+// 從 0.8 調到 1.0——單獨調 tiltY 時，固定力道會讓球過網率隨角度增加而崩潰
+// （tiltY≥1.0 時只剩 2/11），查出來是力道公式沒跟拍面角度聯動的假性收窄，
+// 不是真正的物理上限；力道整體縮小到 0.8 倍後，11 顆校準發球（16 顆排除
+// 2 顆不轉球 + 3 顆過度貼網短球）在 tiltY=1.0（45°）可以 11/11 全過，
+// 側旋出界問題（sidebackspin_*）也一併解決。過程與數據見
+// AI_CONTEXT/push_tiltxy_drivescaled_sweep_output.txt、
+// AI_CONTEXT/push_candidate_rally_and_timing_validation.txt。
+const PUSH_LIFT_BASE = 0.28, PUSH_LIFT_K = 0, PUSH_LIFT_FLOOR = 0, PUSH_LIFT_NEUTRAL = 2, PUSH_LIFT_MAX = 3.0;
+const PUSH_DRIVE_BASE = 0.56, PUSH_DRIVE_K = 0, PUSH_DRIVE_FLOOR = 0.1, PUSH_DRIVE_NEUTRAL = 2, PUSH_DRIVE_MAX = 3.0;
 function computeAdaptivePushLift(incomingVel){
   const speed = Math.hypot(incomingVel.x, incomingVel.z);
   return clamp(PUSH_LIFT_BASE - PUSH_LIFT_K * (speed - PUSH_LIFT_NEUTRAL), PUSH_LIFT_FLOOR, PUSH_LIFT_MAX);
@@ -733,7 +741,10 @@ function computeAdaptivePushTiltX(){
 // 還沒拆開、也還沒有 scale/outputRescale 這套內部放大機制之前校準的數字，
 // 物理意義已經不同，需要重新校準；固定值反而更符合「切球是固定揮拍動作」
 // 的設計原則（見 docs/physics-engine-v2-plan.md 的容錯設計討論）。
-const PUSH_TILT_Y = 0.8;
+// 2026-07-13：從 0.8（≈51°）調到 1.0（45°，落在使用者認定合理的 30~45°
+// 範圍內），需搭配上面 PUSH_LIFT_BASE/PUSH_DRIVE_BASE 的 0.8 倍縮放才成立，
+// 見上方註解與 AI_CONTEXT/push_tiltxy_drivescaled_sweep_output.txt。
+const PUSH_TILT_Y = 1.0;
 function computeAdaptivePushTiltY(){
   return PUSH_TILT_Y;
 }
