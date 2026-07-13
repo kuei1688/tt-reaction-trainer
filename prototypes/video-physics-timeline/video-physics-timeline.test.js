@@ -152,6 +152,15 @@ test("負數時間會失敗", () => {
   assert.throws(() => validateConfig(invalid), /不小於零/);
 });
 
+test("重力必須是有限負數且 hit window 必須存在", () => {
+  const invalidGravity = clone(config);
+  invalidGravity.serves[0].physics.gravity_mps2 = 4.2;
+  assert.throws(() => validateConfig(invalidGravity), /gravity_mps2/);
+  const invalidWindow = clone(config);
+  delete invalidWindow.serves[0].physics.hit_window_z_m;
+  assert.throws(() => validateConfig(invalidWindow), /hit_window_z_m/);
+});
+
 test("重複 serve ID 會失敗", () => {
   const invalid = clone(config);
   invalid.serves[1].id = invalid.serves[0].id;
@@ -165,7 +174,7 @@ test("缺少方向設定會失敗", () => {
 });
 
 test("正式素材路徑會失敗", () => {
-  for (const forbidden of ["../../videos.json", "../../images/contact_backspin/001.mp4", "../../game4.html"]) {
+  for (const forbidden of ["../../videos.json", "../../images/contact_backspin/contact_backspin_001.mp4", "../../game4.html"]) {
     const invalid = clone(config);
     invalid.serves[0].video.src = forbidden;
     assert.throws(() => validateConfig(invalid), /原型素材|正式素材/);

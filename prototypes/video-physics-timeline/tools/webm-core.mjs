@@ -3,6 +3,9 @@ import { readFile } from "node:fs/promises";
 import { spawnSync } from "node:child_process";
 import { dirname, isAbsolute, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { clamp, formatTimecode, getBallPose, getFramePlan, mix } from "./webm-frame-math.mjs";
+
+export * from "./webm-frame-math.mjs";
 
 export const TOOLS_DIR = dirname(fileURLToPath(import.meta.url));
 export const PROTOTYPE_DIR = resolve(TOOLS_DIR, "..");
@@ -70,49 +73,6 @@ export function validateRenderSettings(settings) {
   return settings;
 }
 
-export function getFramePlan(serve, settings) {
-  if (!serve?.video?.procedural_fallback?.start_uv || !serve.video.handoff?.video_anchor_uv) {
-    throw new Error(`${serve?.id || "serve"} 缺少程序化軌跡或 handoff anchor`);
-  }
-  const durationFramesFloat = serve.video.expected_duration_sec * settings.fps;
-  const triggerFrameFloat = serve.video.physics_trigger_time_sec * settings.fps;
-  if (Math.abs(durationFramesFloat - Math.round(durationFramesFloat)) > 1e-9) {
-    throw new Error(`${serve.id} duration 無法精確對齊 ${settings.fps} fps`);
-  }
-  if (Math.abs(triggerFrameFloat - Math.round(triggerFrameFloat)) > 1e-9) {
-    throw new Error(`${serve.id} trigger 無法精確對齊 ${settings.fps} fps`);
-  }
-  const frameCount = Math.round(durationFramesFloat);
-  const triggerFrame = Math.round(triggerFrameFloat);
-  if (triggerFrame < 0 || triggerFrame >= frameCount) throw new Error(`${serve.id} trigger frame 超出影片範圍`);
-  return Object.freeze({
-    frameCount,
-    triggerFrame,
-    handoffEndFrame: Math.ceil((serve.video.physics_trigger_time_sec + serve.video.handoff.duration_sec) * settings.fps),
-    anchorPx: Object.freeze({
-      x: serve.video.handoff.video_anchor_uv.x * settings.width,
-      y: serve.video.handoff.video_anchor_uv.y * settings.height
-    })
-  });
-}
-
-function clamp(value, min, max) { return Math.max(min, Math.min(max, value)); }
-function mix(a, b, t) { return a + (b - a) * t; }
-function easeOutCubic(t) { return 1 - Math.pow(1 - clamp(t, 0, 1), 3); }
-
-export function getBallPose(serve, settings, frameIndex) {
-  const timeSec = frameIndex / settings.fps;
-  const triggerSec = serve.video.physics_trigger_time_sec;
-  const start = serve.video.procedural_fallback.start_uv;
-  const anchor = serve.video.handoff.video_anchor_uv;
-  const progress = easeOutCubic(triggerSec === 0 ? 1 : timeSec / triggerSec);
-  const xUv = mix(start.x, anchor.x, progress);
-  const yUv = mix(start.y, anchor.y, progress) - Math.sin(progress * Math.PI) * 0.12;
-  const alpha = timeSec <= triggerSec
-    ? 1
-    : 1 - clamp((timeSec - triggerSec) / serve.video.handoff.duration_sec, 0, 1);
-  return Object.freeze({ x: xUv * settings.width, y: yUv * settings.height, alpha, timeSec });
-}
 
 function blendPixel(buffer, width, height, x, y, rgb, alpha = 1) {
   const px = Math.floor(x);
@@ -166,16 +126,9 @@ function drawLine(buffer, width, height, x1, y1, x2, y2, thickness, rgb, alpha =
 export function createStaticFrame(settings) {
   const { width, height } = settings;
   const buffer = Buffer.alloc(width * height * 3);
-  const horizon = Math.round(height * 0.55);
   for (let y = 0; y < height; y += 1) {
-    let rgb;
-    if (y < horizon) {
-      const t = y / Math.max(1, horizon - 1);
-      rgb = settings.background.top_rgb.map((channel, index) => Math.round(mix(channel, settings.background.horizon_rgb[index], t)));
-    } else {
-      const t = (y - horizon) / Math.max(1, height - horizon - 1);
-      rgb = settings.background.table_rgb.map((channel) => Math.round(channel * (1 - t * 0.36)));
-    }
+    const t = y / Math.max(1, height - 1);
+    const rgb = settings.background.top_rgb.map((channel, index) => Math.round(mix(channel, settings.background.horizon_rgb[index] * 0.55, t)));
     for (let x = 0; x < width; x += 1) {
       const index = (y * width + x) * 3;
       buffer[index] = rgb[0];
@@ -184,21 +137,38 @@ export function createStaticFrame(settings) {
     }
   }
   const line = settings.background.line_rgb;
-  drawLine(buffer, width, height, width * 0.07, height * 0.55, width * 0.93, height * 0.55, 2, line, 0.68);
-  drawLine(buffer, width, height, width * 0.93, height * 0.55, width * 0.76, height * 0.97, 2, line, 0.68);
-  drawLine(buffer, width, height, width * 0.76, height * 0.97, width * 0.24, height * 0.97, 2, line, 0.68);
-  drawLine(buffer, width, height, width * 0.24, height * 0.97, width * 0.07, height * 0.55, 2, line, 0.68);
-  drawLine(buffer, width, height, width * 0.5, height * 0.55, width * 0.5, height * 0.97, 2, line, 0.55);
-  fillRect(buffer, width, height, 0, height * 0.515, width, 3, line, 0.2);
-  return buffer;
-}
+  const centerX = width / 2;
+  const farY = height * 0.34;
+  const nearY = height * 0.94;
+  const farHalf = width * 0.26;
+  const nearHalf = width * 0.47;
+  for (let y = Math.floor(farY); y <= Math.ceil(nearY); y += 1) {
+    const depth = (y - farY) / (nearY - farY);
+    const halfWidth = mix(farHalf, nearHalf, clamp(depth, 0, 1));
+    fillRect(buffer, width, height, centerX - halfWidth, y, halfWidth * 2, 1, settings.background.table_rgb);
+  }
+  drawLine(buffer, width, height, centerX - farHalf, farY, centerX + farHalf, farY, 2, line, 0.72);
+  drawLine(buffer, width, height, centerX + farHalf, farY, centerX + nearHalf, nearY, 2, line, 0.72);
+  drawLine(buffer, width, height, centerX + nearHalf, nearY, centerX - nearHalf, nearY, 2, line, 0.72);
+  drawLine(buffer, width, height, centerX - nearHalf, nearY, centerX - farHalf, farY, 2, line, 0.72);
+  drawLine(buffer, width, height, centerX, farY, centerX, nearY, 2, line, 0.6);
 
-export function formatTimecode(timeSec, frameIndex) {
-  const totalMs = Math.round(timeSec * 1000);
-  const minutes = Math.floor(totalMs / 60000);
-  const seconds = Math.floor((totalMs % 60000) / 1000);
-  const milliseconds = totalMs % 1000;
-  return `T${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}.${String(milliseconds).padStart(3, "0")} F${String(frameIndex).padStart(4, "0")}`;
+  const netY = mix(farY, nearY, 0.5);
+  const netHalf = mix(farHalf, nearHalf, 0.5);
+  const netHeight = height * 0.075;
+  fillRect(buffer, width, height, centerX - netHalf, netY - netHeight, netHalf * 2, netHeight, line, 0.2);
+  drawLine(buffer, width, height, centerX - netHalf, netY - netHeight, centerX + netHalf, netY - netHeight, 2, line, 0.86);
+  drawLine(buffer, width, height, centerX - netHalf, netY - netHeight - 5, centerX - netHalf, netY + 4, 2, line, 0.86);
+  drawLine(buffer, width, height, centerX + netHalf, netY - netHeight - 5, centerX + netHalf, netY + 4, 2, line, 0.86);
+  for (let row = 1; row < 4; row += 1) {
+    const y = netY - netHeight + row * netHeight / 4;
+    drawLine(buffer, width, height, centerX - netHalf, y, centerX + netHalf, y, 1, line, 0.22);
+  }
+  for (let column = 1; column < 12; column += 1) {
+    const x = centerX - netHalf + column * netHalf * 2 / 12;
+    drawLine(buffer, width, height, x, netY - netHeight, x, netY, 1, line, 0.22);
+  }
+  return buffer;
 }
 
 function drawBitmapText(buffer, width, height, text, x, y, scale, rgb) {
@@ -414,5 +384,14 @@ export function selectServes(config, serveId) {
 }
 
 export function contentHashes(configText, settingsText) {
-  return Object.freeze({ config_sha256: sha256(configText), render_settings_sha256: sha256(settingsText) });
+  const config = JSON.parse(configText);
+  const renderInputs = {
+    schema_version: config.schema_version,
+    serves: config.serves.map((serve) => ({ id: serve.id, video: serve.video }))
+  };
+  return Object.freeze({
+    timeline_config_sha256_at_generation: sha256(configText),
+    render_inputs_sha256: sha256(JSON.stringify(renderInputs)),
+    render_settings_sha256: sha256(settingsText)
+  });
 }

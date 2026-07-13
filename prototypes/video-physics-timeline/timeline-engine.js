@@ -107,6 +107,12 @@
       }
 
       assertObject(serve.physics, `${base}.physics`);
+      if (!Number.isFinite(serve.physics.gravity_mps2) || serve.physics.gravity_mps2 >= 0) {
+        throw new Error(`${base}.physics.gravity_mps2 必須是有限負數`);
+      }
+      if (!Number.isFinite(serve.physics.hit_window_z_m)) {
+        throw new Error(`${base}.physics.hit_window_z_m 必須是有限數字`);
+      }
       const ball = serve.physics.initial_ball_state;
       assertObject(ball, `${base}.physics.initial_ball_state`);
       validateVector(ball.position_m, `${base}.physics.initial_ball_state.position_m`);
@@ -222,7 +228,8 @@
         this._record("VIDEO_TRIGGER_REACHED", time, { mediaTimeSec });
         this._effect("START_PHYSICS_SERVE", {
           handoff: this.serve.video.handoff,
-          initialBallState: this.serve.physics.initial_ball_state
+          initialBallState: this.serve.physics.initial_ball_state,
+          physics: this.serve.physics
         });
       }
 
@@ -240,7 +247,7 @@
           this.substate = SUBSTATES.COUNTER_RETURN;
           this.phaseStartedAtMs += this.response.counter_delay_sec * 1000;
           this._record("COUNTER_CONTACT", time, { returnBallProfile: this.response.return_ball_profile });
-          this._effect("OPPONENT_COUNTER", { response: this.response });
+          this._effect("OPPONENT_COUNTER", { response: this.response, direction: this.direction, physics: this.serve.physics });
         }
       }
       return this.getSnapshot(time);
@@ -262,7 +269,7 @@
         this.substate = SUBSTATES.PREP;
         this.phaseStartedAtMs = nowMs;
         this._record(type, nowMs, { direction: this.direction });
-        this._effect("PLAYER_RETURN", { response: this.response });
+        this._effect("PLAYER_RETURN", { response: this.response, direction: this.direction, physics: this.serve.physics });
         this._effect("OPPONENT_PREP", { response: this.response });
         return true;
       }

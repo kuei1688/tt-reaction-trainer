@@ -2,6 +2,8 @@
   "use strict";
 
   const api = window.VideoPhysicsTimeline;
+  const physicsBridge = window.PrototypePhysicsBridge;
+  const projection = window.VideoPhysicsProjection;
   const els = {
     video: document.getElementById("serveVideo"),
     canvas: document.getElementById("timelineCanvas"),
@@ -19,6 +21,9 @@
     elapsed: document.getElementById("elapsedMetric"),
     session: document.getElementById("sessionMetric"),
     delta: document.getElementById("deltaMetric"),
+    physics: document.getElementById("physicsMetric"),
+    velocity: document.getElementById("velocityMetric"),
+    contact: document.getElementById("contactMetric"),
     eventLog: document.getElementById("eventLog"),
     eventCount: document.getElementById("eventCount"),
     status: document.getElementById("statusLine")
@@ -32,6 +37,79 @@
   function clamp(value, min, max) { return Math.max(min, Math.min(max, value)); }
   function mix(a, b, t) { return a + (b - a) * t; }
   function ease(t) { return 1 - Math.pow(1 - clamp(t, 0, 1), 3); }
+
+  function tableGeometry(width, height) {
+    return {
+      farY: height * 0.34,
+      nearY: height * 0.94,
+      farHalf: width * 0.26,
+      nearHalf: width * 0.47
+    };
+  }
+
+  function drawTableScene(width, height) {
+    const geometry = tableGeometry(width, height);
+    const centerX = width / 2;
+    const gradient = ctx.createLinearGradient(0, 0, 0, height);
+    gradient.addColorStop(0, "#071426");
+    gradient.addColorStop(0.58, "#0d2840");
+    gradient.addColorStop(1, "#07111e");
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, width, height);
+
+    ctx.fillStyle = "#075985";
+    ctx.beginPath();
+    ctx.moveTo(centerX - geometry.farHalf, geometry.farY);
+    ctx.lineTo(centerX + geometry.farHalf, geometry.farY);
+    ctx.lineTo(centerX + geometry.nearHalf, geometry.nearY);
+    ctx.lineTo(centerX - geometry.nearHalf, geometry.nearY);
+    ctx.closePath();
+    ctx.fill();
+    ctx.strokeStyle = "rgba(226,232,240,.72)";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(centerX, geometry.farY);
+    ctx.lineTo(centerX, geometry.nearY);
+    ctx.stroke();
+
+    const netDepth = 0.5;
+    const netY = mix(geometry.farY, geometry.nearY, netDepth);
+    const netHalf = mix(geometry.farHalf, geometry.nearHalf, netDepth);
+    const netHeight = height * 0.075;
+    ctx.fillStyle = "rgba(203,213,225,.2)";
+    ctx.fillRect(centerX - netHalf, netY - netHeight, netHalf * 2, netHeight);
+    ctx.strokeStyle = "rgba(226,232,240,.86)";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(centerX - netHalf, netY - netHeight);
+    ctx.lineTo(centerX + netHalf, netY - netHeight);
+    ctx.moveTo(centerX - netHalf, netY - netHeight - 5);
+    ctx.lineTo(centerX - netHalf, netY + 4);
+    ctx.moveTo(centerX + netHalf, netY - netHeight - 5);
+    ctx.lineTo(centerX + netHalf, netY + 4);
+    ctx.stroke();
+    ctx.strokeStyle = "rgba(226,232,240,.22)";
+    ctx.lineWidth = 1;
+    for (let row = 1; row < 4; row += 1) {
+      const y = netY - netHeight + row * netHeight / 4;
+      ctx.beginPath();
+      ctx.moveTo(centerX - netHalf, y);
+      ctx.lineTo(centerX + netHalf, y);
+      ctx.stroke();
+    }
+    for (let column = 1; column < 12; column += 1) {
+      const x = centerX - netHalf + column * netHalf * 2 / 12;
+      ctx.beginPath();
+      ctx.moveTo(x, netY - netHeight);
+      ctx.lineTo(x, netY);
+      ctx.stroke();
+    }
+  }
+
+  function worldToScreen(position, width, height) {
+    return projection.worldToScreen(position, physicsBridge.constants.table, width, height);
+  }
 
   class MediaAdapter {
     constructor(video) {
@@ -49,7 +127,7 @@
       if (serve.video.generation_status === "pending_generation") {
         this.mode = "procedural";
         this.video.style.display = "none";
-        els.mediaMode.textContent = "程序化替代 · WebM 待定";
+        els.mediaMode.textContent = "程序化媒體 · shared-core physics";
         return;
       }
 
@@ -102,30 +180,7 @@
 
     draw(width, height) {
       if (this.mode === "video") return;
-      const gradient = ctx.createLinearGradient(0, 0, 0, height);
-      gradient.addColorStop(0, "#071426");
-      gradient.addColorStop(0.54, "#0d2840");
-      gradient.addColorStop(0.55, "#075985");
-      gradient.addColorStop(1, "#082f49");
-      ctx.fillStyle = gradient;
-      ctx.fillRect(0, 0, width, height);
-
-      ctx.strokeStyle = "rgba(226,232,240,.48)";
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.moveTo(width * 0.07, height * 0.55);
-      ctx.lineTo(width * 0.93, height * 0.55);
-      ctx.lineTo(width * 0.76, height * 0.97);
-      ctx.lineTo(width * 0.24, height * 0.97);
-      ctx.closePath();
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.moveTo(width * 0.5, height * 0.55);
-      ctx.lineTo(width * 0.5, height * 0.97);
-      ctx.stroke();
-
-      ctx.fillStyle = "rgba(226,232,240,.12)";
-      ctx.fillRect(0, height * 0.51, width, 4);
+      drawTableScene(width, height);
       if (!this.serve || !this.running) return;
 
       const video = this.serve.video;
@@ -156,12 +211,17 @@
       this.mode = "idle";
       this.sessionId = 0;
       this.startedAtMs = 0;
+      this.lastTickAtMs = 0;
       this.anchor = null;
       this.position = null;
+      this.velocity = null;
+      this.world = null;
+      this.physicsSettings = null;
+      this.handoffOffset = null;
       this.handoffDurationMs = 0;
-      this.enteredSent = false;
       this.completeSent = false;
-      this.targetX = 0.5;
+      this.paused = false;
+      this.lastContact = "none";
       this.overlayDeltaPx = null;
     }
 
@@ -170,18 +230,33 @@
       this.sessionId = effect.sessionId;
       this.mode = "serve";
       this.startedAtMs = nowMs;
+      this.lastTickAtMs = nowMs;
       this.anchor = { x: anchorUv.x * els.canvas.width, y: anchorUv.y * els.canvas.height };
-      this.position = { ...this.anchor };
+      this.physicsSettings = effect.detail.physics;
+      this.world = physicsBridge.createWorld(effect.detail.initialBallState, effect.detail.physics);
+      this.position = { ...this.world.position };
+      this.velocity = { ...this.world.velocity };
+      const projected = worldToScreen(this.position, els.canvas.width, els.canvas.height);
+      this.handoffOffset = { x: this.anchor.x - projected.x, y: this.anchor.y - projected.y };
       this.handoffDurationMs = effect.detail.handoff.duration_sec * 1000;
-      this.enteredSent = false;
       this.completeSent = false;
-      this.overlayDeltaPx = Math.hypot(this.position.x - this.anchor.x, this.position.y - this.anchor.y);
+      this.paused = false;
+      this.lastContact = "none";
+      this.overlayDeltaPx = Math.hypot(this.handoffOffset.x, this.handoffOffset.y);
     }
 
     playerReturn(effect, nowMs) {
       this.mode = "player-return";
       this.sessionId = effect.sessionId;
       this.startedAtMs = nowMs;
+      this.lastTickAtMs = nowMs;
+      const returnState = physicsBridge.makeReturnInitialState(this.position, effect.detail.direction, false);
+      this.world = physicsBridge.createWorld(returnState, effect.detail.physics);
+      this.position = { ...this.world.position };
+      this.velocity = { ...this.world.velocity };
+      this.physicsSettings = effect.detail.physics;
+      this.handoffOffset = null;
+      this.paused = false;
       this.completeSent = false;
     }
 
@@ -189,51 +264,68 @@
       this.mode = "counter-return";
       this.sessionId = effect.sessionId;
       this.startedAtMs = nowMs;
+      this.lastTickAtMs = nowMs;
+      const returnState = physicsBridge.makeReturnInitialState(this.position, effect.detail.direction, true);
+      this.world = physicsBridge.createWorld(returnState, effect.detail.physics);
+      this.position = { ...this.world.position };
+      this.velocity = { ...this.world.velocity };
+      this.physicsSettings = effect.detail.physics;
+      this.handoffOffset = null;
+      this.paused = false;
       this.completeSent = false;
-      const profile = effect.detail.response.return_ball_profile;
-      this.targetX = profile.endsWith("left") ? 0.28 : profile.endsWith("right") ? 0.72 : 0.5;
     }
 
     tick(nowMs) {
-      const w = els.canvas.width;
-      const h = els.canvas.height;
-      if (this.mode === "serve") {
-        const elapsed = nowMs - this.startedAtMs;
-        const t = clamp(elapsed / 720, 0, 1);
-        this.position = {
-          x: this.anchor.x + Math.sin(t * Math.PI) * w * 0.035,
-          y: this.anchor.y + t * h * 0.39 - Math.sin(t * Math.PI) * h * 0.08
-        };
-        if (t >= 1 && !this.enteredSent) {
-          this.enteredSent = true;
+      if (!this.world || this.paused || this.mode === "idle") return;
+      const deltaSec = Math.max(0, (nowMs - this.lastTickAtMs) / 1000);
+      this.lastTickAtMs = nowMs;
+      const snapshot = physicsBridge.stepWorld(this.world, deltaSec);
+      this.position = { ...snapshot.position };
+      this.velocity = { ...snapshot.velocity };
+      for (const event of snapshot.events) {
+        if (event.type === "TABLE_BOUNCE") this.lastContact = `table × ${snapshot.bounces}`;
+        if (event.type === "NET_CROSSED") this.lastContact = "net crossed";
+        if (event.type === "NET_HIT") this.lastContact = "net hit";
+        if (this.mode === "serve" && event.type === "HIT_WINDOW_ENTERED") {
+          this.paused = true;
           this.dispatch("BALL_ENTERED_HIT_WINDOW", { sessionId: this.sessionId, nowMs });
         }
-      } else if (this.mode === "player-return") {
-        const t = ease((nowMs - this.startedAtMs) / 720);
-        this.position = {
-          x: mix(w * 0.53, w * 0.5, t),
-          y: mix(h * 0.82, h * 0.31, t) - Math.sin(t * Math.PI) * h * 0.12
-        };
-      } else if (this.mode === "counter-return") {
-        const t = ease((nowMs - this.startedAtMs) / 860);
-        this.position = {
-          x: mix(w * 0.5, w * this.targetX, t),
-          y: mix(h * 0.31, h * 0.88, t) - Math.sin(t * Math.PI) * h * 0.15
-        };
-        if (t >= 1 && !this.completeSent) {
+        if (this.mode === "counter-return" && event.type === "HIT_WINDOW_ENTERED" && !this.completeSent) {
           this.completeSent = true;
+          this.paused = true;
           this.dispatch("RALLY_COMPLETE", { sessionId: this.sessionId, nowMs });
         }
+      }
+      if (this.mode === "counter-return" && snapshot.stopped && !this.completeSent) {
+        this.completeSent = true;
+        this.dispatch("RALLY_COMPLETE", { sessionId: this.sessionId, nowMs });
       }
     }
 
     draw(nowMs) {
       if (!this.position || this.mode === "idle") return;
+      const projected = worldToScreen(this.position, els.canvas.width, els.canvas.height);
       let alpha = 1;
+      let x = projected.x;
+      let y = projected.y;
       if (this.mode === "serve" && this.handoffDurationMs > 0) {
-        alpha = clamp((nowMs - this.startedAtMs) / this.handoffDurationMs, 0, 1);
+        const progress = clamp((nowMs - this.startedAtMs) / this.handoffDurationMs, 0, 1);
+        alpha = progress;
+        if (this.handoffOffset) {
+          x += this.handoffOffset.x * (1 - progress);
+          y += this.handoffOffset.y * (1 - progress);
+        }
       }
-      drawBall(this.position.x, this.position.y, 10, alpha, "#fbbf24");
+      drawBall(x, y, 10, alpha, "#fbbf24");
+    }
+
+    telemetry() {
+      return {
+        position: this.position,
+        velocity: this.velocity,
+        bounces: this.world ? this.world.bounces : 0,
+        contact: this.lastContact
+      };
     }
   }
 
@@ -333,7 +425,7 @@
   }
 
   function clearError() {
-    els.status.innerHTML = '設定檔、狀態機與素材全部位於隔離原型目錄。<a class="spec-link" href="./SPEC.md">閱讀規格</a>';
+    els.status.innerHTML = '隔離 bridge 已載入 shared physics core；正式核心本身未修改。<a class="spec-link" href="./SPEC.md">閱讀規格</a>';
     els.status.classList.remove("error");
   }
 
@@ -345,6 +437,14 @@
     els.session.textContent = String(snapshot.sessionId);
     els.delta.textContent = physics.overlayDeltaPx === null ? "—" : `${physics.overlayDeltaPx.toFixed(1)} px`;
     els.delta.classList.toggle("good", physics.overlayDeltaPx !== null && physics.overlayDeltaPx <= 8);
+    const telemetry = physics.telemetry();
+    els.physics.textContent = telemetry.position
+      ? `${telemetry.position.x.toFixed(2)}, ${telemetry.position.y.toFixed(2)}, ${telemetry.position.z.toFixed(2)} m`
+      : "—";
+    els.velocity.textContent = telemetry.velocity
+      ? `${telemetry.velocity.x.toFixed(2)}, ${telemetry.velocity.y.toFixed(2)}, ${telemetry.velocity.z.toFixed(2)} m/s`
+      : "—";
+    els.contact.textContent = telemetry.position ? `${telemetry.contact} · b${telemetry.bounces}` : "—";
     els.stageReadout.textContent = `${snapshot.substate || snapshot.state} · ${media.currentTimeSec.toFixed(3)}s`;
     els.hit.disabled = snapshot.state !== api.STATES.AWAIT_PLAYER_HIT;
     els.start.disabled = !config || ![api.STATES.IDLE, api.STATES.COMPLETE].includes(snapshot.state);
@@ -378,6 +478,7 @@
 
   async function init() {
     try {
+      if (!physicsBridge || !projection) throw new Error("shared physics bridge 或 projection helper 未載入");
       const response = await fetch("./timeline-config.json", { cache: "no-store" });
       if (!response.ok) throw new Error(`設定檔載入失敗：HTTP ${response.status}`);
       config = await response.json();

@@ -8,3 +8,5 @@
 - `timeline-config.json` 目前仍以 `generation_status: "pending_generation"` 保護 runtime；檔案產生成功不等於真實 `<video>` 瀏覽器驗收完成。
 
 目前固定使用 640×360、60 fps、VP9／yuv420p、無音訊與單執行緒 libvpx 設定；重建請使用工具的 `--force`，不要以無來源的 WebM 覆蓋。
+
+`serve-real-backspin-001.mp4` 是例外：複製自既有題庫 `images/contact_backspin/contact_backspin_001.mp4`（真實賽事畫面），用於 `real_backspin_001` 這筆實驗性 serve，測試真實影片能否驅動 physics handoff。這不是本原型新造的合成素材，規格也不同（540×682、60fps、H.264，非 640×360 VP9）。詳見 `AI_CONTEXT/CHECKPOINT_REAL_VIDEO_HANDOFF_EXPERIMENT.md`。

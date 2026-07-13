@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>真實影片 Anchor 選點器</title>
+<style>
+  :root { color-scheme: dark; --bg:#07111f; --panel:#101d30; --line:#31445f; --ink:#e9f2ff; --muted:#9db0c9; --accent:#4dd8f0; --warn:#ffd166; --ok:#77e0a0; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:radial-gradient(circle at 10% 0%,#14365a,transparent 38rem),var(--bg); color:var(--ink); font:15px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif; }
+  button,input,textarea { font:inherit; border:1px solid var(--line); border-radius:8px; background:#0a1525; color:var(--ink); }
+  button { padding:8px 12px; cursor:pointer; font-weight:700; } button:hover:not(:disabled) { border-color:var(--accent); } button:disabled { cursor:not-allowed; opacity:.45; }
+  input { padding:7px 8px; } textarea { width:100%; min-height:140px; padding:10px; resize:vertical; font:12px/1.45 ui-monospace,Consolas,monospace; }
+  .shell { width:min(1100px,100%); margin:auto; padding:24px clamp(14px,3vw,42px) 48px; }
+  h1 { margin:0; letter-spacing:-.03em; font-size:1.5rem; } .sub { margin-top:6px; color:var(--muted); }
+  .notice { margin:16px 0; padding:10px 12px; border:1px solid var(--line); border-radius:9px; color:var(--muted); background:rgba(16,29,48,.78); font-size:.86rem; }
+  .layout { display:grid; grid-template-columns:minmax(0,1fr) 300px; gap:18px; margin-top:8px; }
+  .card { padding:16px; border:1px solid var(--line); border-radius:12px; background:rgba(16,29,48,.88); box-shadow:0 18px 42px rgba(0,0,0,.2); }
+  .stage { position:relative; aspect-ratio:16/9; border-radius:10px; overflow:hidden; background:#000; cursor:crosshair; }
+  .stage video { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; pointer-events:none; }
+  .stage .empty { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:var(--muted); text-align:center; padding:20px; }
+  .stage .marker { position:absolute; width:22px; height:22px; margin:-11px 0 0 -11px; border-radius:50%; border:2px solid var(--warn); box-shadow:0 0 0 2px rgba(0,0,0,.6),0 0 12px rgba(255,209,102,.7); pointer-events:none; display:none; }
+  .stage .marker::before, .stage .marker::after { content:""; position:absolute; background:var(--warn); }
+  .stage .marker::before { left:50%; top:-6px; width:1px; height:34px; margin-left:-.5px; }
+  .stage .marker::after { top:50%; left:-6px; height:1px; width:34px; margin-top:-.5px; }
+  .transport { display:flex; align-items:center; gap:8px; margin-top:12px; flex-wrap:wrap; }
+  .transport input[type="range"] { flex:1; min-width:160px; accent-color:var(--accent); }
+  .time-readout { color:var(--muted); font:600 .84rem ui-monospace,Consolas,monospace; min-width:82px; }
+  .field { display:grid; gap:5px; margin-bottom:12px; }
+  .field label { color:var(--muted); font-size:.8rem; font-weight:700; }
+  .field input { width:100%; }
+  .field .unit { color:#758aa5; font-weight:400; }
+  .row2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .output-head { display:flex; justify-content:space-between; align-items:center; gap:10px; margin:16px 0 8px; }
+  .help { margin-top:14px; color:var(--muted); font-size:.82rem; line-height:1.5; }
+  .help code { color:#cfe4ff; }
+</style>
+</head>
+<body>
+<main class="shell">
+  <header>
+    <h1>真實影片 Anchor 選點器</h1>
+    <p class="sub">直接在影片畫面上點擊球的位置，取代手算座標。畫面裁切方式與正式舞台一致（16:9、object-fit: cover）。</p>
+  </header>
+  <p class="notice">此工具是離線小幫手：只在你的瀏覽器裡處理選取的影片檔，不會上傳、不需要伺服器，用 <code>file://</code> 雙擊開啟也能跑。</p>
+
+  <div class="layout">
+    <section class="card">
+      <div class="field">
+        <label for="videoFile">選擇影片檔</label>
+        <input id="videoFile" type="file" accept="video/*">
+      </div>
+      <div class="stage" id="stage">
+        <video id="video" muted playsinline preload="metadata"></video>
+        <div class="empty" id="emptyNote">先選一支影片，畫面會顯示在這裡</div>
+        <div class="marker" id="marker"></div>
+      </div>
+      <div class="transport">
+        <button id="stepBack" type="button" disabled>−1 frame</button>
+        <button id="playToggle" type="button" disabled>播放</button>
+        <button id="stepFwd" type="button" disabled>+1 frame</button>
+        <input id="scrub" type="range" min="0" max="1" step="0.001" value="0" disabled>
+        <span class="time-readout" id="timeReadout">0.000 / 0.000 s</span>
+      </div>
+      <p class="help">播放到觸球那一刻，暫停，直接在畫面上<strong>點一下球的位置</strong>——右側會立刻算出 <code>video_anchor_uv</code>。想微調可以再點一次覆蓋，或用右側數字框手動修正。</p>
+    </section>
+
+    <aside class="card">
+      <div class="field">
+        <label>fps（用來把時間吸附到影格邊界）</label>
+        <input id="fps" type="number" min="1" step="1" value="60">
+      </div>
+      <div class="field">
+        <label for="triggerTime">physics_trigger_time_sec</label>
+        <input id="triggerTime" type="number" min="0" step="0.001" disabled>
+      </div>
+      <button id="setTriggerFromScrub" type="button" disabled style="width:100%;margin-bottom:12px;">用目前播放時間設為 trigger</button>
+      <div class="field">
+        <label>expected_duration_sec <span class="unit">(自動偵測，可微調)</span></label>
+        <input id="durationSec" type="number" min="0" step="0.001" disabled>
+      </div>
+      <div class="field">
+        <label for="handoffDuration">handoff.duration_sec</label>
+        <input id="handoffDuration" type="number" min="0.01" step="0.01" value="0.15">
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label for="anchorX">anchor_uv.x</label>
+          <input id="anchorX" type="number" min="0" max="1" step="0.001" disabled>
+        </div>
+        <div class="field">
+          <label for="anchorY">anchor_uv.y</label>
+          <input id="anchorY" type="number" min="0" max="1" step="0.001" disabled>
+        </div>
+      </div>
+
+      <div class="output-head">
+        <strong>可貼入 serve.video 的片段</strong>
+        <button id="copyButton" type="button" disabled>複製</button>
+      </div>
+      <textarea id="outputJson" readonly placeholder="點擊影片畫面設定 anchor 後，這裡會顯示 JSON 片段"></textarea>
+      <p class="help">貼回 <code>timeline-config.json</code> 對應 serve 的 <code>video</code> 欄位；記得同時把影片檔複製到 <code>./assets/</code> 並填上 <code>"src"</code>、<code>"generation_status": "ready"</code>。</p>
+    </aside>
+  </div>
+</main>
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+  const els = {
+    videoFile: $("videoFile"), video: $("video"), stage: $("stage"), emptyNote: $("emptyNote"), marker: $("marker"),
+    stepBack: $("stepBack"), playToggle: $("playToggle"), stepFwd: $("stepFwd"), scrub: $("scrub"), timeReadout: $("timeReadout"),
+    fps: $("fps"), triggerTime: $("triggerTime"), setTriggerFromScrub: $("setTriggerFromScrub"), durationSec: $("durationSec"),
+    handoffDuration: $("handoffDuration"), anchorX: $("anchorX"), anchorY: $("anchorY"), outputJson: $("outputJson"), copyButton: $("copyButton")
+  };
+
+  let anchor = null; // {x, y} in 0..1, relative to the 16:9 cover-cropped stage
+  let loaded = false;
+
+  function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+
+  function snapToFrame(seconds) {
+    const fps = Number(els.fps.value) || 60;
+    return Math.round(seconds * fps) / fps;
+  }
+
+  function updateOutput() {
+    if (!loaded || !anchor) { els.outputJson.value = ""; els.copyButton.disabled = true; return; }
+    const snippet = {
+      generation_status: "ready",
+      expected_duration_sec: Number(els.durationSec.value),
+      physics_trigger_time_sec: Number(els.triggerTime.value),
+      handoff: {
+        mode: "crossfade",
+        duration_sec: Number(els.handoffDuration.value),
+        video_anchor_uv: { x: Number(els.anchorX.value), y: Number(els.anchorY.value) }
+      }
+    };
+    els.outputJson.value = JSON.stringify(snippet, null, 2);
+    els.copyButton.disabled = false;
+  }
+
+  function setAnchorFromClientPoint(clientX, clientY) {
+    const rect = els.stage.getBoundingClientRect();
+    const x = clamp((clientX - rect.x) / rect.width, 0, 1);
+    const y = clamp((clientY - rect.y) / rect.height, 0, 1);
+    anchor = { x, y };
+    els.anchorX.value = x.toFixed(4);
+    els.anchorY.value = y.toFixed(4);
+    els.marker.style.display = "block";
+    els.marker.style.left = `${x * 100}%`;
+    els.marker.style.top = `${y * 100}%`;
+    updateOutput();
+  }
+
+  function refreshTimeReadout() {
+    els.timeReadout.textContent = `${els.video.currentTime.toFixed(3)} / ${(els.video.duration || 0).toFixed(3)} s`;
+    els.scrub.value = els.video.currentTime;
+  }
+
+  els.videoFile.addEventListener("change", () => {
+    const file = els.videoFile.files[0];
+    if (!file) return;
+    const url = URL.createObjectURL(file);
+    els.video.src = url;
+    els.video.load();
+    els.video.addEventListener("loadedmetadata", () => {
+      loaded = true;
+      els.emptyNote.style.display = "none";
+      els.scrub.max = els.video.duration;
+      els.scrub.disabled = false;
+      els.stepBack.disabled = false;
+      els.stepFwd.disabled = false;
+      els.playToggle.disabled = false;
+      els.triggerTime.disabled = false;
+      els.setTriggerFromScrub.disabled = false;
+      els.durationSec.disabled = false;
+      els.durationSec.value = snapToFrame(els.video.duration).toFixed(6);
+      els.triggerTime.value = "0.000";
+      anchor = null;
+      els.marker.style.display = "none";
+      refreshTimeReadout();
+      updateOutput();
+    }, { once: true });
+  });
+
+  els.video.addEventListener("timeupdate", refreshTimeReadout);
+  els.video.addEventListener("pause", () => { els.playToggle.textContent = "播放"; });
+  els.video.addEventListener("play", () => { els.playToggle.textContent = "暫停"; });
+
+  els.playToggle.addEventListener("click", () => {
+    if (els.video.paused) els.video.play(); else els.video.pause();
+  });
+  els.stepBack.addEventListener("click", () => {
+    els.video.pause();
+    const step = 1 / (Number(els.fps.value) || 60);
+    els.video.currentTime = Math.max(0, els.video.currentTime - step);
+  });
+  els.stepFwd.addEventListener("click", () => {
+    els.video.pause();
+    const step = 1 / (Number(els.fps.value) || 60);
+    els.video.currentTime = Math.min(els.video.duration, els.video.currentTime + step);
+  });
+  els.scrub.addEventListener("input", () => {
+    els.video.pause();
+    els.video.currentTime = Number(els.scrub.value);
+  });
+
+  els.stage.addEventListener("click", (event) => {
+    if (!loaded) return;
+    setAnchorFromClientPoint(event.clientX, event.clientY);
+  });
+
+  els.setTriggerFromScrub.addEventListener("click", () => {
+    els.triggerTime.value = snapToFrame(els.video.currentTime).toFixed(6);
+    updateOutput();
+  });
+  els.triggerTime.addEventListener("change", () => {
+    els.triggerTime.value = snapToFrame(Number(els.triggerTime.value)).toFixed(6);
+    updateOutput();
+  });
+  els.durationSec.addEventListener("change", () => {
+    els.durationSec.value = snapToFrame(Number(els.durationSec.value)).toFixed(6);
+    updateOutput();
+  });
+  els.handoffDuration.addEventListener("change", updateOutput);
+  els.anchorX.addEventListener("change", () => {
+    anchor = anchor || { x: 0, y: 0 };
+    anchor.x = clamp(Number(els.anchorX.value), 0, 1);
+    els.anchorX.value = anchor.x.toFixed(4);
+    els.marker.style.display = "block";
+    els.marker.style.left = `${anchor.x * 100}%`;
+    updateOutput();
+  });
+  els.anchorY.addEventListener("change", () => {
+    anchor = anchor || { x: 0, y: 0 };
+    anchor.y = clamp(Number(els.anchorY.value), 0, 1);
+    els.anchorY.value = anchor.y.toFixed(4);
+    els.marker.style.display = "block";
+    els.marker.style.top = `${anchor.y * 100}%`;
+    updateOutput();
+  });
+
+  els.copyButton.addEventListener("click", async () => {
+    await navigator.clipboard.writeText(els.outputJson.value);
+    els.copyButton.textContent = "已複製";
+    setTimeout(() => { els.copyButton.textContent = "複製"; }, 1200);
+  });
+})();
+</script>
+</body>
+</html>

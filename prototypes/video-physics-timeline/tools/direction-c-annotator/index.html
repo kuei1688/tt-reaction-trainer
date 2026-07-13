@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Direction C 影片標註器</title>
+  <style>
+    :root { color-scheme:dark; --bg:#07111d; --panel:#102235; --line:#294861; --ink:#e9f3fb; --muted:#9db1c5; --accent:#5eead4; --cue:#ffd166; --danger:#fca5a5; }
+    * { box-sizing:border-box; } body { margin:0; background:radial-gradient(circle at 20% 0%,#153956,transparent 42rem),var(--bg); color:var(--ink); font:15px/1.45 system-ui,"Noto Sans TC",sans-serif; }
+    main { width:min(100%,540px); margin:auto; padding:16px 12px 34px; } h1 { margin:0; font-size:1.35rem; } p { margin:.45rem 0; }
+    .muted,.hint { color:var(--muted); } .notice { margin:16px 0; padding:11px 13px; border:1px solid #775f26; border-radius:10px; background:#2a2415; color:#f5e6b8; font-size:.9rem; }
+    .layout { display:grid; gap:14px; } .card { padding:13px; border:1px solid var(--line); border-radius:18px; background:linear-gradient(145deg,#102235e8,#0b1727e8); box-shadow:0 18px 44px #0004; }
+    .video-stage { position:relative; isolation:isolate; overflow:hidden; aspect-ratio:9/16; border-radius:14px; background:linear-gradient(180deg,#061d2e,#06121d); touch-action:none; } #overlay { position:absolute; inset:0; z-index:1; width:100%; height:100%; pointer-events:none; } .video-frame { position:absolute; z-index:2; top:3.8%; left:7%; width:86%; height:43%; overflow:hidden; border:2px solid #dbeafe99; border-radius:16px; background:#000; box-shadow:0 9px 22px #0008; transform-origin:50% 0; } .video-frame video { width:100%; height:100%; object-fit:cover; display:block; } .video-frame.c3-playing { animation:c3-observation-exit var(--c3-fade-ms,280ms) linear forwards; } @keyframes c3-observation-exit { to { opacity:0; } }
+    .entry { position:absolute; z-index:3; width:28px; height:28px; margin:-14px; border:3px dashed var(--cue); border-radius:50%; box-shadow:0 0 0 2px #0009,0 0 18px #ffd1669c; cursor:grab; touch-action:none; } .entry:active { cursor:grabbing; } .entry::after { content:"入射點"; position:absolute; left:21px; top:-26px; padding:3px 6px; border-radius:6px; background:#131b2bdf; color:var(--cue); white-space:nowrap; font-size:.72rem; font-weight:750; }
+    .transport,.actions { display:flex; align-items:center; flex-wrap:wrap; gap:8px; margin-top:12px; } button,input,textarea { font:inherit; color:var(--ink); background:#091526; border:1px solid var(--line); border-radius:8px; } button { padding:8px 11px; cursor:pointer; font-weight:750; } button:hover:not(:disabled) { border-color:var(--accent); } button.primary { background:#115e6d; border-color:#2dd4bf; } button:disabled { opacity:.45; cursor:not-allowed; } input { width:100%; padding:7px 8px; } input[type="range"] { padding:0; accent-color:var(--accent); } textarea { width:100%; min-height:180px; padding:10px; resize:vertical; font:12px/1.45 ui-monospace,Consolas,monospace; }
+    .scrub { flex:1 1 180px; } .time { min-width:115px; color:var(--muted); font:600 .84rem ui-monospace,Consolas,monospace; } .field { display:grid; gap:5px; margin-bottom:12px; } .field label { color:var(--muted); font-size:.8rem; font-weight:750; } .two { display:grid; grid-template-columns:1fr 1fr; gap:10px; } .small { font-size:.83rem; } .validation { min-height:1.4em; font-size:.84rem; } .validation.error { color:var(--danger); } .validation.ok { color:var(--accent); } kbd { padding:1px 5px; border:1px solid var(--line); border-radius:4px; background:#07111d; font:inherit; }
+    .transport button { flex:1; } .scrub { flex-basis:100%; order:2; } .time { order:3; margin-inline:auto; }
+    @media (min-width:900px) { main { width:min(1180px,100%); padding:24px 32px 48px; } h1 { font-size:2rem; } .layout { grid-template-columns:minmax(360px,520px) 330px; align-items:start; justify-content:center; gap:20px; } .stage-card { position:sticky; top:18px; } .scrub { flex:1 1 180px; order:initial; } .time { order:initial; margin:0; } }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Direction C 影片標註器</h1>
+    <p class="muted">選取接觸幀、觀察結束幀與入射點，產出可交給教練審核的草稿 JSON。</p>
+    <p class="notice">這是隔離的 prototype 標註工具：入射軌跡是以既有預覽 profile 的遊戲近似值繪製，並非影像追蹤、相機校正或已驗證的物理連續性。輸出固定為 <code>draft</code>／<code>pending_coach</code>。</p>
+    <div class="layout">
+      <section class="card stage-card">
+        <div class="field"><label for="videoFile">影片來源（自由選取本機影片檔，僅在瀏覽器內處理、不會上傳）</label><input id="videoFile" type="file" accept="video/*"></div>
+        <div class="video-stage" id="stage" aria-label="影片與入射點預覽">
+          <canvas id="overlay" width="960" height="540"></canvas>
+          <div class="video-frame" id="videoFrame"><video id="video" muted playsinline preload="metadata"></video></div>
+          <span class="entry" id="entry" title="拖曳設定入射點"></span>
+        </div>
+        <div class="transport" aria-label="影片控制">
+          <button id="stepBack" type="button">−1 幀</button><button id="playPause" type="button">播放</button><button id="stepForward" type="button">+1 幀</button>
+          <input class="scrub" id="scrub" type="range" min="0" max="1" step="0.001" value="0"><span class="time" id="timeReadout">0.000 / 0.000 s</span>
+        </div>
+        <div class="actions"><button id="setContact" type="button">目前幀設為接觸 (T)</button><button id="setEnd" type="button">目前幀設為觀察結束 (E)</button><button class="primary" id="runPreview" type="button">播放 C3 預覽</button></div>
+        <p class="hint small">快捷鍵：<kbd>Space</kbd> 播放／暫停，<kbd>←</kbd>/<kbd>→</kbd> 前後一幀，按住 <kbd>Shift</kbd> 為十幀，<kbd>T</kbd> 接觸，<kbd>E</kbd> 觀察結束。拖曳黃色標記調整入射點。</p>
+      </section>
+      <aside class="card">
+        <div class="field"><label for="sourceName">source_video（目前標註的來源檔名）</label><input id="sourceName" readonly></div>
+        <div class="field"><label for="fps">fps（用來逐幀與對齊時間）</label><input id="fps" type="number" min="1" max="240" step="1" value="60"></div>
+        <div class="two"><div class="field"><label for="contactTime">contact_time_sec</label><input id="contactTime" type="number" min="0" step="0.001" value="1.283"></div><div class="field"><label for="observationEnd">observation_end_sec</label><input id="observationEnd" type="number" min="0" step="0.001" value="1.750"></div></div>
+        <div class="two"><div class="field"><label for="entryX">entry x (UV)</label><input id="entryX" type="number" min="0" max="1" step="0.001" value="0.313"></div><div class="field"><label for="entryY">entry y (UV)</label><input id="entryY" type="number" min="0" max="1" step="0.001" value="0.110"></div></div>
+        <div class="field"><label for="spinNote">spin_note（觀察筆記，不是物理結論）</label><input id="spinNote" maxlength="280" value="觀察到下旋；需由教練複核。"></div>
+        <div class="field"><label>預覽 profile</label><input value="prototype_short（固定，遊戲近似）" readonly></div>
+        <div class="field"><label>草稿變體</label><input value="length: short；placement/speed: 空白；review: pending_coach" readonly></div>
+        <p id="validation" class="validation" aria-live="polite"></p>
+        <div class="actions"><button class="primary" id="saveDraft" type="button">儲存草稿</button><button id="copyJson" type="button">複製 JSON</button></div>
+        <div class="field" style="margin-top:13px"><label for="output">草稿輸出</label><textarea id="output" readonly></textarea></div>
+      </aside>
+    </div>
+  </main>
+  <script src="../../../../shared-physics-core.js"></script>
+  <script src="../../prototype-physics-bridge.js"></script>
+  <script src="../../projection-helper.js"></script>
+  <script src="../../direction-c/direction-c-engine.js"></script>
+  <script src="../../direction-c/entry-drag-controller.js"></script>
+  <script src="./annotation-contract.js"></script>
+  <script src="./preview-runtime.js"></script>
+  <script src="./annotator-app.js"></script>
+</body>
+</html>

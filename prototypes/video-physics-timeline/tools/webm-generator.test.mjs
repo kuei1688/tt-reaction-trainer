@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { resolve } from "node:path";
 import {
   PROTOTYPE_DIR,
+  contentHashes,
   createStaticFrame,
   findColorCentroid,
   formatTimecode,
@@ -102,6 +103,17 @@ await test("輸出路徑只落在原型 assets 目錄", () => {
   for (const serve of config.serves) {
     assert.ok(outputPathForServe(serve).startsWith(resolve(PROTOTYPE_DIR, "assets")));
   }
+});
+
+await test("physics-only 調整不會改變 WebM render input hash", async () => {
+  const configText = JSON.stringify(config);
+  const changed = structuredClone(config);
+  changed.serves[0].physics.gravity_mps2 = -9.81;
+  const settingsText = JSON.stringify(settings);
+  assert.equal(
+    contentHashes(configText, settingsText).render_inputs_sha256,
+    contentHashes(JSON.stringify(changed), settingsText).render_inputs_sha256
+  );
 });
 
 console.log(`# ${passed} tests passed`);

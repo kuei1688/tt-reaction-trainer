@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>方向 C · 影片線索至訓練球</title>
+  <style>
+    :root { color-scheme: dark; --ink:#e8f0f7; --muted:#b8c8d8; --panel:#102235; --line:#27435d; --cue:#ffd166; --ball:#ffbf3f; --accent:#5eead4; }
+    * { box-sizing:border-box; }
+    body { margin:0; min-height:100vh; background:linear-gradient(160deg,#06111d,#102840); color:var(--ink); font-family:system-ui,"Noto Sans TC",sans-serif; }
+    main { width:min(100%,520px); margin:auto; padding:18px 14px 28px; }
+    h1 { margin:0; font-size:1.25rem; } p { line-height:1.5; }
+    .notice { margin:10px 0 14px; color:var(--muted); font-size:.88rem; }
+    .stage { position:relative; overflow:hidden; aspect-ratio:9 / 16; border:1px solid var(--line); border-radius:24px; background:#06121d; box-shadow:0 20px 55px #0007; cursor:crosshair; }
+    #table { position:absolute; inset:0; width:100%; height:100%; }
+    .video-frame { position:absolute; top:3.8%; left:7%; width:86%; height:43%; overflow:hidden; border:2px solid #dbeafe99; border-radius:16px; background:#000; box-shadow:0 9px 22px #0008; transform-origin:50% 0; }
+    .video-frame video { width:100%; height:100%; object-fit:cover; display:block; }
+    .video-frame.exiting { animation: video-exit 100ms cubic-bezier(.2,.8,.2,1) forwards; }
+    .video-frame.overlap-fade { animation: video-overlap-fade var(--overlap-fade-ms, 280ms) linear forwards; }
+    @keyframes video-exit { to { opacity:0; transform:translateY(-7%) scale(.94); clip-path:inset(0 0 100% 0); } }
+    @keyframes video-overlap-fade { to { opacity:0; } }
+    .video-label, .table-label, .entry-label { position:absolute; border-radius:999px; padding:5px 9px; font-weight:750; font-size:.73rem; letter-spacing:.02em; }
+    .video-label { top:7%; left:11%; background:#07111ddd; color:#f8fafc; }
+    .table-label { left:50%; bottom:9%; transform:translateX(-50%); background:#0b2337d9; color:#dff8f5; white-space:nowrap; }
+    .entry-label { left:7%; top:15%; color:#0d1722; background:var(--cue); pointer-events:none; }
+    .entry { position:absolute; z-index:3; display:block; left:31.3%; top:11%; width:22px; height:22px; border:3px dashed var(--cue); border-radius:50%; opacity:.95; cursor:grab; touch-action:none; transform:translate(-50%,-50%); user-select:none; }
+    .entry::before { content:""; position:absolute; inset:-16px; }
+    .entry:active { cursor:grabbing; }
+    .training-ball { position:absolute; width:18px; height:18px; margin:-9px; border-radius:50%; background:radial-gradient(circle at 35% 30%,#fff9d2 0 12%,var(--ball) 32%,#ed7b1c 100%); box-shadow:0 0 17px #ffbd4888; pointer-events:none; }
+    .status { position:absolute; left:50%; top:49%; transform:translateX(-50%); width:88%; text-align:center; font-size:.86rem; font-weight:700; color:var(--muted); text-shadow:0 1px 2px #000; }
+    .status.training { color:var(--accent); }
+    .controls { display:grid; grid-template-columns:1fr 1fr; gap:9px; margin-top:14px; }
+    button { appearance:none; border:1px solid var(--line); border-radius:12px; padding:11px; color:var(--ink); background:var(--panel); font:inherit; font-weight:750; cursor:pointer; }
+    button[aria-pressed="true"] { outline:2px solid var(--cue); color:var(--cue); }
+    button.primary { grid-column:span 2; background:#155e75; border-color:#2dd4bf; }
+    button:disabled { opacity:.5; cursor:not-allowed; }
+    .readout { margin:12px 2px 0; color:var(--muted); font-size:.84rem; }
+    .error { color:#fecaca; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>方向 C：讀影片線索與收拍 → 一顆訓練球</h1>
+    <p class="notice">隔離的手機視覺實驗。影片會保留觸球後的收拍、重心與回位；它不校準真人影片與物理球，也不代表 Trainer 已可使用。</p>
+    <section class="stage" id="stage" aria-label="方向 C 手機畫面實驗">
+      <canvas id="table" width="450" height="800" aria-label="持續可見的接球桌面"></canvas>
+      <div class="video-frame" id="videoFrame"><video id="serveVideo" playsinline muted preload="metadata"></video></div>
+      <span class="video-label">觀察拍型／觸球／收拍／回位</span>
+      <span class="table-label">接球桌面（全程可見）</span>
+      <span class="entry-label" id="entryLabel">在畫面任意位置拖曳入口</span><span class="entry" id="entry" title="在畫面任意位置按住左鍵拖曳，即可調整訓練球起點"></span>
+      <span class="status" id="status">選擇 C1、C2 或 C3，觀看完整觸球與收拍。</span>
+      <span class="training-ball" id="trainingBall" hidden aria-label="唯一可玩訓練球"></span>
+    </section>
+    <div class="controls" aria-label="實驗條件">
+      <button id="c1" aria-pressed="true">C1 · 收拍後立即進場</button>
+      <button id="c2" aria-pressed="false">C2 · 收拍後提示 100 ms</button>
+      <button id="c3" aria-pressed="false">C3 · 影片淡出＋球同步</button>
+      <button id="start" class="primary">開始觀看</button>
+      <button id="reset">重設</button>
+    </div>
+    <p class="readout" id="readout">固定樣本：real_backspin_001 · 固定測試來球：prototype_short</p>
+    <p class="readout">在畫面任意位置按住左鍵拖曳，即可調整訓練入口；位置會保留在這個 prototype。C3 是刻意允許兩顆球短暫同框的干擾測試，不代表校準或正式互動。</p>
+  </main>
+  <script src="./direction-c-engine.js"></script>
+  <script src="./entry-drag-controller.js"></script>
+  <script src="./direction-c-app.js"></script>
+</body>
+</html>

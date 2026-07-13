@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>影片—物理交接校準器（Phase 1）</title>
+  <style>
+    :root { color-scheme: dark; --bg:#07111f; --panel:#102039; --line:#36516f; --ink:#e9f2ff; --muted:#aabbd0; --accent:#6ee7f5; --warn:#ffd166; --danger:#ff8d8d; }
+    * { box-sizing:border-box; } body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.5 system-ui,sans-serif; } button,input,select { font:inherit; } button,input,select { border:1px solid var(--line); border-radius:8px; background:#0a172a; color:var(--ink); padding:8px 10px; } button { cursor:pointer; font-weight:700; } button:disabled { opacity:.45; cursor:not-allowed; }
+    main { width:min(1180px,100%); margin:auto; padding:28px clamp(16px,4vw,48px) 48px; } h1 { margin:0; } .intro,.notice { color:var(--muted); } .notice { border:1px solid #86691d; background:#302711; padding:12px 14px; border-radius:10px; } .error { border-color:#9e3f3f; color:var(--danger); } .layout { display:grid; grid-template-columns:minmax(0,1fr) 300px; gap:20px; margin-top:20px; } .card { background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:16px; } .stage { position:relative; aspect-ratio:16/9; overflow:hidden; border-radius:10px; background:#000; cursor:crosshair; } .stage video { width:100%; height:100%; object-fit:cover; display:block; pointer-events:none; } .marker { position:absolute; width:20px; height:20px; margin:-10px; border-radius:50%; pointer-events:none; } .anchor-marker { border:3px solid var(--warn); box-shadow:0 0 0 2px #000; } .physics-marker { border:3px solid var(--accent); box-shadow:0 0 0 2px #000; } .controls { display:flex; gap:8px; flex-wrap:wrap; margin-top:12px; } .field { display:grid; gap:6px; margin:12px 0; } label { color:var(--muted); font-size:.9rem; } .readout { display:grid; grid-template-columns:1fr auto; gap:8px; padding:9px 0; border-bottom:1px solid var(--line); } .readout strong { text-align:right; font-variant-numeric:tabular-nums; } .large { color:var(--warn); } .foot { color:var(--muted); font-size:.9rem; } @media (max-width:760px) { .layout { grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>影片—物理交接校準器</h1>
+    <p class="intro">Phase 1 · 單一真人影片 · 單點 anchor · 既有玩法近似 profile · 僅產生本機草稿。</p>
+    <p class="notice"><strong>探索性 ready，未校準／不可發布。</strong> <span id="sourceReadout">正在讀取固定素材…</span>。large delta 會如實顯示；沒有發布按鈕，也不會修改 repo 或 timeline config。</p>
+    <p id="error" class="notice error" hidden></p>
+    <div class="layout">
+      <section class="card">
+        <h2>1–4. 定位、標記與對照</h2>
+        <div id="stage" class="stage" aria-label="點擊一次標記 trigger 時刻的球位置">
+          <video id="video" muted playsinline preload="metadata"></video>
+          <span id="anchorMarker" class="marker anchor-marker" hidden></span>
+          <span id="physicsMarker" class="marker physics-marker" hidden></span>
+        </div>
+        <div class="controls">
+          <button id="stepBack" type="button">−1 frame</button><button id="playToggle" type="button">播放／暫停</button><button id="stepForward" type="button">+1 frame</button>
+          <span id="timeReadout" class="foot">讀取中…</span>
+        </div>
+        <div class="field"><label for="trigger">Trigger（固定吸附至 60 fps）</label><input id="trigger" type="number" min="0" step="0.016666666666666666"></div>
+        <div class="field"><label for="profile">玩法近似 physics profile（非量測真值）</label><select id="profile"></select></div>
+        <p class="foot">黃圈＝你在 trigger 單點標記的影片球；藍圈＝選定 profile 的第一個物理投影。兩者不會以 crossfade 或透明度掩飾。</p>
+      </section>
+      <aside class="card">
+        <h2>5. 草稿量測</h2>
+        <div class="readout"><span>Trigger</span><strong id="triggerReadout">—</strong></div>
+        <div class="readout"><span>Anchor UV</span><strong id="anchorReadout">尚未標記</strong></div>
+        <div class="readout"><span>Profile</span><strong id="profileReadout">—</strong></div>
+        <div class="readout"><span>Physics projection</span><strong id="projectionReadout">—</strong></div>
+        <div class="readout"><span>Raw delta</span><strong id="deltaReadout">先標記 anchor</strong></div>
+        <p class="foot">量測畫布：960 × 540 px。數值不是自動發布條件。</p>
+        <h2>6. 僅限草稿</h2>
+        <div class="controls"><button id="saveDraft" type="button" disabled>保存本機草稿</button><button id="exportDraft" type="button" disabled>匯出 JSON</button></div>
+        <div class="field"><label for="importDraft">匯入既有 draft JSON</label><input id="importDraft" type="file" accept="application/json"></div>
+        <p id="saveMessage" class="foot">草稿只會保存到此瀏覽器的 localStorage。</p>
+      </aside>
+    </div>
+  </main>
+  <script src="../../../../shared-physics-core.js"></script>
+  <script src="../../prototype-physics-bridge.js"></script>
+  <script src="../../projection-helper.js"></script>
+  <script src="./draft-contract.js"></script>
+  <script src="./calibrator.js"></script>
+</body>
+</html>

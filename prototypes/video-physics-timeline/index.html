@@ -123,7 +123,7 @@
         <p class="eyebrow">Isolated orchestration prototype</p>
         <h1>影片、事件與動畫的交接時間軸</h1>
       </div>
-      <p class="boundary"><strong>邊界：</strong>只驗證編排；不代表正式物理整合或真實影片校準。WebM 產製流程尚未定義。</p>
+      <p class="boundary"><strong>邊界：</strong>使用 shared core 的隔離 bridge；不代表主線整合或正式發球校準。WebM 仍未啟用於 runtime。</p>
     </header>
 
     <div class="workspace">
@@ -137,7 +137,7 @@
         </div>
         <div class="phase-track" aria-label="四階段進度">
           <div class="phase-step" data-phase="SERVE_VIDEO">01<span>影片發球</span></div>
-          <div class="phase-step" data-phase="PHYSICS_SERVE">02<span>替代物理</span></div>
+          <div class="phase-step" data-phase="PHYSICS_SERVE">02<span>共用物理</span></div>
           <div class="phase-step" data-phase="AWAIT_PLAYER_HIT">03<span>等待 Hit</span></div>
           <div class="phase-step" data-phase="OPPONENT_SEQUENCE">04<span>對手序列</span></div>
         </div>
@@ -149,7 +149,7 @@
           </div>
           <ol id="eventLog" aria-live="polite"><li class="empty-log">Start 後會顯示具 session 隔離的事件。</li></ol>
         </section>
-        <p class="status-line" id="statusLine">設定檔、狀態機與素材全部位於隔離原型目錄。<a class="spec-link" href="./SPEC.md">閱讀規格</a></p>
+        <p class="status-line" id="statusLine">隔離 bridge 已載入 shared physics core；正式核心本身未修改。<a class="spec-link" href="./SPEC.md">閱讀規格</a></p>
       </section>
 
       <aside class="panel control-panel" aria-label="原型控制與狀態">
@@ -178,10 +178,17 @@
           <div class="metric"><dt>phase elapsed</dt><dd id="elapsedMetric">0.000 s</dd></div>
           <div class="metric"><dt>session</dt><dd id="sessionMetric">0</dd></div>
           <div class="metric"><dt>overlay delta</dt><dd id="deltaMetric">—</dd></div>
+          <div class="metric"><dt>physics position</dt><dd id="physicsMetric">—</dd></div>
+          <div class="metric"><dt>velocity</dt><dd id="velocityMetric">—</dd></div>
+          <div class="metric"><dt>contacts</dt><dd id="contactMetric">—</dd></div>
+          <div class="metric"><dt>physics source</dt><dd>shared core</dd></div>
         </dl>
       </aside>
     </div>
   </main>
+  <script src="../../shared-physics-core.js"></script>
+  <script src="./prototype-physics-bridge.js"></script>
+  <script src="./projection-helper.js"></script>
   <script src="./timeline-engine.js"></script>
   <script src="./prototype-app.js"></script>
 </body>

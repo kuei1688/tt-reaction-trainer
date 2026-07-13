@@ -1,0 +1,204 @@
+﻿<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>影片庫標註器</title>
+  <style>
+    :root { color-scheme:dark; --bg:#07111d; --panel:#102235; --line:#294861; --ink:#e9f3fb; --muted:#9db1c5; --accent:#5eead4; --cue:#ffd166; --danger:#fca5a5; --ok:#5eead4; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:radial-gradient(circle at 20% 0%,#153956,transparent 42rem),var(--bg); color:var(--ink); font:15px/1.45 system-ui,"Noto Sans TC",sans-serif; }
+    main { width:min(100%,1280px); margin:auto; padding:16px 12px 34px; }
+    h1 { margin:0; font-size:1.35rem; }
+    .muted,.hint { color:var(--muted); }
+    .card { padding:13px; border:1px solid var(--line); border-radius:18px; background:linear-gradient(145deg,#102235e8,#0b1727e8); box-shadow:0 18px 44px #0004; }
+
+    /* ── Intake (empty state) ─────────────────────────────── */
+    .intake { display:flex; flex-direction:column; align-items:center; gap:16px; padding:48px 20px; text-align:center; }
+    .intake p { max-width:420px; }
+    .folder-btn { display:inline-flex; align-items:center; gap:8px; padding:14px 28px; font-size:1.1rem; font-weight:750; border:2px dashed var(--accent); border-radius:14px; background:#0d2a3a; cursor:pointer; transition:border-color .2s,background .2s; }
+    .folder-btn:hover { background:#103548; }
+    .folder-btn input { position:absolute; width:1px; height:1px; opacity:0; }
+
+    /* ── Toolbar ──────────────────────────────────────────── */
+    .toolbar { display:flex; align-items:center; flex-wrap:wrap; gap:10px; margin:16px 0; }
+    .toolbar input[type="search"], .toolbar select { font:inherit; color:var(--ink); background:#091526; border:1px solid var(--line); border-radius:8px; padding:7px 9px; }
+    .toolbar input[type="search"] { min-width:160px; flex:1 1 160px; }
+    .toolbar select { min-width:130px; }
+    .progress { font-weight:750; color:var(--muted); white-space:nowrap; }
+    .progress .done { color:var(--accent); }
+    .toolbar .spacer { flex:1; }
+    button { font:inherit; color:var(--ink); background:#091526; border:1px solid var(--line); border-radius:8px; padding:7px 12px; cursor:pointer; font-weight:750; }
+    button:hover:not(:disabled) { border-color:var(--accent); }
+    button.primary { background:#115e6d; border-color:#2dd4bf; }
+    button:disabled { opacity:.45; cursor:not-allowed; }
+
+    /* ── Grid ─────────────────────────────────────────────── */
+    .category-group { margin-bottom:22px; }
+    .category-header { display:flex; align-items:center; gap:10px; margin:0 0 10px; font-size:1.05rem; font-weight:750; }
+    .category-bar { width:4px; height:1.1em; border-radius:2px; }
+    .category-count { color:var(--muted); font-size:.85rem; font-weight:400; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:12px; }
+    .vcard { position:relative; border:1px solid var(--line); border-radius:12px; overflow:hidden; cursor:pointer; background:#0b1727; transition:border-color .2s,transform .1s; }
+    .vcard:hover { border-color:var(--accent); transform:translateY(-2px); }
+    .vcard .thumb { aspect-ratio:9/16; background:linear-gradient(135deg,#16335280,#0a1f30); display:flex; align-items:center; justify-content:center; overflow:hidden; }
+    .vcard .thumb img { width:100%; height:100%; object-fit:cover; display:block; }
+    .vcard .thumb .placeholder { color:#5e87a8; font-size:2.2rem; opacity:0.6; }
+    .vcard .meta { padding:7px 9px; }
+    .vcard .fname { font-size:.78rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .vcard .duration { font-size:.72rem; color:var(--muted); }
+    .vcard .badge { position:absolute; top:7px; right:7px; width:14px; height:14px; border-radius:50%; border:2px solid #0009; }
+    .badge.untouched { background:#4a6076; }
+    .badge.draft { background:var(--cue); }
+    .badge.complete { background:#34d399; }
+    .vcard.complete { border-color:#34d39955; }
+    .vcard.draft { border-color:#ffd16655; }
+
+    /* ── Annotator panel ──────────────────────────────────── */
+    #annotatorPanel { animation:fadeIn .2s; }
+    @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+    .anno-header { display:flex; align-items:center; gap:14px; margin-bottom:16px; }
+    .anno-header h2 { margin:0; font-size:1.1rem; }
+    .layout { display:grid; gap:14px; }
+    .video-stage { position:relative; isolation:isolate; overflow:hidden; aspect-ratio:9/16; border-radius:14px; background:linear-gradient(180deg,#061d2e,#06121d); touch-action:none; }
+    #overlay { position:absolute; inset:0; z-index:1; width:100%; height:100%; pointer-events:none; }
+    .video-frame { position:absolute; z-index:2; top:3.8%; left:7%; width:86%; height:43%; overflow:hidden; border:2px solid #dbeafe99; border-radius:16px; background:#000; box-shadow:0 9px 22px #0008; transform-origin:50% 0; }
+    .video-frame video { width:100%; height:100%; object-fit:cover; display:block; }
+    .video-frame.c3-playing { animation:c3-observation-exit var(--c3-fade-ms,280ms) linear forwards; }
+    @keyframes c3-observation-exit { to { opacity:0; } }
+    .entry { position:absolute; z-index:3; width:28px; height:28px; margin:-14px; border:3px dashed var(--cue); border-radius:50%; box-shadow:0 0 0 2px #0009,0 0 18px #ffd1669c; cursor:grab; touch-action:none; }
+    .entry:active { cursor:grabbing; }
+    .entry::after { content:"入射點"; position:absolute; left:21px; top:-26px; padding:3px 6px; border-radius:6px; background:#131b2bdf; color:var(--cue); white-space:nowrap; font-size:.72rem; font-weight:750; }
+    .transport,.actions { display:flex; align-items:center; flex-wrap:wrap; gap:8px; margin-top:12px; }
+    .transport button { flex:1; }
+    .scrub { flex:1 1 180px; }
+    .time { min-width:115px; color:var(--muted); font:600 .84rem ui-monospace,Consolas,monospace; }
+    .field { display:grid; gap:5px; margin-bottom:12px; }
+    .field label { color:var(--muted); font-size:.8rem; font-weight:750; }
+    .field input { width:100%; padding:7px 8px; }
+    input { font:inherit; color:var(--ink); background:#091526; border:1px solid var(--line); border-radius:8px; }
+    input[type="range"] { padding:0; accent-color:var(--accent); }
+    textarea { width:100%; min-height:140px; padding:10px; resize:vertical; font:12px/1.45 ui-monospace,Consolas,monospace; color:var(--ink); background:#091526; border:1px solid var(--line); border-radius:8px; }
+    .two { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .small { font-size:.83rem; }
+    .validation { min-height:1.4em; font-size:.84rem; margin-bottom:10px; }
+    .validation.error { color:var(--danger); }
+    .validation.ok { color:var(--accent); }
+    kbd { padding:1px 5px; border:1px solid var(--line); border-radius:4px; background:#07111d; font:inherit; }
+    details { margin-bottom:12px; border:1px solid var(--line); border-radius:10px; padding:8px 12px; background:#0a1828; }
+    details summary { cursor:pointer; font-weight:750; color:var(--muted); font-size:.85rem; }
+    details[open] summary { margin-bottom:10px; }
+    .hint { font-size:.8rem; }
+
+    @media (min-width:900px) {
+      main { padding:24px 32px 48px; }
+      h1 { font-size:2rem; }
+      .grid { grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:14px; }
+      .layout { grid-template-columns:minmax(360px,520px) 330px; align-items:start; justify-content:center; gap:20px; }
+      .stage-card { position:sticky; top:18px; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>影片庫標註器</h1>
+    <p class="muted">一次匯入整個資料夾，瀏覽所有影片，逐支標註接觸幀與觀察結束，完成後匯出草稿。</p>
+
+    <!-- ═══ Library Panel ═══════════════════════════════════════ -->
+    <section id="libraryPanel">
+      <div id="intakeZone" class="card intake">
+        <p>選擇你的影片資料夾（例如 <code>images</code>），工具會自動讀取所有 MP4 並按子資料夾分類。影片只在瀏覽器內處理，不會上傳。</p>
+        <label class="folder-btn">
+          選擇影片資料夾
+          <input type="file" id="folderInput" webkitdirectory directory multiple>
+        </label>
+        <p class="hint" id="intakeHint"></p>
+      </div>
+
+      <div id="libraryContent" hidden>
+        <div class="toolbar">
+          <input type="search" id="searchInput" placeholder="搜尋檔名…">
+          <select id="categoryFilter"><option value="">全部類別</option></select>
+          <select id="statusFilter">
+            <option value="">全部狀態</option>
+            <option value="untouched">未標註</option>
+            <option value="draft">草稿中</option>
+            <option value="complete">已完成</option>
+          </select>
+          <div class="progress">已標註：<span class="done" id="progressDone">0</span> / <span id="progressTotal">0</span></div>
+          <div class="spacer"></div>
+          <button id="exportBtn">匯出全部草稿</button>
+          <button id="importBtn">匯入草稿</button>
+          <input type="file" id="importInput" accept=".json" hidden>
+          <button id="rescanBtn">重新選擇資料夾</button>
+        </div>
+        <div id="gridContainer"></div>
+      </div>
+    </section>
+
+    <!-- ═══ Annotator Panel ═════════════════════════════════════ -->
+    <section id="annotatorPanel" hidden>
+      <div class="anno-header">
+        <button id="backToLibrary">&#8592; 返回庫</button>
+        <h2 id="annotatorTitle"></h2>
+      </div>
+      <div class="layout">
+        <section class="card stage-card">
+          <div class="video-stage" id="stage" aria-label="影片與入射點預覽">
+            <canvas id="overlay" width="960" height="540"></canvas>
+            <div class="video-frame" id="videoFrame"><video id="video" muted playsinline preload="auto"></video></div>
+            <span class="entry" id="entry" title="拖曳設定入射點"></span>
+          </div>
+          <div class="transport" aria-label="影片控制">
+            <button id="stepBack" type="button">&#8722;1 幀</button>
+            <button id="playPause" type="button">播放</button>
+            <button id="stepForward" type="button">+1 幀</button>
+            <input class="scrub" id="scrub" type="range" min="0" max="1" step="0.001" value="0">
+            <span class="time" id="timeReadout">0.000 / 0.000 s</span>
+          </div>
+          <div class="actions">
+            <button id="setContact" type="button">目前幀設為接觸 (T)</button>
+            <button id="setEnd" type="button">目前幀設為觀察結束 (E)</button>
+            <button class="primary" id="runPreview" type="button">播放 C3 預覽</button>
+          </div>
+          <p class="hint small">快捷鍵：<kbd>Space</kbd> 播放／暫停，<kbd>&#8592;</kbd>/<kbd>&#8594;</kbd> 前後一幀，按住 <kbd>Shift</kbd> 為十幀，<kbd>T</kbd> 接觸，<kbd>E</kbd> 觀察結束。拖曳黃色標記調整入射點。</p>
+        </section>
+        <aside class="card">
+          <div class="field"><label for="sourceName">source_video</label><input id="sourceName" readonly></div>
+          <div class="field"><label for="fps">fps（用來逐幀與對齊時間）</label><input id="fps" type="number" min="1" max="240" step="1" value="60"></div>
+          <div class="two">
+            <div class="field"><label for="contactTime">contact_time_sec</label><input id="contactTime" type="number" min="0" step="0.001"></div>
+            <div class="field"><label for="observationEnd">observation_end_sec</label><input id="observationEnd" type="number" min="0" step="0.001"></div>
+          </div>
+          <details>
+            <summary>入射點（選用 — 需設定才能跑 C3 預覽）</summary>
+            <div class="two">
+              <div class="field"><label for="entryX">entry x (UV)</label><input id="entryX" type="number" min="0" max="1" step="0.001" value="0.313"></div>
+              <div class="field"><label for="entryY">entry y (UV)</label><input id="entryY" type="number" min="0" max="1" step="0.001" value="0.110"></div>
+            </div>
+            <p class="hint">入射點非必要欄位。不調整也能儲存草稿與標記完成。</p>
+          </details>
+          <div class="field"><label for="spinNote">spin_note（觀察筆記）</label><input id="spinNote" maxlength="280"></div>
+          <p id="validation" class="validation" aria-live="polite"></p>
+          <div class="actions">
+            <button class="primary" id="saveDraft" type="button">儲存草稿</button>
+            <button id="markComplete" type="button">標記完成</button>
+            <button id="copyJson" type="button">複製 JSON</button>
+          </div>
+          <div class="field" style="margin-top:13px"><label for="output">草稿輸出</label><textarea id="output" readonly></textarea></div>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <script src="../../../../shared-physics-core.js"></script>
+  <script src="../../prototype-physics-bridge.js"></script>
+  <script src="../../projection-helper.js"></script>
+  <script src="../../direction-c/direction-c-engine.js"></script>
+  <script src="../../direction-c/entry-drag-controller.js"></script>
+  <script src="../direction-c-annotator/annotation-contract.js"></script>
+  <script src="../direction-c-annotator/preview-runtime.js"></script>
+  <script src="./library-contract.js"></script>
+  <script src="./library-app.js"></script>
+</body>
+</html>
