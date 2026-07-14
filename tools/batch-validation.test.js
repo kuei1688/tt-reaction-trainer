@@ -357,18 +357,20 @@ function runPushTests(context) {
 
   // 2026-07-14：computeAdaptivePushMagnitude（單一耦合 magnitude）已回寫成
   // return-studio.html 驗證過的拆分版本 computeAdaptivePushLift/Drive。
-  // PUSH_LIFT_K/PUSH_DRIVE_K 目前都是 0（尚未針對來球速度做負回饋微調的空
-  // 接口，見 game4.html 該常數上方註解），所以不管來球快慢，lift/drive
-  // 都恆等於各自的 BASE 值——這裡明確測出這個現況，之後把 K 調成非零值時
-  // 這條測試理應失敗，提醒要一併更新期望值。
+  // PUSH_LIFT_K/PUSH_DRIVE_K 原本都是 0（尚未針對來球速度做負回饋微調的空
+  // 接口），實測發現這會讓過網高度隨來球速度暴衝（9.7cm~164.6cm，4顆長球
+  // 直接飛出界）。用網格搜尋（只用純下旋 preset 當目標：過網高度收斂到
+  // 5~25cm 且要落桌）校準出 liftK=0.04、driveK=0.19，讓純下旋來球的過網
+  // 高度隨速度負回饋收斂，不再暴衝。這裡改成驗證「來球越快、lift/drive
+  // 越小」這個負回饋方向，而不是原本「恆定不變」的舊現況。
   const liftSlow = extracted.computeAdaptivePushLift({ x: 0, y: -1, z: 1 });
   const liftFast = extracted.computeAdaptivePushLift({ x: 0, y: -1, z: 4 });
   const driveSlow = extracted.computeAdaptivePushDrive({ x: 0, y: -1, z: 1 });
   const driveFast = extracted.computeAdaptivePushDrive({ x: 0, y: -1, z: 4 });
   pushResult(results, {
     group: "push",
-    name: "computeAdaptivePushLiftDrive-currently-speed-independent",
-    expected: { liftSlow: 0.28, liftFast: 0.28, driveSlow: 0.56, driveFast: 0.56 },
+    name: "computeAdaptivePushLiftDrive-negative-feedback-on-speed",
+    expected: { liftSlow: 0.32, liftFast: 0.2, driveSlow: 0.75, driveFast: 0.18 },
     actual: {
       liftSlow: roundNumber(liftSlow),
       liftFast: roundNumber(liftFast),
@@ -376,10 +378,10 @@ function runPushTests(context) {
       driveFast: roundNumber(driveFast),
     },
     pass:
-      Math.abs(liftSlow - 0.28) <= EPSILON &&
-      Math.abs(liftFast - 0.28) <= EPSILON &&
-      Math.abs(driveSlow - 0.56) <= EPSILON &&
-      Math.abs(driveFast - 0.56) <= EPSILON,
+      Math.abs(liftSlow - 0.32) <= EPSILON &&
+      Math.abs(liftFast - 0.2) <= EPSILON &&
+      Math.abs(driveSlow - 0.75) <= EPSILON &&
+      Math.abs(driveFast - 0.18) <= EPSILON,
   });
 
   const tiltXValues = {

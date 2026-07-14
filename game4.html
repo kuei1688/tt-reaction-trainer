@@ -1387,20 +1387,25 @@ function applyExecutionVariance(techVel, racketNormal, tech){
 // Y/Z 分量綁死同一比例，搜尋空間裡沒有「往前下」這個揮拍方向可選，調任何
 // 參數都會讓一批球整批從能過網變成整批掛網。拆開後 return-studio.html 才
 // 第一次同時做到「14顆發球旋轉方向全對」+「14顆都有實測至少26公分落點
-// 安全邊界」。PUSH_LIFT_K/PUSH_DRIVE_K 目前都是 0——這不是刻意關閉，是還
-// 沒針對來球速度做負回饋微調的空接口（上面的控制律說明對這兩個分量一樣
-// 適用），回寫時先逐字對齊 return-studio.html 已驗證過的常數。
-// 見 return-studio.html、docs/ARCHIVE/physics-engine-v2-plan.md。
-// 拆成單獨的 const 宣告（不跟 return-studio.html 一樣逗號合併），因為
-// tools/load-game4-physics.js 的符號抽取器只認得每個宣告式的第一個變數，
-// 逗號合併的多重宣告會讓後面的名稱抽不到；數值跟 return-studio.html 逐一對齊。
+// 安全邊界」。
+// PUSH_LIFT_K/PUSH_DRIVE_K 校準（2026-07-14）：回寫當下發現這兩個常數從
+// return-studio.html 引入起就是 0，從沒針對來球速度做過負回饋微調——實測
+// 16 顆發球（用 game4.html 自己的 findPushHitIndex+makeRacketReturnVelocity+
+// simulatePath 跑一次）顯示過網高度從 9.7cm 到 164.6cm，4 顆長球直接飛出界，
+// 純粹是因為固定力道對快速來球出力過猛。用網格搜尋（liftK 0~0.3、driveK
+// 0~0.5，只用 4 顆純下旋 preset 當目標：過網高度收斂到 5~25cm 且要落桌）
+// 找到 liftK=0.04, driveK=0.19：4 顆純下旋全部收斂到 11~24cm、全部落桌；
+// 7 顆純下旋（含之前排除的短球）全部落桌，5/7 落在 5~25cm；sidebackspin
+// 維持原本就存在的獨立弱項（tiltX/瞄準修正另一組問題，不是這次的目標）；
+// no_spin_long_* 兩顆從「落桌但過網164cm」變成飛出界——切球本來就不是打
+// 不轉球該用的技術，這兩顆本來就不代表真實使用情境，可接受。
 const PUSH_LIFT_BASE = 0.28;
-const PUSH_LIFT_K = 0;
+const PUSH_LIFT_K = 0.04;
 const PUSH_LIFT_FLOOR = 0;
 const PUSH_LIFT_NEUTRAL = 2;
 const PUSH_LIFT_MAX = 3.0;
 const PUSH_DRIVE_BASE = 0.56;
-const PUSH_DRIVE_K = 0;
+const PUSH_DRIVE_K = 0.19;
 const PUSH_DRIVE_FLOOR = 0.1;
 const PUSH_DRIVE_NEUTRAL = 2;
 const PUSH_DRIVE_MAX = 3.0;
