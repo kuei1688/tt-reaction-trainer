@@ -1,11 +1,11 @@
 'use strict';
 // scan.js
 // 兩階段掃描的純邏輯（不碰檔案系統、不呼 API），方便用 mock 測試。
-// classifyFn(frame) -> Promise<'before_contact'|'contact'|'after_contact'|'unclear'>
-// isContactFn(frame) -> Promise<{is_contact:boolean, confidence:number}>
+// 粗掃與細掃都用同一個 classifyFn(frame) -> Promise<label>，
+// label ∈ before_contact | contact | after_contact | unclear。
+// （原計畫細掃用 isContact 二元+信心；實測 reasoning 模型在嚴格二元判斷上會猶豫，
+//  但 4-way classify 在觸球幀能正確回 contact，故細掃改用 classify label 選幀。）
 // frame = { index, timeSec, path }
-
-const LABELS = ['before_contact', 'contact', 'after_contact', 'unclear'];
 
 function selectCoarseFrames(frames, coarseIntervalSec) {
   if (!frames.length) return [];
@@ -28,9 +28,7 @@ function detectCoarseBoundary(classifications) {
   for (const c of classifications) {
     if (c.label === 'before_contact') lastBefore = c.frame;
     if (contactLabelFrame === null && c.label === 'contact') contactLabelFrame = c.frame;
-    if (firstContactish === null && (c.label === 'contact' || c.label === 'after_contact')) {
-      firstContactish = c.frame;
-    }
+    if (firstContactish === null && (c.label === 'contact' || c.label === 'after_contact')) firstContactish = c.frame;
   }
   if (contactLabelFrame) return { contactFrame: contactLabelFrame, confidence: 0.55, clear: true };
   if (firstContactish) return { contactFrame: firstContactish, confidence: 0.45, clear: true };
@@ -51,27 +49,34 @@ async function runCoarse(frames, coarseIntervalSec, classifyFn) {
     const label = await classifyFn(f);
     classifications.push({ frame: f, label: label });
   }
-  const boundary = detectCoarseBoundary(classifications);
-  return { classifications: classifications, boundary: boundary };
+  return { classifications: classifications, boundary: detectCoarseBoundary(classifications) };
 }
 
-async function runFine(frames, isContactFn) {
-  let best = null;
+async function runFine(frames, classifyFn) {
+  const labels = [];
   for (const f of frames) {
-    const r = await isContactFn(f);
-    const conf = Number.isFinite(r.confidence) ? r.confidence : (r.is_contact ? 0.5 : 0.0);
-    if (best === null || conf > best.confidence) {
-      best = { frame: f, isContact: !!r.is_contact, confidence: conf };
-    }
+    labels.push({ frame: f, label: await classifyFn(f) });
   }
-  return best;
+  const contactFrames = labels.filter(c => c.label === 'contact');
+  if (contactFrames.length) {
+    const mid = contactFrames[Math.floor(contactFrames.length / 2)];
+    return { frame: mid.frame, confidence: 0.85, labels: labels, via: 'contact' };
+  }
+  let lastBefore = null, firstAfter = null;
+  for (const c of labels) {
+    if (c.label === 'before_contact') lastBefore = c.frame;
+    if (firstAfter === null && c.label === 'after_contact') firstAfter = c.frame;
+  }
+  if (lastBefore && firstAfter) return { frame: lastBefore, confidence: 0.5, labels: labels, via: 'boundary' };
+  if (lastBefore) return { frame: lastBefore, confidence: 0.3, labels: labels, via: 'before-only' };
+  if (firstAfter) return { frame: firstAfter, confidence: 0.3, labels: labels, via: 'after-only' };
+  return { frame: labels[labels.length - 1].frame, confidence: 0.1, labels: labels, via: 'unclear' };
 }
 
 async function detectContact(frames, opts) {
   const warnings = [];
   const coarseIntervalSec = opts.coarseIntervalSec != null ? opts.coarseIntervalSec : 0.5;
   const halfWindowSec = opts.halfWindowSec != null ? opts.halfWindowSec : 0.5;
-
   let centerTimeSec = null;
   let coarseResult = null;
 
@@ -96,23 +101,19 @@ async function detectContact(frames, opts) {
     warnings.push('no frames in fine-scan window; falling back to center frame');
     return { contactTimeSec: centerTimeSec, confidence: 0, stage: 'fine-empty', coarse: coarseResult, fine: null, warnings: warnings };
   }
-  const fine = await runFine(fineFrames, opts.isContactFn);
-  if (!fine) {
-    return { contactTimeSec: centerTimeSec, confidence: 0, stage: 'fine-none', coarse: coarseResult, fine: null, warnings: warnings };
-  }
-  if (fine.confidence < 0.5) warnings.push('low fine-scan confidence (' + fine.confidence.toFixed(2) + ')');
+  const fine = await runFine(fineFrames, opts.classifyFn);
+  if (fine.confidence < 0.5) warnings.push('low fine-scan confidence (' + fine.confidence.toFixed(2) + ', via ' + fine.via + ')');
   return {
     contactTimeSec: fine.frame.timeSec,
     confidence: fine.confidence,
     stage: 'fine',
     coarse: coarseResult,
-    fine: { frame: fine.frame, isContact: fine.isContact, confidence: fine.confidence },
+    fine: { frame: fine.frame, confidence: fine.confidence, via: fine.via, labels: fine.labels },
     warnings: warnings
   };
 }
 
 module.exports = {
-  LABELS: LABELS,
   selectCoarseFrames: selectCoarseFrames,
   detectCoarseBoundary: detectCoarseBoundary,
   selectFineFrames: selectFineFrames,

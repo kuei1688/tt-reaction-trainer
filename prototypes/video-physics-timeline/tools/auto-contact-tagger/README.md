@@ -9,9 +9,10 @@
 
 ## 狀態
 
-Phase 1 已實作（單檔模式、兩階段掃描、draft 驗證、單元測試通過）。
-**尚未做實機驗證**——需要一個支援影像輸入的 vision 模型才能跑 live 掃描
-（見「視覺模型」）。批次模式與驗證報告為 Phase 2，未做。
+Phase 1 已實作並完成初步實機驗證（單檔模式、兩階段掃描、draft 驗證、單元測試通過）。
+以本地 Ollama `kimi-k2.7-code:cloud` 跑 `real_backspin_001`：偵測 4.350s，
+人工真值 4.300s，誤差 3 frame（50ms），信心 0.85。詳見 `validation-report.md`。
+批次模式為 Phase 2，未做；量產判定需更多具人工真值的影片（計畫 §9.1）。
 
 ## 相依
 
@@ -36,20 +37,31 @@ node auto-contact-tagger.js <video.mp4> [--fps 60] [--out draft.json] \
 node auto-contact-tagger.js video.mp4 --dry-run --hint 4.3
 ```
 
-`--hint <sec>`：已知大致觸球時間時，跳過粗掃直接細掃該點 ±0.5s，API 呼叫量降至 ~60 次以內。
+實機範例（本地 Ollama）：
 
+```text
+node auto-contact-tagger.js serve-real-backspin-001.mp4 \
+  --model kimi-k2.7-code:cloud --out real_backspin_001.draft.json --rate-limit 10
+```
+
+`--hint <sec>`：已知大致觸球時間時，跳過粗掃直接細掃該點 ±half-window，省 API 呼叫。
 輸出 JSON 透過標註器的「匯入 draft」入口載入後，人工逐格微調 ±1–3 frame。
 
 ## 視覺模型
 
-vision-backend 走 OpenAI 相容 `/v1/chat/completions`，endpoint 預設本地 Ollama
-`http://127.0.0.1:11434/v1/chat/completions`。模型用 `--model` 或環境變數
-`OLLAMA_VISION_MODEL` 指定。**模型必須支援影像輸入**（`image_url` content）。
+vision-backend 依 endpoint 自動切換：`/api/chat` 走 Ollama 原生格式
+（`messages[].images=[base64]`，回 `message.content`），`/v1/chat/completions`
+走 OpenAI 相容格式（`image_url` data URI）。預設本地 Ollama
+`http://127.0.0.1:11434/api/chat`。模型用 `--model` 或環境變數 `OLLAMA_VISION_MODEL`
+指定。**模型必須支援影像輸入**。
 
-實測：本地 Ollama 的 `glm-5.2:cloud` 不支援影像輸入（HTTP 400
-「this model does not support image input」）。需換用支援 vision 的模型
-（例如拉一個 multimodal 模型到 Ollama，或改打 OpenAI `gpt-4o` 等端點）。
-Kimi-k2.7-code 若要用，須先確認其在 Ollama 上的標籤與是否支援影像。
+實測（2026-07-15，本地 Ollama `127.0.0.1:11434`）：
+
+- `glm-5.2:cloud` 不支援影像輸入（HTTP 400「does not support image input」）。
+- `kimi-k2.7-code:cloud` 支援影像，是 reasoning 模型。**必須開啟思考**（不可設
+  `think:false`）——關閉思考時模型會把所有幀一律判成 `before_contact`，完全無法區分；
+  開啟思考才能正確區分 before/contact/after。代價：每次呼叫 ~6–11s，單支影片 ~4–6 分鐘。
+  批次量產的加速是 Phase 2 課題。
 
 ## 輸出 schema
 
@@ -74,11 +86,12 @@ node test/scan.test.js
 ## 檔案
 
 - `auto-contact-tagger.js` — CLI 入口（單檔模式）
-- `scan.js` — 兩階段掃描純邏輯
-- `vision-backend.js` — 可替換的 vision API 後端
+- `scan.js` — 兩階段掃描純邏輯（粗掃與細掃皆用 classify 4-way label）
+- `vision-backend.js` — 可替換的 vision 後端（Ollama 原生 / OpenAI 相容自動切換）
 - `frame-extractor.js` — ffmpeg/ffprobe 抽幀封裝
 - `draft-builder.js` — 組裝並驗證 draft JSON
 - `contract-bridge.js` — 載入標註器的 annotation-contract.js
+- `validation-report.md` — 實機驗證報告
 - `test/` — 單元測試
 
 ## 非目標
