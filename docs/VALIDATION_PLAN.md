@@ -24,7 +24,7 @@
 | VAL-002 | 球拍接觸力學對照驗證 | `tools/racket-contact-mechanics.js` | 檔案存在 | 2026-07-06 已執行，單軸對照全部通過 | 可檢查球拍平面碰撞與桌面退化案例；移動拍面段落仍標示為人工檢查輸出 |
 | VAL-003 | 發球 preset / 軌跡檢查 | `physics-studio.html`, `game4.html`, `tools/serve-batch-validation.test.js` | 已工具化 | 2026-07-10 已執行，cross-check 16/16 全過 | 同時驗證兩份 solver，cross-check 為主要通過條件；個別 solver 門檻較寬（過網 >=0.001m、第一跳 <=0.08m、第二跳 <=0.20m），可後續調整 | `physics-studio.html`, `game4.html`, `physics-presets.json` | 檔案存在 | 否 | 需要瀏覽器或抽取函式工具 |
 | VAL-004 | 正式遊戲回擊檢查 | `game4.html`, `tools/batch-validation.test.js` | 已工具化 | 2026-07-10 已執行，14 通過 / 0 失敗 | 需區分 attack / push / loop；loop 仍是舊模型 |
-| VAL-005 | 回擊研究頁檢查 | `return-studio.html`, `physics-presets.json` | 檔案存在 | 否 | 有 blend / substepped push 研究機制 |
+| VAL-005 | 回擊研究頁檢查 | `return-studio.html`, `physics-presets.json`, `tools/return-studio-batch-validation.test.js` | 已工具化 | 2026-07-12 已執行，64 組合（16 preset × 4 技術/side 組合）全部產生結果、0 例外；判定 ok 30/64（push 兩側各 14/16、attack 各 1/16） | 結果只是 `return-studio.html` 研究頁自身行為快照，非 game4.html 驗收、不與 game4.html cross-check；報告在 `AI_CONTEXT/val005_return_studio_test_output.txt`；有 blend / substepped push 研究機制；Phase 2（CMD-005 切球時機窗口取樣）未做，需另開任務包 |
 | VAL-006 | 核心檔案同步差異檢查 | `tools/cross-file-consistency-check.js` | 已建立 | 2026-07-10 已執行，6 constants + 2 functions 全部通過 | 自動比對常數與函式指紋；白名單在 `tools/consistency-whitelist.json` |
 | VAL-007 | 參數搜尋 / optimizer 重跑 | `push-optimizer.js` | 本輪未在 repo 檔案清單中找到 | 否 | 不可依賴為目前可重跑命令 |
 | VAL-008 | 視覺軌跡檢查 | `return-studio.html`, `physics-studio.html` | 檔案存在 | 否 | 主觀但重要，需搭配數值輸出 |

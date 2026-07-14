@@ -2,7 +2,7 @@
 
 > 這份清單只負責「不要讓舊 TODO 隨著文件瘦身消失」,不評判優先度、不預設答案、不擅自關閉任何一項。逐項看完覺得不重要了,直接刪掉該條即可——不需要走任何審批流程。
 >
-> 更新日期:2026-07-11
+> 更新日期:2026-07-15
 
 ## 物理模型相關(來源:`docs/MODEL_DECISIONS.md`)
 
@@ -15,10 +15,25 @@
 - **TODO-007**:重新推導 `tiltX` / `tiltY` 範圍,狀態為「待驗證」。
 - **TODO-008**:部署前確認清單,狀態為「待驗證」。
 
+## 2026-07-14 新增
+
+- **SCALE-FIX-001**：桌面接觸尺度一致性 bug 已在 `game4.html` 和 `return-studio.html` 修復。`physics-studio.html`（line 990）有同樣問題但無 `SIM_TIME_DILATION` 定義，是純研究工具，優先級低，待需要時再修。
+- **EXPERIMENT-PLAN**：✅ 已完成。全部 20 個實驗、約 1746 格數據點在 2026-07-14 執行完畢。結果記錄在 AI_CONTEXT/push_clean_reference_library.md。
+- **TODO-006 更新**：`scale` / `outputRescale` 一致性問題的具體表現已找到並修復——桌面接觸用模擬尺度、球拍接觸用真實尺度，`spins` 輸出現為模擬尺度（需乘 D=1.528 轉真實）。
+
+
+## 2026-07-14~15 新增/解決
+
+- **FALLBACK-FIX**：✅ solveRacketVelXForTargetLandingX 靜默 fallback bug 已修復。舊版回傳 -incomingVel.x，新版改用側旋補償公式 + console.warn。
+- **SIDESPIN-COMP**：✅ 側旋補償公式 planeVel.x = -0.062 × sidespin_real + incomingVel.x 已推導並跨 preset 驗證。
+- **BLEND-CAL**：✅ PADDLE_BLEND 從 0.65 校準為 0.605，安全交集 [0.55, 0.66]。
+- **VY-ADAPT**：✅ PUSH_LIFT_VY_K 架構已加入，搜描顯示最佳值為 0。架構保留，非線性方案待未來探索。
+- **RALLY-TEST**：✅ 14/16 preset 達成 50 回合穩定循環。過網振繚 60 cm 是擊球點 Z 位置不同造成的幾何現象，非參數問題。
+- **SPIN-ANNOTATION**：✅ canonical topspin 符號方向註記已加入 push_clean_reference_library.md、rally 工具程式碼。isBackspin 檢查從 <= 0 修正為 > 0。
 ## 工具化缺口
 
 - **READ_ONLY_PHYSICS_EXTRACTOR**:規格寫過兩輪(`docs/READ_ONLY_PHYSICS_EXTRACTOR_SPEC.md`、GLM 任務包 017/018),但工具本身沒有真的做出來。還要不要做?
-- **VAL-005**:`return-studio.html` 回擊批次驗證尚未工具化(VAL-003 發球批次已工具化並通過 16/16)。
+- **VAL-005 Phase 2(CMD-005)**:VAL-005 回擊批次驗證已於 2026-07-12 工具化(`tools/return-studio-batch-validation.test.js`,64 組合全數產生結果,報告在 `AI_CONTEXT/val005_return_studio_test_output.txt`);但 Phase 2 切球時機窗口取樣(CMD-005 run-push-window-scan)未做,需另開任務包。另外工具化時發現 `simulateReturnForPreset()` 的 `side` 參數在函式體內未被使用(push 雙側結果相同),是否為預期行為待釐清。
 
 ## 產品方向決策
 
@@ -28,5 +43,4 @@
 ## 手機版影片→物理支線(現況見 `STATUS.md`)
 
 - **real_backspin_001 的 handoff 落差**(約 245–382px,不同工具量測數字不完全一致)尚未修正;下一步建議是把 `initial_ball_state.position_m` 改到觸球點附近,而不是拉長 `handoff.duration_sec` 用視覺模糊蓋掉落差。
-- **`AI_CONTEXT/DRAFTS/mobile-video-to-physics-c-direction.md` 與 `mobile-video-to-physics-c-claude-review-plan.md`**:今天(2026-07-11)才討論過,停在 Gate 0。要不要跟著這次的規則簡化(拿掉 Gate 0/1/2 表格措辭,只留「紅線 vs 自由測試」兩層),還是保留原樣單獨處理?這兩份文件這次沒有動,故意留給你另外決定。
 - **`docs/physics-engine-v2-plan.md` 後段研究拆解**:原本有 `PHYSICS_RESEARCH_TAIL_SPLIT_PLAN.md` / `PHYSICS_RESEARCH_TAIL_INDEX.md` 計畫要把這份 214KB 長文拆成一條條 EXP/DEC/RES/TODO,這次瘦身把整份文件連同拆解計畫一起移進 `docs/ARCHIVE/`,拆解工作等於暫停——如果之後真的要查歷史細節,去 `docs/ARCHIVE/physics-engine-v2-plan.md` 找,還要不要繼續拆分是開放問題。

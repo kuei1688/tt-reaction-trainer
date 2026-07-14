@@ -61,7 +61,7 @@
 | EXP-027 | Stage 4a 彈簧-阻尼原型 | 已完成，結論：本身不是答案，需跟 Stage 1 一起 | 研究中，非正式遊戲結論 |
 | EXP-028 | blend 機制發現與驗證 | 已完成，重大突破 | 不可把高 blend 當最終物理解 |
 | EXP-029 | blend 兩階段動態模型 | 瀏覽器原型驗證，尚未寫回檔案 | 明確屬研究/工具頁，不可寫成正式部署 |
-| EXP-030 | 指尖摩擦案例驗證 | 已完成，結論用於校準起點 | 需高階模型審查物理解讀 |
+| EXP-030 | 指尖摩擦案例驗證 | 已完成，結論用於校準起點 | 需高階模型審查物理解讀；2026-07-14 補記（`physics-engine-v2-plan.md`「先解指尖摩擦案例」段落後）：把這個案例的參數搬進完整任務時，容易漏算拍子自身動能，重演「球只被頂高、飛不回去」的失敗模式——同一問題已被 Stage 1（見 EXP-032，`scale` 因子）解決過一次，Stage 4a 校準前務必先讀那段，不要重新診斷一次 |
 | EXP-031 | Phase B 敏感度測試 | 已完成，結論指向 Stage 1 | 研究脈絡 |
 | EXP-032 | Stage 1 核心假設驗證 | 已完成，核心假設成立 | 仍需確認如何正式化 |
 | EXP-033 | Stage 1 自適應力道公式校準 | 進行中，漸進式校準 | 不可當最終公式 |
@@ -70,6 +70,13 @@
 | EXP-036 | 使用者視覺檢查發現 scale 輸出問題 | 已完成，修正設計決策 | 屬架構警訊，需保留 |
 | EXP-037 | 移除 tiltX hack，blend 改 y-z 平面 | 已完成，架構性突破 | 尚需確認是否寫回正式遊戲；對應 `MODEL_DECISIONS.md` 的 RES-004、`TODO-007`、`TODO-008` 與 `VALIDATION_PLAN.md` 的 VAL-009 / VAL-010 |
 | EXP-038 | 修正 outputRescale 瞄準 bug 後重新校準 | 已完成，目前最佳 9/14+14/14 | 階段性成果，不可作最終結論；對應 `TODO-006` 與 `VALIDATION_PLAN.md` 的 VAL-009 / VAL-010 |
+| EXP-039 | 20 實驗全面執行（7 群組） | 已完成，結果記錄於 push_clean_reference_library.md | 約 1746 格數據點，6 個新工具 |
+| EXP-040 | PADDLE_BLEND 精細校準 | 已完成，已套用 | 0.65 → 0.605，安全交集 [0.55, 0.66] |
+| EXP-041 | 側旋補償公式推導 | 已完成，已套用於 fallback | planeVel.x = -0.062 × sidespin + incomingVel.x |
+| EXP-042 | solveRacketVelXForTargetLandingX fallback 修復 | 已完成，已套用 | game4.html + return-studio.html 同步修復 |
+| EXP-043 | 校準後連續對打測試 | 已完成 | 14/16 preset 穩定 50 回合，振繚為幾何現象 |
+| EXP-044 | PUSH_LIFT_VY_K 搜描校準 | 已完成，最佳值=0 | 線性 vy 修正不能壓平振繚 |
+| EXP-045 | 過網振繚診斷 | 已完成，診斷結果 | 擊球點 Z 位置不同造成，非參數問題 |
 
 ## 目前可視為高信任的實驗類型
 

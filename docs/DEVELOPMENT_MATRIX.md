@@ -23,8 +23,8 @@
 | 桌面反彈 v2 | 半穩定 | 中 | `game4.html`, `physics-studio.html`, `tools/physics-v2-contact-mechanics.js` | Node 腳本、關鍵常數查證、後續函式 diff | Codex / 高階模型 | 常數已核對；函式逐字一致尚未工具化驗證 |
 | 發球 preset / solve | 半穩定 | 中 | `physics-presets.json`, `physics-studio.html`, `game4.html` | 16 preset 批次驗證、視覺檢查 | Codex | 第一輪不調 preset，只整理狀態 |
 | 正式遊戲回擊 | 半穩定 | 高 | `game4.html` | 單拍批次驗證、核心函式查證 | Codex / 高階模型 | attack/push 走球拍接觸；loop 仍是舊 direct 模型 |
-| return-studio 回擊研究頁 | 研究中 | 高 | `return-studio.html` | 視覺工具、符號盤點、後續 diff | Codex / 高階模型 | 有 blend/substepped push，不可直接寫成正式遊戲已部署 |
-| push/chop 切球模型 | 研究中 | 最高 | `game4.html`, `return-studio.html`, `docs/physics-engine-v2-plan.md` | 單拍、窗口、連續對打、旋轉方向、人工審查 | 高階模型 / Codex | 目前是最高風險區；GLM 只可整理，不可裁決 |
+| return-studio 回擊研究頁 | 研究中 | 高 | `return-studio.html` | 視覺工具、符號盤點、後續 diff | Codex / 高階模型 | blend/substepped push 已同步至 game4.html，PADDLE_BLEND=0.605，fallback 修復同步 |
+| push/chop 切球模型 | 半穩定 | 中 | `game4.html`, `return-studio.html`, `docs/physics-engine-v2-plan.md` | 單拍、窗口、連續對打、旋轉方向、人工審查 | 高階模型 / Codex | 2026-07-14 完成 20 實驗 + PADDLE_BLEND 校準 + fallback 修復；14/16 preset 穩定 50 回合連續對打 |
 | loop / 拉球 | 待決策 | 高 | `game4.html`, `return-studio.html` | 人類決策與高階模型審查 | 高階模型 / 人類 | game4 保留舊模型；return-studio 已移除 |
 | 膠皮 / 海綿參數化 | 待決策 | 高 | `docs/physics-engine-v2-plan.md` | 高階模型審查 | 高階模型 / 人類 | 尚未實作，不應寫入正式規格為已部署 |
 | 參數搜尋 / 優化 | 研究中 | 高 | `docs/physics-engine-v2-plan.md`, 可能的臨時腳本 | 需先整理腳本來源與目標函式 | Codex / 高階模型 | 搜尋結果不得自動升格成決策 |

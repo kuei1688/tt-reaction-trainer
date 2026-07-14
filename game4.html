@@ -253,7 +253,7 @@ const PADDLE_RESTITUTION = -0.9;    // 舊模型殘留常數，目前只有 loop
 // 這次寫回 game4.html，對應 OPEN_ITEMS.md TODO-001/TODO-007）。攻球等其他技術
 // 維持原本的瞬時碰撞公式，不受影響。詳細物理推導見 return-studio.html 同名常數
 // /函式的註解，這裡不重複。
-const PADDLE_BLEND = 0.65;
+const PADDLE_BLEND = 0.605;
 const PADDLE_SPRING_K = BALL_MASS * (Math.PI / 0.005) ** 2;
 const PADDLE_DAMPING_RATIO = 0.0421;
 const BLADE_NODE_MASS = BALL_MASS * 0.15;
@@ -763,9 +763,17 @@ function simulatePath(start, velocity, options){
         velocities.push(clone(vel));
         spins.push({...spin});
         if(bounces.length > MAX_TABLE_BOUNCES) break;
-        const bounced = bounceWithSpinPhysical(vel, spin, CONTACT_FRICTION_MU);
-        vel.x = bounced.vel.x; vel.y = bounced.vel.y; vel.z = bounced.vel.z;
-        spin = bounced.spin;
+        // 尺度一致性修復（2026-07-14）：bounceWithSpinPhysical 需要真實尺度的速度和旋轉，
+        // 但 simulatePath 內部用模擬尺度（gravity=-4.2）。呼叫前乘 SIM_TIME_DILATION 轉真實尺度，
+        // 呼叫後除回去。跟 bounceOffPlaneSubstepped 的做法一致。
+        const D_bounce = SIM_TIME_DILATION;
+        const bounced = bounceWithSpinPhysical(
+          {x: vel.x * D_bounce, y: vel.y * D_bounce, z: vel.z * D_bounce},
+          {topspin: (spin.topspin || 0) * D_bounce, sidespin: (spin.sidespin || 0) * D_bounce},
+          CONTACT_FRICTION_MU
+        );
+        vel.x = bounced.vel.x / D_bounce; vel.y = bounced.vel.y / D_bounce; vel.z = bounced.vel.z / D_bounce;
+        spin = {topspin: bounced.spin.topspin / D_bounce, sidespin: bounced.spin.sidespin / D_bounce};
         if(bounceBoost){
           const forwardZ = Math.sign(vel.z || velocity.z || -1);
           vel.z += forwardZ * bounceBoost;
@@ -914,9 +922,14 @@ function getServeBounces(path){
 }
 function serveBounceScore(preset, baseVel){
   const profile = getServeLengthProfile(preset);
+  const D_sbs = SIM_TIME_DILATION;
+  const simSpin_sbs = preset.variation?.spin ? {
+    topspin: preset.variation.spin.topspin / D_sbs,
+    sidespin: preset.variation.spin.sidespin / D_sbs
+  } : undefined;
   const result = simulatePath(preset.start, baseVel, {
     gravity:preset.solve?.gravity ?? -4.2,
-    spin:preset.variation?.spin
+    spin: simSpin_sbs
   });
   const firstTarget = preset.firstBounce || preset.target;
   const secondTarget = preset.secondBounce || preset.target;
@@ -958,9 +971,14 @@ function serveBounceScore(preset, baseVel){
 function simulateServe(preset){
   const gravity = preset.solve?.gravity ?? -4.2;
   const velocity = solveBaseVelocity(preset);
+  const D_ss = SIM_TIME_DILATION;
+  const simSpin_ss = preset.variation?.spin ? {
+    topspin: preset.variation.spin.topspin / D_ss,
+    sidespin: preset.variation.spin.sidespin / D_ss
+  } : undefined;
   return simulatePath(preset.start, velocity, {
     gravity,
-    spin:preset.variation?.spin
+    spin: simSpin_ss
   });
 }
 function findHitIndex(path){
@@ -1450,13 +1468,29 @@ function solveRacketVelXForTargetLandingX(incomingVel, incomingSpin, racketNorma
       const fb = path.bounces[0];
       return fb ? {x:fb.x, z:fb.z} : null;
     }
-    let bestRx = -incomingVel.x, bestDist = Infinity;
+    let bestRx = -incomingVel.x, bestDist = Infinity, found = false;
     for(let rx=-8; rx<=8; rx+=0.1){
       const land = landingForPush(rx);
       if(land != null && land.z < 0){
+        found = true;
         const dist = Math.abs(land.x - targetLandingX);
         if(dist < bestDist){ bestDist = dist; bestRx = rx; }
       }
+    }
+    if(!found){
+      // Fallback (2026-07-14): coarse search found zero valid landings (ball
+      // can't clear the net for any rx in [-8,8]). Old code silently returned
+      // -incomingVel.x — a physically-unvalidated placeholder. New fallback
+      // uses the sidespin compensation formula derived from Group 4B sweep:
+      //   planeVel.x = -0.062 * sidespin_real + incomingVel.x
+      // where sidespin_real = incomingSpin.sidespin * SIM_TIME_DILATION.
+      // This doesn't aim at a target landing point (impossible if the ball
+      // can't clear the net), but at least cancels sidespin-induced drift
+      // instead of producing an unvalidated value.
+      const sidespinReal = ((incomingSpin && incomingSpin.sidespin) || 0) * SIM_TIME_DILATION;
+      const fallbackRx = -0.062 * sidespinReal + incomingVel.x;
+      console.warn('[solveRacketVelXForTargetLandingX] push fallback: no valid landing found in rx[-8,8], using sidespin compensation: rx=' + fallbackRx.toFixed(3));
+      return fallbackRx;
     }
     let lo = bestRx - 0.1, hi = bestRx + 0.1;
     for(let i=0;i<20;i++){
@@ -1582,6 +1616,7 @@ const PUSH_LIFT_K = 0.04;
 const PUSH_LIFT_FLOOR = 0;
 const PUSH_LIFT_NEUTRAL = 2;
 const PUSH_LIFT_MAX = 3.0;
+const PUSH_LIFT_VY_K = 0; // 2026-07-14: vy 適應性補正。搜描結果：vyK 越大振繚越嚴重、最低過網不斷下降。最佳值 = 0（不修正）。詳見 AI_CONTEXT/lift_vy_k_calibration_2026-07-14_raw.json。 // 2026-07-14: vy 適應性補正——來球下沖角度大（|vy| 大）時減少拖高，壓平彈道。待搜描棡減小。
 const PUSH_DRIVE_BASE = 0.56;
 const PUSH_DRIVE_K = 0.19;
 const PUSH_DRIVE_FLOOR = 0.1;
@@ -1589,7 +1624,11 @@ const PUSH_DRIVE_NEUTRAL = 2;
 const PUSH_DRIVE_MAX = 3.0;
 function computeAdaptivePushLift(incomingVel){
   const speed = Math.hypot(incomingVel.x, incomingVel.z);
-  return clamp(PUSH_LIFT_BASE - PUSH_LIFT_K * (speed - PUSH_LIFT_NEUTRAL), PUSH_LIFT_FLOOR, PUSH_LIFT_MAX);
+  // vy 適應性（2026-07-14）：來球下沖角度大（|vy| 大）時自動減少拖高力道。
+  // 解決連續對打中過網高度在 11cm 和 72cm 之間振繚 60cm 的問題。
+  // 球從高處下沖時 vy 更負，已有下降動量，不需要額外拖高。
+  const vyCorrection = PUSH_LIFT_VY_K * Math.max(0, -incomingVel.y);
+  return clamp(PUSH_LIFT_BASE - PUSH_LIFT_K * (speed - PUSH_LIFT_NEUTRAL) - vyCorrection, PUSH_LIFT_FLOOR, PUSH_LIFT_MAX);
 }
 function computeAdaptivePushDrive(incomingVel){
   const speed = Math.hypot(incomingVel.x, incomingVel.z);

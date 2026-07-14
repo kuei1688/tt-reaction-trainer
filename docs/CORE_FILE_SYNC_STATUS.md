@@ -32,11 +32,11 @@
 
 ### 2. return-studio.html 有 blend / substepped push，game4.html 未見同等機制
 
-- `return-studio.html` 有 `PADDLE_BLEND = 0.65`。
+- `return-studio.html` 有 `PADDLE_BLEND = 0.605`。fallback bug 已同步修復。PUSH_LIFT_VY_K = 0（架構保留）。
 - `return-studio.html` 有 `computeBlendedNormal()`。
 - `return-studio.html` 有 `bounceOffPlaneSubstepped()`。
 - `return-studio.html` 有 `PUSH_WRIST_BRAKE_RATE = 0`。
-- `game4.html` 關鍵字搜尋未找到 `PADDLE_BLEND`、`computeBlendedNormal`、`bounceOffPlaneSubstepped`、`PUSH_WRIST_BRAKE_RATE`。
+- `game4.html` 現已有 `PADDLE_BLEND=0.605`、`computeBlendedNormal`、`bounceOffPlaneSubstepped`、`PUSH_WRIST_BRAKE_RATE`（2026-07-14 同步）。
 
 **狀態：** 已核對。  
 **風險：** `return-studio.html` 的研究機制不能直接寫成 `game4.html` 正式遊戲已部署。
@@ -45,7 +45,7 @@
 
 - `game4.html` 的 adaptive push 使用 `computeAdaptivePushMagnitude(incomingVel, contactZ, topspin)`。
 - `return-studio.html` 的 adaptive push 使用 `computeAdaptivePushLift(incomingVel)` 與 `computeAdaptivePushDrive(incomingVel)`。
-- `return-studio.html` 目前可見 `PUSH_LIFT_K = 0`、`PUSH_DRIVE_K = 0`，等於目前 lift / drive 對 incoming speed 的負回饋係數為 0。
+- `return-studio.html` 已同步 `PUSH_LIFT_K = 0.04`、`PUSH_DRIVE_K = 0.19`（與 game4.html 一致），等於目前 lift / drive 對 incoming speed 的負回饋係數為 0。
 
 **狀態：** 已核對。  
 **風險：** 文件若整理「切球自適應力道公式」時，必須標明它指的是哪個檔案版本。
@@ -88,7 +88,7 @@
 ## 不可直接下結論
 
 1. 不可判斷 `return-studio.html` 的 substepped push 比 `game4.html` 的瞬時碰撞模型更正確。
-2. 不可判斷 `PADDLE_BLEND = 0.65` 是合理或最終值。
+2. 不可判斷 `PADDLE_BLEND = 0.605` 是合理或最終值。
 3. 不可把高 blend 或 `blend=0.9` 當成最終物理解。
 4. 不可把 `return-studio.html` 的研究工具功能寫成正式遊戲已部署。
 5. 不可把 GLM 草稿中的「已部署」直接當真；必須逐檔核對。

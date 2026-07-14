@@ -113,11 +113,13 @@
 
 `return-studio.html` 有以下研究/工具頁機制：
 
-- `PADDLE_BLEND = 0.65`
+- `PADDLE_BLEND = 0.605`（2026-07-14 從 0.65 校準，三球過網安全交集 [0.55, 0.66]）
+- `PUSH_LIFT_VY_K = 0`（vy 適應性架構，搜描顯示最佳值為 0，架構保留）
+- solveRacketVelXForTargetLandingX fallback：改用側旋補償公式 rx = -0.062 × sidespin_real + incomingVel.x，代替舊的 -incomingVel.x
 - `computeBlendedNormal()`
 - `bounceOffPlane(..., blend)` 的 7 參數版本
 
-這些目前不可自動視為 `game4.html` 正式遊戲已部署。
+這些機制已於 2026-07-14 同步至 game4.html（PADDLE_BLEND=0.605、bounceOffPlaneSubstepped、fallback 修復）。
 
 ### 2. return-studio.html 的 substepped push
 
