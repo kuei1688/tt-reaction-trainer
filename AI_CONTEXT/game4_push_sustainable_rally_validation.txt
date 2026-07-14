@@ -1,0 +1,831 @@
+# Push sustainable backspin-vs-backspin rally validation (game4.html deployed, post-68179db)
+
+> Read-only research tool output. Does not modify game4.html or return-studio.html.
+Updated: 2026-07-14T01:19:31.290Z
+Presets: 11 (11-preset calibration set, same exclusions as push-tilty-sweep-calibration.js: no_spin_long_forehand, no_spin_long_backhand, backspin_short_forehand_2, backspin_short_backhand_2, backspin_short_backhand)
+maxRounds per rally: 12. Descriptive backspin label threshold on canonical outgoing topspin: <= -15 (not a pass/fail gate — net+inbounds is the only survival criterion; see note below).
+
+## Question under test
+
+Commit 68179db fixed game4.html's PUSH_LIFT_K (0 -> 0.04) and PUSH_DRIVE_K (0 -> 0.19), based only on single-shot net-clearance checks (16 serves), claiming this was one of the main reasons push couldn't sustain continuous rallies. This tool runs an actual multi-round push-vs-push rally against game4.html's own currently-deployed formula (post-68179db) to check that claim directly, and runs the identical rally harness against return-studio.html's own currently-deployed formula as a comparison group.
+
+## Design notes / divergences found (see full explanation in tool source header)
+
+- game4.html has its OWN simulateServe/simulatePath/findPushHitIndex (generic shared-physics-only flight simulation + hit-timing detection, no push-specific formulas baked in) — confirmed by inspection and by the fingerprint diagnostics below. This tool uses game4.html's versions as a SHARED "board" for BOTH configs' rallies (game4-deployed and return-studio-deployed), so the only variable between the two configs is the contact/return formula itself.
+- Contact model divergence: game4.html's push technique uses bounceOffPlane (5-arg instantaneous Coulomb-friction collision). return-studio.html's push technique uses applyPushContact -> bounceOffPlaneSubstepped (Stage 4a spring-damper compression/release integrator with blended contact normal via PADDLE_BLEND=0.65 and TANGENT_KP=1 viscous tangential damping). This is a fundamentally different contact PHYSICS MODEL, not just different K constants — dc62c94 only ported the lift/drive split formula into game4.html, and 68179db only fixed K there; neither ported the Stage 4a substepped model.
+- return-studio.html's own PUSH_LIFT_K/PUSH_DRIVE_K are STILL 0 as currently deployed (PUSH_LIFT_K=0.04, PUSH_DRIVE_K=0.19) — only game4.html received the 68179db fix. The "return-studio deployed" comparison group below is expected to reproduce pre-fix-style behavior, not act as a competing fixed baseline.
+
+## Deployed constants read from each file (not hardcoded/assumed)
+
+constant | game4.html (deployed) | return-studio.html (deployed)
+--- | --- | ---
+PUSH_LIFT_BASE | 0.28 | 0.28
+PUSH_LIFT_K | 0.04 | 0.04
+PUSH_LIFT_FLOOR | 0 | 0
+PUSH_LIFT_NEUTRAL | 2 | 2
+PUSH_LIFT_MAX | 3 | 3
+PUSH_DRIVE_BASE | 0.56 | 0.56
+PUSH_DRIVE_K | 0.19 | 0.19
+PUSH_DRIVE_FLOOR | 0.1 | 0.1
+PUSH_DRIVE_NEUTRAL | 2 | 2
+PUSH_DRIVE_MAX | 3 | 3
+PUSH_TILT_Y | 1 | 1
+PADDLE_FRICTION | 0.4 | 0.4
+contactModel | bounceOffPlane (5-arg instantaneous Coulomb-friction collision) | applyPushContact -> bounceOffPlaneSubstepped (Stage 4a spring-damper, blended normal)
+TANGENT_KP | n/a (no such concept in game4.html) | 1
+PADDLE_BLEND | n/a (no such concept in game4.html) | 0.65
+
+## Fingerprint diagnostics: game4.html vs return-studio.html board functions
+
+function | found in game4.html | found in return-studio.html | source-identical (normalized)
+--- | --- | --- | ---
+simulateServe | true | true | false
+simulatePath | true | true | false
+findPushHitIndex | true | true | true
+findHitIndex | true | true | false
+solveBaseVelocity | true | true | false
+solveServeBounceVelocity | true | true | false
+
+(This tool only USES game4.html's versions for both configs' rallies, per the design note above — this table is diagnostic only, checking whether that choice would have mattered.)
+
+## game4.html deployed config — rally results
+
+avgRounds=0.909, minRounds=0, backspinFraction=0.4, totalSurvivedRounds=10
+failReason counts: {"掛網":7,"出界":4}
+
+preset | rounds survived | fail reason | outgoing topspin per round (canonical)
+--- | --- | --- | ---
+backspin_long_backhand | 0 | 掛網 | -3.4267
+sidebackspin_long_forehand | 1 | 出界 | -13.2987, 38.961
+sidebackspin_half_long_forehand | 1 | 出界 | -10.2194, 36.6115
+sidebackspin_half_long_backhand | 2 | 掛網 | -34.6488, 46.487, 14.9706
+sidebackspin_long_backhand | 1 | 出界 | -24.6337, 44.2634
+sidebackspin_long_forehand_2 | 0 | 掛網 | -5.2425
+sidebackspin_long_forehand_3 | 1 | 出界 | -12.0395, 37.2011
+backspin_long_forehand | 0 | 掛網 | -6.5924
+backspin_long_forehand_2 | 0 | 掛網 | -5.0932
+backspin_short_forehand | 2 | 掛網 | -23.9743, 35.2203, 16.1466
+sidebackspin_short_forehand | 2 | 掛網 | -51.9897, 46.3839, 11.3818
+
+## return-studio.html deployed config — rally results (using game4.html's board)
+
+avgRounds=0.909, minRounds=0, backspinFraction=0.4, totalSurvivedRounds=10
+failReason counts: {"掛網":7,"出界":4}
+
+preset | rounds survived | fail reason | outgoing topspin per round (canonical)
+--- | --- | --- | ---
+backspin_long_backhand | 0 | 掛網 | -3.4267
+sidebackspin_long_forehand | 1 | 出界 | -13.2987, 38.961
+sidebackspin_half_long_forehand | 1 | 出界 | -10.2194, 36.6115
+sidebackspin_half_long_backhand | 2 | 掛網 | -34.6488, 46.487, 14.9706
+sidebackspin_long_backhand | 1 | 出界 | -24.6337, 44.2634
+sidebackspin_long_forehand_2 | 0 | 掛網 | -5.2425
+sidebackspin_long_forehand_3 | 1 | 出界 | -12.0395, 37.2011
+backspin_long_forehand | 0 | 掛網 | -6.5924
+backspin_long_forehand_2 | 0 | 掛網 | -5.0932
+backspin_short_forehand | 2 | 掛網 | -23.9743, 35.2203, 16.1466
+sidebackspin_short_forehand | 2 | 掛網 | -51.9897, 46.3839, 11.3818
+
+## Head-to-head summary
+
+config | avgRounds | minRounds | backspinFraction | totalSurvivedRounds(11 presets, max 12 rounds each = 132 max)
+--- | --- | --- | --- | ---
+game4.html deployed | 0.909 | 0 | 0.4 | 10
+return-studio.html deployed | 0.909 | 0 | 0.4 | 10
+
+## Backspin threshold fit note
+
+Threshold <= -15 on canonical outgoing topspin is carried over unchanged from push-sustainable-rally-sweep-calibration.js as a descriptive label only (isBackspin flag in the per-round data below/JSON), not used to gate rounds/rounds-survived here (survival = net clearance >= 0 AND in-bounds, matching runRallyReal's own criteria). See per-round outgoing-topspin series above/JSON for whether the observed values actually cluster clearly negative or hover near the threshold.
+
+## Full JSON (all per-round data)
+
+```json
+{
+  "game4Constants": {
+    "PUSH_LIFT_K": 0.04,
+    "PUSH_LIFT_BASE": 0.28,
+    "PUSH_LIFT_FLOOR": 0,
+    "PUSH_LIFT_NEUTRAL": 2,
+    "PUSH_LIFT_MAX": 3,
+    "PUSH_DRIVE_K": 0.19,
+    "PUSH_DRIVE_BASE": 0.56,
+    "PUSH_DRIVE_FLOOR": 0.1,
+    "PUSH_DRIVE_NEUTRAL": 2,
+    "PUSH_DRIVE_MAX": 3,
+    "PUSH_TILT_Y": 1,
+    "PADDLE_FRICTION": 0.4,
+    "contactModel": "bounceOffPlane (5-arg instantaneous Coulomb-friction collision)"
+  },
+  "returnStudioConstants": {
+    "PUSH_LIFT_K": 0.04,
+    "PUSH_LIFT_BASE": 0.28,
+    "PUSH_LIFT_FLOOR": 0,
+    "PUSH_LIFT_NEUTRAL": 2,
+    "PUSH_LIFT_MAX": 3,
+    "PUSH_DRIVE_K": 0.19,
+    "PUSH_DRIVE_BASE": 0.56,
+    "PUSH_DRIVE_FLOOR": 0.1,
+    "PUSH_DRIVE_NEUTRAL": 2,
+    "PUSH_DRIVE_MAX": 3,
+    "PUSH_TILT_Y": 1,
+    "PADDLE_FRICTION": 0.4,
+    "TANGENT_KP": 1,
+    "PADDLE_BLEND": 0.65,
+    "contactModel": "applyPushContact -> bounceOffPlaneSubstepped (Stage 4a spring-damper, blended normal)"
+  },
+  "fingerprintDiagnostics": [
+    {
+      "name": "simulateServe",
+      "foundInGame4": true,
+      "foundInReturnStudio": true,
+      "game4Fingerprint": "fb46f0abe7",
+      "returnStudioFingerprint": "f4d6596d1f",
+      "identical": false
+    },
+    {
+      "name": "simulatePath",
+      "foundInGame4": true,
+      "foundInReturnStudio": true,
+      "game4Fingerprint": "b113acfaa7",
+      "returnStudioFingerprint": "9edbfb7de4",
+      "identical": false
+    },
+    {
+      "name": "findPushHitIndex",
+      "foundInGame4": true,
+      "foundInReturnStudio": true,
+      "game4Fingerprint": "e428bfc260",
+      "returnStudioFingerprint": "e428bfc260",
+      "identical": true
+    },
+    {
+      "name": "findHitIndex",
+      "foundInGame4": true,
+      "foundInReturnStudio": true,
+      "game4Fingerprint": "d8ca7b3625",
+      "returnStudioFingerprint": "39be4bb16f",
+      "identical": false
+    },
+    {
+      "name": "solveBaseVelocity",
+      "foundInGame4": true,
+      "foundInReturnStudio": true,
+      "game4Fingerprint": "f0117b1b0f",
+      "returnStudioFingerprint": "52d94adaf2",
+      "identical": false
+    },
+    {
+      "name": "solveServeBounceVelocity",
+      "foundInGame4": true,
+      "foundInReturnStudio": true,
+      "game4Fingerprint": "6962c9700e",
+      "returnStudioFingerprint": "5bc18864a7",
+      "identical": false
+    }
+  ],
+  "game4Result": {
+    "perPreset": [
+      {
+        "preset": "backspin_long_backhand",
+        "rounds": 0,
+        "failReason": "掛網",
+        "totalRoundsAttempted": 1,
+        "backspinRounds": 0,
+        "minOutgoingTopspin": -3.4267,
+        "maxOutgoingTopspin": -3.4267,
+        "roundStats": [
+          {
+            "round": 1,
+            "incomingCanonicalTopspin": -70.5099,
+            "outgoingCanonicalTopspin": -3.4267,
+            "outSpeed": 3.431,
+            "netClearance": -0.162,
+            "inBounds": false,
+            "isBackspin": false
+          }
+        ]
+      },
+      {
+        "preset": "sidebackspin_long_forehand",
+        "rounds": 1,
+        "failReason": "出界",
+        "totalRoundsAttempted": 2,
+        "backspinRounds": 0,
+        "minOutgoingTopspin": -13.2987,
+        "maxOutgoingTopspin": 38.961,
+        "roundStats": [
+          {
+            "round": 1,
+            "incomingCanonicalTopspin": -82.8142,
+            "outgoingCanonicalTopspin": -13.2987,
+            "outSpeed": 4.1913,
+            "netClearance": 0.0059,
+            "inBounds": true,
+            "isBackspin": false
+          },
+          {
+            "round": 2,
+            "incomingCanonicalTopspin": 38.5774,
+            "outgoingCanonicalTopspin": 38.961,
+            "outSpeed": 3.3527,
+            "netClearance": 0.4429,
+            "inBounds": false,
+            "isBackspin": false
+          }
+        ]
+      },
+      {
+        "preset": "sidebackspin_half_long_forehand",
+        "rounds": 1,
+        "failReason": "出界",
+        "totalRoundsAttempted": 2,
+        "backspinRounds": 0,
+        "minOutgoingTopspin": -10.2194,
+        "maxOutgoingTopspin": 36.6115,
+        "roundStats": [
+          {
+            "round": 1,
+            "incomingCanonicalTopspin": -82.9019,
+            "outgoingCanonicalTopspin": -10.2194,
+            "outSpeed": 3.9769,
+            "netClearance": 0.0011,
+            "inBounds": true,
+            "isBackspin": false
+          },
+          {
+            "round": 2,
+            "incomingCanonicalTopspin": 33.6456,
+            "outgoingCanonicalTopspin": 36.6115,
+            "outSpeed": 3.3135,
+            "netClearance": 0.3972,
+            "inBounds": false,
+            "isBackspin": false
+          }
+        ]
+      },
+      {
+        "preset": "sidebackspin_half_long_backhand",
+        "rounds": 2,
+        "failReason": "掛網",
+        "totalRoundsAttempted": 3,
+        "backspinRounds": 1,
+        "minOutgoingTopspin": -34.6488,
+        "maxOutgoingTopspin": 46.487,
+        "roundStats": [
+          {
+            "round": 1,
+            "incomingCanonicalTopspin": -82.7828,
+            "outgoingCanonicalTopspin": -34.6488,
+            "outSpeed": 3.472,
+            "netClearance": 0.1014,
+            "inBounds": true,
+            "isBackspin": true
+          },
+          {
+            "round": 2,
+            "incomingCanonicalTopspin": 62.7151,
+            "outgoingCanonicalTopspin": 46.487,
+            "outSpeed": 3.3654,
+            "netClearance": 0.5338,
+            "inBounds": true,
+            "isBackspin": false
+          },
+          {
+            "round": 3,
+            "incomingCanonicalTopspin": -3.9022,
+            "outgoingCanonicalTopspin": 14.9706,
+            "outSpeed": 2.9182,
+            "netClearance": -0.1244,
+            "inBounds": false,
+            "isBackspin": false
+          }
+        ]
+      },
+      {
+        "preset": "sidebackspin_long_backhand",
+        "rounds": 1,
+        "failReason": "出界",
+        "totalRoundsAttempted": 2,
+        "backspinRounds": 1,
+        "minOutgoingTopspin": -24.6337,
+        "maxOutgoingTopspin": 44.2634,
+        "roundStats": [
+          {
+            "round": 1,
+            "incomingCanonicalTopspin": -82.7335,
+            "outgoingCanonicalTopspin": -24.6337,
+            "outSpeed": 3.872,
+            "netClearance": 0.0609,
+            "inBounds": true,
+            "isBackspin": true
+          },
+          {
+            "round": 2,
+            "incomingCanonicalTopspin": 52.9116,
+            "outgoingCanonicalTopspin": 44.2634,
+            "outSpeed": 3.418,
+            "netClearance": 0.5353,
+            "inBounds": false,
+            "isBackspin": false
+          }
+        ]
+      },
+      {
+        "preset": "sidebackspin_long_forehand_2",
+        "rounds": 0,
+        "failReason": "掛網",
+        "totalRoundsAttempted": 1,
+        "backspinRounds": 0,
+        "minOutgoingTopspin": -5.2425,
+        "maxOutgoingTopspin": -5.2425,
+        "roundStats": [
+          {
+            "round": 1,
+            "incomingCanonicalTopspin": -82.8517,
+            "outgoingCanonicalTopspin": -5.2425,
+            "outSpeed": 3.6652,
+            "netClearance": -0.0257,
+            "inBounds": false,
+            "isBackspin": false
+          }
+        ]
+      },
+      {
+        "preset": "sidebackspin_long_forehand_3",
+        "rounds": 1,
+        "failReason": "出界",
+        "totalRoundsAttempted": 2,
+        "backspinRounds": 0,
+        "minOutgoingTopspin": -12.0395,
+        "maxOutgoingTopspin": 37.2011,
+        "roundStats": [
+          {
+            "round": 1,
+            "incomingCanonicalTopspin": -82.9117,
+            "outgoingCanonicalTopspin": -12.0395,
+            "outSpeed": 3.8834,
+            "netClearance": 0.0029,
+            "inBounds": true,
+            "isBackspin": false
+          },
+          {
+            "round": 2,
+            "incomingCanonicalTopspin": 35.8082,
+            "outgoingCanonicalTopspin": 37.2011,
+            "outSpeed": 3.3292,
+            "netClearance": 0.4107,
+            "inBounds": false,
+            "isBackspin": false
+          }
+        ]
+      },
+      {
+        "preset": "backspin_long_forehand",
+        "rounds": 0,
+        "failReason": "掛網",
+        "totalRoundsAttempted": 1,
+        "backspinRounds": 0,
+        "minOutgoingTopspin": -6.5924,
+        "maxOutgoingTopspin": -6.5924,
+        "roundStats": [
+          {
+            "round": 1,
+            "incomingCanonicalTopspin": -82.3897,
+            "outgoingCanonicalTopspin": -6.5924,
+            "outSpeed": 3.5856,
+            "netClearance": -0.0351,
+            "inBounds": false,
+            "isBackspin": false
+          }
+        ]
+      },
+      {
+        "preset": "backspin_long_forehand_2",
+        "rounds": 0,
+        "failReason": "掛網",
+        "totalRoundsAttempted": 1,
+        "backspinRounds": 0,
+        "minOutgoingTopspin": -5.0932,
+        "maxOutgoingTopspin": -5.0932,
+        "roundStats": [
+          {
+            "round": 1,
+            "incomingCanonicalTopspin": -75.4329,
+            "outgoingCanonicalTopspin": -5.0932,
+            "outSpeed": 3.4935,
+            "netClearance": -0.0894,
+            "inBounds": false,
+            "isBackspin": false
+          }
+        ]
+      },
+      {
+        "preset": "backspin_short_forehand",
+        "rounds": 2,
+        "failReason": "掛網",
+        "totalRoundsAttempted": 3,
+        "backspinRounds": 1,
+        "minOutgoingTopspin": -23.9743,
+        "maxOutgoingTopspin": 35.2203,
+        "roundStats": [
+          {
+            "round": 1,
+            "incomingCanonicalTopspin": -79.7802,
+            "outgoingCanonicalTopspin": -23.9743,
+            "outSpeed": 2.7321,
+            "netClearance": 0.0036,
+            "inBounds": true,
+            "isBackspin": true
+          },
+          {
+            "round": 2,
+            "incomingCanonicalTopspin": 43.1381,
+            "outgoingCanonicalTopspin": 35.2203,
+            "outSpeed": 3.0417,
+            "netClearance": 0.3226,
+            "inBounds": true,
+            "isBackspin": false
+          },
+          {
+            "round": 3,
+            "incomingCanonicalTopspin": -0.6779,
+            "outgoingCanonicalTopspin": 16.1466,
+            "outSpeed": 2.9069,
+            "netClearance": -0.0318,
+            "inBounds": false,
+            "isBackspin": false
+          }
+        ]
+      },
+      {
+        "preset": "sidebackspin_short_forehand",
+        "rounds": 2,
+        "failReason": "掛網",
+        "totalRoundsAttempted": 3,
+        "backspinRounds": 1,
+        "minOutgoingTopspin": -51.9897,
+        "maxOutgoingTopspin": 46.3839,
+        "roundStats": [
+          {
+            "round": 1,
+            "incomingCanonicalTopspin": -78.865,
+            "outgoingCanonicalTopspin": -51.9897,
+            "outSpeed": 2.4985,
+            "netClearance": 0.054,
+            "inBounds": true,
+            "isBackspin": true
+          },
+          {
+            "round": 2,
+            "incomingCanonicalTopspin": 74.9975,
+            "outgoingCanonicalTopspin": 46.3839,
+            "outSpeed": 3.0881,
+            "netClearance": 0.4378,
+            "inBounds": true,
+            "isBackspin": false
+          },
+          {
+            "round": 3,
+            "incomingCanonicalTopspin": -8.5667,
+            "outgoingCanonicalTopspin": 11.3818,
+            "outSpeed": 2.8125,
+            "netClearance": -0.1112,
+            "inBounds": false,
+            "isBackspin": false
+          }
+        ]
+      }
+    ],
+    "avgRounds": 0.909,
+    "minRounds": 0,
+    "backspinFraction": 0.4,
+    "totalSurvivedRounds": 10,
+    "failReasonCounts": {
+      "掛網": 7,
+      "出界": 4
+    }
+  },
+  "returnStudioResult": {
+    "perPreset": [
+      {
+        "preset": "backspin_long_backhand",
+        "rounds": 0,
+        "failReason": "掛網",
+        "totalRoundsAttempted": 1,
+        "backspinRounds": 0,
+        "minOutgoingTopspin": -3.4267,
+        "maxOutgoingTopspin": -3.4267,
+        "roundStats": [
+          {
+            "round": 1,
+            "incomingCanonicalTopspin": -70.5099,
+            "outgoingCanonicalTopspin": -3.4267,
+            "outSpeed": 3.431,
+            "netClearance": -0.162,
+            "inBounds": false,
+            "isBackspin": false
+          }
+        ]
+      },
+      {
+        "preset": "sidebackspin_long_forehand",
+        "rounds": 1,
+        "failReason": "出界",
+        "totalRoundsAttempted": 2,
+        "backspinRounds": 0,
+        "minOutgoingTopspin": -13.2987,
+        "maxOutgoingTopspin": 38.961,
+        "roundStats": [
+          {
+            "round": 1,
+            "incomingCanonicalTopspin": -82.8142,
+            "outgoingCanonicalTopspin": -13.2987,
+            "outSpeed": 4.1913,
+            "netClearance": 0.0059,
+            "inBounds": true,
+            "isBackspin": false
+          },
+          {
+            "round": 2,
+            "incomingCanonicalTopspin": 38.5774,
+            "outgoingCanonicalTopspin": 38.961,
+            "outSpeed": 3.3527,
+            "netClearance": 0.4429,
+            "inBounds": false,
+            "isBackspin": false
+          }
+        ]
+      },
+      {
+        "preset": "sidebackspin_half_long_forehand",
+        "rounds": 1,
+        "failReason": "出界",
+        "totalRoundsAttempted": 2,
+        "backspinRounds": 0,
+        "minOutgoingTopspin": -10.2194,
+        "maxOutgoingTopspin": 36.6115,
+        "roundStats": [
+          {
+            "round": 1,
+            "incomingCanonicalTopspin": -82.9019,
+            "outgoingCanonicalTopspin": -10.2194,
+            "outSpeed": 3.9769,
+            "netClearance": 0.0011,
+            "inBounds": true,
+            "isBackspin": false
+          },
+          {
+            "round": 2,
+            "incomingCanonicalTopspin": 33.6456,
+            "outgoingCanonicalTopspin": 36.6115,
+            "outSpeed": 3.3135,
+            "netClearance": 0.3972,
+            "inBounds": false,
+            "isBackspin": false
+          }
+        ]
+      },
+      {
+        "preset": "sidebackspin_half_long_backhand",
+        "rounds": 2,
+        "failReason": "掛網",
+        "totalRoundsAttempted": 3,
+        "backspinRounds": 1,
+        "minOutgoingTopspin": -34.6488,
+        "maxOutgoingTopspin": 46.487,
+        "roundStats": [
+          {
+            "round": 1,
+            "incomingCanonicalTopspin": -82.7828,
+            "outgoingCanonicalTopspin": -34.6488,
+            "outSpeed": 3.472,
+            "netClearance": 0.1014,
+            "inBounds": true,
+            "isBackspin": true
+          },
+          {
+            "round": 2,
+            "incomingCanonicalTopspin": 62.7151,
+            "outgoingCanonicalTopspin": 46.487,
+            "outSpeed": 3.3654,
+            "netClearance": 0.5338,
+            "inBounds": true,
+            "isBackspin": false
+          },
+          {
+            "round": 3,
+            "incomingCanonicalTopspin": -3.9022,
+            "outgoingCanonicalTopspin": 14.9706,
+            "outSpeed": 2.9182,
+            "netClearance": -0.1244,
+            "inBounds": false,
+            "isBackspin": false
+          }
+        ]
+      },
+      {
+        "preset": "sidebackspin_long_backhand",
+        "rounds": 1,
+        "failReason": "出界",
+        "totalRoundsAttempted": 2,
+        "backspinRounds": 1,
+        "minOutgoingTopspin": -24.6337,
+        "maxOutgoingTopspin": 44.2634,
+        "roundStats": [
+          {
+            "round": 1,
+            "incomingCanonicalTopspin": -82.7335,
+            "outgoingCanonicalTopspin": -24.6337,
+            "outSpeed": 3.872,
+            "netClearance": 0.0609,
+            "inBounds": true,
+            "isBackspin": true
+          },
+          {
+            "round": 2,
+            "incomingCanonicalTopspin": 52.9116,
+            "outgoingCanonicalTopspin": 44.2634,
+            "outSpeed": 3.418,
+            "netClearance": 0.5353,
+            "inBounds": false,
+            "isBackspin": false
+          }
+        ]
+      },
+      {
+        "preset": "sidebackspin_long_forehand_2",
+        "rounds": 0,
+        "failReason": "掛網",
+        "totalRoundsAttempted": 1,
+        "backspinRounds": 0,
+        "minOutgoingTopspin": -5.2425,
+        "maxOutgoingTopspin": -5.2425,
+        "roundStats": [
+          {
+            "round": 1,
+            "incomingCanonicalTopspin": -82.8517,
+            "outgoingCanonicalTopspin": -5.2425,
+            "outSpeed": 3.6652,
+            "netClearance": -0.0257,
+            "inBounds": false,
+            "isBackspin": false
+          }
+        ]
+      },
+      {
+        "preset": "sidebackspin_long_forehand_3",
+        "rounds": 1,
+        "failReason": "出界",
+        "totalRoundsAttempted": 2,
+        "backspinRounds": 0,
+        "minOutgoingTopspin": -12.0395,
+        "maxOutgoingTopspin": 37.2011,
+        "roundStats": [
+          {
+            "round": 1,
+            "incomingCanonicalTopspin": -82.9117,
+            "outgoingCanonicalTopspin": -12.0395,
+            "outSpeed": 3.8834,
+            "netClearance": 0.0029,
+            "inBounds": true,
+            "isBackspin": false
+          },
+          {
+            "round": 2,
+            "incomingCanonicalTopspin": 35.8082,
+            "outgoingCanonicalTopspin": 37.2011,
+            "outSpeed": 3.3292,
+            "netClearance": 0.4107,
+            "inBounds": false,
+            "isBackspin": false
+          }
+        ]
+      },
+      {
+        "preset": "backspin_long_forehand",
+        "rounds": 0,
+        "failReason": "掛網",
+        "totalRoundsAttempted": 1,
+        "backspinRounds": 0,
+        "minOutgoingTopspin": -6.5924,
+        "maxOutgoingTopspin": -6.5924,
+        "roundStats": [
+          {
+            "round": 1,
+            "incomingCanonicalTopspin": -82.3897,
+            "outgoingCanonicalTopspin": -6.5924,
+            "outSpeed": 3.5856,
+            "netClearance": -0.0351,
+            "inBounds": false,
+            "isBackspin": false
+          }
+        ]
+      },
+      {
+        "preset": "backspin_long_forehand_2",
+        "rounds": 0,
+        "failReason": "掛網",
+        "totalRoundsAttempted": 1,
+        "backspinRounds": 0,
+        "minOutgoingTopspin": -5.0932,
+        "maxOutgoingTopspin": -5.0932,
+        "roundStats": [
+          {
+            "round": 1,
+            "incomingCanonicalTopspin": -75.4329,
+            "outgoingCanonicalTopspin": -5.0932,
+            "outSpeed": 3.4935,
+            "netClearance": -0.0894,
+            "inBounds": false,
+            "isBackspin": false
+          }
+        ]
+      },
+      {
+        "preset": "backspin_short_forehand",
+        "rounds": 2,
+        "failReason": "掛網",
+        "totalRoundsAttempted": 3,
+        "backspinRounds": 1,
+        "minOutgoingTopspin": -23.9743,
+        "maxOutgoingTopspin": 35.2203,
+        "roundStats": [
+          {
+            "round": 1,
+            "incomingCanonicalTopspin": -79.7802,
+            "outgoingCanonicalTopspin": -23.9743,
+            "outSpeed": 2.7321,
+            "netClearance": 0.0036,
+            "inBounds": true,
+            "isBackspin": true
+          },
+          {
+            "round": 2,
+            "incomingCanonicalTopspin": 43.1381,
+            "outgoingCanonicalTopspin": 35.2203,
+            "outSpeed": 3.0417,
+            "netClearance": 0.3226,
+            "inBounds": true,
+            "isBackspin": false
+          },
+          {
+            "round": 3,
+            "incomingCanonicalTopspin": -0.6779,
+            "outgoingCanonicalTopspin": 16.1466,
+            "outSpeed": 2.9069,
+            "netClearance": -0.0318,
+            "inBounds": false,
+            "isBackspin": false
+          }
+        ]
+      },
+      {
+        "preset": "sidebackspin_short_forehand",
+        "rounds": 2,
+        "failReason": "掛網",
+        "totalRoundsAttempted": 3,
+        "backspinRounds": 1,
+        "minOutgoingTopspin": -51.9897,
+        "maxOutgoingTopspin": 46.3839,
+        "roundStats": [
+          {
+            "round": 1,
+            "incomingCanonicalTopspin": -78.865,
+            "outgoingCanonicalTopspin": -51.9897,
+            "outSpeed": 2.4985,
+            "netClearance": 0.054,
+            "inBounds": true,
+            "isBackspin": true
+          },
+          {
+            "round": 2,
+            "incomingCanonicalTopspin": 74.9975,
+            "outgoingCanonicalTopspin": 46.3839,
+            "outSpeed": 3.0881,
+            "netClearance": 0.4378,
+            "inBounds": true,
+            "isBackspin": false
+          },
+          {
+            "round": 3,
+            "incomingCanonicalTopspin": -8.5667,
+            "outgoingCanonicalTopspin": 11.3818,
+            "outSpeed": 2.8125,
+            "netClearance": -0.1112,
+            "inBounds": false,
+            "isBackspin": false
+          }
+        ]
+      }
+    ],
+    "avgRounds": 0.909,
+    "minRounds": 0,
+    "backspinFraction": 0.4,
+    "totalSurvivedRounds": 10,
+    "failReasonCounts": {
+      "掛網": 7,
+      "出界": 4
+    }
+  }
+}
+```

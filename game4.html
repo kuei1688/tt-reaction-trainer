@@ -244,6 +244,37 @@ const PADDLE_SPEED_LOW = 2.0;
 const PADDLE_SPEED_HIGH = 12.0;
 const PADDLE_FRICTION = 0.4;        // 拍面切向摩擦係數，工程估計值（無精確文獻，之後可依膠皮種類覆寫）
 const PADDLE_RESTITUTION = -0.9;    // 舊模型殘留常數，目前只有 loop（拉球）還在用，尚未套用球拍接觸力學
+// ── Stage 4a 切球接觸模型（2026-07-14 從 return-studio.html 移植）────────────
+// 逐字對齊 return-studio.html：切球改用彈簧-阻尼子步進積分（球陷入海綿壓縮→
+// 釋放的真實動態過程），取代簡單瞬時碰撞；反彈方向不是純剛體拍面法向量，是
+// 法向量跟「球實際接近方向反方向」的 Y-Z-only 混合（PADDLE_BLEND），取代原本
+// computeAdaptivePushTiltX() 的手動回歸公式（EXPERIMENT_LOG.md EXP-037「移除
+// tiltX hack，blend 改 y-z 平面」，architecture 已在 return-studio.html 驗證過，
+// 這次寫回 game4.html，對應 OPEN_ITEMS.md TODO-001/TODO-007）。攻球等其他技術
+// 維持原本的瞬時碰撞公式，不受影響。詳細物理推導見 return-studio.html 同名常數
+// /函式的註解，這裡不重複。
+const PADDLE_BLEND = 0.65;
+const PADDLE_SPRING_K = BALL_MASS * (Math.PI / 0.005) ** 2;
+const PADDLE_DAMPING_RATIO = 0.0421;
+const BLADE_NODE_MASS = BALL_MASS * 0.15;
+const BLADE_SPRING_K = BLADE_NODE_MASS * (Math.PI / 0.0008) ** 2;
+const BLADE_DAMPING_RATIO = 0.03;
+const TANGENT_KP = 1.0;
+// vel/spin/planeVel 都是模擬尺度，bounceOffPlaneSubstepped 內部轉真實 m/s 計算
+// （乘 SIM_TIME_DILATION，結尾除回去）。
+const SIM_TIME_DILATION = Math.sqrt(9.8 / 4.2);
+// 切球觸球瞬間手腕「自然減速」的速率，0=接觸期間等速（逐字對齊 return-studio.html
+// 目前的部署值）。
+const PUSH_WRIST_BRAKE_RATE = 0;
+function restitutionToDampingRatio(e){
+  const L = Math.log(e);
+  return -L / Math.sqrt(Math.PI * Math.PI + L * L);
+}
+function speedDependentSpongeDampingRatio(impactSpeedReal){
+  const t = clamp((impactSpeedReal - PADDLE_SPEED_LOW) / (PADDLE_SPEED_HIGH - PADDLE_SPEED_LOW), 0, 1);
+  const e = PADDLE_RESTITUTION_LOW + (PADDLE_RESTITUTION_HIGH - PADDLE_RESTITUTION_LOW) * t;
+  return restitutionToDampingRatio(e);
+}
 // executionVariance：範圍解模式（RANGE_SOLUTION_MODE）用的動作抖動幅度，模擬人手每次
 // 揮拍不會一模一樣。數值是校準過的安全範圍（用 13 顆有效發球批次測試，確保抖動後
 // 大部分情況仍然成功，不會做出明知不可行的動作）：push 容錯空間大用 0.12，
@@ -515,6 +546,30 @@ function computeRacketNormal(tiltY, tiltX, swingDirRef){
   const axis = normalize(swingDirRef);
   return rotateAroundAxis(verticalTilted, axis, tiltX);
 }
+// blend：反彈方向不是純剛體拍面法向量，是法向量跟「球實際接近方向反方向」的混合，
+// 模擬球陷入海綿滑動時，回彈方向被滑動方向帶偏的效應。只用 Y-Z（垂直）分量算接近
+// 方向，刻意排除X分量——左右方向不該耦合進「這球到底是上旋還是下旋」的判斷。
+// blend=0 時直接回傳原始 planeNormal。用球面線性插值（slerp）而非線性插值+標準化，
+// 避免拍面角度大時等效法向量在某個角度突然180度反轉（逐字對齊 return-studio.html，
+// 完整推導見該檔案同名函式註解）。
+function computeBlendedNormal(vel, planeVel, planeNormal, blend){
+  if(!blend) return planeNormal;
+  const relVelRaw = subVec3(vel, planeVel);
+  const relYZ = {x:0, y:relVelRaw.y, z:relVelRaw.z};
+  const relSpeed = Math.hypot(relYZ.y, relYZ.z);
+  if(relSpeed <= 1e-9) return planeNormal;
+  const approachDir = scaleVec3(relYZ, -1 / relSpeed);
+  const cosTheta = clamp(dotVec3(planeNormal, approachDir), -1, 1);
+  const theta = Math.acos(cosTheta);
+  if(theta < 1e-6) return planeNormal;
+  if(theta > Math.PI - 1e-6){
+    return normalize(addVec(scaleVec3(planeNormal, 1 - blend), scaleVec3(approachDir, blend)));
+  }
+  const sinTheta = Math.sin(theta);
+  const wPlane = Math.sin((1 - blend) * theta) / sinTheta;
+  const wApproach = Math.sin(blend * theta) / sinTheta;
+  return normalize(addVec(scaleVec3(planeNormal, wPlane), scaleVec3(approachDir, wApproach)));
+}
 function bounceOffPlane(vel, spin, planeNormal, planeVel, restitution, friction){
   const omega = {x:(spin && spin.topspin) || 0, y:0, z:(spin && spin.sidespin) || 0};
   const relVel = subVec3(vel, planeVel);
@@ -547,6 +602,97 @@ function bounceOffPlane(vel, spin, planeNormal, planeVel, restitution, friction)
   const velAfterRel = add(scaleVec3(planeNormal, normalRelAfter), tangentRelAfter);
   const velAfter = add(velAfterRel, planeVel);
   return {vel:velAfter, spin:{topspin:omegaAfter.x, sidespin:omegaAfter.z}};
+}
+// 逐步積分接觸模型（2026-07-14 從 return-studio.html 移植，逐字對齊）：法向用
+// 「兩級串聯彈簧-阻尼」取代固定反彈係數——球先壓縮海綿+膠皮（第一級，spring1），
+// 海綿再壓縮木板（第二級，spring2），木板頂著拍柄/手（固定端）。切向摩擦（旋轉）
+// 由 spring1 在球面接觸點的力驅動，沿用既有 bounceTangentialAxis() 同一套推導但
+// 改成連續黏性阻尼力 Pxy=-TANGENT_KP·vs（見 return-studio.html 同名函式完整註解，
+// 含 wristBrakeRate/SIM_TIME_DILATION 的物理意義，這裡不重複）。
+function bounceOffPlaneSubstepped(vel, spin, planeNormal, planeVel, springK, dampingRatio, friction, opts){
+  opts = opts || {};
+  const dt = opts.dt || 0.00002;
+  const maxSteps = opts.maxSteps || 3000;
+  const wristBrakeRate = opts.wristBrakeRate || 0;
+  const D = SIM_TIME_DILATION;
+  const velLab = scaleVec3(vel, D);
+  const wallVel0 = scaleVec3(planeVel, D);
+  const relVelReal0 = subVec3(velLab, wallVel0);
+  const rawNormalDot = dotVec3(relVelReal0, planeNormal);
+  const normalSpeedReal = -rawNormalDot;
+  if(normalSpeedReal <= 0) return bounceOffPlane(vel, spin, planeNormal, planeVel, 0, friction); // 沒在接近，直接不反彈
+  const effectiveDampingRatio = speedDependentSpongeDampingRatio(normalSpeedReal);
+  const dampingC = effectiveDampingRatio * 2 * Math.sqrt(springK * BALL_MASS);
+  const bladeDampingC = BLADE_DAMPING_RATIO * 2 * Math.sqrt(BLADE_SPRING_K * BLADE_NODE_MASS);
+  const omega0 = scaleVec3({x:(spin && spin.topspin) || 0, y:0, z:(spin && spin.sidespin) || 0}, D);
+  const r = scaleVec3(planeNormal, -BALL_RADIUS);
+  const contactRelVel = addVec(relVelReal0, crossVec3(omega0, r));
+  const trueSlip = subVec3(contactRelVel, scaleVec3(planeNormal, dotVec3(contactRelVel, planeNormal)));
+  const slipMag = Math.hypot(trueSlip.x, trueSlip.y, trueSlip.z);
+  let e1;
+  if(slipMag > 1e-9){
+    e1 = scaleVec3(trueSlip, 1 / slipMag);
+  } else {
+    const arbitrary = Math.abs(planeNormal.x) < 0.9 ? {x:1,y:0,z:0} : {x:0,y:1,z:0};
+    e1 = normalize(subVec3(arbitrary, scaleVec3(planeNormal, dotVec3(arbitrary, planeNormal))));
+  }
+  const e2 = crossVec3(planeNormal, e1);
+  const normalSpinComp = scaleVec3(planeNormal, dotVec3(omega0, planeNormal));
+  let om1 = dotVec3(omega0, e2), om2 = -dotVec3(omega0, e1);
+  let negBall = -dotVec3(velLab, planeNormal);
+  let ballV1 = dotVec3(velLab, e1), ballV2 = dotVec3(velLab, e2);
+  let negNode = -dotVec3(wallVel0, planeNormal);
+  let x1 = 0, x2 = 0, t = 0;
+  for(let i = 0; i < maxSteps; i++){
+    const wallVelNow = wristBrakeRate ? scaleVec3(wallVel0, Math.exp(-wristBrakeRate * t)) : wallVel0;
+    const negWallN = -dotVec3(wallVelNow, planeNormal);
+    const v1rel = negBall - negNode;
+    const F1 = -springK * x1 - dampingC * v1rel;
+    const F2 = -BLADE_SPRING_K * x2 - bladeDampingC * (negNode - negWallN);
+    negBall += (F1 / BALL_MASS) * dt;
+    negNode += ((-F1 + F2) / BLADE_NODE_MASS) * dt;
+    x1 += (negBall - negNode) * dt;
+    x2 += (negNode - negWallN) * dt;
+    const normalForceNow = Math.max(0, -F1);
+    if(normalForceNow > 0){
+      const wallV1 = dotVec3(wallVelNow, e1), wallV2 = dotVec3(wallVelNow, e2);
+      const Fcap = friction * normalForceNow;
+      {
+        const slip = (ballV1 - wallV1) - om1 * BALL_RADIUS;
+        const FtRaw = -TANGENT_KP * slip;
+        const Ft = clamp(FtRaw, -Fcap, Fcap);
+        ballV1 += (Ft / BALL_MASS) * dt;
+        om1 -= (Ft * BALL_RADIUS / BALL_INERTIA) * dt;
+      }
+      {
+        const slip = (ballV2 - wallV2) - om2 * BALL_RADIUS;
+        const FtRaw = -TANGENT_KP * slip;
+        const Ft = clamp(FtRaw, -Fcap, Fcap);
+        ballV2 += (Ft / BALL_MASS) * dt;
+        om2 -= (Ft * BALL_RADIUS / BALL_INERTIA) * dt;
+      }
+    }
+    t += dt;
+    if(x1 <= 0 && i > 5){
+      const vBallN = -negBall;
+      const velAfterLab = addVec(scaleVec3(planeNormal, vBallN), addVec(scaleVec3(e1, ballV1), scaleVec3(e2, ballV2)));
+      const velAfter = scaleVec3(velAfterLab, 1 / D);
+      const omegaFinal = scaleVec3(addVec(addVec(normalSpinComp, scaleVec3(e2, om1)), scaleVec3(e1, -om2)), 1 / D);
+      return {vel: velAfter, spin: {topspin: omegaFinal.x, sidespin: omegaFinal.z}, dwellMs: t * 1000, effectiveEpsilon: negBall / normalSpeedReal};
+    }
+  }
+  return {vel, spin, dwellMs: t * 1000, regime: 'overdamped_no_exit'};
+}
+// push 技術改用 Stage 4a 逐步積分接觸模型，blend 先算出「等效法向量」（Y-Z-only，
+// 見 computeBlendedNormal），整個接觸期間固定用這個等效法向量做壓縮/釋放積分。
+// 其他技術（攻球等）維持原本的瞬時碰撞公式，不受影響。epsilon 是為非切球技術
+// 準備的，切球這條分支不會用到它（呼叫端仍會算，跟攻球共用同一段呼叫邏輯）。
+function applyPushContact(incomingVel, spin, racketNormal, planeVel, epsilon, tech, blend){
+  if(tech.model === 'push'){
+    const effNormal = computeBlendedNormal(incomingVel, planeVel, racketNormal, blend);
+    return bounceOffPlaneSubstepped(incomingVel, spin, effNormal, planeVel, PADDLE_SPRING_K, PADDLE_DAMPING_RATIO, PADDLE_FRICTION, {wristBrakeRate: PUSH_WRIST_BRAKE_RATE});
+  }
+  return bounceOffPlane(incomingVel, spin, racketNormal, planeVel, epsilon, PADDLE_FRICTION);
 }
 function simulatePath(start, velocity, options){
   const gravity = options.gravity ?? -4.2;
@@ -1288,7 +1434,39 @@ function estimateFlightTimeToTable(startY, vy, gravity){
   const candidates = [(-b+sq)/(2*a), (-b-sq)/(2*a)].filter(t=>t>0.01);
   return candidates.length ? Math.min(...candidates) : 0.3;
 }
-function solveRacketVelXForTargetLandingX(incomingVel, incomingSpin, racketNormal, techVel, restitution, friction, hitPoint, gravity, targetLandingX){
+// blend/tech（2026-07-14 移植自 return-studio.html）：push 分支改「完整模擬實際
+// 落點」而不是拋物線快速估計——快速估計公式沒辦法反映真實落點時間，而且切球在
+// 強旋轉/大幅拋高時，rx→落點x 這個函數在滾動/滑動 regime 交界處會有不連續跳動，
+// 割線法容易發散或收斂到假解，所以先粗掃一輪找出「真的有落地（z<0，過網）」的
+// 區間，再在那個區間內二分逼近目標。blend 要跟最終真正套用的碰撞一致傳進瞄準
+// 求解，否則瞄準跟實際碰撞用不同物理，算出來的修正方向會對不上。非 push 技術
+// 維持原本拋物線快速估計 + 割線法，不受影響。
+function solveRacketVelXForTargetLandingX(incomingVel, incomingSpin, racketNormal, techVel, restitution, friction, hitPoint, gravity, targetLandingX, blend, tech){
+  if(tech && tech.model === 'push'){
+    function landingForPush(rx){
+      const planeVel = {x:rx, y:techVel.y, z:techVel.z};
+      const bounced = applyPushContact(incomingVel, incomingSpin, racketNormal, planeVel, restitution, tech, blend);
+      const path = simulatePath(hitPoint, bounced.vel, {gravity, spin:bounced.spin, bounceBoost:0});
+      const fb = path.bounces[0];
+      return fb ? {x:fb.x, z:fb.z} : null;
+    }
+    let bestRx = -incomingVel.x, bestDist = Infinity;
+    for(let rx=-8; rx<=8; rx+=0.1){
+      const land = landingForPush(rx);
+      if(land != null && land.z < 0){
+        const dist = Math.abs(land.x - targetLandingX);
+        if(dist < bestDist){ bestDist = dist; bestRx = rx; }
+      }
+    }
+    let lo = bestRx - 0.1, hi = bestRx + 0.1;
+    for(let i=0;i<20;i++){
+      const mid = (lo + hi) / 2;
+      const land = landingForPush(mid);
+      if(land == null || land.z >= 0) break;
+      if(land.x > targetLandingX) lo = mid; else hi = mid;
+    }
+    return (lo + hi) / 2;
+  }
   function landingXFor(rx){
     const planeVel = {x:rx, y:techVel.y, z:techVel.z};
     const bounced = bounceOffPlane(incomingVel, incomingSpin, racketNormal, planeVel, restitution, friction);
@@ -1417,15 +1595,14 @@ function computeAdaptivePushDrive(incomingVel){
   const speed = Math.hypot(incomingVel.x, incomingVel.z);
   return clamp(PUSH_DRIVE_BASE - PUSH_DRIVE_K * (speed - PUSH_DRIVE_NEUTRAL), PUSH_DRIVE_FLOOR, PUSH_DRIVE_MAX);
 }
-// 拍面平面角度改成依來球左右速度調整。用「球例校正資料庫」裡使用者手動
-// 標好的 10 顆合理切球回歸出來：tiltX 主要跟來球的左右速度分量有關（不是
-// 跟側旋本身，回歸係數顯示側旋幾乎沒有影響）。樣本只有 10 顆（其中 7 顆
-// 是真正自由調的），係數可能還不夠穩定，之後樣本變多可以再重新擬合。
-// tiltY 也用同一批資料試過回歸，但實測 16 顆發球驗證會讓 backspin/
-// sidebackspin 雙雙倒退，研判樣本量不足以擬合出穩定的 tiltY 關係，先維持
-// 固定值，只套用驗證過沒有退步的 tiltX/力道。見 docs/physics-engine-v2-plan.md。
-function computeAdaptivePushTiltX(incomingVel){
-  return clamp(-0.1436 - 0.5376 * (incomingVel.x || 0), -1.2, 1.2);
+// tiltX（2026-07-14 移除手動標註回歸公式，改回傳固定 0，同步 return-studio.html）：
+// 舊版用「球例校正資料庫」10 顆樣本回歸出 tiltX 跟來球左右速度的關係，但使用者
+// 澄清正常切球不該靠轉拍面去抵銷側旋（那是來不及選位置時的應急做法），正常做法
+// 是靠瞄準方向過量修正；拍面角度該固定。EXPERIMENT_LOG.md EXP-037 已用
+// PADDLE_BLEND 的 Y-Z-only 機制取代這個回歸公式（架構性突破，在 return-studio.html
+// 驗證過），這次隨 Stage 4a 接觸模型一起寫回 game4.html，回歸公式改為死碼移除。
+function computeAdaptivePushTiltX(){
+  return 0;
 }
 // tiltY：固定拍面角度（2026-07-14 從 return-studio.html 回寫）。舊版依接觸
 // 當下殘留旋轉量內插（0.006×|topspin|，clamp 0.4~0.55），是拖高/往前送還
@@ -1449,15 +1626,19 @@ function makeRacketReturnVelocity(incomingVel, incomingSpin, tech, hitPoint, gra
   // 切球自適應力道公式開啟時用 swingDirection；其他情況（攻球）就用實際
   // 要打出去的球拍速度方向本身。
   const swingDirRef = tech.adaptivePush ? tech.swingDirection : baseTechVel;
-  const tiltX = tech.adaptivePush ? computeAdaptivePushTiltX(incomingVel) : tech.racketNormalTiltX;
+  const tiltX = tech.adaptivePush ? computeAdaptivePushTiltX() : tech.racketNormalTiltX;
   const tiltY = tech.adaptivePush ? computeAdaptivePushTiltY() : tech.racketNormalTiltY;
   const racketNormalBase = computeRacketNormal(tiltY, tiltX, swingDirRef);
   const {techVel, racketNormal} = applyExecutionVariance(baseTechVel, racketNormalBase, tech);
   const epsilon = dynamicPaddleEpsilon(incomingVel, techVel, racketNormal);
-  const aimedX = solveRacketVelXForTargetLandingX(incomingVel, spin, racketNormal, techVel, epsilon, PADDLE_FRICTION, hitPoint, gravity, RETURN_TARGET_X);
+  // push 技術改用 Stage 4a 接觸模型（applyPushContact/bounceOffPlaneSubstepped），
+  // blend 要跟最終真正套用的碰撞一致傳進瞄準求解，否則瞄準跟實際碰撞用不同物理
+  // （2026-07-14 從 return-studio.html 移植，見上方 PADDLE_BLEND 註解）。
+  const blend = tech.model === 'push' ? PADDLE_BLEND : 0;
+  const aimedX = solveRacketVelXForTargetLandingX(incomingVel, spin, racketNormal, techVel, epsilon, PADDLE_FRICTION, hitPoint, gravity, RETURN_TARGET_X, blend, tech);
   const correction = sampleReturnCorrectionFraction(RETURN_SKILL_LEVEL); // 1=完全修正（現有已驗證的預設行為），0=完全不修正
   const planeVel = {x:aimedX * correction, y:techVel.y, z:techVel.z};
-  return bounceOffPlane(incomingVel, spin, racketNormal, planeVel, epsilon, PADDLE_FRICTION);
+  return applyPushContact(incomingVel, spin, racketNormal, planeVel, epsilon, tech, blend);
 }
 function makeReturnVelocity(incomingVel, incomingSpin, tech, hitPoint, gravity){
   if(tech.model === 'push' || tech.model === 'attack') return makeRacketReturnVelocity(incomingVel, incomingSpin, tech, hitPoint, gravity);

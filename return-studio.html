@@ -720,8 +720,12 @@ function applyExecutionVariance(techVel, racketNormal, tech){
 // 側旋出界問題（sidebackspin_*）也一併解決。過程與數據見
 // AI_CONTEXT/push_tiltxy_drivescaled_sweep_output.txt、
 // AI_CONTEXT/push_candidate_rally_and_timing_validation.txt。
-const PUSH_LIFT_BASE = 0.28, PUSH_LIFT_K = 0, PUSH_LIFT_FLOOR = 0, PUSH_LIFT_NEUTRAL = 2, PUSH_LIFT_MAX = 3.0;
-const PUSH_DRIVE_BASE = 0.56, PUSH_DRIVE_K = 0, PUSH_DRIVE_FLOOR = 0.1, PUSH_DRIVE_NEUTRAL = 2, PUSH_DRIVE_MAX = 3.0;
+// PUSH_LIFT_K/PUSH_DRIVE_K 同步 game4.html（2026-07-14 校準，見 game4.html 同名常數
+// 註解與 AI_CONTEXT/push_final_sustainable_rally_calibration.txt）：這兩個常數在
+// return-studio.html 一直是 0（從沒做過來球速度負回饋），game4.html 那邊已經校準出
+// 0.04/0.19 修正掛網高度隨速度暴衝的問題，這裡同步回來，避免兩檔案數字繼續分岔。
+const PUSH_LIFT_BASE = 0.28, PUSH_LIFT_K = 0.04, PUSH_LIFT_FLOOR = 0, PUSH_LIFT_NEUTRAL = 2, PUSH_LIFT_MAX = 3.0;
+const PUSH_DRIVE_BASE = 0.56, PUSH_DRIVE_K = 0.19, PUSH_DRIVE_FLOOR = 0.1, PUSH_DRIVE_NEUTRAL = 2, PUSH_DRIVE_MAX = 3.0;
 function computeAdaptivePushLift(incomingVel){
   const speed = Math.hypot(incomingVel.x, incomingVel.z);
   return clamp(PUSH_LIFT_BASE - PUSH_LIFT_K * (speed - PUSH_LIFT_NEUTRAL), PUSH_LIFT_FLOOR, PUSH_LIFT_MAX);

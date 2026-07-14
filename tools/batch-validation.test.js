@@ -25,6 +25,24 @@ const ATTACK_SNAPSHOT_EXPECTED = {
   spin: { topspin: -101.851561, sidespin: 1.369893 },
 };
 
+// 2026-07-14：切球改用 Stage 4a 逐步積分接觸模型（applyPushContact/
+// bounceOffPlaneSubstepped，從 return-studio.html 移植），這是回歸快照，不是
+// 手推的物理正確值——目的是抓「這條路徑會不會意外壞掉」（NaN、拋例外、數值
+// 跑飛），不是驗證接觸物理本身的正確性。基準值來自跑一次目前程式碼的實際輸出。
+const PUSH_SAMPLE = {
+  techKey: "push",
+  incomingVel: { x: 0.2, y: -2.5, z: 3.0 },
+  incomingSpin: { topspin: -70, sidespin: 5 },
+  hitPoint: { x: 0.1, y: 0.9, z: 0.6 },
+  gravity: -4.2,
+};
+const PUSH_SNAPSHOT_EXPECTED = {
+  vel: { x: 0.015471, y: 2.349485, z: -3.479795 },
+  spin: { topspin: -23.775389, sidespin: -4.11216 },
+  dwellMs: 5.44,
+  effectiveEpsilon: -0.960051,
+};
+
 function main() {
   const options = parseArgs(process.argv.slice(2));
   const loader = loadGame4Physics({ sourceFile: options.sourceFile });
@@ -384,24 +402,27 @@ function runPushTests(context) {
       Math.abs(driveFast - 0.18) <= EPSILON,
   });
 
+  // 2026-07-14：computeAdaptivePushTiltX 的手動標註回歸公式已移除，改回傳固定 0
+  // （同步 return-studio.html，側向修正改交給 Stage 4a 的 PADDLE_BLEND 機制處理，
+  // 見 EXPERIMENT_LOG.md EXP-037）。不再吃 incomingVel 參數。
   const tiltXValues = {
-    backhand: extracted.computeAdaptivePushTiltX({ x: -1, y: 0, z: 0 }),
-    neutral: extracted.computeAdaptivePushTiltX({ x: 0, y: 0, z: 0 }),
-    forehandClamp: extracted.computeAdaptivePushTiltX({ x: 3, y: 0, z: 0 }),
+    backhand: extracted.computeAdaptivePushTiltX(),
+    neutral: extracted.computeAdaptivePushTiltX(),
+    forehandClamp: extracted.computeAdaptivePushTiltX(),
   };
   pushResult(results, {
     group: "push",
-    name: "computeAdaptivePushTiltX-regression-shape",
+    name: "computeAdaptivePushTiltX-fixed-constant",
     expected: {
-      backhand: 0.394,
-      neutral: -0.1436,
-      forehandClamp: -1.2,
+      backhand: 0,
+      neutral: 0,
+      forehandClamp: 0,
     },
     actual: roundDeep(tiltXValues),
     pass: deepRoundedEqual(tiltXValues, {
-      backhand: 0.394,
-      neutral: -0.1436,
-      forehandClamp: -1.2,
+      backhand: 0,
+      neutral: 0,
+      forehandClamp: 0,
     }),
   });
 
@@ -414,6 +435,31 @@ function runPushTests(context) {
     expected: { tiltY: 1.0 },
     actual: { tiltY: roundNumber(tiltYValue) },
     pass: Math.abs(tiltYValue - 1.0) <= EPSILON,
+  });
+
+  // 2026-07-14：Stage 4a 逐步積分接觸模型（applyPushContact/bounceOffPlaneSubstepped）
+  // 端到端回歸快照——確認 push 路徑會實際跑到底、輸出有限數值，不會拋例外或卡在
+  // overdamped_no_exit（bounceOffPlaneSubstepped 找不到 x1<=0 出口時的 fallback）。
+  const pushTech = extracted.TECHNIQUES[PUSH_SAMPLE.techKey];
+  const pushResultValue = extracted.makeRacketReturnVelocity(
+    PUSH_SAMPLE.incomingVel,
+    PUSH_SAMPLE.incomingSpin,
+    pushTech,
+    PUSH_SAMPLE.hitPoint,
+    PUSH_SAMPLE.gravity
+  );
+  const pushFinite =
+    Number.isFinite(pushResultValue.vel.x) &&
+    Number.isFinite(pushResultValue.vel.y) &&
+    Number.isFinite(pushResultValue.vel.z) &&
+    Number.isFinite(pushResultValue.spin.topspin) &&
+    Number.isFinite(pushResultValue.spin.sidespin);
+  pushResult(results, {
+    group: "push",
+    name: "makeRacketReturnVelocity-stage4a-snapshot",
+    expected: PUSH_SNAPSHOT_EXPECTED,
+    actual: roundDeep(pushResultValue),
+    pass: pushFinite && deepRoundedEqual(pushResultValue, PUSH_SNAPSHOT_EXPECTED),
   });
 }
 
