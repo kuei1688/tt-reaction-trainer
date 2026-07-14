@@ -1,6 +1,6 @@
 # 自動粗標觸球時間——獨立離線腳本計畫書
 
-> 狀態：**計畫草案；未開始實作。2026-07-15：視覺模型已可用（Ollama cloud Kimi-k2.7-code），待實作**
+> 狀態：**Phase 1 已實作（單檔模式、兩階段掃描、單元測試通過）；待支援影像的 vision 模型做實機驗證。本地 glm-5.2:cloud 不支援影像輸入，Kimi-k2.7-code 待確認 Ollama 標籤與影像能力**
 > 日期：2026-07-12
 > 依據：`AI_CONTEXT/MOBILE_VIDEO_RESEARCH/mobile-video-to-physics-c-annotator-plan.md` 第 8 節「後續構想——自動粗標觸球時間」
 
