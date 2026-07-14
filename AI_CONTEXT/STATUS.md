@@ -28,13 +28,34 @@
 - `b870d53` Add isolated video timeline prototype and WebM tooling
 - `23fdb86` video-physics-timeline 原型更新：shared-core bridge、direction-c 探索、投影輔助與配套工具
 
-## 目前活躍的工作支線:手機版影片→物理切鏡(prototype 限定)
+## 已完成的研究支線:手機版影片→物理切鏡(方向 C,prototype 限定)
 
-在 `prototypes/video-physics-timeline/` 隔離原型中探索「真人發球影片 + 物理模擬回合」如何在手機直式畫面呈現,**完全未接入正式 Trainer**。目前狀態:
+> 2026-07-15 收尾:研究階段完成,Direction C 已驗證,標註器工具 Phase 1/2 完成。整合進正式 Trainer 為紅線另案,尚未開始。
 
-- 已建立時間軸引擎、WebM 產生器、投影/校準輔助工具、handoff-calibrator(見 `AI_CONTEXT/ARCHIVE/checkpoints/CHECKPOINT_WEBM_GENERATOR.md`、`CHECKPOINT_VIDEO_PHYSICS_BRIDGE.md`、`CHECKPOINT_WEBM_PREVIEWER.md`、`CHECKPOINT_HANDOFF_CALIBRATOR_PHASE1.md`)。
-- 已用單支真人影片 `real_backspin_001`(來源 `images/contact_backspin/contact_backspin_001.mp4`)做探索性 handoff 實驗:觸球 anchor 與物理投影落差約 245–382px(不同工具測得數值略有差異),**尚未修正**,`generation_status: "ready"` 只是實驗操作性設定,不是正式驗收。
-- 產品方向草案(方向 C:桌面持續可見、影片層明確切換退場)與 Claude 邊界審理仍在 `AI_CONTEXT/DRAFTS/mobile-video-to-physics-c-*.md`,停在 Gate 0(尚未獲使用者確認要不要進入視覺實驗)。
+### 問題與放棄的路線
+
+手機直式畫面要接「真人發球影片 + 物理回合」,但人物特寫影片的鏡頭比例與接球桌面視角不相容。用 `real_backspin_001`(來源 `images/contact_backspin/contact_backspin_001.mp4`)探索時,觸球 anchor 與物理投影落差約 245–382px,無法誠實呈現成同一顆球在同一座標系連續。幾何連續路線(把 `initial_ball_state` 改到觸球點、拉長 handoff 用 crossfade 蓋落差)已決定不再投入;早期探索記錄見 `AI_CONTEXT/ARCHIVE/checkpoints/CHECKPOINT_REAL_VIDEO_HANDOFF_EXPERIMENT.md`,WebM 產生器/handoff-calibrator 等舊工具隨之封存。
+
+### 採用的方向 C 與驗證結果
+
+方向 C:影片與桌面分為兩個視覺空間,接球桌面從頭持續可見,觸球瞬間影片層明確退場,一顆固定「球路入口」訓練球在桌面出現。球路入口是介面語意,不是真人軌跡量測。視覺實驗(C1/C2/C3)已於 2026-07-12 執行,**C3 勝出**(影片淡出 + 訓練球同時入場),reviewer 評為可接受且有活力,短暫重疊的位置差未造成混亂 handoff。結果見 `prototypes/video-physics-timeline/direction-c/RESULT.md`——這是產品可讀性證據,不是物理連續性宣稱。
+
+### 標註器工具
+
+`prototypes/video-physics-timeline/tools/direction-c-annotator/` Phase 1、Phase 2 完成:離線瀏覽器工具標註每支影片的觸球時間/觀察結束時間/球路入口位置,含 C3 真實物理預覽、自由選片、幾何一致性測試全過。
+
+### 計畫文件位置
+
+方向 C 產品規格、視覺實驗計畫、標註器計畫、自動粗標腳本計畫已搬到 `AI_CONTEXT/MOBILE_VIDEO_RESEARCH/`(脫離 DRAFTS,因為研究已完成)。
+
+### 尚未做
+
+- 標註器 Phase 3(變體草稿欄 + 匯入匯出)——視需要再排。
+- 自動粗標觸球時間腳本(vision API):計畫已寫,當時卡在找不到合適視覺模型;2026-07-15 已確認可呼叫 Ollama cloud 的 Kimi-k2.7-code,待實作。
+- 整合進正式 Trainer:碰紅線檔案(`game4.html`/`match-trainer.html`/`videos.json`/`physics-presets.json`),另案討論,未開始。
+
+### 備忘
+
 - `prototypes/` 底下的檔案已於 `23fdb86` commit（shared-core bridge、direction-c 探索、投影輔助、anchor 選點器、影片庫介面等）。
 - 2026-07-13 修掉 `tools/video-library-shell/library-app.js` 的黑屏 bug:`annEls`(以及類似的 `libEls`)是靠 `Object.fromEntries(idList.map(id => [id, $(id)]))` 從一份 id 字串陣列產生的,陣列漏列一個 HTML 裡實際存在的 id(這次是 `sourceName`)時,該屬性變成 `undefined`,之後任何 `annEls.xxx.value = ...` 會丟出 `TypeError`——而且是在 DOM event listener 內部丟的,不會被外層 try/catch 接住,主控台也不一定顯眼,容易被誤判成影片載入失敗。`direction-c-annotator`、`physics-studio` 等其他工具頁如果用同樣的 id-list 模式,改 HTML 時要記得同步改 JS 那份陣列。
 

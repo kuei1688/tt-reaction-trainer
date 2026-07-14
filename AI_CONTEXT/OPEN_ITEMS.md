@@ -42,5 +42,5 @@
 
 ## 手機版影片→物理支線(現況見 `STATUS.md`)
 
-- **real_backspin_001 的 handoff 落差**(約 245–382px,不同工具量測數字不完全一致)尚未修正;下一步建議是把 `initial_ball_state.position_m` 改到觸球點附近,而不是拉長 `handoff.duration_sec` 用視覺模糊蓋掉落差。
+- **real_backspin_001 的 handoff 落差**:已由 Direction C 重新定框解決——不假造幾何連續,改用「影片層明確退場 + 固定球路入口訓練球」的切鏡語意(見 STATUS.md「已完成的研究支線」)。早期「把 initial_ball_state 改到觸球點」的修正方向已隨幾何連續路線一起放棄。
 - **`docs/physics-engine-v2-plan.md` 後段研究拆解**:原本有 `PHYSICS_RESEARCH_TAIL_SPLIT_PLAN.md` / `PHYSICS_RESEARCH_TAIL_INDEX.md` 計畫要把這份 214KB 長文拆成一條條 EXP/DEC/RES/TODO,這次瘦身把整份文件連同拆解計畫一起移進 `docs/ARCHIVE/`,拆解工作等於暫停——如果之後真的要查歷史細節,去 `docs/ARCHIVE/physics-engine-v2-plan.md` 找,還要不要繼續拆分是開放問題。

@@ -18,7 +18,7 @@
 
 ### 2. 新增真實影片 serve：`real_backspin_001`
 
-- 來源：`images/contact_backspin/001.mp4`（`videos.json` 題庫既有素材，`reviewStatus: "approved"`），複製為 `prototypes/video-physics-timeline/assets/serve-real-backspin-001.mp4`。
+- 來源：`images/contact_backspin/contact_backspin_001.mp4`（`videos.json` 題庫既有素材，`reviewStatus: "approved"`），複製為 `prototypes/video-physics-timeline/assets/serve-real-backspin-001.mp4`。
 - 影片實測規格：540×682、60fps、275 frames、時長 4.583333s（= 275/60，已對齊 frame 邊界，避免破壞 `generate-webm.mjs` 的 `loadProject()` 對 config 內每一筆 serve 的強制驗證）。
 - 觸球時間：逐幀視覺判讀定為 frame 258 = 4.300s。
 - `video_anchor_uv`：以相同判讀方式定為 `(0.282, 0.266)`（16:9 cover 裁切後的舞台座標，非原始直式影片像素座標）；後續以 `anchor-picker.html` 重新點擊驗證得 `(0.2817, 0.2647)`，誤差 <0.002，一致。
@@ -63,5 +63,5 @@ trigger 瞬間 anchor 與物理投影的 Δ 約 349–382px（960×540 canvas）
 - 依 `SPEC.md` §8，「兩支 WebM 的 trigger ±0.05 秒、瀏覽器解碼與 crossfade 畫面品質」在 `pending_generation` 時明訂為「未驗收」。本輪對 `real_backspin_001` 做的是**程式邏輯層與座標數學驗證**，不是 SPEC 定義的正式人工瀏覽器驗收（沒有做真人目視 crossfade 品質判斷）。`generation_status: "ready"` 是配合本次探索性實驗的操作性設定，需要使用者知情並決定是否照 SPEC §8 補做正式驗收。
 - handoff Δ 349–382px 尚未修正，physics 參數尚未針對真實影片校準（見上方第 4 點）。
 - 目前只完成一支題庫影片（`contact_backspin/001`）的實驗；`videos.json` 其餘約 50 支尚未處理。
-- `assets/serve-real-backspin-001.mp4` 是真實賽事畫面的複製（來源 `images/contact_backspin/001.mp4`），不是本原型新造的合成素材，與 `assets/README.md` 原先「只放新造素材」的描述不同，已在該檔補充說明。
+- `assets/serve-real-backspin-001.mp4` 是真實賽事畫面的複製（來源 `images/contact_backspin/contact_backspin_001.mp4`），不是本原型新造的合成素材，與 `assets/README.md` 原先「只放新造素材」的描述不同，已在該檔補充說明。
 - 未修改：`shared-physics-core.js`、`game4.html`、`match-trainer.html`、`videos.json`、`physics-presets.json`。
