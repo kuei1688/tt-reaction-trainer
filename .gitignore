@@ -1,0 +1,4 @@
+﻿# Agent / tooling working directories (local only, not part of the project)
+.codex/
+.claude/
+prototypes/.claude/
