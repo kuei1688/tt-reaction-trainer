@@ -1,0 +1,4547 @@
+{
+  "generatedAt": "2026-07-14T10:22:34.049Z",
+  "tool": "bounce-spin-decay-sweep.js",
+  "note": "Direct bounceWithSpinPhysical calls with real-scale inputs (no D conversion). All spin values already in real rad/s.",
+  "experiments": [
+    {
+      "experiment": "1A",
+      "description": "topspin × |vy| → post-bounce topspin/vz/epsilon/regime",
+      "fixed": {
+        "vz": 3,
+        "sidespin": 0,
+        "mu": 0.13
+      },
+      "grid": {
+        "topspin": [
+          -250,
+          -223.7,
+          -197.37,
+          -171.053,
+          -144.7368,
+          -118.42105,
+          -92.105263,
+          -65.7894737,
+          -39.47368421,
+          -13.157894737,
+          13.1578947368,
+          39.47368421053,
+          65.789473684211,
+          92.1052631578947,
+          118.42105263157896,
+          144.73684210526318,
+          171.05263157894734,
+          197.36842105263156,
+          223.68421052631578,
+          250
+        ],
+        "vy": [
+          1,
+          1.6,
+          2.11,
+          2.667,
+          3.2222,
+          3.77778,
+          4.333333,
+          4.8888889,
+          5.44444444,
+          6
+        ],
+        "totalPoints": 200
+      },
+      "rows": [
+        {
+          "topspin_in": -250,
+          "vy_in": 1,
+          "topspin_out": -233.783,
+          "vz_out": 2.7838,
+          "vy_out": 0.6633,
+          "epsilon": 0.6633,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 93.51
+        },
+        {
+          "topspin_in": -250,
+          "vy_in": 1.5556,
+          "topspin_out": -224.163,
+          "vz_out": 2.6555,
+          "vy_out": 1.0944,
+          "epsilon": 0.7035,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 89.67
+        },
+        {
+          "topspin_in": -250,
+          "vy_in": 2.1111,
+          "topspin_out": -214.543,
+          "vz_out": 2.5272,
+          "vy_out": 1.5255,
+          "epsilon": 0.7226,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 85.82
+        },
+        {
+          "topspin_in": -250,
+          "vy_in": 2.6667,
+          "topspin_out": -204.923,
+          "vz_out": 2.399,
+          "vy_out": 1.9566,
+          "epsilon": 0.7337,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 81.97
+        },
+        {
+          "topspin_in": -250,
+          "vy_in": 3.2222,
+          "topspin_out": -195.303,
+          "vz_out": 2.2707,
+          "vy_out": 2.3877,
+          "epsilon": 0.741,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 78.12
+        },
+        {
+          "topspin_in": -250,
+          "vy_in": 3.7778,
+          "topspin_out": -185.683,
+          "vz_out": 2.1424,
+          "vy_out": 2.8188,
+          "epsilon": 0.7462,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 74.27
+        },
+        {
+          "topspin_in": -250,
+          "vy_in": 4.3333,
+          "topspin_out": -176.063,
+          "vz_out": 2.0142,
+          "vy_out": 3.25,
+          "epsilon": 0.75,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 70.43
+        },
+        {
+          "topspin_in": -250,
+          "vy_in": 4.8889,
+          "topspin_out": -166.443,
+          "vz_out": 1.8859,
+          "vy_out": 3.6811,
+          "epsilon": 0.7529,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 66.58
+        },
+        {
+          "topspin_in": -250,
+          "vy_in": 5.4444,
+          "topspin_out": -156.823,
+          "vz_out": 1.7576,
+          "vy_out": 4.1122,
+          "epsilon": 0.7553,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 62.73
+        },
+        {
+          "topspin_in": -250,
+          "vy_in": 6,
+          "topspin_out": -147.203,
+          "vz_out": 1.6294,
+          "vy_out": 4.5433,
+          "epsilon": 0.7572,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 58.88
+        },
+        {
+          "topspin_in": -223.6842,
+          "vy_in": 1,
+          "topspin_out": -207.3646,
+          "vz_out": 2.7824,
+          "vy_out": 0.6738,
+          "epsilon": 0.6738,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 92.7
+        },
+        {
+          "topspin_in": -223.6842,
+          "vy_in": 1.5556,
+          "topspin_out": -197.6875,
+          "vz_out": 2.6534,
+          "vy_out": 1.1108,
+          "epsilon": 0.7141,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 88.38
+        },
+        {
+          "topspin_in": -223.6842,
+          "vy_in": 2.1111,
+          "topspin_out": -188.0105,
+          "vz_out": 2.5244,
+          "vy_out": 1.5477,
+          "epsilon": 0.7331,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 84.05
+        },
+        {
+          "topspin_in": -223.6842,
+          "vy_in": 2.6667,
+          "topspin_out": -178.3335,
+          "vz_out": 2.3953,
+          "vy_out": 1.9847,
+          "epsilon": 0.7443,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 79.73
+        },
+        {
+          "topspin_in": -223.6842,
+          "vy_in": 3.2222,
+          "topspin_out": -168.6565,
+          "vz_out": 2.2663,
+          "vy_out": 2.4216,
+          "epsilon": 0.7515,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 75.4
+        },
+        {
+          "topspin_in": -223.6842,
+          "vy_in": 3.7778,
+          "topspin_out": -158.9795,
+          "vz_out": 2.1373,
+          "vy_out": 2.8586,
+          "epsilon": 0.7567,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 71.07
+        },
+        {
+          "topspin_in": -223.6842,
+          "vy_in": 4.3333,
+          "topspin_out": -149.3025,
+          "vz_out": 2.0082,
+          "vy_out": 3.2956,
+          "epsilon": 0.7605,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 66.75
+        },
+        {
+          "topspin_in": -223.6842,
+          "vy_in": 4.8889,
+          "topspin_out": -139.6254,
+          "vz_out": 1.8792,
+          "vy_out": 3.7325,
+          "epsilon": 0.7635,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 62.42
+        },
+        {
+          "topspin_in": -223.6842,
+          "vy_in": 5.4444,
+          "topspin_out": -129.9484,
+          "vz_out": 1.7502,
+          "vy_out": 4.1695,
+          "epsilon": 0.7658,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 58.09
+        },
+        {
+          "topspin_in": -223.6842,
+          "vy_in": 6,
+          "topspin_out": -120.2714,
+          "vz_out": 1.6212,
+          "vy_out": 4.6064,
+          "epsilon": 0.7677,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 53.77
+        },
+        {
+          "topspin_in": -197.3684,
+          "vy_in": 1,
+          "topspin_out": -180.9461,
+          "vz_out": 2.781,
+          "vy_out": 0.6843,
+          "epsilon": 0.6843,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 91.68
+        },
+        {
+          "topspin_in": -197.3684,
+          "vy_in": 1.5556,
+          "topspin_out": -171.2121,
+          "vz_out": 2.6512,
+          "vy_out": 1.1271,
+          "epsilon": 0.7246,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 86.75
+        },
+        {
+          "topspin_in": -197.3684,
+          "vy_in": 2.1111,
+          "topspin_out": -161.4781,
+          "vz_out": 2.5215,
+          "vy_out": 1.57,
+          "epsilon": 0.7437,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 81.82
+        },
+        {
+          "topspin_in": -197.3684,
+          "vy_in": 2.6667,
+          "topspin_out": -151.744,
+          "vz_out": 2.3917,
+          "vy_out": 2.0128,
+          "epsilon": 0.7548,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 76.88
+        },
+        {
+          "topspin_in": -197.3684,
+          "vy_in": 3.2222,
+          "topspin_out": -142.01,
+          "vz_out": 2.2619,
+          "vy_out": 2.4556,
+          "epsilon": 0.7621,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 71.95
+        },
+        {
+          "topspin_in": -197.3684,
+          "vy_in": 3.7778,
+          "topspin_out": -132.276,
+          "vz_out": 2.1321,
+          "vy_out": 2.8984,
+          "epsilon": 0.7672,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 67.02
+        },
+        {
+          "topspin_in": -197.3684,
+          "vy_in": 4.3333,
+          "topspin_out": -122.5419,
+          "vz_out": 2.0023,
+          "vy_out": 3.3412,
+          "epsilon": 0.771,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 62.09
+        },
+        {
+          "topspin_in": -197.3684,
+          "vy_in": 4.8889,
+          "topspin_out": -112.8079,
+          "vz_out": 1.8725,
+          "vy_out": 3.784,
+          "epsilon": 0.774,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 57.16
+        },
+        {
+          "topspin_in": -197.3684,
+          "vy_in": 5.4444,
+          "topspin_out": -103.0739,
+          "vz_out": 1.7427,
+          "vy_out": 4.2268,
+          "epsilon": 0.7763,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 52.22
+        },
+        {
+          "topspin_in": -197.3684,
+          "vy_in": 6,
+          "topspin_out": -93.3398,
+          "vz_out": 1.613,
+          "vy_out": 4.6696,
+          "epsilon": 0.7783,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 47.29
+        },
+        {
+          "topspin_in": -171.0526,
+          "vy_in": 1,
+          "topspin_out": -154.5277,
+          "vz_out": 2.7797,
+          "vy_out": 0.6949,
+          "epsilon": 0.6949,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 90.34
+        },
+        {
+          "topspin_in": -171.0526,
+          "vy_in": 1.5556,
+          "topspin_out": -144.7367,
+          "vz_out": 2.6491,
+          "vy_out": 1.1435,
+          "epsilon": 0.7351,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 84.62
+        },
+        {
+          "topspin_in": -171.0526,
+          "vy_in": 2.1111,
+          "topspin_out": -134.9456,
+          "vz_out": 2.5186,
+          "vy_out": 1.5922,
+          "epsilon": 0.7542,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 78.89
+        },
+        {
+          "topspin_in": -171.0526,
+          "vy_in": 2.6667,
+          "topspin_out": -125.1546,
+          "vz_out": 2.388,
+          "vy_out": 2.0408,
+          "epsilon": 0.7653,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 73.17
+        },
+        {
+          "topspin_in": -171.0526,
+          "vy_in": 3.2222,
+          "topspin_out": -115.3635,
+          "vz_out": 2.2575,
+          "vy_out": 2.4895,
+          "epsilon": 0.7726,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 67.44
+        },
+        {
+          "topspin_in": -171.0526,
+          "vy_in": 3.7778,
+          "topspin_out": -105.5725,
+          "vz_out": 2.1269,
+          "vy_out": 2.9381,
+          "epsilon": 0.7777,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 61.72
+        },
+        {
+          "topspin_in": -171.0526,
+          "vy_in": 4.3333,
+          "topspin_out": -95.7814,
+          "vz_out": 1.9964,
+          "vy_out": 3.3868,
+          "epsilon": 0.7816,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 56
+        },
+        {
+          "topspin_in": -171.0526,
+          "vy_in": 4.8889,
+          "topspin_out": -85.9904,
+          "vz_out": 1.8658,
+          "vy_out": 3.8354,
+          "epsilon": 0.7845,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 50.27
+        },
+        {
+          "topspin_in": -171.0526,
+          "vy_in": 5.4444,
+          "topspin_out": -76.1993,
+          "vz_out": 1.7353,
+          "vy_out": 4.2841,
+          "epsilon": 0.7869,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 44.55
+        },
+        {
+          "topspin_in": -171.0526,
+          "vy_in": 6,
+          "topspin_out": -66.4082,
+          "vz_out": 1.6047,
+          "vy_out": 4.7328,
+          "epsilon": 0.7888,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 38.82
+        },
+        {
+          "topspin_in": -144.7368,
+          "vy_in": 1,
+          "topspin_out": -128.1093,
+          "vz_out": 2.7783,
+          "vy_out": 0.7054,
+          "epsilon": 0.7054,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 88.51
+        },
+        {
+          "topspin_in": -144.7368,
+          "vy_in": 1.5556,
+          "topspin_out": -118.2612,
+          "vz_out": 2.647,
+          "vy_out": 1.1599,
+          "epsilon": 0.7456,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 81.71
+        },
+        {
+          "topspin_in": -144.7368,
+          "vy_in": 2.1111,
+          "topspin_out": -108.4132,
+          "vz_out": 2.5157,
+          "vy_out": 1.6144,
+          "epsilon": 0.7647,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 74.9
+        },
+        {
+          "topspin_in": -144.7368,
+          "vy_in": 2.6667,
+          "topspin_out": -98.5651,
+          "vz_out": 2.3844,
+          "vy_out": 2.0689,
+          "epsilon": 0.7758,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 68.1
+        },
+        {
+          "topspin_in": -144.7368,
+          "vy_in": 3.2222,
+          "topspin_out": -88.717,
+          "vz_out": 2.2531,
+          "vy_out": 2.5234,
+          "epsilon": 0.7831,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 61.3
+        },
+        {
+          "topspin_in": -144.7368,
+          "vy_in": 3.7778,
+          "topspin_out": -78.8689,
+          "vz_out": 2.1218,
+          "vy_out": 2.9779,
+          "epsilon": 0.7883,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 54.49
+        },
+        {
+          "topspin_in": -144.7368,
+          "vy_in": 4.3333,
+          "topspin_out": -69.0209,
+          "vz_out": 1.9905,
+          "vy_out": 3.4324,
+          "epsilon": 0.7921,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 47.69
+        },
+        {
+          "topspin_in": -144.7368,
+          "vy_in": 4.8889,
+          "topspin_out": -59.1728,
+          "vz_out": 1.8591,
+          "vy_out": 3.8869,
+          "epsilon": 0.795,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 40.88
+        },
+        {
+          "topspin_in": -144.7368,
+          "vy_in": 5.4444,
+          "topspin_out": -49.3247,
+          "vz_out": 1.7278,
+          "vy_out": 4.3414,
+          "epsilon": 0.7974,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 34.08
+        },
+        {
+          "topspin_in": -144.7368,
+          "vy_in": 6,
+          "topspin_out": -39.4767,
+          "vz_out": 1.5965,
+          "vy_out": 4.7959,
+          "epsilon": 0.7993,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 27.27
+        },
+        {
+          "topspin_in": -118.4211,
+          "vy_in": 1,
+          "topspin_out": -101.6909,
+          "vz_out": 2.7769,
+          "vy_out": 0.7159,
+          "epsilon": 0.7159,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 85.87
+        },
+        {
+          "topspin_in": -118.4211,
+          "vy_in": 1.5556,
+          "topspin_out": -91.7858,
+          "vz_out": 2.6449,
+          "vy_out": 1.1763,
+          "epsilon": 0.7562,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 77.51
+        },
+        {
+          "topspin_in": -118.4211,
+          "vy_in": 2.1111,
+          "topspin_out": -81.8807,
+          "vz_out": 2.5128,
+          "vy_out": 1.6366,
+          "epsilon": 0.7752,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 69.14
+        },
+        {
+          "topspin_in": -118.4211,
+          "vy_in": 2.6667,
+          "topspin_out": -71.9756,
+          "vz_out": 2.3807,
+          "vy_out": 2.097,
+          "epsilon": 0.7864,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 60.78
+        },
+        {
+          "topspin_in": -118.4211,
+          "vy_in": 3.2222,
+          "topspin_out": -62.0705,
+          "vz_out": 2.2487,
+          "vy_out": 2.5573,
+          "epsilon": 0.7937,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 52.42
+        },
+        {
+          "topspin_in": -118.4211,
+          "vy_in": 3.7778,
+          "topspin_out": -52.1654,
+          "vz_out": 2.1166,
+          "vy_out": 3.0177,
+          "epsilon": 0.7988,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 44.05
+        },
+        {
+          "topspin_in": -118.4211,
+          "vy_in": 4.3333,
+          "topspin_out": -42.2604,
+          "vz_out": 1.9845,
+          "vy_out": 3.478,
+          "epsilon": 0.8026,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 35.69
+        },
+        {
+          "topspin_in": -118.4211,
+          "vy_in": 4.8889,
+          "topspin_out": -32.3553,
+          "vz_out": 1.8525,
+          "vy_out": 3.9384,
+          "epsilon": 0.8056,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 27.32
+        },
+        {
+          "topspin_in": -118.4211,
+          "vy_in": 5.4444,
+          "topspin_out": -22.4502,
+          "vz_out": 1.7204,
+          "vy_out": 4.3987,
+          "epsilon": 0.8079,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 18.96
+        },
+        {
+          "topspin_in": -118.4211,
+          "vy_in": 6,
+          "topspin_out": -12.5451,
+          "vz_out": 1.5883,
+          "vy_out": 4.8591,
+          "epsilon": 0.8098,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 10.59
+        },
+        {
+          "topspin_in": -92.1053,
+          "vy_in": 1,
+          "topspin_out": -75.2725,
+          "vz_out": 2.7756,
+          "vy_out": 0.7264,
+          "epsilon": 0.7264,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 81.72
+        },
+        {
+          "topspin_in": -92.1053,
+          "vy_in": 1.5556,
+          "topspin_out": -65.3104,
+          "vz_out": 2.6427,
+          "vy_out": 1.1926,
+          "epsilon": 0.7667,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 70.91
+        },
+        {
+          "topspin_in": -92.1053,
+          "vy_in": 2.1111,
+          "topspin_out": -55.3482,
+          "vz_out": 2.5099,
+          "vy_out": 1.6588,
+          "epsilon": 0.7858,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 60.09
+        },
+        {
+          "topspin_in": -92.1053,
+          "vy_in": 2.6667,
+          "topspin_out": -45.3861,
+          "vz_out": 2.3771,
+          "vy_out": 2.125,
+          "epsilon": 0.7969,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 49.28
+        },
+        {
+          "topspin_in": -92.1053,
+          "vy_in": 3.2222,
+          "topspin_out": -35.424,
+          "vz_out": 2.2443,
+          "vy_out": 2.5912,
+          "epsilon": 0.8042,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 38.46
+        },
+        {
+          "topspin_in": -92.1053,
+          "vy_in": 3.7778,
+          "topspin_out": -25.4619,
+          "vz_out": 2.1114,
+          "vy_out": 3.0574,
+          "epsilon": 0.8093,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 27.64
+        },
+        {
+          "topspin_in": -92.1053,
+          "vy_in": 4.3333,
+          "topspin_out": -15.4998,
+          "vz_out": 1.9786,
+          "vy_out": 3.5236,
+          "epsilon": 0.8131,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 16.83
+        },
+        {
+          "topspin_in": -92.1053,
+          "vy_in": 4.8889,
+          "topspin_out": -5.5377,
+          "vz_out": 1.8458,
+          "vy_out": 3.9898,
+          "epsilon": 0.8161,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 6.01
+        },
+        {
+          "topspin_in": -92.1053,
+          "vy_in": 5.4444,
+          "topspin_out": 4.4244,
+          "vz_out": 1.7129,
+          "vy_out": 4.456,
+          "epsilon": 0.8185,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": -4.8
+        },
+        {
+          "topspin_in": -92.1053,
+          "vy_in": 6,
+          "topspin_out": 14.3865,
+          "vz_out": 1.5801,
+          "vy_out": 4.9222,
+          "epsilon": 0.8204,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": -15.62
+        },
+        {
+          "topspin_in": -65.7895,
+          "vy_in": 1,
+          "topspin_out": -48.854,
+          "vz_out": 2.7742,
+          "vy_out": 0.737,
+          "epsilon": 0.737,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 74.26
+        },
+        {
+          "topspin_in": -65.7895,
+          "vy_in": 1.5556,
+          "topspin_out": -38.8349,
+          "vz_out": 2.6406,
+          "vy_out": 1.209,
+          "epsilon": 0.7772,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 59.03
+        },
+        {
+          "topspin_in": -65.7895,
+          "vy_in": 2.1111,
+          "topspin_out": -28.8158,
+          "vz_out": 2.507,
+          "vy_out": 1.6811,
+          "epsilon": 0.7963,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 43.8
+        },
+        {
+          "topspin_in": -65.7895,
+          "vy_in": 2.6667,
+          "topspin_out": -18.7967,
+          "vz_out": 2.3734,
+          "vy_out": 2.1531,
+          "epsilon": 0.8074,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 28.57
+        },
+        {
+          "topspin_in": -65.7895,
+          "vy_in": 3.2222,
+          "topspin_out": -8.7775,
+          "vz_out": 2.2398,
+          "vy_out": 2.6252,
+          "epsilon": 0.8147,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 13.34
+        },
+        {
+          "topspin_in": -65.7895,
+          "vy_in": 3.7778,
+          "topspin_out": 1.2416,
+          "vz_out": 2.1063,
+          "vy_out": 3.0972,
+          "epsilon": 0.8198,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": -1.89
+        },
+        {
+          "topspin_in": -65.7895,
+          "vy_in": 4.3333,
+          "topspin_out": 11.2607,
+          "vz_out": 1.9727,
+          "vy_out": 3.5692,
+          "epsilon": 0.8237,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": -17.12
+        },
+        {
+          "topspin_in": -65.7895,
+          "vy_in": 4.8889,
+          "topspin_out": 21.2798,
+          "vz_out": 1.8391,
+          "vy_out": 4.0413,
+          "epsilon": 0.8266,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": -32.35
+        },
+        {
+          "topspin_in": -65.7895,
+          "vy_in": 5.4444,
+          "topspin_out": 31.2989,
+          "vz_out": 1.7055,
+          "vy_out": 4.5133,
+          "epsilon": 0.829,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": -47.57
+        },
+        {
+          "topspin_in": -65.7895,
+          "vy_in": 6,
+          "topspin_out": 41.3181,
+          "vz_out": 1.5719,
+          "vy_out": 4.9854,
+          "epsilon": 0.8309,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": -62.8
+        },
+        {
+          "topspin_in": -39.4737,
+          "vy_in": 1,
+          "topspin_out": -22.4356,
+          "vz_out": 2.7728,
+          "vy_out": 0.7475,
+          "epsilon": 0.7475,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 56.84
+        },
+        {
+          "topspin_in": -39.4737,
+          "vy_in": 1.5556,
+          "topspin_out": -12.3595,
+          "vz_out": 2.6385,
+          "vy_out": 1.2254,
+          "epsilon": 0.7878,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 31.31
+        },
+        {
+          "topspin_in": -39.4737,
+          "vy_in": 2.1111,
+          "topspin_out": -2.2833,
+          "vz_out": 2.5041,
+          "vy_out": 1.7033,
+          "epsilon": 0.8068,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 5.78
+        },
+        {
+          "topspin_in": -39.4737,
+          "vy_in": 2.6667,
+          "topspin_out": 7.7928,
+          "vz_out": 2.3698,
+          "vy_out": 2.1812,
+          "epsilon": 0.8179,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": -19.74
+        },
+        {
+          "topspin_in": -39.4737,
+          "vy_in": 3.2222,
+          "topspin_out": 17.8689,
+          "vz_out": 2.2354,
+          "vy_out": 2.6591,
+          "epsilon": 0.8252,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": -45.27
+        },
+        {
+          "topspin_in": -39.4737,
+          "vy_in": 3.7778,
+          "topspin_out": 27.9451,
+          "vz_out": 2.1011,
+          "vy_out": 3.137,
+          "epsilon": 0.8304,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": -70.79
+        },
+        {
+          "topspin_in": -39.4737,
+          "vy_in": 4.3333,
+          "topspin_out": 38.0212,
+          "vz_out": 1.9667,
+          "vy_out": 3.6149,
+          "epsilon": 0.8342,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": -96.32
+        },
+        {
+          "topspin_in": -39.4737,
+          "vy_in": 4.8889,
+          "topspin_out": 48.0974,
+          "vz_out": 1.8324,
+          "vy_out": 4.0928,
+          "epsilon": 0.8372,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": -121.85
+        },
+        {
+          "topspin_in": -39.4737,
+          "vy_in": 5.4444,
+          "topspin_out": 58.1735,
+          "vz_out": 1.698,
+          "vy_out": 4.5707,
+          "epsilon": 0.8395,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": -147.37
+        },
+        {
+          "topspin_in": -39.4737,
+          "vy_in": 6,
+          "topspin_out": 68.2496,
+          "vz_out": 1.5637,
+          "vy_out": 5.0485,
+          "epsilon": 0.8414,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": -172.9
+        },
+        {
+          "topspin_in": -13.1579,
+          "vy_in": 1,
+          "topspin_out": 3.9828,
+          "vz_out": 2.7715,
+          "vy_out": 0.758,
+          "epsilon": 0.758,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": -30.27
+        },
+        {
+          "topspin_in": -13.1579,
+          "vy_in": 1.5556,
+          "topspin_out": 14.116,
+          "vz_out": 2.6363,
+          "vy_out": 1.2418,
+          "epsilon": 0.7983,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": -107.28
+        },
+        {
+          "topspin_in": -13.1579,
+          "vy_in": 2.1111,
+          "topspin_out": 24.2491,
+          "vz_out": 2.5012,
+          "vy_out": 1.7255,
+          "epsilon": 0.8173,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": -184.29
+        },
+        {
+          "topspin_in": -13.1579,
+          "vy_in": 2.6667,
+          "topspin_out": 34.3823,
+          "vz_out": 2.3661,
+          "vy_out": 2.2092,
+          "epsilon": 0.8285,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": -261.31
+        },
+        {
+          "topspin_in": -13.1579,
+          "vy_in": 3.2222,
+          "topspin_out": 44.5154,
+          "vz_out": 2.231,
+          "vy_out": 2.693,
+          "epsilon": 0.8358,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": -338.32
+        },
+        {
+          "topspin_in": -13.1579,
+          "vy_in": 3.7778,
+          "topspin_out": 54.6486,
+          "vz_out": 2.0959,
+          "vy_out": 3.1767,
+          "epsilon": 0.8409,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": -415.33
+        },
+        {
+          "topspin_in": -13.1579,
+          "vy_in": 4.3333,
+          "topspin_out": 64.7818,
+          "vz_out": 1.9608,
+          "vy_out": 3.6605,
+          "epsilon": 0.8447,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": -492.34
+        },
+        {
+          "topspin_in": -13.1579,
+          "vy_in": 4.8889,
+          "topspin_out": 74.9149,
+          "vz_out": 1.8257,
+          "vy_out": 4.1442,
+          "epsilon": 0.8477,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": -569.35
+        },
+        {
+          "topspin_in": -13.1579,
+          "vy_in": 5.4444,
+          "topspin_out": 84.7368,
+          "vz_out": 1.6947,
+          "vy_out": 4.628,
+          "epsilon": 0.85,
+          "regime_topspin": "rolling",
+          "regime_sidespin": "rolling",
+          "retention": -644
+        },
+        {
+          "topspin_in": -13.1579,
+          "vy_in": 6,
+          "topspin_out": 84.7368,
+          "vz_out": 1.6947,
+          "vy_out": 5.1117,
+          "epsilon": 0.852,
+          "regime_topspin": "rolling",
+          "regime_sidespin": "rolling",
+          "retention": -644
+        },
+        {
+          "topspin_in": 13.1579,
+          "vy_in": 1,
+          "topspin_out": 30.2986,
+          "vz_out": 2.7715,
+          "vy_out": 0.758,
+          "epsilon": 0.758,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 230.27
+        },
+        {
+          "topspin_in": 13.1579,
+          "vy_in": 1.5556,
+          "topspin_out": 40.4318,
+          "vz_out": 2.6363,
+          "vy_out": 1.2418,
+          "epsilon": 0.7983,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 307.28
+        },
+        {
+          "topspin_in": 13.1579,
+          "vy_in": 2.1111,
+          "topspin_out": 50.5649,
+          "vz_out": 2.5012,
+          "vy_out": 1.7255,
+          "epsilon": 0.8173,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 384.29
+        },
+        {
+          "topspin_in": 13.1579,
+          "vy_in": 2.6667,
+          "topspin_out": 60.6981,
+          "vz_out": 2.3661,
+          "vy_out": 2.2092,
+          "epsilon": 0.8285,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 461.31
+        },
+        {
+          "topspin_in": 13.1579,
+          "vy_in": 3.2222,
+          "topspin_out": 70.8312,
+          "vz_out": 2.231,
+          "vy_out": 2.693,
+          "epsilon": 0.8358,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 538.32
+        },
+        {
+          "topspin_in": 13.1579,
+          "vy_in": 3.7778,
+          "topspin_out": 80.9644,
+          "vz_out": 2.0959,
+          "vy_out": 3.1767,
+          "epsilon": 0.8409,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 615.33
+        },
+        {
+          "topspin_in": 13.1579,
+          "vy_in": 4.3333,
+          "topspin_out": 91.0975,
+          "vz_out": 1.9608,
+          "vy_out": 3.6605,
+          "epsilon": 0.8447,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 692.34
+        },
+        {
+          "topspin_in": 13.1579,
+          "vy_in": 4.8889,
+          "topspin_out": 95.2632,
+          "vz_out": 1.9053,
+          "vy_out": 4.1442,
+          "epsilon": 0.8477,
+          "regime_topspin": "rolling",
+          "regime_sidespin": "rolling",
+          "retention": 724
+        },
+        {
+          "topspin_in": 13.1579,
+          "vy_in": 5.4444,
+          "topspin_out": 95.2632,
+          "vz_out": 1.9053,
+          "vy_out": 4.628,
+          "epsilon": 0.85,
+          "regime_topspin": "rolling",
+          "regime_sidespin": "rolling",
+          "retention": 724
+        },
+        {
+          "topspin_in": 13.1579,
+          "vy_in": 6,
+          "topspin_out": 95.2632,
+          "vz_out": 1.9053,
+          "vy_out": 5.1117,
+          "epsilon": 0.852,
+          "regime_topspin": "rolling",
+          "regime_sidespin": "rolling",
+          "retention": 724
+        },
+        {
+          "topspin_in": 39.4737,
+          "vy_in": 1,
+          "topspin_out": 56.5118,
+          "vz_out": 2.7728,
+          "vy_out": 0.7475,
+          "epsilon": 0.7475,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 143.16
+        },
+        {
+          "topspin_in": 39.4737,
+          "vy_in": 1.5556,
+          "topspin_out": 66.5879,
+          "vz_out": 2.6385,
+          "vy_out": 1.2254,
+          "epsilon": 0.7878,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 168.69
+        },
+        {
+          "topspin_in": 39.4737,
+          "vy_in": 2.1111,
+          "topspin_out": 76.664,
+          "vz_out": 2.5041,
+          "vy_out": 1.7033,
+          "epsilon": 0.8068,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 194.22
+        },
+        {
+          "topspin_in": 39.4737,
+          "vy_in": 2.6667,
+          "topspin_out": 86.7402,
+          "vz_out": 2.3698,
+          "vy_out": 2.1812,
+          "epsilon": 0.8179,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 219.74
+        },
+        {
+          "topspin_in": 39.4737,
+          "vy_in": 3.2222,
+          "topspin_out": 96.8163,
+          "vz_out": 2.2354,
+          "vy_out": 2.6591,
+          "epsilon": 0.8252,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 245.27
+        },
+        {
+          "topspin_in": 39.4737,
+          "vy_in": 3.7778,
+          "topspin_out": 105.7895,
+          "vz_out": 2.1158,
+          "vy_out": 3.137,
+          "epsilon": 0.8304,
+          "regime_topspin": "rolling",
+          "regime_sidespin": "rolling",
+          "retention": 268
+        },
+        {
+          "topspin_in": 39.4737,
+          "vy_in": 4.3333,
+          "topspin_out": 105.7895,
+          "vz_out": 2.1158,
+          "vy_out": 3.6149,
+          "epsilon": 0.8342,
+          "regime_topspin": "rolling",
+          "regime_sidespin": "rolling",
+          "retention": 268
+        },
+        {
+          "topspin_in": 39.4737,
+          "vy_in": 4.8889,
+          "topspin_out": 105.7895,
+          "vz_out": 2.1158,
+          "vy_out": 4.0928,
+          "epsilon": 0.8372,
+          "regime_topspin": "rolling",
+          "regime_sidespin": "rolling",
+          "retention": 268
+        },
+        {
+          "topspin_in": 39.4737,
+          "vy_in": 5.4444,
+          "topspin_out": 105.7895,
+          "vz_out": 2.1158,
+          "vy_out": 4.5707,
+          "epsilon": 0.8395,
+          "regime_topspin": "rolling",
+          "regime_sidespin": "rolling",
+          "retention": 268
+        },
+        {
+          "topspin_in": 39.4737,
+          "vy_in": 6,
+          "topspin_out": 105.7895,
+          "vz_out": 2.1158,
+          "vy_out": 5.0485,
+          "epsilon": 0.8414,
+          "regime_topspin": "rolling",
+          "regime_sidespin": "rolling",
+          "retention": 268
+        },
+        {
+          "topspin_in": 65.7895,
+          "vy_in": 1,
+          "topspin_out": 82.7249,
+          "vz_out": 2.7742,
+          "vy_out": 0.737,
+          "epsilon": 0.737,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 125.74
+        },
+        {
+          "topspin_in": 65.7895,
+          "vy_in": 1.5556,
+          "topspin_out": 92.744,
+          "vz_out": 2.6406,
+          "vy_out": 1.209,
+          "epsilon": 0.7772,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 140.97
+        },
+        {
+          "topspin_in": 65.7895,
+          "vy_in": 2.1111,
+          "topspin_out": 102.7632,
+          "vz_out": 2.507,
+          "vy_out": 1.6811,
+          "epsilon": 0.7963,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 156.2
+        },
+        {
+          "topspin_in": 65.7895,
+          "vy_in": 2.6667,
+          "topspin_out": 112.7823,
+          "vz_out": 2.3734,
+          "vy_out": 2.1531,
+          "epsilon": 0.8074,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 171.43
+        },
+        {
+          "topspin_in": 65.7895,
+          "vy_in": 3.2222,
+          "topspin_out": 116.3158,
+          "vz_out": 2.3263,
+          "vy_out": 2.6252,
+          "epsilon": 0.8147,
+          "regime_topspin": "rolling",
+          "regime_sidespin": "rolling",
+          "retention": 176.8
+        },
+        {
+          "topspin_in": 65.7895,
+          "vy_in": 3.7778,
+          "topspin_out": 116.3158,
+          "vz_out": 2.3263,
+          "vy_out": 3.0972,
+          "epsilon": 0.8198,
+          "regime_topspin": "rolling",
+          "regime_sidespin": "rolling",
+          "retention": 176.8
+        },
+        {
+          "topspin_in": 65.7895,
+          "vy_in": 4.3333,
+          "topspin_out": 116.3158,
+          "vz_out": 2.3263,
+          "vy_out": 3.5692,
+          "epsilon": 0.8237,
+          "regime_topspin": "rolling",
+          "regime_sidespin": "rolling",
+          "retention": 176.8
+        },
+        {
+          "topspin_in": 65.7895,
+          "vy_in": 4.8889,
+          "topspin_out": 116.3158,
+          "vz_out": 2.3263,
+          "vy_out": 4.0413,
+          "epsilon": 0.8266,
+          "regime_topspin": "rolling",
+          "regime_sidespin": "rolling",
+          "retention": 176.8
+        },
+        {
+          "topspin_in": 65.7895,
+          "vy_in": 5.4444,
+          "topspin_out": 116.3158,
+          "vz_out": 2.3263,
+          "vy_out": 4.5133,
+          "epsilon": 0.829,
+          "regime_topspin": "rolling",
+          "regime_sidespin": "rolling",
+          "retention": 176.8
+        },
+        {
+          "topspin_in": 65.7895,
+          "vy_in": 6,
+          "topspin_out": 116.3158,
+          "vz_out": 2.3263,
+          "vy_out": 4.9854,
+          "epsilon": 0.8309,
+          "regime_topspin": "rolling",
+          "regime_sidespin": "rolling",
+          "retention": 176.8
+        },
+        {
+          "topspin_in": 92.1053,
+          "vy_in": 1,
+          "topspin_out": 108.9381,
+          "vz_out": 2.7756,
+          "vy_out": 0.7264,
+          "epsilon": 0.7264,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 118.28
+        },
+        {
+          "topspin_in": 92.1053,
+          "vy_in": 1.5556,
+          "topspin_out": 118.9002,
+          "vz_out": 2.6427,
+          "vy_out": 1.1926,
+          "epsilon": 0.7667,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 129.09
+        },
+        {
+          "topspin_in": 92.1053,
+          "vy_in": 2.1111,
+          "topspin_out": 126.8421,
+          "vz_out": 2.5368,
+          "vy_out": 1.6588,
+          "epsilon": 0.7858,
+          "regime_topspin": "rolling",
+          "regime_sidespin": "rolling",
+          "retention": 137.71
+        },
+        {
+          "topspin_in": 92.1053,
+          "vy_in": 2.6667,
+          "topspin_out": 126.8421,
+          "vz_out": 2.5368,
+          "vy_out": 2.125,
+          "epsilon": 0.7969,
+          "regime_topspin": "rolling",
+          "regime_sidespin": "rolling",
+          "retention": 137.71
+        },
+        {
+          "topspin_in": 92.1053,
+          "vy_in": 3.2222,
+          "topspin_out": 126.8421,
+          "vz_out": 2.5368,
+          "vy_out": 2.5912,
+          "epsilon": 0.8042,
+          "regime_topspin": "rolling",
+          "regime_sidespin": "rolling",
+          "retention": 137.71
+        },
+        {
+          "topspin_in": 92.1053,
+          "vy_in": 3.7778,
+          "topspin_out": 126.8421,
+          "vz_out": 2.5368,
+          "vy_out": 3.0574,
+          "epsilon": 0.8093,
+          "regime_topspin": "rolling",
+          "regime_sidespin": "rolling",
+          "retention": 137.71
+        },
+        {
+          "topspin_in": 92.1053,
+          "vy_in": 4.3333,
+          "topspin_out": 126.8421,
+          "vz_out": 2.5368,
+          "vy_out": 3.5236,
+          "epsilon": 0.8131,
+          "regime_topspin": "rolling",
+          "regime_sidespin": "rolling",
+          "retention": 137.71
+        },
+        {
+          "topspin_in": 92.1053,
+          "vy_in": 4.8889,
+          "topspin_out": 126.8421,
+          "vz_out": 2.5368,
+          "vy_out": 3.9898,
+          "epsilon": 0.8161,
+          "regime_topspin": "rolling",
+          "regime_sidespin": "rolling",
+          "retention": 137.71
+        },
+        {
+          "topspin_in": 92.1053,
+          "vy_in": 5.4444,
+          "topspin_out": 126.8421,
+          "vz_out": 2.5368,
+          "vy_out": 4.456,
+          "epsilon": 0.8185,
+          "regime_topspin": "rolling",
+          "regime_sidespin": "rolling",
+          "retention": 137.71
+        },
+        {
+          "topspin_in": 92.1053,
+          "vy_in": 6,
+          "topspin_out": 126.8421,
+          "vz_out": 2.5368,
+          "vy_out": 4.9222,
+          "epsilon": 0.8204,
+          "regime_topspin": "rolling",
+          "regime_sidespin": "rolling",
+          "retention": 137.71
+        },
+        {
+          "topspin_in": 118.4211,
+          "vy_in": 1,
+          "topspin_out": 135.1512,
+          "vz_out": 2.7769,
+          "vy_out": 0.7159,
+          "epsilon": 0.7159,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 114.13
+        },
+        {
+          "topspin_in": 118.4211,
+          "vy_in": 1.5556,
+          "topspin_out": 137.3684,
+          "vz_out": 2.7474,
+          "vy_out": 1.1763,
+          "epsilon": 0.7562,
+          "regime_topspin": "rolling",
+          "regime_sidespin": "rolling",
+          "retention": 116
+        },
+        {
+          "topspin_in": 118.4211,
+          "vy_in": 2.1111,
+          "topspin_out": 137.3684,
+          "vz_out": 2.7474,
+          "vy_out": 1.6366,
+          "epsilon": 0.7752,
+          "regime_topspin": "rolling",
+          "regime_sidespin": "rolling",
+          "retention": 116
+        },
+        {
+          "topspin_in": 118.4211,
+          "vy_in": 2.6667,
+          "topspin_out": 137.3684,
+          "vz_out": 2.7474,
+          "vy_out": 2.097,
+          "epsilon": 0.7864,
+          "regime_topspin": "rolling",
+          "regime_sidespin": "rolling",
+          "retention": 116
+        },
+        {
+          "topspin_in": 118.4211,
+          "vy_in": 3.2222,
+          "topspin_out": 137.3684,
+          "vz_out": 2.7474,
+          "vy_out": 2.5573,
+          "epsilon": 0.7937,
+          "regime_topspin": "rolling",
+          "regime_sidespin": "rolling",
+          "retention": 116
+        },
+        {
+          "topspin_in": 118.4211,
+          "vy_in": 3.7778,
+          "topspin_out": 137.3684,
+          "vz_out": 2.7474,
+          "vy_out": 3.0177,
+          "epsilon": 0.7988,
+          "regime_topspin": "rolling",
+          "regime_sidespin": "rolling",
+          "retention": 116
+        },
+        {
+          "topspin_in": 118.4211,
+          "vy_in": 4.3333,
+          "topspin_out": 137.3684,
+          "vz_out": 2.7474,
+          "vy_out": 3.478,
+          "epsilon": 0.8026,
+          "regime_topspin": "rolling",
+          "regime_sidespin": "rolling",
+          "retention": 116
+        },
+        {
+          "topspin_in": 118.4211,
+          "vy_in": 4.8889,
+          "topspin_out": 137.3684,
+          "vz_out": 2.7474,
+          "vy_out": 3.9384,
+          "epsilon": 0.8056,
+          "regime_topspin": "rolling",
+          "regime_sidespin": "rolling",
+          "retention": 116
+        },
+        {
+          "topspin_in": 118.4211,
+          "vy_in": 5.4444,
+          "topspin_out": 137.3684,
+          "vz_out": 2.7474,
+          "vy_out": 4.3987,
+          "epsilon": 0.8079,
+          "regime_topspin": "rolling",
+          "regime_sidespin": "rolling",
+          "retention": 116
+        },
+        {
+          "topspin_in": 118.4211,
+          "vy_in": 6,
+          "topspin_out": 137.3684,
+          "vz_out": 2.7474,
+          "vy_out": 4.8591,
+          "epsilon": 0.8098,
+          "regime_topspin": "rolling",
+          "regime_sidespin": "rolling",
+          "retention": 116
+        },
+        {
+          "topspin_in": 144.7368,
+          "vy_in": 1,
+          "topspin_out": 147.8947,
+          "vz_out": 2.9579,
+          "vy_out": 0.7054,
+          "epsilon": 0.7054,
+          "regime_topspin": "rolling",
+          "regime_sidespin": "rolling",
+          "retention": 102.18
+        },
+        {
+          "topspin_in": 144.7368,
+          "vy_in": 1.5556,
+          "topspin_out": 147.8947,
+          "vz_out": 2.9579,
+          "vy_out": 1.1599,
+          "epsilon": 0.7456,
+          "regime_topspin": "rolling",
+          "regime_sidespin": "rolling",
+          "retention": 102.18
+        },
+        {
+          "topspin_in": 144.7368,
+          "vy_in": 2.1111,
+          "topspin_out": 147.8947,
+          "vz_out": 2.9579,
+          "vy_out": 1.6144,
+          "epsilon": 0.7647,
+          "regime_topspin": "rolling",
+          "regime_sidespin": "rolling",
+          "retention": 102.18
+        },
+        {
+          "topspin_in": 144.7368,
+          "vy_in": 2.6667,
+          "topspin_out": 147.8947,
+          "vz_out": 2.9579,
+          "vy_out": 2.0689,
+          "epsilon": 0.7758,
+          "regime_topspin": "rolling",
+          "regime_sidespin": "rolling",
+          "retention": 102.18
+        },
+        {
+          "topspin_in": 144.7368,
+          "vy_in": 3.2222,
+          "topspin_out": 147.8947,
+          "vz_out": 2.9579,
+          "vy_out": 2.5234,
+          "epsilon": 0.7831,
+          "regime_topspin": "rolling",
+          "regime_sidespin": "rolling",
+          "retention": 102.18
+        },
+        {
+          "topspin_in": 144.7368,
+          "vy_in": 3.7778,
+          "topspin_out": 147.8947,
+          "vz_out": 2.9579,
+          "vy_out": 2.9779,
+          "epsilon": 0.7883,
+          "regime_topspin": "rolling",
+          "regime_sidespin": "rolling",
+          "retention": 102.18
+        },
+        {
+          "topspin_in": 144.7368,
+          "vy_in": 4.3333,
+          "topspin_out": 147.8947,
+          "vz_out": 2.9579,
+          "vy_out": 3.4324,
+          "epsilon": 0.7921,
+          "regime_topspin": "rolling",
+          "regime_sidespin": "rolling",
+          "retention": 102.18
+        },
+        {
+          "topspin_in": 144.7368,
+          "vy_in": 4.8889,
+          "topspin_out": 147.8947,
+          "vz_out": 2.9579,
+          "vy_out": 3.8869,
+          "epsilon": 0.795,
+          "regime_topspin": "rolling",
+          "regime_sidespin": "rolling",
+          "retention": 102.18
+        },
+        {
+          "topspin_in": 144.7368,
+          "vy_in": 5.4444,
+          "topspin_out": 147.8947,
+          "vz_out": 2.9579,
+          "vy_out": 4.3414,
+          "epsilon": 0.7974,
+          "regime_topspin": "rolling",
+          "regime_sidespin": "rolling",
+          "retention": 102.18
+        },
+        {
+          "topspin_in": 144.7368,
+          "vy_in": 6,
+          "topspin_out": 147.8947,
+          "vz_out": 2.9579,
+          "vy_out": 4.7959,
+          "epsilon": 0.7993,
+          "regime_topspin": "rolling",
+          "regime_sidespin": "rolling",
+          "retention": 102.18
+        },
+        {
+          "topspin_in": 171.0526,
+          "vy_in": 1,
+          "topspin_out": 158.4211,
+          "vz_out": 3.1684,
+          "vy_out": 0.6949,
+          "epsilon": 0.6949,
+          "regime_topspin": "rolling",
+          "regime_sidespin": "rolling",
+          "retention": 92.62
+        },
+        {
+          "topspin_in": 171.0526,
+          "vy_in": 1.5556,
+          "topspin_out": 158.4211,
+          "vz_out": 3.1684,
+          "vy_out": 1.1435,
+          "epsilon": 0.7351,
+          "regime_topspin": "rolling",
+          "regime_sidespin": "rolling",
+          "retention": 92.62
+        },
+        {
+          "topspin_in": 171.0526,
+          "vy_in": 2.1111,
+          "topspin_out": 158.4211,
+          "vz_out": 3.1684,
+          "vy_out": 1.5922,
+          "epsilon": 0.7542,
+          "regime_topspin": "rolling",
+          "regime_sidespin": "rolling",
+          "retention": 92.62
+        },
+        {
+          "topspin_in": 171.0526,
+          "vy_in": 2.6667,
+          "topspin_out": 158.4211,
+          "vz_out": 3.1684,
+          "vy_out": 2.0408,
+          "epsilon": 0.7653,
+          "regime_topspin": "rolling",
+          "regime_sidespin": "rolling",
+          "retention": 92.62
+        },
+        {
+          "topspin_in": 171.0526,
+          "vy_in": 3.2222,
+          "topspin_out": 158.4211,
+          "vz_out": 3.1684,
+          "vy_out": 2.4895,
+          "epsilon": 0.7726,
+          "regime_topspin": "rolling",
+          "regime_sidespin": "rolling",
+          "retention": 92.62
+        },
+        {
+          "topspin_in": 171.0526,
+          "vy_in": 3.7778,
+          "topspin_out": 158.4211,
+          "vz_out": 3.1684,
+          "vy_out": 2.9381,
+          "epsilon": 0.7777,
+          "regime_topspin": "rolling",
+          "regime_sidespin": "rolling",
+          "retention": 92.62
+        },
+        {
+          "topspin_in": 171.0526,
+          "vy_in": 4.3333,
+          "topspin_out": 158.4211,
+          "vz_out": 3.1684,
+          "vy_out": 3.3868,
+          "epsilon": 0.7816,
+          "regime_topspin": "rolling",
+          "regime_sidespin": "rolling",
+          "retention": 92.62
+        },
+        {
+          "topspin_in": 171.0526,
+          "vy_in": 4.8889,
+          "topspin_out": 158.4211,
+          "vz_out": 3.1684,
+          "vy_out": 3.8354,
+          "epsilon": 0.7845,
+          "regime_topspin": "rolling",
+          "regime_sidespin": "rolling",
+          "retention": 92.62
+        },
+        {
+          "topspin_in": 171.0526,
+          "vy_in": 5.4444,
+          "topspin_out": 158.4211,
+          "vz_out": 3.1684,
+          "vy_out": 4.2841,
+          "epsilon": 0.7869,
+          "regime_topspin": "rolling",
+          "regime_sidespin": "rolling",
+          "retention": 92.62
+        },
+        {
+          "topspin_in": 171.0526,
+          "vy_in": 6,
+          "topspin_out": 158.4211,
+          "vz_out": 3.1684,
+          "vy_out": 4.7328,
+          "epsilon": 0.7888,
+          "regime_topspin": "rolling",
+          "regime_sidespin": "rolling",
+          "retention": 92.62
+        },
+        {
+          "topspin_in": 197.3684,
+          "vy_in": 1,
+          "topspin_out": 180.9461,
+          "vz_out": 3.219,
+          "vy_out": 0.6843,
+          "epsilon": 0.6843,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 91.68
+        },
+        {
+          "topspin_in": 197.3684,
+          "vy_in": 1.5556,
+          "topspin_out": 171.2121,
+          "vz_out": 3.3488,
+          "vy_out": 1.1271,
+          "epsilon": 0.7246,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 86.75
+        },
+        {
+          "topspin_in": 197.3684,
+          "vy_in": 2.1111,
+          "topspin_out": 168.9474,
+          "vz_out": 3.3789,
+          "vy_out": 1.57,
+          "epsilon": 0.7437,
+          "regime_topspin": "rolling",
+          "regime_sidespin": "rolling",
+          "retention": 85.6
+        },
+        {
+          "topspin_in": 197.3684,
+          "vy_in": 2.6667,
+          "topspin_out": 168.9474,
+          "vz_out": 3.3789,
+          "vy_out": 2.0128,
+          "epsilon": 0.7548,
+          "regime_topspin": "rolling",
+          "regime_sidespin": "rolling",
+          "retention": 85.6
+        },
+        {
+          "topspin_in": 197.3684,
+          "vy_in": 3.2222,
+          "topspin_out": 168.9474,
+          "vz_out": 3.3789,
+          "vy_out": 2.4556,
+          "epsilon": 0.7621,
+          "regime_topspin": "rolling",
+          "regime_sidespin": "rolling",
+          "retention": 85.6
+        },
+        {
+          "topspin_in": 197.3684,
+          "vy_in": 3.7778,
+          "topspin_out": 168.9474,
+          "vz_out": 3.3789,
+          "vy_out": 2.8984,
+          "epsilon": 0.7672,
+          "regime_topspin": "rolling",
+          "regime_sidespin": "rolling",
+          "retention": 85.6
+        },
+        {
+          "topspin_in": 197.3684,
+          "vy_in": 4.3333,
+          "topspin_out": 168.9474,
+          "vz_out": 3.3789,
+          "vy_out": 3.3412,
+          "epsilon": 0.771,
+          "regime_topspin": "rolling",
+          "regime_sidespin": "rolling",
+          "retention": 85.6
+        },
+        {
+          "topspin_in": 197.3684,
+          "vy_in": 4.8889,
+          "topspin_out": 168.9474,
+          "vz_out": 3.3789,
+          "vy_out": 3.784,
+          "epsilon": 0.774,
+          "regime_topspin": "rolling",
+          "regime_sidespin": "rolling",
+          "retention": 85.6
+        },
+        {
+          "topspin_in": 197.3684,
+          "vy_in": 5.4444,
+          "topspin_out": 168.9474,
+          "vz_out": 3.3789,
+          "vy_out": 4.2268,
+          "epsilon": 0.7763,
+          "regime_topspin": "rolling",
+          "regime_sidespin": "rolling",
+          "retention": 85.6
+        },
+        {
+          "topspin_in": 197.3684,
+          "vy_in": 6,
+          "topspin_out": 168.9474,
+          "vz_out": 3.3789,
+          "vy_out": 4.6696,
+          "epsilon": 0.7783,
+          "regime_topspin": "rolling",
+          "regime_sidespin": "rolling",
+          "retention": 85.6
+        },
+        {
+          "topspin_in": 223.6842,
+          "vy_in": 1,
+          "topspin_out": 207.3646,
+          "vz_out": 3.2176,
+          "vy_out": 0.6738,
+          "epsilon": 0.6738,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 92.7
+        },
+        {
+          "topspin_in": 223.6842,
+          "vy_in": 1.5556,
+          "topspin_out": 197.6875,
+          "vz_out": 3.3466,
+          "vy_out": 1.1108,
+          "epsilon": 0.7141,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 88.38
+        },
+        {
+          "topspin_in": 223.6842,
+          "vy_in": 2.1111,
+          "topspin_out": 188.0105,
+          "vz_out": 3.4756,
+          "vy_out": 1.5477,
+          "epsilon": 0.7331,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 84.05
+        },
+        {
+          "topspin_in": 223.6842,
+          "vy_in": 2.6667,
+          "topspin_out": 179.4737,
+          "vz_out": 3.5895,
+          "vy_out": 1.9847,
+          "epsilon": 0.7443,
+          "regime_topspin": "rolling",
+          "regime_sidespin": "rolling",
+          "retention": 80.24
+        },
+        {
+          "topspin_in": 223.6842,
+          "vy_in": 3.2222,
+          "topspin_out": 179.4737,
+          "vz_out": 3.5895,
+          "vy_out": 2.4216,
+          "epsilon": 0.7515,
+          "regime_topspin": "rolling",
+          "regime_sidespin": "rolling",
+          "retention": 80.24
+        },
+        {
+          "topspin_in": 223.6842,
+          "vy_in": 3.7778,
+          "topspin_out": 179.4737,
+          "vz_out": 3.5895,
+          "vy_out": 2.8586,
+          "epsilon": 0.7567,
+          "regime_topspin": "rolling",
+          "regime_sidespin": "rolling",
+          "retention": 80.24
+        },
+        {
+          "topspin_in": 223.6842,
+          "vy_in": 4.3333,
+          "topspin_out": 179.4737,
+          "vz_out": 3.5895,
+          "vy_out": 3.2956,
+          "epsilon": 0.7605,
+          "regime_topspin": "rolling",
+          "regime_sidespin": "rolling",
+          "retention": 80.24
+        },
+        {
+          "topspin_in": 223.6842,
+          "vy_in": 4.8889,
+          "topspin_out": 179.4737,
+          "vz_out": 3.5895,
+          "vy_out": 3.7325,
+          "epsilon": 0.7635,
+          "regime_topspin": "rolling",
+          "regime_sidespin": "rolling",
+          "retention": 80.24
+        },
+        {
+          "topspin_in": 223.6842,
+          "vy_in": 5.4444,
+          "topspin_out": 179.4737,
+          "vz_out": 3.5895,
+          "vy_out": 4.1695,
+          "epsilon": 0.7658,
+          "regime_topspin": "rolling",
+          "regime_sidespin": "rolling",
+          "retention": 80.24
+        },
+        {
+          "topspin_in": 223.6842,
+          "vy_in": 6,
+          "topspin_out": 179.4737,
+          "vz_out": 3.5895,
+          "vy_out": 4.6064,
+          "epsilon": 0.7677,
+          "regime_topspin": "rolling",
+          "regime_sidespin": "rolling",
+          "retention": 80.24
+        },
+        {
+          "topspin_in": 250,
+          "vy_in": 1,
+          "topspin_out": 233.783,
+          "vz_out": 3.2162,
+          "vy_out": 0.6633,
+          "epsilon": 0.6633,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 93.51
+        },
+        {
+          "topspin_in": 250,
+          "vy_in": 1.5556,
+          "topspin_out": 224.163,
+          "vz_out": 3.3445,
+          "vy_out": 1.0944,
+          "epsilon": 0.7035,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 89.67
+        },
+        {
+          "topspin_in": 250,
+          "vy_in": 2.1111,
+          "topspin_out": 214.543,
+          "vz_out": 3.4728,
+          "vy_out": 1.5255,
+          "epsilon": 0.7226,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 85.82
+        },
+        {
+          "topspin_in": 250,
+          "vy_in": 2.6667,
+          "topspin_out": 204.923,
+          "vz_out": 3.601,
+          "vy_out": 1.9566,
+          "epsilon": 0.7337,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 81.97
+        },
+        {
+          "topspin_in": 250,
+          "vy_in": 3.2222,
+          "topspin_out": 195.303,
+          "vz_out": 3.7293,
+          "vy_out": 2.3877,
+          "epsilon": 0.741,
+          "regime_topspin": "sliding",
+          "regime_sidespin": "rolling",
+          "retention": 78.12
+        },
+        {
+          "topspin_in": 250,
+          "vy_in": 3.7778,
+          "topspin_out": 190,
+          "vz_out": 3.8,
+          "vy_out": 2.8188,
+          "epsilon": 0.7462,
+          "regime_topspin": "rolling",
+          "regime_sidespin": "rolling",
+          "retention": 76
+        },
+        {
+          "topspin_in": 250,
+          "vy_in": 4.3333,
+          "topspin_out": 190,
+          "vz_out": 3.8,
+          "vy_out": 3.25,
+          "epsilon": 0.75,
+          "regime_topspin": "rolling",
+          "regime_sidespin": "rolling",
+          "retention": 76
+        },
+        {
+          "topspin_in": 250,
+          "vy_in": 4.8889,
+          "topspin_out": 190,
+          "vz_out": 3.8,
+          "vy_out": 3.6811,
+          "epsilon": 0.7529,
+          "regime_topspin": "rolling",
+          "regime_sidespin": "rolling",
+          "retention": 76
+        },
+        {
+          "topspin_in": 250,
+          "vy_in": 5.4444,
+          "topspin_out": 190,
+          "vz_out": 3.8,
+          "vy_out": 4.1122,
+          "epsilon": 0.7553,
+          "regime_topspin": "rolling",
+          "regime_sidespin": "rolling",
+          "retention": 76
+        },
+        {
+          "topspin_in": 250,
+          "vy_in": 6,
+          "topspin_out": 190,
+          "vz_out": 3.8,
+          "vy_out": 4.5433,
+          "epsilon": 0.7572,
+          "regime_topspin": "rolling",
+          "regime_sidespin": "rolling",
+          "retention": 76
+        }
+      ],
+      "regimeBoundary": [
+        {
+          "vy": 1,
+          "between": [
+            118.4211,
+            144.7368
+          ],
+          "from": "sliding",
+          "to": "rolling"
+        },
+        {
+          "vy": 1,
+          "between": [
+            171.0526,
+            197.3684
+          ],
+          "from": "rolling",
+          "to": "sliding"
+        },
+        {
+          "vy": 1.5556,
+          "between": [
+            92.1053,
+            118.4211
+          ],
+          "from": "sliding",
+          "to": "rolling"
+        },
+        {
+          "vy": 1.5556,
+          "between": [
+            171.0526,
+            197.3684
+          ],
+          "from": "rolling",
+          "to": "sliding"
+        },
+        {
+          "vy": 2.1111,
+          "between": [
+            65.7895,
+            92.1053
+          ],
+          "from": "sliding",
+          "to": "rolling"
+        },
+        {
+          "vy": 2.1111,
+          "between": [
+            197.3684,
+            223.6842
+          ],
+          "from": "rolling",
+          "to": "sliding"
+        },
+        {
+          "vy": 2.6667,
+          "between": [
+            65.7895,
+            92.1053
+          ],
+          "from": "sliding",
+          "to": "rolling"
+        },
+        {
+          "vy": 2.6667,
+          "between": [
+            223.6842,
+            250
+          ],
+          "from": "rolling",
+          "to": "sliding"
+        },
+        {
+          "vy": 3.2222,
+          "between": [
+            39.4737,
+            65.7895
+          ],
+          "from": "sliding",
+          "to": "rolling"
+        },
+        {
+          "vy": 3.2222,
+          "between": [
+            223.6842,
+            250
+          ],
+          "from": "rolling",
+          "to": "sliding"
+        },
+        {
+          "vy": 3.7778,
+          "between": [
+            13.1579,
+            39.4737
+          ],
+          "from": "sliding",
+          "to": "rolling"
+        },
+        {
+          "vy": 4.3333,
+          "between": [
+            13.1579,
+            39.4737
+          ],
+          "from": "sliding",
+          "to": "rolling"
+        },
+        {
+          "vy": 4.8889,
+          "between": [
+            -13.1579,
+            13.1579
+          ],
+          "from": "sliding",
+          "to": "rolling"
+        },
+        {
+          "vy": 5.4444,
+          "between": [
+            -39.4737,
+            -13.1579
+          ],
+          "from": "sliding",
+          "to": "rolling"
+        },
+        {
+          "vy": 6,
+          "between": [
+            -39.4737,
+            -13.1579
+          ],
+          "from": "sliding",
+          "to": "rolling"
+        }
+      ],
+      "signFlips": [
+        {
+          "vy": 1,
+          "between": [
+            -39.4737,
+            -13.1579
+          ],
+          "values": [
+            -22.4356,
+            3.9828
+          ]
+        },
+        {
+          "vy": 1.5556,
+          "between": [
+            -39.4737,
+            -13.1579
+          ],
+          "values": [
+            -12.3595,
+            14.116
+          ]
+        },
+        {
+          "vy": 2.1111,
+          "between": [
+            -39.4737,
+            -13.1579
+          ],
+          "values": [
+            -2.2833,
+            24.2491
+          ]
+        },
+        {
+          "vy": 2.6667,
+          "between": [
+            -65.7895,
+            -39.4737
+          ],
+          "values": [
+            -18.7967,
+            7.7928
+          ]
+        },
+        {
+          "vy": 3.2222,
+          "between": [
+            -65.7895,
+            -39.4737
+          ],
+          "values": [
+            -8.7775,
+            17.8689
+          ]
+        },
+        {
+          "vy": 3.7778,
+          "between": [
+            -92.1053,
+            -65.7895
+          ],
+          "values": [
+            -25.4619,
+            1.2416
+          ]
+        },
+        {
+          "vy": 4.3333,
+          "between": [
+            -92.1053,
+            -65.7895
+          ],
+          "values": [
+            -15.4998,
+            11.2607
+          ]
+        },
+        {
+          "vy": 4.8889,
+          "between": [
+            -92.1053,
+            -65.7895
+          ],
+          "values": [
+            -5.5377,
+            21.2798
+          ]
+        },
+        {
+          "vy": 5.4444,
+          "between": [
+            -118.4211,
+            -92.1053
+          ],
+          "values": [
+            -22.4502,
+            4.4244
+          ]
+        },
+        {
+          "vy": 6,
+          "between": [
+            -118.4211,
+            -92.1053
+          ],
+          "values": [
+            -12.5451,
+            14.3865
+          ]
+        }
+      ],
+      "tsSensitivity": {
+        "label": "topspin→topspin_out (vy=3)",
+        "segments": [
+          {
+            "from": -250,
+            "to": -223.6842,
+            "dx": 26.3158,
+            "dy": 26.6237,
+            "slope": 1.0117
+          },
+          {
+            "from": -223.6842,
+            "to": -197.3684,
+            "dx": 26.3158,
+            "dy": 26.6237,
+            "slope": 1.0117
+          },
+          {
+            "from": -197.3684,
+            "to": -171.0526,
+            "dx": 26.3158,
+            "dy": 26.6237,
+            "slope": 1.0117
+          },
+          {
+            "from": -171.0526,
+            "to": -144.7368,
+            "dx": 26.3158,
+            "dy": 26.6237,
+            "slope": 1.0117
+          },
+          {
+            "from": -144.7368,
+            "to": -118.4211,
+            "dx": 26.3158,
+            "dy": 26.6236,
+            "slope": 1.0117
+          },
+          {
+            "from": -118.4211,
+            "to": -92.1053,
+            "dx": 26.3158,
+            "dy": 26.6237,
+            "slope": 1.0117
+          },
+          {
+            "from": -92.1053,
+            "to": -65.7895,
+            "dx": 26.3158,
+            "dy": 26.6237,
+            "slope": 1.0117
+          },
+          {
+            "from": -65.7895,
+            "to": -39.4737,
+            "dx": 26.3158,
+            "dy": 26.6237,
+            "slope": 1.0117
+          },
+          {
+            "from": -39.4737,
+            "to": -13.1579,
+            "dx": 26.3158,
+            "dy": 26.6237,
+            "slope": 1.0117
+          },
+          {
+            "from": -13.1579,
+            "to": 13.1579,
+            "dx": 26.3158,
+            "dy": 26.3158,
+            "slope": 1
+          },
+          {
+            "from": 13.1579,
+            "to": 39.4737,
+            "dx": 26.3158,
+            "dy": 26.0079,
+            "slope": 0.9883
+          },
+          {
+            "from": 39.4737,
+            "to": 65.7895,
+            "dx": 26.3158,
+            "dy": 23.5299,
+            "slope": 0.8941
+          },
+          {
+            "from": 65.7895,
+            "to": 92.1053,
+            "dx": 26.3158,
+            "dy": 10.5263,
+            "slope": 0.4
+          },
+          {
+            "from": 92.1053,
+            "to": 118.4211,
+            "dx": 26.3158,
+            "dy": 10.5263,
+            "slope": 0.4
+          },
+          {
+            "from": 118.4211,
+            "to": 144.7368,
+            "dx": 26.3158,
+            "dy": 10.5263,
+            "slope": 0.4
+          },
+          {
+            "from": 144.7368,
+            "to": 171.0526,
+            "dx": 26.3158,
+            "dy": 10.5264,
+            "slope": 0.4
+          },
+          {
+            "from": 171.0526,
+            "to": 197.3684,
+            "dx": 26.3158,
+            "dy": 10.5263,
+            "slope": 0.4
+          },
+          {
+            "from": 197.3684,
+            "to": 223.6842,
+            "dx": 26.3158,
+            "dy": 10.5263,
+            "slope": 0.4
+          },
+          {
+            "from": 223.6842,
+            "to": 250,
+            "dx": 26.3158,
+            "dy": 19.6773,
+            "slope": 0.7477
+          }
+        ],
+        "medianAbsSlope": 1,
+        "flagged": []
+      }
+    },
+    {
+      "experiment": "1B",
+      "description": "sidespin × vx → post-bounce sidespin/vx/regime",
+      "fixed": {
+        "vy": -3,
+        "vz": 3,
+        "topspin": 0,
+        "mu": 0.13
+      },
+      "grid": {
+        "sidespin": [
+          -200,
+          -173.3,
+          -146.67,
+          -120,
+          -93.3333,
+          -66.66667,
+          -40,
+          -13.3333333,
+          13.33333333,
+          40,
+          66.6666666667,
+          93.33333333333,
+          120,
+          146.6666666666667,
+          173.33333333333331,
+          200
+        ],
+        "vx": [
+          -3,
+          -2.3,
+          -1.67,
+          -1,
+          -0.3333,
+          0.33333,
+          1,
+          1.6666667,
+          2.33333333,
+          3
+        ],
+        "totalPoints": 160
+      },
+      "rows": [
+        {
+          "sidespin_in": -200,
+          "vx_in": -3,
+          "sidespin_out": -149.0212,
+          "vx_out": -2.3203,
+          "vy_out": 2.2286,
+          "epsilon": 0.7429,
+          "regime_sidespin": "sliding",
+          "retention": 74.51
+        },
+        {
+          "sidespin_in": -200,
+          "vx_in": -2.3333,
+          "sidespin_out": -148.8593,
+          "vx_out": -1.6515,
+          "vy_out": 2.2452,
+          "epsilon": 0.7484,
+          "regime_sidespin": "sliding",
+          "retention": 74.43
+        },
+        {
+          "sidespin_in": -200,
+          "vx_in": -1.6667,
+          "sidespin_out": -148.7242,
+          "vx_out": -0.983,
+          "vy_out": 2.2591,
+          "epsilon": 0.753,
+          "regime_sidespin": "sliding",
+          "retention": 74.36
+        },
+        {
+          "sidespin_in": -200,
+          "vx_in": -1,
+          "sidespin_out": -148.6254,
+          "vx_out": -0.315,
+          "vy_out": 2.2692,
+          "epsilon": 0.7564,
+          "regime_sidespin": "sliding",
+          "retention": 74.31
+        },
+        {
+          "sidespin_in": -200,
+          "vx_in": -0.3333,
+          "sidespin_out": -148.5727,
+          "vx_out": 0.3524,
+          "vy_out": 2.2746,
+          "epsilon": 0.7582,
+          "regime_sidespin": "sliding",
+          "retention": 74.29
+        },
+        {
+          "sidespin_in": -200,
+          "vx_in": 0.3333,
+          "sidespin_out": -148.5727,
+          "vx_out": 1.019,
+          "vy_out": 2.2746,
+          "epsilon": 0.7582,
+          "regime_sidespin": "sliding",
+          "retention": 74.29
+        },
+        {
+          "sidespin_in": -200,
+          "vx_in": 1,
+          "sidespin_out": -148.6254,
+          "vx_out": 1.685,
+          "vy_out": 2.2692,
+          "epsilon": 0.7564,
+          "regime_sidespin": "sliding",
+          "retention": 74.31
+        },
+        {
+          "sidespin_in": -200,
+          "vx_in": 1.6667,
+          "sidespin_out": -148.7242,
+          "vx_out": 2.3503,
+          "vy_out": 2.2591,
+          "epsilon": 0.753,
+          "regime_sidespin": "sliding",
+          "retention": 74.36
+        },
+        {
+          "sidespin_in": -200,
+          "vx_in": 2.3333,
+          "sidespin_out": -150,
+          "vx_out": 3,
+          "vy_out": 2.2452,
+          "epsilon": 0.7484,
+          "regime_sidespin": "rolling",
+          "retention": 75
+        },
+        {
+          "sidespin_in": -200,
+          "vx_in": 3,
+          "sidespin_out": -170,
+          "vx_out": 3.4,
+          "vy_out": 2.2286,
+          "epsilon": 0.7429,
+          "regime_sidespin": "rolling",
+          "retention": 85
+        },
+        {
+          "sidespin_in": -173.3333,
+          "vx_in": -3,
+          "sidespin_out": -122.0425,
+          "vx_out": -2.3161,
+          "vy_out": 2.2606,
+          "epsilon": 0.7535,
+          "regime_sidespin": "sliding",
+          "retention": 70.41
+        },
+        {
+          "sidespin_in": -173.3333,
+          "vx_in": -2.3333,
+          "sidespin_out": -121.8806,
+          "vx_out": -1.6473,
+          "vy_out": 2.2772,
+          "epsilon": 0.7591,
+          "regime_sidespin": "sliding",
+          "retention": 70.32
+        },
+        {
+          "sidespin_in": -173.3333,
+          "vx_in": -1.6667,
+          "sidespin_out": -121.7455,
+          "vx_out": -0.9788,
+          "vy_out": 2.2911,
+          "epsilon": 0.7637,
+          "regime_sidespin": "sliding",
+          "retention": 70.24
+        },
+        {
+          "sidespin_in": -173.3333,
+          "vx_in": -1,
+          "sidespin_out": -121.6468,
+          "vx_out": -0.3108,
+          "vy_out": 2.3012,
+          "epsilon": 0.7671,
+          "regime_sidespin": "sliding",
+          "retention": 70.18
+        },
+        {
+          "sidespin_in": -173.3333,
+          "vx_in": -0.3333,
+          "sidespin_out": -121.5941,
+          "vx_out": 0.3565,
+          "vy_out": 2.3066,
+          "epsilon": 0.7689,
+          "regime_sidespin": "sliding",
+          "retention": 70.15
+        },
+        {
+          "sidespin_in": -173.3333,
+          "vx_in": 0.3333,
+          "sidespin_out": -121.5941,
+          "vx_out": 1.0232,
+          "vy_out": 2.3066,
+          "epsilon": 0.7689,
+          "regime_sidespin": "sliding",
+          "retention": 70.15
+        },
+        {
+          "sidespin_in": -173.3333,
+          "vx_in": 1,
+          "sidespin_out": -121.6468,
+          "vx_out": 1.6892,
+          "vy_out": 2.3012,
+          "epsilon": 0.7671,
+          "regime_sidespin": "sliding",
+          "retention": 70.18
+        },
+        {
+          "sidespin_in": -173.3333,
+          "vx_in": 1.6667,
+          "sidespin_out": -121.7455,
+          "vx_out": 2.3545,
+          "vy_out": 2.2911,
+          "epsilon": 0.7637,
+          "regime_sidespin": "sliding",
+          "retention": 70.24
+        },
+        {
+          "sidespin_in": -173.3333,
+          "vx_in": 2.3333,
+          "sidespin_out": -139.3333,
+          "vx_out": 2.7867,
+          "vy_out": 2.2772,
+          "epsilon": 0.7591,
+          "regime_sidespin": "rolling",
+          "retention": 80.38
+        },
+        {
+          "sidespin_in": -173.3333,
+          "vx_in": 3,
+          "sidespin_out": -159.3333,
+          "vx_out": 3.1867,
+          "vy_out": 2.2606,
+          "epsilon": 0.7535,
+          "regime_sidespin": "rolling",
+          "retention": 91.92
+        },
+        {
+          "sidespin_in": -146.6667,
+          "vx_in": -3,
+          "sidespin_out": -95.0639,
+          "vx_out": -2.312,
+          "vy_out": 2.2926,
+          "epsilon": 0.7642,
+          "regime_sidespin": "sliding",
+          "retention": 64.82
+        },
+        {
+          "sidespin_in": -146.6667,
+          "vx_in": -2.3333,
+          "sidespin_out": -94.9019,
+          "vx_out": -1.6431,
+          "vy_out": 2.3092,
+          "epsilon": 0.7697,
+          "regime_sidespin": "sliding",
+          "retention": 64.71
+        },
+        {
+          "sidespin_in": -146.6667,
+          "vx_in": -1.6667,
+          "sidespin_out": -94.7669,
+          "vx_out": -0.9747,
+          "vy_out": 2.3231,
+          "epsilon": 0.7744,
+          "regime_sidespin": "sliding",
+          "retention": 64.61
+        },
+        {
+          "sidespin_in": -146.6667,
+          "vx_in": -1,
+          "sidespin_out": -94.6681,
+          "vx_out": -0.3067,
+          "vy_out": 2.3332,
+          "epsilon": 0.7777,
+          "regime_sidespin": "sliding",
+          "retention": 64.55
+        },
+        {
+          "sidespin_in": -146.6667,
+          "vx_in": -0.3333,
+          "sidespin_out": -94.6154,
+          "vx_out": 0.3607,
+          "vy_out": 2.3386,
+          "epsilon": 0.7795,
+          "regime_sidespin": "sliding",
+          "retention": 64.51
+        },
+        {
+          "sidespin_in": -146.6667,
+          "vx_in": 0.3333,
+          "sidespin_out": -94.6154,
+          "vx_out": 1.0274,
+          "vy_out": 2.3386,
+          "epsilon": 0.7795,
+          "regime_sidespin": "sliding",
+          "retention": 64.51
+        },
+        {
+          "sidespin_in": -146.6667,
+          "vx_in": 1,
+          "sidespin_out": -94.6681,
+          "vx_out": 1.6933,
+          "vy_out": 2.3332,
+          "epsilon": 0.7777,
+          "regime_sidespin": "sliding",
+          "retention": 64.55
+        },
+        {
+          "sidespin_in": -146.6667,
+          "vx_in": 1.6667,
+          "sidespin_out": -108.6667,
+          "vx_out": 2.1733,
+          "vy_out": 2.3231,
+          "epsilon": 0.7744,
+          "regime_sidespin": "rolling",
+          "retention": 74.09
+        },
+        {
+          "sidespin_in": -146.6667,
+          "vx_in": 2.3333,
+          "sidespin_out": -128.6667,
+          "vx_out": 2.5733,
+          "vy_out": 2.3092,
+          "epsilon": 0.7697,
+          "regime_sidespin": "rolling",
+          "retention": 87.73
+        },
+        {
+          "sidespin_in": -146.6667,
+          "vx_in": 3,
+          "sidespin_out": -148.6667,
+          "vx_out": 2.9733,
+          "vy_out": 2.2926,
+          "epsilon": 0.7642,
+          "regime_sidespin": "rolling",
+          "retention": 101.36
+        },
+        {
+          "sidespin_in": -120,
+          "vx_in": -3,
+          "sidespin_out": -68.0852,
+          "vx_out": -2.3078,
+          "vy_out": 2.3246,
+          "epsilon": 0.7749,
+          "regime_sidespin": "sliding",
+          "retention": 56.74
+        },
+        {
+          "sidespin_in": -120,
+          "vx_in": -2.3333,
+          "sidespin_out": -67.9233,
+          "vx_out": -1.639,
+          "vy_out": 2.3412,
+          "epsilon": 0.7804,
+          "regime_sidespin": "sliding",
+          "retention": 56.6
+        },
+        {
+          "sidespin_in": -120,
+          "vx_in": -1.6667,
+          "sidespin_out": -67.7882,
+          "vx_out": -0.9705,
+          "vy_out": 2.3551,
+          "epsilon": 0.785,
+          "regime_sidespin": "sliding",
+          "retention": 56.49
+        },
+        {
+          "sidespin_in": -120,
+          "vx_in": -1,
+          "sidespin_out": -67.6894,
+          "vx_out": -0.3025,
+          "vy_out": 2.3652,
+          "epsilon": 0.7884,
+          "regime_sidespin": "sliding",
+          "retention": 56.41
+        },
+        {
+          "sidespin_in": -120,
+          "vx_in": -0.3333,
+          "sidespin_out": -67.6367,
+          "vx_out": 0.3648,
+          "vy_out": 2.3706,
+          "epsilon": 0.7902,
+          "regime_sidespin": "sliding",
+          "retention": 56.36
+        },
+        {
+          "sidespin_in": -120,
+          "vx_in": 0.3333,
+          "sidespin_out": -67.6367,
+          "vx_out": 1.0315,
+          "vy_out": 2.3706,
+          "epsilon": 0.7902,
+          "regime_sidespin": "sliding",
+          "retention": 56.36
+        },
+        {
+          "sidespin_in": -120,
+          "vx_in": 1,
+          "sidespin_out": -78,
+          "vx_out": 1.56,
+          "vy_out": 2.3652,
+          "epsilon": 0.7884,
+          "regime_sidespin": "rolling",
+          "retention": 65
+        },
+        {
+          "sidespin_in": -120,
+          "vx_in": 1.6667,
+          "sidespin_out": -98,
+          "vx_out": 1.96,
+          "vy_out": 2.3551,
+          "epsilon": 0.785,
+          "regime_sidespin": "rolling",
+          "retention": 81.67
+        },
+        {
+          "sidespin_in": -120,
+          "vx_in": 2.3333,
+          "sidespin_out": -118,
+          "vx_out": 2.36,
+          "vy_out": 2.3412,
+          "epsilon": 0.7804,
+          "regime_sidespin": "rolling",
+          "retention": 98.33
+        },
+        {
+          "sidespin_in": -120,
+          "vx_in": 3,
+          "sidespin_out": -138,
+          "vx_out": 2.76,
+          "vy_out": 2.3246,
+          "epsilon": 0.7749,
+          "regime_sidespin": "rolling",
+          "retention": 115
+        },
+        {
+          "sidespin_in": -93.3333,
+          "vx_in": -3,
+          "sidespin_out": -41.1065,
+          "vx_out": -2.3036,
+          "vy_out": 2.3566,
+          "epsilon": 0.7855,
+          "regime_sidespin": "sliding",
+          "retention": 44.04
+        },
+        {
+          "sidespin_in": -93.3333,
+          "vx_in": -2.3333,
+          "sidespin_out": -40.9446,
+          "vx_out": -1.6348,
+          "vy_out": 2.3732,
+          "epsilon": 0.7911,
+          "regime_sidespin": "sliding",
+          "retention": 43.87
+        },
+        {
+          "sidespin_in": -93.3333,
+          "vx_in": -1.6667,
+          "sidespin_out": -40.8095,
+          "vx_out": -0.9663,
+          "vy_out": 2.3871,
+          "epsilon": 0.7957,
+          "regime_sidespin": "sliding",
+          "retention": 43.72
+        },
+        {
+          "sidespin_in": -93.3333,
+          "vx_in": -1,
+          "sidespin_out": -40.7108,
+          "vx_out": -0.2984,
+          "vy_out": 2.3972,
+          "epsilon": 0.7991,
+          "regime_sidespin": "sliding",
+          "retention": 43.62
+        },
+        {
+          "sidespin_in": -93.3333,
+          "vx_in": -0.3333,
+          "sidespin_out": -40.6581,
+          "vx_out": 0.369,
+          "vy_out": 2.4026,
+          "epsilon": 0.8009,
+          "regime_sidespin": "sliding",
+          "retention": 43.56
+        },
+        {
+          "sidespin_in": -93.3333,
+          "vx_in": 0.3333,
+          "sidespin_out": -47.3333,
+          "vx_out": 0.9467,
+          "vy_out": 2.4026,
+          "epsilon": 0.8009,
+          "regime_sidespin": "rolling",
+          "retention": 50.71
+        },
+        {
+          "sidespin_in": -93.3333,
+          "vx_in": 1,
+          "sidespin_out": -67.3333,
+          "vx_out": 1.3467,
+          "vy_out": 2.3972,
+          "epsilon": 0.7991,
+          "regime_sidespin": "rolling",
+          "retention": 72.14
+        },
+        {
+          "sidespin_in": -93.3333,
+          "vx_in": 1.6667,
+          "sidespin_out": -87.3333,
+          "vx_out": 1.7467,
+          "vy_out": 2.3871,
+          "epsilon": 0.7957,
+          "regime_sidespin": "rolling",
+          "retention": 93.57
+        },
+        {
+          "sidespin_in": -93.3333,
+          "vx_in": 2.3333,
+          "sidespin_out": -107.3333,
+          "vx_out": 2.1467,
+          "vy_out": 2.3732,
+          "epsilon": 0.7911,
+          "regime_sidespin": "rolling",
+          "retention": 115
+        },
+        {
+          "sidespin_in": -93.3333,
+          "vx_in": 3,
+          "sidespin_out": -127.3333,
+          "vx_out": 2.5467,
+          "vy_out": 2.3566,
+          "epsilon": 0.7855,
+          "regime_sidespin": "rolling",
+          "retention": 136.43
+        },
+        {
+          "sidespin_in": -66.6667,
+          "vx_in": -3,
+          "sidespin_out": -14.1279,
+          "vx_out": -2.2995,
+          "vy_out": 2.3886,
+          "epsilon": 0.7962,
+          "regime_sidespin": "sliding",
+          "retention": 21.19
+        },
+        {
+          "sidespin_in": -66.6667,
+          "vx_in": -2.3333,
+          "sidespin_out": -13.9659,
+          "vx_out": -1.6307,
+          "vy_out": 2.4052,
+          "epsilon": 0.8017,
+          "regime_sidespin": "sliding",
+          "retention": 20.95
+        },
+        {
+          "sidespin_in": -66.6667,
+          "vx_in": -1.6667,
+          "sidespin_out": -13.8309,
+          "vx_out": -0.9622,
+          "vy_out": 2.4191,
+          "epsilon": 0.8064,
+          "regime_sidespin": "sliding",
+          "retention": 20.75
+        },
+        {
+          "sidespin_in": -66.6667,
+          "vx_in": -1,
+          "sidespin_out": -13.7321,
+          "vx_out": -0.2942,
+          "vy_out": 2.4292,
+          "epsilon": 0.8097,
+          "regime_sidespin": "sliding",
+          "retention": 20.6
+        },
+        {
+          "sidespin_in": -66.6667,
+          "vx_in": -0.3333,
+          "sidespin_out": -16.6667,
+          "vx_out": 0.3333,
+          "vy_out": 2.4346,
+          "epsilon": 0.8115,
+          "regime_sidespin": "rolling",
+          "retention": 25
+        },
+        {
+          "sidespin_in": -66.6667,
+          "vx_in": 0.3333,
+          "sidespin_out": -36.6667,
+          "vx_out": 0.7333,
+          "vy_out": 2.4346,
+          "epsilon": 0.8115,
+          "regime_sidespin": "rolling",
+          "retention": 55
+        },
+        {
+          "sidespin_in": -66.6667,
+          "vx_in": 1,
+          "sidespin_out": -56.6667,
+          "vx_out": 1.1333,
+          "vy_out": 2.4292,
+          "epsilon": 0.8097,
+          "regime_sidespin": "rolling",
+          "retention": 85
+        },
+        {
+          "sidespin_in": -66.6667,
+          "vx_in": 1.6667,
+          "sidespin_out": -76.6667,
+          "vx_out": 1.5333,
+          "vy_out": 2.4191,
+          "epsilon": 0.8064,
+          "regime_sidespin": "rolling",
+          "retention": 115
+        },
+        {
+          "sidespin_in": -66.6667,
+          "vx_in": 2.3333,
+          "sidespin_out": -96.6667,
+          "vx_out": 1.9333,
+          "vy_out": 2.4052,
+          "epsilon": 0.8017,
+          "regime_sidespin": "rolling",
+          "retention": 145
+        },
+        {
+          "sidespin_in": -66.6667,
+          "vx_in": 3,
+          "sidespin_out": -116.6667,
+          "vx_out": 2.3333,
+          "vy_out": 2.3886,
+          "epsilon": 0.7962,
+          "regime_sidespin": "rolling",
+          "retention": 175
+        },
+        {
+          "sidespin_in": -40,
+          "vx_in": -3,
+          "sidespin_out": 12.8508,
+          "vx_out": -2.2953,
+          "vy_out": 2.4206,
+          "epsilon": 0.8069,
+          "regime_sidespin": "sliding",
+          "retention": -32.13
+        },
+        {
+          "sidespin_in": -40,
+          "vx_in": -2.3333,
+          "sidespin_out": 13.0127,
+          "vx_out": -1.6265,
+          "vy_out": 2.4372,
+          "epsilon": 0.8124,
+          "regime_sidespin": "sliding",
+          "retention": -32.53
+        },
+        {
+          "sidespin_in": -40,
+          "vx_in": -1.6667,
+          "sidespin_out": 13.1478,
+          "vx_out": -0.958,
+          "vy_out": 2.4511,
+          "epsilon": 0.817,
+          "regime_sidespin": "sliding",
+          "retention": -32.87
+        },
+        {
+          "sidespin_in": -40,
+          "vx_in": -1,
+          "sidespin_out": 13.2466,
+          "vx_out": -0.29,
+          "vy_out": 2.4612,
+          "epsilon": 0.8204,
+          "regime_sidespin": "sliding",
+          "retention": -33.12
+        },
+        {
+          "sidespin_in": -40,
+          "vx_in": -0.3333,
+          "sidespin_out": -6,
+          "vx_out": 0.12,
+          "vy_out": 2.4666,
+          "epsilon": 0.8222,
+          "regime_sidespin": "rolling",
+          "retention": 15
+        },
+        {
+          "sidespin_in": -40,
+          "vx_in": 0.3333,
+          "sidespin_out": -26,
+          "vx_out": 0.52,
+          "vy_out": 2.4666,
+          "epsilon": 0.8222,
+          "regime_sidespin": "rolling",
+          "retention": 65
+        },
+        {
+          "sidespin_in": -40,
+          "vx_in": 1,
+          "sidespin_out": -46,
+          "vx_out": 0.92,
+          "vy_out": 2.4612,
+          "epsilon": 0.8204,
+          "regime_sidespin": "rolling",
+          "retention": 115
+        },
+        {
+          "sidespin_in": -40,
+          "vx_in": 1.6667,
+          "sidespin_out": -66,
+          "vx_out": 1.32,
+          "vy_out": 2.4511,
+          "epsilon": 0.817,
+          "regime_sidespin": "rolling",
+          "retention": 165
+        },
+        {
+          "sidespin_in": -40,
+          "vx_in": 2.3333,
+          "sidespin_out": -86,
+          "vx_out": 1.72,
+          "vy_out": 2.4372,
+          "epsilon": 0.8124,
+          "regime_sidespin": "rolling",
+          "retention": 215
+        },
+        {
+          "sidespin_in": -40,
+          "vx_in": 3,
+          "sidespin_out": -92.8508,
+          "vx_out": 2.2953,
+          "vy_out": 2.4206,
+          "epsilon": 0.8069,
+          "regime_sidespin": "sliding",
+          "retention": 232.13
+        },
+        {
+          "sidespin_in": -13.3333,
+          "vx_in": -3,
+          "sidespin_out": 39.8295,
+          "vx_out": -2.2912,
+          "vy_out": 2.4526,
+          "epsilon": 0.8175,
+          "regime_sidespin": "sliding",
+          "retention": -298.72
+        },
+        {
+          "sidespin_in": -13.3333,
+          "vx_in": -2.3333,
+          "sidespin_out": 39.9914,
+          "vx_out": -1.6223,
+          "vy_out": 2.4692,
+          "epsilon": 0.8231,
+          "regime_sidespin": "sliding",
+          "retention": -299.94
+        },
+        {
+          "sidespin_in": -13.3333,
+          "vx_in": -1.6667,
+          "sidespin_out": 40.1265,
+          "vx_out": -0.9539,
+          "vy_out": 2.4831,
+          "epsilon": 0.8277,
+          "regime_sidespin": "sliding",
+          "retention": -300.95
+        },
+        {
+          "sidespin_in": -13.3333,
+          "vx_in": -1,
+          "sidespin_out": 24.6667,
+          "vx_out": -0.4933,
+          "vy_out": 2.4932,
+          "epsilon": 0.8311,
+          "regime_sidespin": "rolling",
+          "retention": -185
+        },
+        {
+          "sidespin_in": -13.3333,
+          "vx_in": -0.3333,
+          "sidespin_out": 4.6667,
+          "vx_out": -0.0933,
+          "vy_out": 2.4986,
+          "epsilon": 0.8329,
+          "regime_sidespin": "rolling",
+          "retention": -35
+        },
+        {
+          "sidespin_in": -13.3333,
+          "vx_in": 0.3333,
+          "sidespin_out": -15.3333,
+          "vx_out": 0.3067,
+          "vy_out": 2.4986,
+          "epsilon": 0.8329,
+          "regime_sidespin": "rolling",
+          "retention": 115
+        },
+        {
+          "sidespin_in": -13.3333,
+          "vx_in": 1,
+          "sidespin_out": -35.3333,
+          "vx_out": 0.7067,
+          "vy_out": 2.4932,
+          "epsilon": 0.8311,
+          "regime_sidespin": "rolling",
+          "retention": 265
+        },
+        {
+          "sidespin_in": -13.3333,
+          "vx_in": 1.6667,
+          "sidespin_out": -55.3333,
+          "vx_out": 1.1067,
+          "vy_out": 2.4831,
+          "epsilon": 0.8277,
+          "regime_sidespin": "rolling",
+          "retention": 415
+        },
+        {
+          "sidespin_in": -13.3333,
+          "vx_in": 2.3333,
+          "sidespin_out": -66.6581,
+          "vx_out": 1.6223,
+          "vy_out": 2.4692,
+          "epsilon": 0.8231,
+          "regime_sidespin": "sliding",
+          "retention": 499.94
+        },
+        {
+          "sidespin_in": -13.3333,
+          "vx_in": 3,
+          "sidespin_out": -66.4961,
+          "vx_out": 2.2912,
+          "vy_out": 2.4526,
+          "epsilon": 0.8175,
+          "regime_sidespin": "sliding",
+          "retention": 498.72
+        },
+        {
+          "sidespin_in": 13.3333,
+          "vx_in": -3,
+          "sidespin_out": 66.4961,
+          "vx_out": -2.2912,
+          "vy_out": 2.4526,
+          "epsilon": 0.8175,
+          "regime_sidespin": "sliding",
+          "retention": 498.72
+        },
+        {
+          "sidespin_in": 13.3333,
+          "vx_in": -2.3333,
+          "sidespin_out": 66.6581,
+          "vx_out": -1.6223,
+          "vy_out": 2.4692,
+          "epsilon": 0.8231,
+          "regime_sidespin": "sliding",
+          "retention": 499.94
+        },
+        {
+          "sidespin_in": 13.3333,
+          "vx_in": -1.6667,
+          "sidespin_out": 55.3333,
+          "vx_out": -1.1067,
+          "vy_out": 2.4831,
+          "epsilon": 0.8277,
+          "regime_sidespin": "rolling",
+          "retention": 415
+        },
+        {
+          "sidespin_in": 13.3333,
+          "vx_in": -1,
+          "sidespin_out": 35.3333,
+          "vx_out": -0.7067,
+          "vy_out": 2.4932,
+          "epsilon": 0.8311,
+          "regime_sidespin": "rolling",
+          "retention": 265
+        },
+        {
+          "sidespin_in": 13.3333,
+          "vx_in": -0.3333,
+          "sidespin_out": 15.3333,
+          "vx_out": -0.3067,
+          "vy_out": 2.4986,
+          "epsilon": 0.8329,
+          "regime_sidespin": "rolling",
+          "retention": 115
+        },
+        {
+          "sidespin_in": 13.3333,
+          "vx_in": 0.3333,
+          "sidespin_out": -4.6667,
+          "vx_out": 0.0933,
+          "vy_out": 2.4986,
+          "epsilon": 0.8329,
+          "regime_sidespin": "rolling",
+          "retention": -35
+        },
+        {
+          "sidespin_in": 13.3333,
+          "vx_in": 1,
+          "sidespin_out": -24.6667,
+          "vx_out": 0.4933,
+          "vy_out": 2.4932,
+          "epsilon": 0.8311,
+          "regime_sidespin": "rolling",
+          "retention": -185
+        },
+        {
+          "sidespin_in": 13.3333,
+          "vx_in": 1.6667,
+          "sidespin_out": -40.1265,
+          "vx_out": 0.9539,
+          "vy_out": 2.4831,
+          "epsilon": 0.8277,
+          "regime_sidespin": "sliding",
+          "retention": -300.95
+        },
+        {
+          "sidespin_in": 13.3333,
+          "vx_in": 2.3333,
+          "sidespin_out": -39.9914,
+          "vx_out": 1.6223,
+          "vy_out": 2.4692,
+          "epsilon": 0.8231,
+          "regime_sidespin": "sliding",
+          "retention": -299.94
+        },
+        {
+          "sidespin_in": 13.3333,
+          "vx_in": 3,
+          "sidespin_out": -39.8295,
+          "vx_out": 2.2912,
+          "vy_out": 2.4526,
+          "epsilon": 0.8175,
+          "regime_sidespin": "sliding",
+          "retention": -298.72
+        },
+        {
+          "sidespin_in": 40,
+          "vx_in": -3,
+          "sidespin_out": 92.8508,
+          "vx_out": -2.2953,
+          "vy_out": 2.4206,
+          "epsilon": 0.8069,
+          "regime_sidespin": "sliding",
+          "retention": 232.13
+        },
+        {
+          "sidespin_in": 40,
+          "vx_in": -2.3333,
+          "sidespin_out": 86,
+          "vx_out": -1.72,
+          "vy_out": 2.4372,
+          "epsilon": 0.8124,
+          "regime_sidespin": "rolling",
+          "retention": 215
+        },
+        {
+          "sidespin_in": 40,
+          "vx_in": -1.6667,
+          "sidespin_out": 66,
+          "vx_out": -1.32,
+          "vy_out": 2.4511,
+          "epsilon": 0.817,
+          "regime_sidespin": "rolling",
+          "retention": 165
+        },
+        {
+          "sidespin_in": 40,
+          "vx_in": -1,
+          "sidespin_out": 46,
+          "vx_out": -0.92,
+          "vy_out": 2.4612,
+          "epsilon": 0.8204,
+          "regime_sidespin": "rolling",
+          "retention": 115
+        },
+        {
+          "sidespin_in": 40,
+          "vx_in": -0.3333,
+          "sidespin_out": 26,
+          "vx_out": -0.52,
+          "vy_out": 2.4666,
+          "epsilon": 0.8222,
+          "regime_sidespin": "rolling",
+          "retention": 65
+        },
+        {
+          "sidespin_in": 40,
+          "vx_in": 0.3333,
+          "sidespin_out": 6,
+          "vx_out": -0.12,
+          "vy_out": 2.4666,
+          "epsilon": 0.8222,
+          "regime_sidespin": "rolling",
+          "retention": 15
+        },
+        {
+          "sidespin_in": 40,
+          "vx_in": 1,
+          "sidespin_out": -13.2466,
+          "vx_out": 0.29,
+          "vy_out": 2.4612,
+          "epsilon": 0.8204,
+          "regime_sidespin": "sliding",
+          "retention": -33.12
+        },
+        {
+          "sidespin_in": 40,
+          "vx_in": 1.6667,
+          "sidespin_out": -13.1478,
+          "vx_out": 0.958,
+          "vy_out": 2.4511,
+          "epsilon": 0.817,
+          "regime_sidespin": "sliding",
+          "retention": -32.87
+        },
+        {
+          "sidespin_in": 40,
+          "vx_in": 2.3333,
+          "sidespin_out": -13.0127,
+          "vx_out": 1.6265,
+          "vy_out": 2.4372,
+          "epsilon": 0.8124,
+          "regime_sidespin": "sliding",
+          "retention": -32.53
+        },
+        {
+          "sidespin_in": 40,
+          "vx_in": 3,
+          "sidespin_out": -12.8508,
+          "vx_out": 2.2953,
+          "vy_out": 2.4206,
+          "epsilon": 0.8069,
+          "regime_sidespin": "sliding",
+          "retention": -32.13
+        },
+        {
+          "sidespin_in": 66.6667,
+          "vx_in": -3,
+          "sidespin_out": 116.6667,
+          "vx_out": -2.3333,
+          "vy_out": 2.3886,
+          "epsilon": 0.7962,
+          "regime_sidespin": "rolling",
+          "retention": 175
+        },
+        {
+          "sidespin_in": 66.6667,
+          "vx_in": -2.3333,
+          "sidespin_out": 96.6667,
+          "vx_out": -1.9333,
+          "vy_out": 2.4052,
+          "epsilon": 0.8017,
+          "regime_sidespin": "rolling",
+          "retention": 145
+        },
+        {
+          "sidespin_in": 66.6667,
+          "vx_in": -1.6667,
+          "sidespin_out": 76.6667,
+          "vx_out": -1.5333,
+          "vy_out": 2.4191,
+          "epsilon": 0.8064,
+          "regime_sidespin": "rolling",
+          "retention": 115
+        },
+        {
+          "sidespin_in": 66.6667,
+          "vx_in": -1,
+          "sidespin_out": 56.6667,
+          "vx_out": -1.1333,
+          "vy_out": 2.4292,
+          "epsilon": 0.8097,
+          "regime_sidespin": "rolling",
+          "retention": 85
+        },
+        {
+          "sidespin_in": 66.6667,
+          "vx_in": -0.3333,
+          "sidespin_out": 36.6667,
+          "vx_out": -0.7333,
+          "vy_out": 2.4346,
+          "epsilon": 0.8115,
+          "regime_sidespin": "rolling",
+          "retention": 55
+        },
+        {
+          "sidespin_in": 66.6667,
+          "vx_in": 0.3333,
+          "sidespin_out": 16.6667,
+          "vx_out": -0.3333,
+          "vy_out": 2.4346,
+          "epsilon": 0.8115,
+          "regime_sidespin": "rolling",
+          "retention": 25
+        },
+        {
+          "sidespin_in": 66.6667,
+          "vx_in": 1,
+          "sidespin_out": 13.7321,
+          "vx_out": 0.2942,
+          "vy_out": 2.4292,
+          "epsilon": 0.8097,
+          "regime_sidespin": "sliding",
+          "retention": 20.6
+        },
+        {
+          "sidespin_in": 66.6667,
+          "vx_in": 1.6667,
+          "sidespin_out": 13.8309,
+          "vx_out": 0.9622,
+          "vy_out": 2.4191,
+          "epsilon": 0.8064,
+          "regime_sidespin": "sliding",
+          "retention": 20.75
+        },
+        {
+          "sidespin_in": 66.6667,
+          "vx_in": 2.3333,
+          "sidespin_out": 13.9659,
+          "vx_out": 1.6307,
+          "vy_out": 2.4052,
+          "epsilon": 0.8017,
+          "regime_sidespin": "sliding",
+          "retention": 20.95
+        },
+        {
+          "sidespin_in": 66.6667,
+          "vx_in": 3,
+          "sidespin_out": 14.1279,
+          "vx_out": 2.2995,
+          "vy_out": 2.3886,
+          "epsilon": 0.7962,
+          "regime_sidespin": "sliding",
+          "retention": 21.19
+        },
+        {
+          "sidespin_in": 93.3333,
+          "vx_in": -3,
+          "sidespin_out": 127.3333,
+          "vx_out": -2.5467,
+          "vy_out": 2.3566,
+          "epsilon": 0.7855,
+          "regime_sidespin": "rolling",
+          "retention": 136.43
+        },
+        {
+          "sidespin_in": 93.3333,
+          "vx_in": -2.3333,
+          "sidespin_out": 107.3333,
+          "vx_out": -2.1467,
+          "vy_out": 2.3732,
+          "epsilon": 0.7911,
+          "regime_sidespin": "rolling",
+          "retention": 115
+        },
+        {
+          "sidespin_in": 93.3333,
+          "vx_in": -1.6667,
+          "sidespin_out": 87.3333,
+          "vx_out": -1.7467,
+          "vy_out": 2.3871,
+          "epsilon": 0.7957,
+          "regime_sidespin": "rolling",
+          "retention": 93.57
+        },
+        {
+          "sidespin_in": 93.3333,
+          "vx_in": -1,
+          "sidespin_out": 67.3333,
+          "vx_out": -1.3467,
+          "vy_out": 2.3972,
+          "epsilon": 0.7991,
+          "regime_sidespin": "rolling",
+          "retention": 72.14
+        },
+        {
+          "sidespin_in": 93.3333,
+          "vx_in": -0.3333,
+          "sidespin_out": 47.3333,
+          "vx_out": -0.9467,
+          "vy_out": 2.4026,
+          "epsilon": 0.8009,
+          "regime_sidespin": "rolling",
+          "retention": 50.71
+        },
+        {
+          "sidespin_in": 93.3333,
+          "vx_in": 0.3333,
+          "sidespin_out": 40.6581,
+          "vx_out": -0.369,
+          "vy_out": 2.4026,
+          "epsilon": 0.8009,
+          "regime_sidespin": "sliding",
+          "retention": 43.56
+        },
+        {
+          "sidespin_in": 93.3333,
+          "vx_in": 1,
+          "sidespin_out": 40.7108,
+          "vx_out": 0.2984,
+          "vy_out": 2.3972,
+          "epsilon": 0.7991,
+          "regime_sidespin": "sliding",
+          "retention": 43.62
+        },
+        {
+          "sidespin_in": 93.3333,
+          "vx_in": 1.6667,
+          "sidespin_out": 40.8095,
+          "vx_out": 0.9663,
+          "vy_out": 2.3871,
+          "epsilon": 0.7957,
+          "regime_sidespin": "sliding",
+          "retention": 43.72
+        },
+        {
+          "sidespin_in": 93.3333,
+          "vx_in": 2.3333,
+          "sidespin_out": 40.9446,
+          "vx_out": 1.6348,
+          "vy_out": 2.3732,
+          "epsilon": 0.7911,
+          "regime_sidespin": "sliding",
+          "retention": 43.87
+        },
+        {
+          "sidespin_in": 93.3333,
+          "vx_in": 3,
+          "sidespin_out": 41.1065,
+          "vx_out": 2.3036,
+          "vy_out": 2.3566,
+          "epsilon": 0.7855,
+          "regime_sidespin": "sliding",
+          "retention": 44.04
+        },
+        {
+          "sidespin_in": 120,
+          "vx_in": -3,
+          "sidespin_out": 138,
+          "vx_out": -2.76,
+          "vy_out": 2.3246,
+          "epsilon": 0.7749,
+          "regime_sidespin": "rolling",
+          "retention": 115
+        },
+        {
+          "sidespin_in": 120,
+          "vx_in": -2.3333,
+          "sidespin_out": 118,
+          "vx_out": -2.36,
+          "vy_out": 2.3412,
+          "epsilon": 0.7804,
+          "regime_sidespin": "rolling",
+          "retention": 98.33
+        },
+        {
+          "sidespin_in": 120,
+          "vx_in": -1.6667,
+          "sidespin_out": 98,
+          "vx_out": -1.96,
+          "vy_out": 2.3551,
+          "epsilon": 0.785,
+          "regime_sidespin": "rolling",
+          "retention": 81.67
+        },
+        {
+          "sidespin_in": 120,
+          "vx_in": -1,
+          "sidespin_out": 78,
+          "vx_out": -1.56,
+          "vy_out": 2.3652,
+          "epsilon": 0.7884,
+          "regime_sidespin": "rolling",
+          "retention": 65
+        },
+        {
+          "sidespin_in": 120,
+          "vx_in": -0.3333,
+          "sidespin_out": 67.6367,
+          "vx_out": -1.0315,
+          "vy_out": 2.3706,
+          "epsilon": 0.7902,
+          "regime_sidespin": "sliding",
+          "retention": 56.36
+        },
+        {
+          "sidespin_in": 120,
+          "vx_in": 0.3333,
+          "sidespin_out": 67.6367,
+          "vx_out": -0.3648,
+          "vy_out": 2.3706,
+          "epsilon": 0.7902,
+          "regime_sidespin": "sliding",
+          "retention": 56.36
+        },
+        {
+          "sidespin_in": 120,
+          "vx_in": 1,
+          "sidespin_out": 67.6894,
+          "vx_out": 0.3025,
+          "vy_out": 2.3652,
+          "epsilon": 0.7884,
+          "regime_sidespin": "sliding",
+          "retention": 56.41
+        },
+        {
+          "sidespin_in": 120,
+          "vx_in": 1.6667,
+          "sidespin_out": 67.7882,
+          "vx_out": 0.9705,
+          "vy_out": 2.3551,
+          "epsilon": 0.785,
+          "regime_sidespin": "sliding",
+          "retention": 56.49
+        },
+        {
+          "sidespin_in": 120,
+          "vx_in": 2.3333,
+          "sidespin_out": 67.9233,
+          "vx_out": 1.639,
+          "vy_out": 2.3412,
+          "epsilon": 0.7804,
+          "regime_sidespin": "sliding",
+          "retention": 56.6
+        },
+        {
+          "sidespin_in": 120,
+          "vx_in": 3,
+          "sidespin_out": 68.0852,
+          "vx_out": 2.3078,
+          "vy_out": 2.3246,
+          "epsilon": 0.7749,
+          "regime_sidespin": "sliding",
+          "retention": 56.74
+        },
+        {
+          "sidespin_in": 146.6667,
+          "vx_in": -3,
+          "sidespin_out": 148.6667,
+          "vx_out": -2.9733,
+          "vy_out": 2.2926,
+          "epsilon": 0.7642,
+          "regime_sidespin": "rolling",
+          "retention": 101.36
+        },
+        {
+          "sidespin_in": 146.6667,
+          "vx_in": -2.3333,
+          "sidespin_out": 128.6667,
+          "vx_out": -2.5733,
+          "vy_out": 2.3092,
+          "epsilon": 0.7697,
+          "regime_sidespin": "rolling",
+          "retention": 87.73
+        },
+        {
+          "sidespin_in": 146.6667,
+          "vx_in": -1.6667,
+          "sidespin_out": 108.6667,
+          "vx_out": -2.1733,
+          "vy_out": 2.3231,
+          "epsilon": 0.7744,
+          "regime_sidespin": "rolling",
+          "retention": 74.09
+        },
+        {
+          "sidespin_in": 146.6667,
+          "vx_in": -1,
+          "sidespin_out": 94.6681,
+          "vx_out": -1.6933,
+          "vy_out": 2.3332,
+          "epsilon": 0.7777,
+          "regime_sidespin": "sliding",
+          "retention": 64.55
+        },
+        {
+          "sidespin_in": 146.6667,
+          "vx_in": -0.3333,
+          "sidespin_out": 94.6154,
+          "vx_out": -1.0274,
+          "vy_out": 2.3386,
+          "epsilon": 0.7795,
+          "regime_sidespin": "sliding",
+          "retention": 64.51
+        },
+        {
+          "sidespin_in": 146.6667,
+          "vx_in": 0.3333,
+          "sidespin_out": 94.6154,
+          "vx_out": -0.3607,
+          "vy_out": 2.3386,
+          "epsilon": 0.7795,
+          "regime_sidespin": "sliding",
+          "retention": 64.51
+        },
+        {
+          "sidespin_in": 146.6667,
+          "vx_in": 1,
+          "sidespin_out": 94.6681,
+          "vx_out": 0.3067,
+          "vy_out": 2.3332,
+          "epsilon": 0.7777,
+          "regime_sidespin": "sliding",
+          "retention": 64.55
+        },
+        {
+          "sidespin_in": 146.6667,
+          "vx_in": 1.6667,
+          "sidespin_out": 94.7669,
+          "vx_out": 0.9747,
+          "vy_out": 2.3231,
+          "epsilon": 0.7744,
+          "regime_sidespin": "sliding",
+          "retention": 64.61
+        },
+        {
+          "sidespin_in": 146.6667,
+          "vx_in": 2.3333,
+          "sidespin_out": 94.9019,
+          "vx_out": 1.6431,
+          "vy_out": 2.3092,
+          "epsilon": 0.7697,
+          "regime_sidespin": "sliding",
+          "retention": 64.71
+        },
+        {
+          "sidespin_in": 146.6667,
+          "vx_in": 3,
+          "sidespin_out": 95.0639,
+          "vx_out": 2.312,
+          "vy_out": 2.2926,
+          "epsilon": 0.7642,
+          "regime_sidespin": "sliding",
+          "retention": 64.82
+        },
+        {
+          "sidespin_in": 173.3333,
+          "vx_in": -3,
+          "sidespin_out": 159.3333,
+          "vx_out": -3.1867,
+          "vy_out": 2.2606,
+          "epsilon": 0.7535,
+          "regime_sidespin": "rolling",
+          "retention": 91.92
+        },
+        {
+          "sidespin_in": 173.3333,
+          "vx_in": -2.3333,
+          "sidespin_out": 139.3333,
+          "vx_out": -2.7867,
+          "vy_out": 2.2772,
+          "epsilon": 0.7591,
+          "regime_sidespin": "rolling",
+          "retention": 80.38
+        },
+        {
+          "sidespin_in": 173.3333,
+          "vx_in": -1.6667,
+          "sidespin_out": 121.7455,
+          "vx_out": -2.3545,
+          "vy_out": 2.2911,
+          "epsilon": 0.7637,
+          "regime_sidespin": "sliding",
+          "retention": 70.24
+        },
+        {
+          "sidespin_in": 173.3333,
+          "vx_in": -1,
+          "sidespin_out": 121.6468,
+          "vx_out": -1.6892,
+          "vy_out": 2.3012,
+          "epsilon": 0.7671,
+          "regime_sidespin": "sliding",
+          "retention": 70.18
+        },
+        {
+          "sidespin_in": 173.3333,
+          "vx_in": -0.3333,
+          "sidespin_out": 121.5941,
+          "vx_out": -1.0232,
+          "vy_out": 2.3066,
+          "epsilon": 0.7689,
+          "regime_sidespin": "sliding",
+          "retention": 70.15
+        },
+        {
+          "sidespin_in": 173.3333,
+          "vx_in": 0.3333,
+          "sidespin_out": 121.5941,
+          "vx_out": -0.3565,
+          "vy_out": 2.3066,
+          "epsilon": 0.7689,
+          "regime_sidespin": "sliding",
+          "retention": 70.15
+        },
+        {
+          "sidespin_in": 173.3333,
+          "vx_in": 1,
+          "sidespin_out": 121.6468,
+          "vx_out": 0.3108,
+          "vy_out": 2.3012,
+          "epsilon": 0.7671,
+          "regime_sidespin": "sliding",
+          "retention": 70.18
+        },
+        {
+          "sidespin_in": 173.3333,
+          "vx_in": 1.6667,
+          "sidespin_out": 121.7455,
+          "vx_out": 0.9788,
+          "vy_out": 2.2911,
+          "epsilon": 0.7637,
+          "regime_sidespin": "sliding",
+          "retention": 70.24
+        },
+        {
+          "sidespin_in": 173.3333,
+          "vx_in": 2.3333,
+          "sidespin_out": 121.8806,
+          "vx_out": 1.6473,
+          "vy_out": 2.2772,
+          "epsilon": 0.7591,
+          "regime_sidespin": "sliding",
+          "retention": 70.32
+        },
+        {
+          "sidespin_in": 173.3333,
+          "vx_in": 3,
+          "sidespin_out": 122.0425,
+          "vx_out": 2.3161,
+          "vy_out": 2.2606,
+          "epsilon": 0.7535,
+          "regime_sidespin": "sliding",
+          "retention": 70.41
+        },
+        {
+          "sidespin_in": 200,
+          "vx_in": -3,
+          "sidespin_out": 170,
+          "vx_out": -3.4,
+          "vy_out": 2.2286,
+          "epsilon": 0.7429,
+          "regime_sidespin": "rolling",
+          "retention": 85
+        },
+        {
+          "sidespin_in": 200,
+          "vx_in": -2.3333,
+          "sidespin_out": 150,
+          "vx_out": -3,
+          "vy_out": 2.2452,
+          "epsilon": 0.7484,
+          "regime_sidespin": "rolling",
+          "retention": 75
+        },
+        {
+          "sidespin_in": 200,
+          "vx_in": -1.6667,
+          "sidespin_out": 148.7242,
+          "vx_out": -2.3503,
+          "vy_out": 2.2591,
+          "epsilon": 0.753,
+          "regime_sidespin": "sliding",
+          "retention": 74.36
+        },
+        {
+          "sidespin_in": 200,
+          "vx_in": -1,
+          "sidespin_out": 148.6254,
+          "vx_out": -1.685,
+          "vy_out": 2.2692,
+          "epsilon": 0.7564,
+          "regime_sidespin": "sliding",
+          "retention": 74.31
+        },
+        {
+          "sidespin_in": 200,
+          "vx_in": -0.3333,
+          "sidespin_out": 148.5727,
+          "vx_out": -1.019,
+          "vy_out": 2.2746,
+          "epsilon": 0.7582,
+          "regime_sidespin": "sliding",
+          "retention": 74.29
+        },
+        {
+          "sidespin_in": 200,
+          "vx_in": 0.3333,
+          "sidespin_out": 148.5727,
+          "vx_out": -0.3524,
+          "vy_out": 2.2746,
+          "epsilon": 0.7582,
+          "regime_sidespin": "sliding",
+          "retention": 74.29
+        },
+        {
+          "sidespin_in": 200,
+          "vx_in": 1,
+          "sidespin_out": 148.6254,
+          "vx_out": 0.315,
+          "vy_out": 2.2692,
+          "epsilon": 0.7564,
+          "regime_sidespin": "sliding",
+          "retention": 74.31
+        },
+        {
+          "sidespin_in": 200,
+          "vx_in": 1.6667,
+          "sidespin_out": 148.7242,
+          "vx_out": 0.983,
+          "vy_out": 2.2591,
+          "epsilon": 0.753,
+          "regime_sidespin": "sliding",
+          "retention": 74.36
+        },
+        {
+          "sidespin_in": 200,
+          "vx_in": 2.3333,
+          "sidespin_out": 148.8593,
+          "vx_out": 1.6515,
+          "vy_out": 2.2452,
+          "epsilon": 0.7484,
+          "regime_sidespin": "sliding",
+          "retention": 74.43
+        },
+        {
+          "sidespin_in": 200,
+          "vx_in": 3,
+          "sidespin_out": 149.0212,
+          "vx_out": 2.3203,
+          "vy_out": 2.2286,
+          "epsilon": 0.7429,
+          "regime_sidespin": "sliding",
+          "retention": 74.51
+        }
+      ],
+      "regimeBoundary": [
+        {
+          "vx": -3,
+          "between": [
+            40,
+            66.6667
+          ],
+          "from": "sliding",
+          "to": "rolling"
+        },
+        {
+          "vx": -2.3333,
+          "between": [
+            13.3333,
+            40
+          ],
+          "from": "sliding",
+          "to": "rolling"
+        },
+        {
+          "vx": -1.6667,
+          "between": [
+            -13.3333,
+            13.3333
+          ],
+          "from": "sliding",
+          "to": "rolling"
+        },
+        {
+          "vx": -1.6667,
+          "between": [
+            146.6667,
+            173.3333
+          ],
+          "from": "rolling",
+          "to": "sliding"
+        },
+        {
+          "vx": -1,
+          "between": [
+            -40,
+            -13.3333
+          ],
+          "from": "sliding",
+          "to": "rolling"
+        },
+        {
+          "vx": -1,
+          "between": [
+            120,
+            146.6667
+          ],
+          "from": "rolling",
+          "to": "sliding"
+        },
+        {
+          "vx": -0.3333,
+          "between": [
+            -93.3333,
+            -66.6667
+          ],
+          "from": "sliding",
+          "to": "rolling"
+        },
+        {
+          "vx": -0.3333,
+          "between": [
+            93.3333,
+            120
+          ],
+          "from": "rolling",
+          "to": "sliding"
+        },
+        {
+          "vx": 0.3333,
+          "between": [
+            -120,
+            -93.3333
+          ],
+          "from": "sliding",
+          "to": "rolling"
+        },
+        {
+          "vx": 0.3333,
+          "between": [
+            66.6667,
+            93.3333
+          ],
+          "from": "rolling",
+          "to": "sliding"
+        },
+        {
+          "vx": 1,
+          "between": [
+            -146.6667,
+            -120
+          ],
+          "from": "sliding",
+          "to": "rolling"
+        },
+        {
+          "vx": 1,
+          "between": [
+            13.3333,
+            40
+          ],
+          "from": "rolling",
+          "to": "sliding"
+        },
+        {
+          "vx": 1.6667,
+          "between": [
+            -173.3333,
+            -146.6667
+          ],
+          "from": "sliding",
+          "to": "rolling"
+        },
+        {
+          "vx": 1.6667,
+          "between": [
+            -13.3333,
+            13.3333
+          ],
+          "from": "rolling",
+          "to": "sliding"
+        },
+        {
+          "vx": 2.3333,
+          "between": [
+            -40,
+            -13.3333
+          ],
+          "from": "rolling",
+          "to": "sliding"
+        },
+        {
+          "vx": 3,
+          "between": [
+            -66.6667,
+            -40
+          ],
+          "from": "rolling",
+          "to": "sliding"
+        }
+      ],
+      "ssSensitivity": {
+        "label": "sidespin→sidespin_out (vx=0)",
+        "segments": [
+          {
+            "from": -200,
+            "to": -173.3333,
+            "dx": 26.6667,
+            "dy": 26.9787,
+            "slope": 1.0117
+          },
+          {
+            "from": -173.3333,
+            "to": -146.6667,
+            "dx": 26.6667,
+            "dy": 26.9787,
+            "slope": 1.0117
+          },
+          {
+            "from": -146.6667,
+            "to": -120,
+            "dx": 26.6667,
+            "dy": 26.9786,
+            "slope": 1.0117
+          },
+          {
+            "from": -120,
+            "to": -93.3333,
+            "dx": 26.6667,
+            "dy": 26.9787,
+            "slope": 1.0117
+          },
+          {
+            "from": -93.3333,
+            "to": -66.6667,
+            "dx": 26.6667,
+            "dy": 13.9846,
+            "slope": 0.5244
+          },
+          {
+            "from": -66.6667,
+            "to": -40,
+            "dx": 26.6667,
+            "dy": 10.6667,
+            "slope": 0.4
+          },
+          {
+            "from": -40,
+            "to": -13.3333,
+            "dx": 26.6667,
+            "dy": 10.6667,
+            "slope": 0.4
+          },
+          {
+            "from": -13.3333,
+            "to": 13.3333,
+            "dx": 26.6667,
+            "dy": 10.6666,
+            "slope": 0.4
+          },
+          {
+            "from": 13.3333,
+            "to": 40,
+            "dx": 26.6667,
+            "dy": 10.6667,
+            "slope": 0.4
+          },
+          {
+            "from": 40,
+            "to": 66.6667,
+            "dx": 26.6667,
+            "dy": 10.6667,
+            "slope": 0.4
+          },
+          {
+            "from": 66.6667,
+            "to": 93.3333,
+            "dx": 26.6667,
+            "dy": 13.9846,
+            "slope": 0.5244
+          },
+          {
+            "from": 93.3333,
+            "to": 120,
+            "dx": 26.6667,
+            "dy": 26.9787,
+            "slope": 1.0117
+          },
+          {
+            "from": 120,
+            "to": 146.6667,
+            "dx": 26.6667,
+            "dy": 26.9786,
+            "slope": 1.0117
+          },
+          {
+            "from": 146.6667,
+            "to": 173.3333,
+            "dx": 26.6667,
+            "dy": 26.9787,
+            "slope": 1.0117
+          },
+          {
+            "from": 173.3333,
+            "to": 200,
+            "dx": 26.6667,
+            "dy": 26.9787,
+            "slope": 1.0117
+          }
+        ],
+        "medianAbsSlope": 1.0117,
+        "flagged": []
+      }
+    }
+  ]
+}

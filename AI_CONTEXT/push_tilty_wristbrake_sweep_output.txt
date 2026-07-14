@@ -1,0 +1,6454 @@
+# push tiltY × wristBrakeRate 聯合校準掃描(return-studio.html, push 技術, forehand 側)
+
+> 研究工具輸出，非 game4.html 正式驗收。只逐一計算候選組合分數，不自動找最佳解。
+Updated: 2026-07-13T05:15:16.552Z
+Presets: 11（原始16顆，排除 5 顆：no_spin_long_forehand, no_spin_long_backhand, backspin_short_forehand_2, backspin_short_backhand_2, backspin_short_backhand）
+tiltY candidates: 0.8, 1, 1.3, 1.73, 2.5, 4, 6, 10
+wristBrakeRate candidates: 0, 50, 145, 300, 500, 800
+spinCorrect 定義：輸出topspin跟來球topspin同號(未翻正)視為方向正確（依據 docs/ARCHIVE/physics-engine-v2-plan.md 對「揮拍方向y負值/下旋刷」被判定為「旋轉方向多數正確」時輸出仍為負值topspin的歷史紀錄推得，非逐字沿用該文件的correctSpinFrac實作）。
+
+## Summary
+
+tiltY | 角度 | wristBrakeRate | landing pass/total | spinCorrect/total | spinFlipped/total | 失敗 preset
+--- | --- | --- | --- | --- | --- | ---
+0.8 | 51.3402° | 0 | 11/11 | 11/11 | 0/11 | -
+0.8 | 51.3402° | 50 | 10/11 | 11/11 | 0/11 | sidebackspin_short_forehand(掛網)
+0.8 | 51.3402° | 145 | 6/11 | 11/11 | 0/11 | backspin_long_backhand(掛網); sidebackspin_half_long_backhand(出界); backspin_long_forehand_2(掛網); backspin_short_forehand(掛網); sidebackspin_short_forehand(掛網)
+0.8 | 51.3402° | 300 | 0/11 | 11/11 | 0/11 | backspin_long_backhand(掛網); sidebackspin_long_forehand(掛網); sidebackspin_half_long_forehand(掛網); sidebackspin_half_long_backhand(掛網); sidebackspin_long_backhand(掛網); sidebackspin_long_forehand_2(掛網); sidebackspin_long_forehand_3(掛網); backspin_long_forehand(掛網); backspin_long_forehand_2(掛網); backspin_short_forehand(掛網); sidebackspin_short_forehand(掛網)
+0.8 | 51.3402° | 500 | 0/11 | 11/11 | 0/11 | backspin_long_backhand(掛網); sidebackspin_long_forehand(掛網); sidebackspin_half_long_forehand(掛網); sidebackspin_half_long_backhand(掛網); sidebackspin_long_backhand(掛網); sidebackspin_long_forehand_2(掛網); sidebackspin_long_forehand_3(掛網); backspin_long_forehand(掛網); backspin_long_forehand_2(掛網); backspin_short_forehand(掛網); sidebackspin_short_forehand(掛網)
+0.8 | 51.3402° | 800 | 0/11 | 11/11 | 0/11 | backspin_long_backhand(掛網); sidebackspin_long_forehand(掛網); sidebackspin_half_long_forehand(掛網); sidebackspin_half_long_backhand(掛網); sidebackspin_long_backhand(掛網); sidebackspin_long_forehand_2(掛網); sidebackspin_long_forehand_3(掛網); backspin_long_forehand(掛網); backspin_long_forehand_2(掛網); backspin_short_forehand(掛網); sidebackspin_short_forehand(掛網)
+1 | 45° | 0 | 5/11 | 11/11 | 0/11 | sidebackspin_long_forehand(出界); sidebackspin_half_long_forehand(出界); sidebackspin_half_long_backhand(出界); sidebackspin_long_backhand(出界); sidebackspin_long_forehand_2(出界); sidebackspin_long_forehand_3(出界)
+1 | 45° | 50 | 11/11 | 11/11 | 0/11 | -
+1 | 45° | 145 | 9/11 | 11/11 | 0/11 | backspin_short_forehand(掛網); sidebackspin_short_forehand(掛網)
+1 | 45° | 300 | 5/11 | 10/11 | 1/11 | backspin_long_backhand(掛網); sidebackspin_half_long_backhand(出界); sidebackspin_long_backhand(出界); backspin_long_forehand_2(掛網); backspin_short_forehand(掛網); sidebackspin_short_forehand(掛網)
+1 | 45° | 500 | 0/11 | 8/11 | 3/11 | backspin_long_backhand(掛網); sidebackspin_long_forehand(掛網); sidebackspin_half_long_forehand(掛網); sidebackspin_half_long_backhand(掛網); sidebackspin_long_backhand(掛網); sidebackspin_long_forehand_2(掛網); sidebackspin_long_forehand_3(掛網); backspin_long_forehand(掛網); backspin_long_forehand_2(掛網); backspin_short_forehand(掛網); sidebackspin_short_forehand(掛網)
+1 | 45° | 800 | 0/11 | 8/11 | 3/11 | backspin_long_backhand(掛網); sidebackspin_long_forehand(掛網); sidebackspin_half_long_forehand(掛網); sidebackspin_half_long_backhand(掛網); sidebackspin_long_backhand(掛網); sidebackspin_long_forehand_2(掛網); sidebackspin_long_forehand_3(掛網); backspin_long_forehand(掛網); backspin_long_forehand_2(掛網); backspin_short_forehand(掛網); sidebackspin_short_forehand(掛網)
+1.3 | 37.5686° | 0 | 3/11 | 3/11 | 8/11 | sidebackspin_long_forehand(出界); sidebackspin_half_long_forehand(出界); sidebackspin_half_long_backhand(出界); sidebackspin_long_backhand(出界); sidebackspin_long_forehand_2(出界); sidebackspin_long_forehand_3(出界); backspin_long_forehand(出界); backspin_long_forehand_2(出界)
+1.3 | 37.5686° | 50 | 4/11 | 3/11 | 8/11 | sidebackspin_long_forehand(出界); sidebackspin_half_long_forehand(出界); sidebackspin_half_long_backhand(出界); sidebackspin_long_backhand(出界); sidebackspin_long_forehand_2(出界); sidebackspin_long_forehand_3(出界); backspin_long_forehand(出界)
+1.3 | 37.5686° | 145 | 9/11 | 5/11 | 6/11 | backspin_short_forehand(掛網); sidebackspin_short_forehand(掛網)
+1.3 | 37.5686° | 300 | 6/11 | 2/11 | 9/11 | backspin_long_backhand(出界); sidebackspin_half_long_backhand(出界); sidebackspin_long_backhand(出界); backspin_short_forehand(掛網); sidebackspin_short_forehand(掛網)
+1.3 | 37.5686° | 500 | 3/11 | 2/11 | 9/11 | backspin_long_backhand(掛網); sidebackspin_long_forehand(出界); sidebackspin_half_long_backhand(出界); sidebackspin_long_backhand(出界); sidebackspin_long_forehand_3(出界); backspin_long_forehand_2(掛網); backspin_short_forehand(掛網); sidebackspin_short_forehand(掛網)
+1.3 | 37.5686° | 800 | 0/11 | 2/11 | 9/11 | backspin_long_backhand(掛網); sidebackspin_long_forehand(掛網); sidebackspin_half_long_forehand(掛網); sidebackspin_half_long_backhand(掛網); sidebackspin_long_backhand(掛網); sidebackspin_long_forehand_2(掛網); sidebackspin_long_forehand_3(掛網); backspin_long_forehand(掛網); backspin_long_forehand_2(掛網); backspin_short_forehand(掛網); sidebackspin_short_forehand(掛網)
+1.73 | 30.0294° | 0 | 2/11 | 2/11 | 9/11 | backspin_long_backhand(出界); sidebackspin_long_forehand(出界); sidebackspin_half_long_forehand(出界); sidebackspin_half_long_backhand(出界); sidebackspin_long_backhand(出界); sidebackspin_long_forehand_2(出界); sidebackspin_long_forehand_3(出界); backspin_long_forehand(出界); backspin_long_forehand_2(出界)
+1.73 | 30.0294° | 50 | 4/11 | 2/11 | 9/11 | sidebackspin_long_forehand(出界); sidebackspin_half_long_forehand(出界); sidebackspin_half_long_backhand(出界); sidebackspin_long_backhand(出界); sidebackspin_long_forehand_2(出界); sidebackspin_long_forehand_3(出界); backspin_long_forehand(出界)
+1.73 | 30.0294° | 145 | 7/11 | 2/11 | 9/11 | sidebackspin_long_forehand(出界); sidebackspin_long_backhand(出界); sidebackspin_long_forehand_2(出界); sidebackspin_short_forehand(掛網)
+1.73 | 30.0294° | 300 | 6/11 | 2/11 | 9/11 | backspin_long_backhand(出界); sidebackspin_half_long_backhand(出界); sidebackspin_long_backhand(出界); backspin_short_forehand(掛網); sidebackspin_short_forehand(掛網)
+1.73 | 30.0294° | 500 | 3/11 | 2/11 | 9/11 | backspin_long_backhand(掛網); sidebackspin_long_forehand(出界); sidebackspin_half_long_backhand(出界); sidebackspin_long_backhand(出界); sidebackspin_long_forehand_3(出界); backspin_long_forehand_2(掛網); backspin_short_forehand(掛網); sidebackspin_short_forehand(掛網)
+1.73 | 30.0294° | 800 | 1/11 | 2/11 | 9/11 | backspin_long_backhand(掛網); sidebackspin_long_forehand(出界); sidebackspin_half_long_forehand(出界); sidebackspin_half_long_backhand(出界); sidebackspin_long_backhand(出界); sidebackspin_long_forehand_3(出界); backspin_long_forehand(掛網); backspin_long_forehand_2(掛網); backspin_short_forehand(掛網); sidebackspin_short_forehand(掛網)
+2.5 | 21.8014° | 0 | 2/11 | 2/11 | 9/11 | backspin_long_backhand(出界); sidebackspin_long_forehand(出界); sidebackspin_half_long_forehand(出界); sidebackspin_half_long_backhand(出界); sidebackspin_long_backhand(出界); sidebackspin_long_forehand_2(出界); sidebackspin_long_forehand_3(出界); backspin_long_forehand(出界); backspin_long_forehand_2(出界)
+2.5 | 21.8014° | 50 | 2/11 | 2/11 | 9/11 | backspin_long_backhand(出界); sidebackspin_long_forehand(出界); sidebackspin_half_long_forehand(出界); sidebackspin_half_long_backhand(出界); sidebackspin_long_backhand(出界); sidebackspin_long_forehand_2(出界); sidebackspin_long_forehand_3(出界); backspin_long_forehand(出界); backspin_long_forehand_2(出界)
+2.5 | 21.8014° | 145 | 3/11 | 2/11 | 9/11 | sidebackspin_long_forehand(出界); sidebackspin_half_long_forehand(出界); sidebackspin_half_long_backhand(出界); sidebackspin_long_backhand(出界); sidebackspin_long_forehand_2(出界); sidebackspin_long_forehand_3(出界); backspin_long_forehand(出界); sidebackspin_short_forehand(掛網)
+2.5 | 21.8014° | 300 | 7/11 | 2/11 | 9/11 | backspin_long_backhand(出界); sidebackspin_half_long_backhand(出界); backspin_short_forehand(掛網); sidebackspin_short_forehand(掛網)
+2.5 | 21.8014° | 500 | 4/11 | 2/11 | 9/11 | backspin_long_backhand(出界); sidebackspin_long_forehand(出界); sidebackspin_half_long_backhand(出界); sidebackspin_long_backhand(出界); sidebackspin_long_forehand_3(出界); backspin_short_forehand(掛網); sidebackspin_short_forehand(掛網)
+2.5 | 21.8014° | 800 | 2/11 | 2/11 | 9/11 | backspin_long_backhand(掛網); sidebackspin_long_forehand(出界); sidebackspin_half_long_forehand(出界); sidebackspin_half_long_backhand(出界); sidebackspin_long_backhand(出界); sidebackspin_long_forehand_3(出界); backspin_long_forehand_2(掛網); backspin_short_forehand(掛網); sidebackspin_short_forehand(掛網)
+4 | 14.0362° | 0 | 2/11 | 2/11 | 9/11 | backspin_long_backhand(出界); sidebackspin_long_forehand(出界); sidebackspin_half_long_forehand(出界); sidebackspin_half_long_backhand(出界); sidebackspin_long_backhand(出界); sidebackspin_long_forehand_2(出界); sidebackspin_long_forehand_3(出界); backspin_long_forehand(出界); backspin_long_forehand_2(出界)
+4 | 14.0362° | 50 | 2/11 | 2/11 | 9/11 | backspin_long_backhand(出界); sidebackspin_long_forehand(出界); sidebackspin_half_long_forehand(出界); sidebackspin_half_long_backhand(出界); sidebackspin_long_backhand(出界); sidebackspin_long_forehand_2(出界); sidebackspin_long_forehand_3(出界); backspin_long_forehand(出界); backspin_long_forehand_2(出界)
+4 | 14.0362° | 145 | 3/11 | 2/11 | 9/11 | sidebackspin_long_forehand(出界); sidebackspin_half_long_forehand(出界); sidebackspin_half_long_backhand(出界); sidebackspin_long_backhand(出界); sidebackspin_long_forehand_2(出界); sidebackspin_long_forehand_3(出界); backspin_long_forehand(出界); sidebackspin_short_forehand(出界)
+4 | 14.0362° | 300 | 5/11 | 2/11 | 9/11 | backspin_long_backhand(出界); sidebackspin_long_forehand(出界); sidebackspin_half_long_backhand(出界); sidebackspin_long_forehand_3(出界); backspin_short_forehand(掛網); sidebackspin_short_forehand(掛網)
+4 | 14.0362° | 500 | 3/11 | 2/11 | 9/11 | backspin_long_backhand(出界); sidebackspin_long_forehand(出界); sidebackspin_half_long_forehand(出界); sidebackspin_half_long_backhand(出界); sidebackspin_long_backhand(出界); sidebackspin_long_forehand_3(出界); backspin_short_forehand(掛網); sidebackspin_short_forehand(掛網)
+4 | 14.0362° | 800 | 2/11 | 2/11 | 9/11 | backspin_long_backhand(掛網); sidebackspin_long_forehand(出界); sidebackspin_half_long_forehand(出界); sidebackspin_half_long_backhand(出界); sidebackspin_long_backhand(出界); sidebackspin_long_forehand_3(出界); backspin_long_forehand_2(掛網); backspin_short_forehand(掛網); sidebackspin_short_forehand(掛網)
+6 | 9.4623° | 0 | 2/11 | 2/11 | 9/11 | backspin_long_backhand(出界); sidebackspin_long_forehand(出界); sidebackspin_half_long_forehand(出界); sidebackspin_half_long_backhand(出界); sidebackspin_long_backhand(出界); sidebackspin_long_forehand_2(出界); sidebackspin_long_forehand_3(出界); backspin_long_forehand(出界); backspin_long_forehand_2(出界)
+6 | 9.4623° | 50 | 1/11 | 2/11 | 9/11 | backspin_long_backhand(出界); sidebackspin_long_forehand(出界); sidebackspin_half_long_forehand(出界); sidebackspin_half_long_backhand(出界); sidebackspin_long_backhand(出界); sidebackspin_long_forehand_2(出界); sidebackspin_long_forehand_3(出界); backspin_long_forehand(出界); backspin_long_forehand_2(出界); sidebackspin_short_forehand(出界)
+6 | 9.4623° | 145 | 3/11 | 2/11 | 9/11 | sidebackspin_long_forehand(出界); sidebackspin_half_long_forehand(出界); sidebackspin_half_long_backhand(出界); sidebackspin_long_backhand(出界); sidebackspin_long_forehand_2(出界); sidebackspin_long_forehand_3(出界); backspin_long_forehand(出界); sidebackspin_short_forehand(出界)
+6 | 9.4623° | 300 | 5/11 | 2/11 | 9/11 | backspin_long_backhand(出界); sidebackspin_long_forehand(出界); sidebackspin_half_long_backhand(出界); sidebackspin_long_forehand_3(出界); backspin_short_forehand(掛網); sidebackspin_short_forehand(掛網)
+6 | 9.4623° | 500 | 3/11 | 2/11 | 9/11 | backspin_long_backhand(出界); sidebackspin_long_forehand(出界); sidebackspin_half_long_forehand(出界); sidebackspin_half_long_backhand(出界); sidebackspin_long_backhand(出界); sidebackspin_long_forehand_3(出界); backspin_short_forehand(掛網); sidebackspin_short_forehand(掛網)
+6 | 9.4623° | 800 | 2/11 | 2/11 | 9/11 | backspin_long_backhand(掛網); sidebackspin_long_forehand(出界); sidebackspin_half_long_forehand(出界); sidebackspin_half_long_backhand(出界); sidebackspin_long_backhand(出界); sidebackspin_long_forehand_3(出界); backspin_long_forehand_2(掛網); backspin_short_forehand(掛網); sidebackspin_short_forehand(掛網)
+10 | 5.7106° | 0 | 2/11 | 2/11 | 9/11 | backspin_long_backhand(出界); sidebackspin_long_forehand(出界); sidebackspin_half_long_forehand(出界); sidebackspin_half_long_backhand(出界); sidebackspin_long_backhand(出界); sidebackspin_long_forehand_2(出界); sidebackspin_long_forehand_3(出界); backspin_long_forehand(出界); backspin_long_forehand_2(出界)
+10 | 5.7106° | 50 | 1/11 | 2/11 | 9/11 | backspin_long_backhand(出界); sidebackspin_long_forehand(出界); sidebackspin_half_long_forehand(出界); sidebackspin_half_long_backhand(出界); sidebackspin_long_backhand(出界); sidebackspin_long_forehand_2(出界); sidebackspin_long_forehand_3(出界); backspin_long_forehand(出界); backspin_long_forehand_2(出界); sidebackspin_short_forehand(出界)
+10 | 5.7106° | 145 | 3/11 | 2/11 | 9/11 | sidebackspin_long_forehand(出界); sidebackspin_half_long_forehand(出界); sidebackspin_half_long_backhand(出界); sidebackspin_long_backhand(出界); sidebackspin_long_forehand_2(出界); sidebackspin_long_forehand_3(出界); backspin_long_forehand(出界); sidebackspin_short_forehand(出界)
+10 | 5.7106° | 300 | 5/11 | 2/11 | 9/11 | backspin_long_backhand(出界); sidebackspin_long_forehand(出界); sidebackspin_half_long_backhand(出界); sidebackspin_long_forehand_3(出界); backspin_short_forehand(掛網); sidebackspin_short_forehand(掛網)
+10 | 5.7106° | 500 | 3/11 | 2/11 | 9/11 | backspin_long_backhand(出界); sidebackspin_long_forehand(出界); sidebackspin_half_long_forehand(出界); sidebackspin_half_long_backhand(出界); sidebackspin_long_backhand(出界); sidebackspin_long_forehand_3(出界); backspin_short_forehand(掛網); sidebackspin_short_forehand(掛網)
+10 | 5.7106° | 800 | 2/11 | 2/11 | 9/11 | backspin_long_backhand(掛網); sidebackspin_long_forehand(出界); sidebackspin_half_long_forehand(出界); sidebackspin_half_long_backhand(出界); sidebackspin_long_backhand(出界); sidebackspin_long_forehand_3(出界); backspin_long_forehand_2(掛網); backspin_short_forehand(掛網); sidebackspin_short_forehand(掛網)
+
+## Best combos (by landing pass-rate, tie-break by spinCorrect-rate)
+
+- tiltY=0.8 (51.3402°), wristBrakeRate=0: landing=11/11, spinCorrect=11/11, spinFlipped=0/11
+- tiltY=1 (45°), wristBrakeRate=50: landing=11/11, spinCorrect=11/11, spinFlipped=0/11
+- tiltY=0.8 (51.3402°), wristBrakeRate=50: landing=10/11, spinCorrect=11/11, spinFlipped=0/11
+- tiltY=1 (45°), wristBrakeRate=145: landing=9/11, spinCorrect=11/11, spinFlipped=0/11
+- tiltY=1.3 (37.5686°), wristBrakeRate=145: landing=9/11, spinCorrect=5/11, spinFlipped=6/11
+- tiltY=1.73 (30.0294°), wristBrakeRate=145: landing=7/11, spinCorrect=2/11, spinFlipped=9/11
+- tiltY=2.5 (21.8014°), wristBrakeRate=300: landing=7/11, spinCorrect=2/11, spinFlipped=9/11
+- tiltY=0.8 (51.3402°), wristBrakeRate=145: landing=6/11, spinCorrect=11/11, spinFlipped=0/11
+- tiltY=1.3 (37.5686°), wristBrakeRate=300: landing=6/11, spinCorrect=2/11, spinFlipped=9/11
+- tiltY=1.73 (30.0294°), wristBrakeRate=300: landing=6/11, spinCorrect=2/11, spinFlipped=9/11
+
+## Best combos (by spinCorrect-rate, tie-break by landing pass-rate)
+
+- tiltY=0.8 (51.3402°), wristBrakeRate=0: landing=11/11, spinCorrect=11/11, spinFlipped=0/11
+- tiltY=1 (45°), wristBrakeRate=50: landing=11/11, spinCorrect=11/11, spinFlipped=0/11
+- tiltY=0.8 (51.3402°), wristBrakeRate=50: landing=10/11, spinCorrect=11/11, spinFlipped=0/11
+- tiltY=1 (45°), wristBrakeRate=145: landing=9/11, spinCorrect=11/11, spinFlipped=0/11
+- tiltY=0.8 (51.3402°), wristBrakeRate=145: landing=6/11, spinCorrect=11/11, spinFlipped=0/11
+- tiltY=1 (45°), wristBrakeRate=0: landing=5/11, spinCorrect=11/11, spinFlipped=0/11
+- tiltY=0.8 (51.3402°), wristBrakeRate=300: landing=0/11, spinCorrect=11/11, spinFlipped=0/11
+- tiltY=0.8 (51.3402°), wristBrakeRate=500: landing=0/11, spinCorrect=11/11, spinFlipped=0/11
+- tiltY=0.8 (51.3402°), wristBrakeRate=800: landing=0/11, spinCorrect=11/11, spinFlipped=0/11
+- tiltY=1 (45°), wristBrakeRate=300: landing=5/11, spinCorrect=10/11, spinFlipped=1/11
+
+## Full JSON
+
+```json
+[
+  {
+    "tiltY": 0.8,
+    "angleDeg": 51.3402,
+    "wristBrakeRate": 0,
+    "okCount": 11,
+    "spinCorrectCount": 11,
+    "spinFlippedCount": 0,
+    "total": 11,
+    "rows": [
+      {
+        "preset": "backspin_long_backhand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.1174,
+        "incomingTopspin": -70.5099,
+        "outgoingTopspin": -7.4135,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.1051
+      },
+      {
+        "preset": "sidebackspin_long_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.1396,
+        "incomingTopspin": -82.8142,
+        "outgoingTopspin": -7.7459,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.0935
+      },
+      {
+        "preset": "sidebackspin_half_long_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.1086,
+        "incomingTopspin": -82.9019,
+        "outgoingTopspin": -10.2881,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.1241
+      },
+      {
+        "preset": "sidebackspin_half_long_backhand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.1653,
+        "incomingTopspin": -82.7828,
+        "outgoingTopspin": -22.0072,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.2658
+      },
+      {
+        "preset": "sidebackspin_long_backhand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.1529,
+        "incomingTopspin": -82.7335,
+        "outgoingTopspin": -8.8263,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.1067
+      },
+      {
+        "preset": "sidebackspin_long_forehand_2",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.1245,
+        "incomingTopspin": -82.8517,
+        "outgoingTopspin": -7.7771,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.0939
+      },
+      {
+        "preset": "sidebackspin_long_forehand_3",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.1136,
+        "incomingTopspin": -82.9117,
+        "outgoingTopspin": -11.1398,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.1344
+      },
+      {
+        "preset": "backspin_long_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.1111,
+        "incomingTopspin": -82.3897,
+        "outgoingTopspin": -9.1837,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.1115
+      },
+      {
+        "preset": "backspin_long_forehand_2",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.0988,
+        "incomingTopspin": -75.4329,
+        "outgoingTopspin": -7.839,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.1039
+      },
+      {
+        "preset": "backspin_short_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.0039,
+        "incomingTopspin": -79.7802,
+        "outgoingTopspin": -30.9536,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.388
+      },
+      {
+        "preset": "sidebackspin_short_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.0648,
+        "incomingTopspin": -78.865,
+        "outgoingTopspin": -51.4705,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.6526
+      }
+    ]
+  },
+  {
+    "tiltY": 0.8,
+    "angleDeg": 51.3402,
+    "wristBrakeRate": 50,
+    "okCount": 10,
+    "spinCorrectCount": 11,
+    "spinFlippedCount": 0,
+    "total": 11,
+    "rows": [
+      {
+        "preset": "backspin_long_backhand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.0634,
+        "incomingTopspin": -70.5099,
+        "outgoingTopspin": -7.2679,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.1031
+      },
+      {
+        "preset": "sidebackspin_long_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.1031,
+        "incomingTopspin": -82.8142,
+        "outgoingTopspin": -7.3428,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.0887
+      },
+      {
+        "preset": "sidebackspin_half_long_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.0755,
+        "incomingTopspin": -82.9019,
+        "outgoingTopspin": -9.9332,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.1198
+      },
+      {
+        "preset": "sidebackspin_half_long_backhand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.1243,
+        "incomingTopspin": -82.7828,
+        "outgoingTopspin": -19.4264,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.2347
+      },
+      {
+        "preset": "sidebackspin_long_backhand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.1199,
+        "incomingTopspin": -82.7335,
+        "outgoingTopspin": -8.8763,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.1073
+      },
+      {
+        "preset": "sidebackspin_long_forehand_2",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.0883,
+        "incomingTopspin": -82.8517,
+        "outgoingTopspin": -7.2336,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.0873
+      },
+      {
+        "preset": "sidebackspin_long_forehand_3",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.0806,
+        "incomingTopspin": -82.9117,
+        "outgoingTopspin": -10.81,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.1304
+      },
+      {
+        "preset": "backspin_long_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.0729,
+        "incomingTopspin": -82.3897,
+        "outgoingTopspin": -8.7328,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.106
+      },
+      {
+        "preset": "backspin_long_forehand_2",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.0489,
+        "incomingTopspin": -75.4329,
+        "outgoingTopspin": -7.3983,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.0981
+      },
+      {
+        "preset": "backspin_short_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.0018,
+        "incomingTopspin": -79.7802,
+        "outgoingTopspin": -38.6929,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.485
+      },
+      {
+        "preset": "sidebackspin_short_forehand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.0766,
+        "incomingTopspin": -78.865,
+        "outgoingTopspin": -22.8013,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.2891
+      }
+    ]
+  },
+  {
+    "tiltY": 0.8,
+    "angleDeg": 51.3402,
+    "wristBrakeRate": 145,
+    "okCount": 6,
+    "spinCorrectCount": 11,
+    "spinFlippedCount": 0,
+    "total": 11,
+    "rows": [
+      {
+        "preset": "backspin_long_backhand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.0491,
+        "incomingTopspin": -70.5099,
+        "outgoingTopspin": -4.1294,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.0586
+      },
+      {
+        "preset": "sidebackspin_long_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.0377,
+        "incomingTopspin": -82.8142,
+        "outgoingTopspin": -6.5496,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.0791
+      },
+      {
+        "preset": "sidebackspin_half_long_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.0196,
+        "incomingTopspin": -82.9019,
+        "outgoingTopspin": -9.5322,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.115
+      },
+      {
+        "preset": "sidebackspin_half_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.0204,
+        "incomingTopspin": -82.7828,
+        "outgoingTopspin": -8.9075,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.1076
+      },
+      {
+        "preset": "sidebackspin_long_backhand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.0516,
+        "incomingTopspin": -82.7335,
+        "outgoingTopspin": -7.3346,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.0887
+      },
+      {
+        "preset": "sidebackspin_long_forehand_2",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.0272,
+        "incomingTopspin": -82.8517,
+        "outgoingTopspin": -6.6173,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.0799
+      },
+      {
+        "preset": "sidebackspin_long_forehand_3",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.0224,
+        "incomingTopspin": -82.9117,
+        "outgoingTopspin": -9.9516,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.12
+      },
+      {
+        "preset": "backspin_long_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.0086,
+        "incomingTopspin": -82.3897,
+        "outgoingTopspin": -8.1577,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.099
+      },
+      {
+        "preset": "backspin_long_forehand_2",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.0402,
+        "incomingTopspin": -75.4329,
+        "outgoingTopspin": -6.1642,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.0817
+      },
+      {
+        "preset": "backspin_short_forehand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.0842,
+        "incomingTopspin": -79.7802,
+        "outgoingTopspin": -24.5822,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.3081
+      },
+      {
+        "preset": "sidebackspin_short_forehand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.1474,
+        "incomingTopspin": -78.865,
+        "outgoingTopspin": -22.5812,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.2863
+      }
+    ]
+  },
+  {
+    "tiltY": 0.8,
+    "angleDeg": 51.3402,
+    "wristBrakeRate": 300,
+    "okCount": 0,
+    "spinCorrectCount": 11,
+    "spinFlippedCount": 0,
+    "total": 11,
+    "rows": [
+      {
+        "preset": "backspin_long_backhand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.1848,
+        "incomingTopspin": -70.5099,
+        "outgoingTopspin": -3.3372,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.0473
+      },
+      {
+        "preset": "sidebackspin_long_forehand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.0581,
+        "incomingTopspin": -82.8142,
+        "outgoingTopspin": -4.4495,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.0537
+      },
+      {
+        "preset": "sidebackspin_half_long_forehand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.0671,
+        "incomingTopspin": -82.9019,
+        "outgoingTopspin": -7.6587,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.0924
+      },
+      {
+        "preset": "sidebackspin_half_long_backhand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.0568,
+        "incomingTopspin": -82.7828,
+        "outgoingTopspin": -8.0728,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.0975
+      },
+      {
+        "preset": "sidebackspin_long_backhand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.0472,
+        "incomingTopspin": -82.7335,
+        "outgoingTopspin": -4.629,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.056
+      },
+      {
+        "preset": "sidebackspin_long_forehand_2",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.059,
+        "incomingTopspin": -82.8517,
+        "outgoingTopspin": -5.3918,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.0651
+      },
+      {
+        "preset": "sidebackspin_long_forehand_3",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.0667,
+        "incomingTopspin": -82.9117,
+        "outgoingTopspin": -7.6776,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.0926
+      },
+      {
+        "preset": "backspin_long_forehand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.0856,
+        "incomingTopspin": -82.3897,
+        "outgoingTopspin": -6.877,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.0835
+      },
+      {
+        "preset": "backspin_long_forehand_2",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.109,
+        "incomingTopspin": -75.4329,
+        "outgoingTopspin": -5.4016,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.0716
+      },
+      {
+        "preset": "backspin_short_forehand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.1119,
+        "incomingTopspin": -79.7802,
+        "outgoingTopspin": -24.5461,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.3077
+      },
+      {
+        "preset": "sidebackspin_short_forehand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.257,
+        "incomingTopspin": -78.865,
+        "outgoingTopspin": -22.3477,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.2834
+      }
+    ]
+  },
+  {
+    "tiltY": 0.8,
+    "angleDeg": 51.3402,
+    "wristBrakeRate": 500,
+    "okCount": 0,
+    "spinCorrectCount": 11,
+    "spinFlippedCount": 0,
+    "total": 11,
+    "rows": [
+      {
+        "preset": "backspin_long_backhand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.3193,
+        "incomingTopspin": -70.5099,
+        "outgoingTopspin": -2.7732,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.0393
+      },
+      {
+        "preset": "sidebackspin_long_forehand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.1447,
+        "incomingTopspin": -82.8142,
+        "outgoingTopspin": -3.8937,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.047
+      },
+      {
+        "preset": "sidebackspin_half_long_forehand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.1436,
+        "incomingTopspin": -82.9019,
+        "outgoingTopspin": -7.1518,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.0863
+      },
+      {
+        "preset": "sidebackspin_half_long_backhand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.1302,
+        "incomingTopspin": -82.7828,
+        "outgoingTopspin": -7.4549,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.0901
+      },
+      {
+        "preset": "sidebackspin_long_backhand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.1306,
+        "incomingTopspin": -82.7335,
+        "outgoingTopspin": -4.0227,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.0486
+      },
+      {
+        "preset": "sidebackspin_long_forehand_2",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.1251,
+        "incomingTopspin": -82.8517,
+        "outgoingTopspin": -4.8596,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.0587
+      },
+      {
+        "preset": "sidebackspin_long_forehand_3",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.145,
+        "incomingTopspin": -82.9117,
+        "outgoingTopspin": -7.15,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.0862
+      },
+      {
+        "preset": "backspin_long_forehand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.102,
+        "incomingTopspin": -82.3897,
+        "outgoingTopspin": -6.3728,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.0773
+      },
+      {
+        "preset": "backspin_long_forehand_2",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.0503,
+        "incomingTopspin": -75.4329,
+        "outgoingTopspin": -4.9022,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.065
+      },
+      {
+        "preset": "backspin_short_forehand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.0798,
+        "incomingTopspin": -79.7802,
+        "outgoingTopspin": -24.558,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.3078
+      },
+      {
+        "preset": "sidebackspin_short_forehand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.383,
+        "incomingTopspin": -78.865,
+        "outgoingTopspin": -22.1117,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.2804
+      }
+    ]
+  },
+  {
+    "tiltY": 0.8,
+    "angleDeg": 51.3402,
+    "wristBrakeRate": 800,
+    "okCount": 0,
+    "spinCorrectCount": 11,
+    "spinFlippedCount": 0,
+    "total": 11,
+    "rows": [
+      {
+        "preset": "backspin_long_backhand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.453,
+        "incomingTopspin": -70.5099,
+        "outgoingTopspin": -2.3746,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.0337
+      },
+      {
+        "preset": "sidebackspin_long_forehand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.2249,
+        "incomingTopspin": -82.8142,
+        "outgoingTopspin": -3.5333,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.0427
+      },
+      {
+        "preset": "sidebackspin_half_long_forehand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.22,
+        "incomingTopspin": -82.9019,
+        "outgoingTopspin": -6.828,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.0824
+      },
+      {
+        "preset": "sidebackspin_half_long_backhand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.2036,
+        "incomingTopspin": -82.7828,
+        "outgoingTopspin": -6.9898,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.0844
+      },
+      {
+        "preset": "sidebackspin_long_backhand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.2094,
+        "incomingTopspin": -82.7335,
+        "outgoingTopspin": -3.5904,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.0434
+      },
+      {
+        "preset": "sidebackspin_long_forehand_2",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.0804,
+        "incomingTopspin": -82.8517,
+        "outgoingTopspin": -4.5249,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.0546
+      },
+      {
+        "preset": "sidebackspin_long_forehand_3",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.2201,
+        "incomingTopspin": -82.9117,
+        "outgoingTopspin": -6.8018,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.082
+      },
+      {
+        "preset": "backspin_long_forehand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.0642,
+        "incomingTopspin": -82.3897,
+        "outgoingTopspin": -6.0547,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.0735
+      },
+      {
+        "preset": "backspin_long_forehand_2",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.0272,
+        "incomingTopspin": -75.4329,
+        "outgoingTopspin": -4.5871,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.0608
+      },
+      {
+        "preset": "backspin_short_forehand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.0797,
+        "incomingTopspin": -79.7802,
+        "outgoingTopspin": -24.5889,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.3082
+      },
+      {
+        "preset": "sidebackspin_short_forehand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.5296,
+        "incomingTopspin": -78.865,
+        "outgoingTopspin": -21.87,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.2773
+      }
+    ]
+  },
+  {
+    "tiltY": 1,
+    "angleDeg": 45,
+    "wristBrakeRate": 0,
+    "okCount": 5,
+    "spinCorrectCount": 11,
+    "spinFlippedCount": 0,
+    "total": 11,
+    "rows": [
+      {
+        "preset": "backspin_long_backhand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.2191,
+        "incomingTopspin": -70.5099,
+        "outgoingTopspin": -2.9107,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.0413
+      },
+      {
+        "preset": "sidebackspin_long_forehand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.2372,
+        "incomingTopspin": -82.8142,
+        "outgoingTopspin": -1.5743,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.019
+      },
+      {
+        "preset": "sidebackspin_half_long_forehand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.1905,
+        "incomingTopspin": -82.9019,
+        "outgoingTopspin": -5.1049,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.0616
+      },
+      {
+        "preset": "sidebackspin_half_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.1916,
+        "incomingTopspin": -82.7828,
+        "outgoingTopspin": -5.7478,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.0694
+      },
+      {
+        "preset": "sidebackspin_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.2464,
+        "incomingTopspin": -82.7335,
+        "outgoingTopspin": -1.779,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.0215
+      },
+      {
+        "preset": "sidebackspin_long_forehand_2",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.2192,
+        "incomingTopspin": -82.8517,
+        "outgoingTopspin": -2.6778,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.0323
+      },
+      {
+        "preset": "sidebackspin_long_forehand_3",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.1918,
+        "incomingTopspin": -82.9117,
+        "outgoingTopspin": -5.1059,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.0616
+      },
+      {
+        "preset": "backspin_long_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.2028,
+        "incomingTopspin": -82.3897,
+        "outgoingTopspin": -4.3558,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.0529
+      },
+      {
+        "preset": "backspin_long_forehand_2",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.1947,
+        "incomingTopspin": -75.4329,
+        "outgoingTopspin": -3.2745,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.0434
+      },
+      {
+        "preset": "backspin_short_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.0149,
+        "incomingTopspin": -79.7802,
+        "outgoingTopspin": -24.1885,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.3032
+      },
+      {
+        "preset": "sidebackspin_short_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.1034,
+        "incomingTopspin": -78.865,
+        "outgoingTopspin": -50.2894,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.6377
+      }
+    ]
+  },
+  {
+    "tiltY": 1,
+    "angleDeg": 45,
+    "wristBrakeRate": 50,
+    "okCount": 11,
+    "spinCorrectCount": 11,
+    "spinFlippedCount": 0,
+    "total": 11,
+    "rows": [
+      {
+        "preset": "backspin_long_backhand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.1638,
+        "incomingTopspin": -70.5099,
+        "outgoingTopspin": -2.8881,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.041
+      },
+      {
+        "preset": "sidebackspin_long_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.2056,
+        "incomingTopspin": -82.8142,
+        "outgoingTopspin": -2.2193,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.0268
+      },
+      {
+        "preset": "sidebackspin_half_long_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.1596,
+        "incomingTopspin": -82.9019,
+        "outgoingTopspin": -5.345,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.0645
+      },
+      {
+        "preset": "sidebackspin_half_long_backhand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.2073,
+        "incomingTopspin": -82.7828,
+        "outgoingTopspin": -14.7335,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.178
+      },
+      {
+        "preset": "sidebackspin_long_backhand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.2176,
+        "incomingTopspin": -82.7335,
+        "outgoingTopspin": -2.7529,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.0333
+      },
+      {
+        "preset": "sidebackspin_long_forehand_2",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.1835,
+        "incomingTopspin": -82.8517,
+        "outgoingTopspin": -2.3883,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.0288
+      },
+      {
+        "preset": "sidebackspin_long_forehand_3",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.1655,
+        "incomingTopspin": -82.9117,
+        "outgoingTopspin": -6.2653,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.0756
+      },
+      {
+        "preset": "backspin_long_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.1644,
+        "incomingTopspin": -82.3897,
+        "outgoingTopspin": -4.0544,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.0492
+      },
+      {
+        "preset": "backspin_long_forehand_2",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.1442,
+        "incomingTopspin": -75.4329,
+        "outgoingTopspin": -3.0165,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.04
+      },
+      {
+        "preset": "backspin_short_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.0025,
+        "incomingTopspin": -79.7802,
+        "outgoingTopspin": -28.7665,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.3606
+      },
+      {
+        "preset": "sidebackspin_short_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.0331,
+        "incomingTopspin": -78.865,
+        "outgoingTopspin": -41.5068,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.5263
+      }
+    ]
+  },
+  {
+    "tiltY": 1,
+    "angleDeg": 45,
+    "wristBrakeRate": 145,
+    "okCount": 9,
+    "spinCorrectCount": 11,
+    "spinFlippedCount": 0,
+    "total": 11,
+    "rows": [
+      {
+        "preset": "backspin_long_backhand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.0603,
+        "incomingTopspin": -70.5099,
+        "outgoingTopspin": -1.726,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.0245
+      },
+      {
+        "preset": "sidebackspin_long_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.1409,
+        "incomingTopspin": -82.8142,
+        "outgoingTopspin": -1.8862,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.0228
+      },
+      {
+        "preset": "sidebackspin_half_long_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.1034,
+        "incomingTopspin": -82.9019,
+        "outgoingTopspin": -5.1818,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.0625
+      },
+      {
+        "preset": "sidebackspin_half_long_backhand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.118,
+        "incomingTopspin": -82.7828,
+        "outgoingTopspin": -7.48,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.0904
+      },
+      {
+        "preset": "sidebackspin_long_backhand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.1566,
+        "incomingTopspin": -82.7335,
+        "outgoingTopspin": -2.7924,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.0338
+      },
+      {
+        "preset": "sidebackspin_long_forehand_2",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.122,
+        "incomingTopspin": -82.8517,
+        "outgoingTopspin": -2.0263,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.0245
+      },
+      {
+        "preset": "sidebackspin_long_forehand_3",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.1076,
+        "incomingTopspin": -82.9117,
+        "outgoingTopspin": -5.7628,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.0695
+      },
+      {
+        "preset": "backspin_long_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.0996,
+        "incomingTopspin": -82.3897,
+        "outgoingTopspin": -3.7402,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.0454
+      },
+      {
+        "preset": "backspin_long_forehand_2",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.0575,
+        "incomingTopspin": -75.4329,
+        "outgoingTopspin": -2.6895,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.0357
+      },
+      {
+        "preset": "backspin_short_forehand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.0614,
+        "incomingTopspin": -79.7802,
+        "outgoingTopspin": -22.8445,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.2863
+      },
+      {
+        "preset": "sidebackspin_short_forehand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.1161,
+        "incomingTopspin": -78.865,
+        "outgoingTopspin": -20.5867,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.261
+      }
+    ]
+  },
+  {
+    "tiltY": 1,
+    "angleDeg": 45,
+    "wristBrakeRate": 300,
+    "okCount": 5,
+    "spinCorrectCount": 10,
+    "spinFlippedCount": 1,
+    "total": 11,
+    "rows": [
+      {
+        "preset": "backspin_long_backhand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.092,
+        "incomingTopspin": -70.5099,
+        "outgoingTopspin": 0.6144,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.0087
+      },
+      {
+        "preset": "sidebackspin_long_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.046,
+        "incomingTopspin": -82.8142,
+        "outgoingTopspin": -0.4253,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.0051
+      },
+      {
+        "preset": "sidebackspin_half_long_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.0194,
+        "incomingTopspin": -82.9019,
+        "outgoingTopspin": -4.0968,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.0494
+      },
+      {
+        "preset": "sidebackspin_half_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.0258,
+        "incomingTopspin": -82.7828,
+        "outgoingTopspin": -4.0677,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.0491
+      },
+      {
+        "preset": "sidebackspin_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.056,
+        "incomingTopspin": -82.7335,
+        "outgoingTopspin": -0.079,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.001
+      },
+      {
+        "preset": "sidebackspin_long_forehand_2",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.0362,
+        "incomingTopspin": -82.8517,
+        "outgoingTopspin": -1.362,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.0164
+      },
+      {
+        "preset": "sidebackspin_long_forehand_3",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.0208,
+        "incomingTopspin": -82.9117,
+        "outgoingTopspin": -4.2012,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.0507
+      },
+      {
+        "preset": "backspin_long_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.0063,
+        "incomingTopspin": -82.3897,
+        "outgoingTopspin": -3.1779,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.0386
+      },
+      {
+        "preset": "backspin_long_forehand_2",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.0705,
+        "incomingTopspin": -75.4329,
+        "outgoingTopspin": -1.4552,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.0193
+      },
+      {
+        "preset": "backspin_short_forehand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.1348,
+        "incomingTopspin": -79.7802,
+        "outgoingTopspin": -23.0419,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.2888
+      },
+      {
+        "preset": "sidebackspin_short_forehand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.2282,
+        "incomingTopspin": -78.865,
+        "outgoingTopspin": -20.5791,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.2609
+      }
+    ]
+  },
+  {
+    "tiltY": 1,
+    "angleDeg": 45,
+    "wristBrakeRate": 500,
+    "okCount": 0,
+    "spinCorrectCount": 8,
+    "spinFlippedCount": 3,
+    "total": 11,
+    "rows": [
+      {
+        "preset": "backspin_long_backhand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.2327,
+        "incomingTopspin": -70.5099,
+        "outgoingTopspin": 1.0387,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.0147
+      },
+      {
+        "preset": "sidebackspin_long_forehand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.0447,
+        "incomingTopspin": -82.8142,
+        "outgoingTopspin": 0.5105,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.0062
+      },
+      {
+        "preset": "sidebackspin_half_long_forehand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.0635,
+        "incomingTopspin": -82.9019,
+        "outgoingTopspin": -3.2263,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.0389
+      },
+      {
+        "preset": "sidebackspin_half_long_backhand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.051,
+        "incomingTopspin": -82.7828,
+        "outgoingTopspin": -3.5806,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.0433
+      },
+      {
+        "preset": "sidebackspin_long_backhand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.0297,
+        "incomingTopspin": -82.7335,
+        "outgoingTopspin": 0.392,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.0047
+      },
+      {
+        "preset": "sidebackspin_long_forehand_2",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.0491,
+        "incomingTopspin": -82.8517,
+        "outgoingTopspin": -0.6455,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.0078
+      },
+      {
+        "preset": "sidebackspin_long_forehand_3",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.0629,
+        "incomingTopspin": -82.9117,
+        "outgoingTopspin": -3.2077,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.0387
+      },
+      {
+        "preset": "backspin_long_forehand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.087,
+        "incomingTopspin": -82.3897,
+        "outgoingTopspin": -2.35,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.0285
+      },
+      {
+        "preset": "backspin_long_forehand_2",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.0842,
+        "incomingTopspin": -75.4329,
+        "outgoingTopspin": -1.1006,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.0146
+      },
+      {
+        "preset": "backspin_short_forehand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.0823,
+        "incomingTopspin": -79.7802,
+        "outgoingTopspin": -23.2159,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.291
+      },
+      {
+        "preset": "sidebackspin_short_forehand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.357,
+        "incomingTopspin": -78.865,
+        "outgoingTopspin": -20.4913,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.2598
+      }
+    ]
+  },
+  {
+    "tiltY": 1,
+    "angleDeg": 45,
+    "wristBrakeRate": 800,
+    "okCount": 0,
+    "spinCorrectCount": 8,
+    "spinFlippedCount": 3,
+    "total": 11,
+    "rows": [
+      {
+        "preset": "backspin_long_backhand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.3739,
+        "incomingTopspin": -70.5099,
+        "outgoingTopspin": 1.357,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.0192
+      },
+      {
+        "preset": "sidebackspin_long_forehand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.1301,
+        "incomingTopspin": -82.8142,
+        "outgoingTopspin": 0.7866,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.0095
+      },
+      {
+        "preset": "sidebackspin_half_long_forehand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.1428,
+        "incomingTopspin": -82.9019,
+        "outgoingTopspin": -2.9901,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.0361
+      },
+      {
+        "preset": "sidebackspin_half_long_backhand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.1273,
+        "incomingTopspin": -82.7828,
+        "outgoingTopspin": -3.1886,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.0385
+      },
+      {
+        "preset": "sidebackspin_long_backhand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.1135,
+        "incomingTopspin": -82.7335,
+        "outgoingTopspin": 0.7478,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.009
+      },
+      {
+        "preset": "sidebackspin_long_forehand_2",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.131,
+        "incomingTopspin": -82.8517,
+        "outgoingTopspin": -0.397,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.0048
+      },
+      {
+        "preset": "sidebackspin_long_forehand_3",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.1426,
+        "incomingTopspin": -82.9117,
+        "outgoingTopspin": -2.9449,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.0355
+      },
+      {
+        "preset": "backspin_long_forehand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.0984,
+        "incomingTopspin": -82.3897,
+        "outgoingTopspin": -2.118,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.0257
+      },
+      {
+        "preset": "backspin_long_forehand_2",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.0274,
+        "incomingTopspin": -75.4329,
+        "outgoingTopspin": -0.8715,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.0116
+      },
+      {
+        "preset": "backspin_short_forehand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.0728,
+        "incomingTopspin": -79.7802,
+        "outgoingTopspin": -23.3573,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.2928
+      },
+      {
+        "preset": "sidebackspin_short_forehand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.5087,
+        "incomingTopspin": -78.865,
+        "outgoingTopspin": -20.3436,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.258
+      }
+    ]
+  },
+  {
+    "tiltY": 1.3,
+    "angleDeg": 37.5686,
+    "wristBrakeRate": 0,
+    "okCount": 3,
+    "spinCorrectCount": 3,
+    "spinFlippedCount": 8,
+    "total": 11,
+    "rows": [
+      {
+        "preset": "backspin_long_backhand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.3349,
+        "incomingTopspin": -70.5099,
+        "outgoingTopspin": 2.4915,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.0353
+      },
+      {
+        "preset": "sidebackspin_long_forehand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.3578,
+        "incomingTopspin": -82.8142,
+        "outgoingTopspin": 4.4251,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.0534
+      },
+      {
+        "preset": "sidebackspin_half_long_forehand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.2893,
+        "incomingTopspin": -82.9019,
+        "outgoingTopspin": 0.3461,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.0042
+      },
+      {
+        "preset": "sidebackspin_half_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.2891,
+        "incomingTopspin": -82.7828,
+        "outgoingTopspin": -0.4232,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.0051
+      },
+      {
+        "preset": "sidebackspin_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.3683,
+        "incomingTopspin": -82.7335,
+        "outgoingTopspin": 4.2013,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.0508
+      },
+      {
+        "preset": "sidebackspin_long_forehand_2",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.3308,
+        "incomingTopspin": -82.8517,
+        "outgoingTopspin": 3.1085,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.0375
+      },
+      {
+        "preset": "sidebackspin_long_forehand_3",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.2911,
+        "incomingTopspin": -82.9117,
+        "outgoingTopspin": 0.3597,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.0043
+      },
+      {
+        "preset": "backspin_long_forehand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.3094,
+        "incomingTopspin": -82.3897,
+        "outgoingTopspin": 1.332,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.0162
+      },
+      {
+        "preset": "backspin_long_forehand_2",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.3034,
+        "incomingTopspin": -75.4329,
+        "outgoingTopspin": 2.3539,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.0312
+      },
+      {
+        "preset": "backspin_short_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.0423,
+        "incomingTopspin": -79.7802,
+        "outgoingTopspin": -21.8756,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.2742
+      },
+      {
+        "preset": "sidebackspin_short_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.1483,
+        "incomingTopspin": -78.865,
+        "outgoingTopspin": -48.984,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.6211
+      }
+    ]
+  },
+  {
+    "tiltY": 1.3,
+    "angleDeg": 37.5686,
+    "wristBrakeRate": 50,
+    "okCount": 4,
+    "spinCorrectCount": 3,
+    "spinFlippedCount": 8,
+    "total": 11,
+    "rows": [
+      {
+        "preset": "backspin_long_backhand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.2774,
+        "incomingTopspin": -70.5099,
+        "outgoingTopspin": 2.3335,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.0331
+      },
+      {
+        "preset": "sidebackspin_long_forehand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.3194,
+        "incomingTopspin": -82.8142,
+        "outgoingTopspin": 4.6788,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.0565
+      },
+      {
+        "preset": "sidebackspin_half_long_forehand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.2545,
+        "incomingTopspin": -82.9019,
+        "outgoingTopspin": 0.5532,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.0067
+      },
+      {
+        "preset": "sidebackspin_half_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.2558,
+        "incomingTopspin": -82.7828,
+        "outgoingTopspin": -0.1268,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.0015
+      },
+      {
+        "preset": "sidebackspin_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.3305,
+        "incomingTopspin": -82.7335,
+        "outgoingTopspin": 4.4847,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.0542
+      },
+      {
+        "preset": "sidebackspin_long_forehand_2",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.2938,
+        "incomingTopspin": -82.8517,
+        "outgoingTopspin": 3.3488,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.0404
+      },
+      {
+        "preset": "sidebackspin_long_forehand_3",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.2562,
+        "incomingTopspin": -82.9117,
+        "outgoingTopspin": 0.571,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.0069
+      },
+      {
+        "preset": "backspin_long_forehand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.2697,
+        "incomingTopspin": -82.3897,
+        "outgoingTopspin": 1.5396,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.0187
+      },
+      {
+        "preset": "backspin_long_forehand_2",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.2528,
+        "incomingTopspin": -75.4329,
+        "outgoingTopspin": 2.1819,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.0289
+      },
+      {
+        "preset": "backspin_short_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.0179,
+        "incomingTopspin": -79.7802,
+        "outgoingTopspin": -22.4696,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.2816
+      },
+      {
+        "preset": "sidebackspin_short_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.0741,
+        "incomingTopspin": -78.865,
+        "outgoingTopspin": -39.9463,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.5065
+      }
+    ]
+  },
+  {
+    "tiltY": 1.3,
+    "angleDeg": 37.5686,
+    "wristBrakeRate": 145,
+    "okCount": 9,
+    "spinCorrectCount": 5,
+    "spinFlippedCount": 6,
+    "total": 11,
+    "rows": [
+      {
+        "preset": "backspin_long_backhand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.1713,
+        "incomingTopspin": -70.5099,
+        "outgoingTopspin": 2.9049,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.0412
+      },
+      {
+        "preset": "sidebackspin_long_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.2605,
+        "incomingTopspin": -82.8142,
+        "outgoingTopspin": 3.4929,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.0422
+      },
+      {
+        "preset": "sidebackspin_half_long_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.2005,
+        "incomingTopspin": -82.9019,
+        "outgoingTopspin": -0.2005,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.0024
+      },
+      {
+        "preset": "sidebackspin_half_long_backhand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.2168,
+        "incomingTopspin": -82.7828,
+        "outgoingTopspin": -3.0571,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.0369
+      },
+      {
+        "preset": "sidebackspin_long_backhand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.2787,
+        "incomingTopspin": -82.7335,
+        "outgoingTopspin": 2.4123,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.0292
+      },
+      {
+        "preset": "sidebackspin_long_forehand_2",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.2319,
+        "incomingTopspin": -82.8517,
+        "outgoingTopspin": 3.2407,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.0391
+      },
+      {
+        "preset": "sidebackspin_long_forehand_3",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.2062,
+        "incomingTopspin": -82.9117,
+        "outgoingTopspin": -0.9328,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.0113
+      },
+      {
+        "preset": "backspin_long_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.2041,
+        "incomingTopspin": -82.3897,
+        "outgoingTopspin": 1.4146,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.0172
+      },
+      {
+        "preset": "backspin_long_forehand_2",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.1631,
+        "incomingTopspin": -75.4329,
+        "outgoingTopspin": 2.1471,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.0285
+      },
+      {
+        "preset": "backspin_short_forehand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.0358,
+        "incomingTopspin": -79.7802,
+        "outgoingTopspin": -20.8404,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.2612
+      },
+      {
+        "preset": "sidebackspin_short_forehand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.0817,
+        "incomingTopspin": -78.865,
+        "outgoingTopspin": -18.2854,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.2319
+      }
+    ]
+  },
+  {
+    "tiltY": 1.3,
+    "angleDeg": 37.5686,
+    "wristBrakeRate": 300,
+    "okCount": 6,
+    "spinCorrectCount": 2,
+    "spinFlippedCount": 9,
+    "total": 11,
+    "rows": [
+      {
+        "preset": "backspin_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.0091,
+        "incomingTopspin": -70.5099,
+        "outgoingTopspin": 5.1796,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.0735
+      },
+      {
+        "preset": "sidebackspin_long_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.1614,
+        "incomingTopspin": -82.8142,
+        "outgoingTopspin": 4.7558,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.0574
+      },
+      {
+        "preset": "sidebackspin_half_long_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.1139,
+        "incomingTopspin": -82.9019,
+        "outgoingTopspin": 0.5425,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.0065
+      },
+      {
+        "preset": "sidebackspin_half_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.1189,
+        "incomingTopspin": -82.7828,
+        "outgoingTopspin": 0.547,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.0066
+      },
+      {
+        "preset": "sidebackspin_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.1723,
+        "incomingTopspin": -82.7335,
+        "outgoingTopspin": 5.1726,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.0625
+      },
+      {
+        "preset": "sidebackspin_long_forehand_2",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.143,
+        "incomingTopspin": -82.8517,
+        "outgoingTopspin": 3.6219,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.0437
+      },
+      {
+        "preset": "sidebackspin_long_forehand_3",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.1158,
+        "incomingTopspin": -82.9117,
+        "outgoingTopspin": 0.4441,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.0054
+      },
+      {
+        "preset": "backspin_long_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.1092,
+        "incomingTopspin": -82.3897,
+        "outgoingTopspin": 1.5792,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.0192
+      },
+      {
+        "preset": "backspin_long_forehand_2",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.0329,
+        "incomingTopspin": -75.4329,
+        "outgoingTopspin": 2.4386,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.0323
+      },
+      {
+        "preset": "backspin_short_forehand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.1112,
+        "incomingTopspin": -79.7802,
+        "outgoingTopspin": -21.3166,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.2672
+      },
+      {
+        "preset": "sidebackspin_short_forehand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.1981,
+        "incomingTopspin": -78.865,
+        "outgoingTopspin": -18.5422,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.2351
+      }
+    ]
+  },
+  {
+    "tiltY": 1.3,
+    "angleDeg": 37.5686,
+    "wristBrakeRate": 500,
+    "okCount": 3,
+    "spinCorrectCount": 2,
+    "spinFlippedCount": 9,
+    "total": 11,
+    "rows": [
+      {
+        "preset": "backspin_long_backhand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.1419,
+        "incomingTopspin": -70.5099,
+        "outgoingTopspin": 5.4384,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.0771
+      },
+      {
+        "preset": "sidebackspin_long_forehand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.0654,
+        "incomingTopspin": -82.8142,
+        "outgoingTopspin": 5.5934,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.0675
+      },
+      {
+        "preset": "sidebackspin_half_long_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.0272,
+        "incomingTopspin": -82.9019,
+        "outgoingTopspin": 1.1642,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.014
+      },
+      {
+        "preset": "sidebackspin_half_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.0382,
+        "incomingTopspin": -82.7828,
+        "outgoingTopspin": 0.8825,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.0107
+      },
+      {
+        "preset": "sidebackspin_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.082,
+        "incomingTopspin": -82.7335,
+        "outgoingTopspin": 5.4831,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.0663
+      },
+      {
+        "preset": "sidebackspin_long_forehand_2",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.0531,
+        "incomingTopspin": -82.8517,
+        "outgoingTopspin": 4.1756,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.0504
+      },
+      {
+        "preset": "sidebackspin_long_forehand_3",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.0273,
+        "incomingTopspin": -82.9117,
+        "outgoingTopspin": 1.3396,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.0162
+      },
+      {
+        "preset": "backspin_long_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.0118,
+        "incomingTopspin": -82.3897,
+        "outgoingTopspin": 2.1035,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.0255
+      },
+      {
+        "preset": "backspin_long_forehand_2",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.1029,
+        "incomingTopspin": -75.4329,
+        "outgoingTopspin": 3.2843,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.0435
+      },
+      {
+        "preset": "backspin_short_forehand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.0887,
+        "incomingTopspin": -79.7802,
+        "outgoingTopspin": -21.6835,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.2718
+      },
+      {
+        "preset": "sidebackspin_short_forehand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.3332,
+        "incomingTopspin": -78.865,
+        "outgoingTopspin": -18.6305,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.2362
+      }
+    ]
+  },
+  {
+    "tiltY": 1.3,
+    "angleDeg": 37.5686,
+    "wristBrakeRate": 800,
+    "okCount": 0,
+    "spinCorrectCount": 2,
+    "spinFlippedCount": 9,
+    "total": 11,
+    "rows": [
+      {
+        "preset": "backspin_long_backhand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.2921,
+        "incomingTopspin": -70.5099,
+        "outgoingTopspin": 5.6641,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.0803
+      },
+      {
+        "preset": "sidebackspin_long_forehand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.0258,
+        "incomingTopspin": -82.8142,
+        "outgoingTopspin": 5.7701,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.0697
+      },
+      {
+        "preset": "sidebackspin_half_long_forehand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.0582,
+        "incomingTopspin": -82.9019,
+        "outgoingTopspin": 1.436,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.0173
+      },
+      {
+        "preset": "sidebackspin_half_long_backhand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.0431,
+        "incomingTopspin": -82.7828,
+        "outgoingTopspin": 1.1866,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.0143
+      },
+      {
+        "preset": "sidebackspin_long_backhand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.0075,
+        "incomingTopspin": -82.7335,
+        "outgoingTopspin": 5.7486,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.0695
+      },
+      {
+        "preset": "sidebackspin_long_forehand_2",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.0324,
+        "incomingTopspin": -82.8517,
+        "outgoingTopspin": 4.3633,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.0527
+      },
+      {
+        "preset": "sidebackspin_long_forehand_3",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.0575,
+        "incomingTopspin": -82.9117,
+        "outgoingTopspin": 1.5009,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.0181
+      },
+      {
+        "preset": "backspin_long_forehand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.0847,
+        "incomingTopspin": -82.3897,
+        "outgoingTopspin": 2.4231,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.0294
+      },
+      {
+        "preset": "backspin_long_forehand_2",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.0564,
+        "incomingTopspin": -75.4329,
+        "outgoingTopspin": 3.4156,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.0453
+      },
+      {
+        "preset": "backspin_short_forehand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.0686,
+        "incomingTopspin": -79.7802,
+        "outgoingTopspin": -21.9617,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.2753
+      },
+      {
+        "preset": "sidebackspin_short_forehand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.4935,
+        "incomingTopspin": -78.865,
+        "outgoingTopspin": -18.5953,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.2358
+      }
+    ]
+  },
+  {
+    "tiltY": 1.73,
+    "angleDeg": 30.0294,
+    "wristBrakeRate": 0,
+    "okCount": 2,
+    "spinCorrectCount": 2,
+    "spinFlippedCount": 9,
+    "total": 11,
+    "rows": [
+      {
+        "preset": "backspin_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.4379,
+        "incomingTopspin": -70.5099,
+        "outgoingTopspin": 9.6712,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1372
+      },
+      {
+        "preset": "sidebackspin_long_forehand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.4814,
+        "incomingTopspin": -82.8142,
+        "outgoingTopspin": 10.4175,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1258
+      },
+      {
+        "preset": "sidebackspin_half_long_forehand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.3896,
+        "incomingTopspin": -82.9019,
+        "outgoingTopspin": 5.7912,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.0699
+      },
+      {
+        "preset": "sidebackspin_half_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.3886,
+        "incomingTopspin": -82.7828,
+        "outgoingTopspin": 4.8701,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.0588
+      },
+      {
+        "preset": "sidebackspin_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.4933,
+        "incomingTopspin": -82.7335,
+        "outgoingTopspin": 10.1614,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1228
+      },
+      {
+        "preset": "sidebackspin_long_forehand_2",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.4443,
+        "incomingTopspin": -82.8517,
+        "outgoingTopspin": 8.8856,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1072
+      },
+      {
+        "preset": "sidebackspin_long_forehand_3",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.3919,
+        "incomingTopspin": -82.9117,
+        "outgoingTopspin": 5.8179,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.0702
+      },
+      {
+        "preset": "backspin_long_forehand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.4179,
+        "incomingTopspin": -82.3897,
+        "outgoingTopspin": 6.8912,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.0836
+      },
+      {
+        "preset": "backspin_long_forehand_2",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.4138,
+        "incomingTopspin": -75.4329,
+        "outgoingTopspin": 7.6561,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1015
+      },
+      {
+        "preset": "backspin_short_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.0685,
+        "incomingTopspin": -79.7802,
+        "outgoingTopspin": -19.2112,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.2408
+      },
+      {
+        "preset": "sidebackspin_short_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.1934,
+        "incomingTopspin": -78.865,
+        "outgoingTopspin": -47.7606,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.6056
+      }
+    ]
+  },
+  {
+    "tiltY": 1.73,
+    "angleDeg": 30.0294,
+    "wristBrakeRate": 50,
+    "okCount": 4,
+    "spinCorrectCount": 2,
+    "spinFlippedCount": 9,
+    "total": 11,
+    "rows": [
+      {
+        "preset": "backspin_long_backhand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.3882,
+        "incomingTopspin": -70.5099,
+        "outgoingTopspin": 7.6183,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.108
+      },
+      {
+        "preset": "sidebackspin_long_forehand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.4407,
+        "incomingTopspin": -82.8142,
+        "outgoingTopspin": 10.4641,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1264
+      },
+      {
+        "preset": "sidebackspin_half_long_forehand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.3539,
+        "incomingTopspin": -82.9019,
+        "outgoingTopspin": 5.7896,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.0698
+      },
+      {
+        "preset": "sidebackspin_half_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.3543,
+        "incomingTopspin": -82.7828,
+        "outgoingTopspin": 4.9781,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.0601
+      },
+      {
+        "preset": "sidebackspin_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.4534,
+        "incomingTopspin": -82.7335,
+        "outgoingTopspin": 10.2467,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1239
+      },
+      {
+        "preset": "sidebackspin_long_forehand_2",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.4061,
+        "incomingTopspin": -82.8517,
+        "outgoingTopspin": 8.9187,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1076
+      },
+      {
+        "preset": "sidebackspin_long_forehand_3",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.3561,
+        "incomingTopspin": -82.9117,
+        "outgoingTopspin": 5.8227,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.0702
+      },
+      {
+        "preset": "backspin_long_forehand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.377,
+        "incomingTopspin": -82.3897,
+        "outgoingTopspin": 6.8903,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.0836
+      },
+      {
+        "preset": "backspin_long_forehand_2",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.3618,
+        "incomingTopspin": -75.4329,
+        "outgoingTopspin": 7.305,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.0968
+      },
+      {
+        "preset": "backspin_short_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.0449,
+        "incomingTopspin": -79.7802,
+        "outgoingTopspin": -20.4723,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.2566
+      },
+      {
+        "preset": "sidebackspin_short_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.1143,
+        "incomingTopspin": -78.865,
+        "outgoingTopspin": -38.4662,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.4877
+      }
+    ]
+  },
+  {
+    "tiltY": 1.73,
+    "angleDeg": 30.0294,
+    "wristBrakeRate": 145,
+    "okCount": 7,
+    "spinCorrectCount": 2,
+    "spinFlippedCount": 9,
+    "total": 11,
+    "rows": [
+      {
+        "preset": "backspin_long_backhand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.2777,
+        "incomingTopspin": -70.5099,
+        "outgoingTopspin": 7.4953,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1063
+      },
+      {
+        "preset": "sidebackspin_long_forehand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.3694,
+        "incomingTopspin": -82.8142,
+        "outgoingTopspin": 10.5204,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.127
+      },
+      {
+        "preset": "sidebackspin_half_long_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.2977,
+        "incomingTopspin": -82.9019,
+        "outgoingTopspin": 4.7409,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.0572
+      },
+      {
+        "preset": "sidebackspin_half_long_backhand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.3144,
+        "incomingTopspin": -82.7828,
+        "outgoingTopspin": 1.6573,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.02
+      },
+      {
+        "preset": "sidebackspin_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.3837,
+        "incomingTopspin": -82.7335,
+        "outgoingTopspin": 10.3001,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1245
+      },
+      {
+        "preset": "sidebackspin_long_forehand_2",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.3402,
+        "incomingTopspin": -82.8517,
+        "outgoingTopspin": 8.9631,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1082
+      },
+      {
+        "preset": "sidebackspin_long_forehand_3",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.305,
+        "incomingTopspin": -82.9117,
+        "outgoingTopspin": 3.8629,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.0466
+      },
+      {
+        "preset": "backspin_long_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.3084,
+        "incomingTopspin": -82.3897,
+        "outgoingTopspin": 6.4544,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.0783
+      },
+      {
+        "preset": "backspin_long_forehand_2",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.2655,
+        "incomingTopspin": -75.4329,
+        "outgoingTopspin": 6.9562,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.0922
+      },
+      {
+        "preset": "backspin_short_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.0106,
+        "incomingTopspin": -79.7802,
+        "outgoingTopspin": -26.3826,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.3307
+      },
+      {
+        "preset": "sidebackspin_short_forehand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.0497,
+        "incomingTopspin": -78.865,
+        "outgoingTopspin": -15.996,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.2028
+      }
+    ]
+  },
+  {
+    "tiltY": 1.73,
+    "angleDeg": 30.0294,
+    "wristBrakeRate": 300,
+    "okCount": 6,
+    "spinCorrectCount": 2,
+    "spinFlippedCount": 9,
+    "total": 11,
+    "rows": [
+      {
+        "preset": "backspin_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.1015,
+        "incomingTopspin": -70.5099,
+        "outgoingTopspin": 9.7268,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1379
+      },
+      {
+        "preset": "sidebackspin_long_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.2746,
+        "incomingTopspin": -82.8142,
+        "outgoingTopspin": 9.9058,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1196
+      },
+      {
+        "preset": "sidebackspin_half_long_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.2065,
+        "incomingTopspin": -82.9019,
+        "outgoingTopspin": 5.152,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.0621
+      },
+      {
+        "preset": "sidebackspin_half_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.2106,
+        "incomingTopspin": -82.7828,
+        "outgoingTopspin": 5.1265,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.0619
+      },
+      {
+        "preset": "sidebackspin_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.2867,
+        "incomingTopspin": -82.7335,
+        "outgoingTopspin": 10.3947,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1256
+      },
+      {
+        "preset": "sidebackspin_long_forehand_2",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.2478,
+        "incomingTopspin": -82.8517,
+        "outgoingTopspin": 8.5781,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1035
+      },
+      {
+        "preset": "sidebackspin_long_forehand_3",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.2089,
+        "incomingTopspin": -82.9117,
+        "outgoingTopspin": 5.0575,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.061
+      },
+      {
+        "preset": "backspin_long_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.2077,
+        "incomingTopspin": -82.3897,
+        "outgoingTopspin": 6.3238,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.0768
+      },
+      {
+        "preset": "backspin_long_forehand_2",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.1259,
+        "incomingTopspin": -75.4329,
+        "outgoingTopspin": 6.8773,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.0912
+      },
+      {
+        "preset": "backspin_short_forehand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.0897,
+        "incomingTopspin": -79.7802,
+        "outgoingTopspin": -19.614,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.2459
+      },
+      {
+        "preset": "sidebackspin_short_forehand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.1724,
+        "incomingTopspin": -78.865,
+        "outgoingTopspin": -16.5239,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.2095
+      }
+    ]
+  },
+  {
+    "tiltY": 1.73,
+    "angleDeg": 30.0294,
+    "wristBrakeRate": 500,
+    "okCount": 3,
+    "spinCorrectCount": 2,
+    "spinFlippedCount": 9,
+    "total": 11,
+    "rows": [
+      {
+        "preset": "backspin_long_backhand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.0644,
+        "incomingTopspin": -70.5099,
+        "outgoingTopspin": 9.8172,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1392
+      },
+      {
+        "preset": "sidebackspin_long_forehand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.1707,
+        "incomingTopspin": -82.8142,
+        "outgoingTopspin": 10.6475,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1286
+      },
+      {
+        "preset": "sidebackspin_half_long_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.113,
+        "incomingTopspin": -82.9019,
+        "outgoingTopspin": 5.6658,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.0683
+      },
+      {
+        "preset": "sidebackspin_half_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.1238,
+        "incomingTopspin": -82.7828,
+        "outgoingTopspin": 5.3091,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.0641
+      },
+      {
+        "preset": "sidebackspin_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.1892,
+        "incomingTopspin": -82.7335,
+        "outgoingTopspin": 10.5426,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1274
+      },
+      {
+        "preset": "sidebackspin_long_forehand_2",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.1507,
+        "incomingTopspin": -82.8517,
+        "outgoingTopspin": 9.0136,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1088
+      },
+      {
+        "preset": "sidebackspin_long_forehand_3",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.1135,
+        "incomingTopspin": -82.9117,
+        "outgoingTopspin": 5.863,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.0707
+      },
+      {
+        "preset": "backspin_long_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.1025,
+        "incomingTopspin": -82.3897,
+        "outgoingTopspin": 6.6978,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.0813
+      },
+      {
+        "preset": "backspin_long_forehand_2",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.0226,
+        "incomingTopspin": -75.4329,
+        "outgoingTopspin": 7.6463,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1014
+      },
+      {
+        "preset": "backspin_short_forehand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.0943,
+        "incomingTopspin": -79.7802,
+        "outgoingTopspin": -20.1833,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.253
+      },
+      {
+        "preset": "sidebackspin_short_forehand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.3161,
+        "incomingTopspin": -78.865,
+        "outgoingTopspin": -16.7935,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.2129
+      }
+    ]
+  },
+  {
+    "tiltY": 1.73,
+    "angleDeg": 30.0294,
+    "wristBrakeRate": 800,
+    "okCount": 1,
+    "spinCorrectCount": 2,
+    "spinFlippedCount": 9,
+    "total": 11,
+    "rows": [
+      {
+        "preset": "backspin_long_backhand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.2316,
+        "incomingTopspin": -70.5099,
+        "outgoingTopspin": 9.9496,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1411
+      },
+      {
+        "preset": "sidebackspin_long_forehand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.071,
+        "incomingTopspin": -82.8142,
+        "outgoingTopspin": 10.7232,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1295
+      },
+      {
+        "preset": "sidebackspin_half_long_forehand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.0218,
+        "incomingTopspin": -82.9019,
+        "outgoingTopspin": 5.8326,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.0704
+      },
+      {
+        "preset": "sidebackspin_half_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.037,
+        "incomingTopspin": -82.7828,
+        "outgoingTopspin": 5.5257,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.0667
+      },
+      {
+        "preset": "sidebackspin_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.0913,
+        "incomingTopspin": -82.7335,
+        "outgoingTopspin": 10.717,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1295
+      },
+      {
+        "preset": "sidebackspin_long_forehand_2",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.0566,
+        "incomingTopspin": -82.8517,
+        "outgoingTopspin": 9.1955,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.111
+      },
+      {
+        "preset": "sidebackspin_long_forehand_3",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.0209,
+        "incomingTopspin": -82.9117,
+        "outgoingTopspin": 5.9208,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.0714
+      },
+      {
+        "preset": "backspin_long_forehand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.0032,
+        "incomingTopspin": -82.3897,
+        "outgoingTopspin": 6.9356,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.0842
+      },
+      {
+        "preset": "backspin_long_forehand_2",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.0999,
+        "incomingTopspin": -75.4329,
+        "outgoingTopspin": 7.675,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1017
+      },
+      {
+        "preset": "backspin_short_forehand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.0648,
+        "incomingTopspin": -79.7802,
+        "outgoingTopspin": -20.6107,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.2583
+      },
+      {
+        "preset": "sidebackspin_short_forehand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.4881,
+        "incomingTopspin": -78.865,
+        "outgoingTopspin": -16.8746,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.214
+      }
+    ]
+  },
+  {
+    "tiltY": 2.5,
+    "angleDeg": 21.8014,
+    "wristBrakeRate": 0,
+    "okCount": 2,
+    "spinCorrectCount": 2,
+    "spinFlippedCount": 9,
+    "total": 11,
+    "rows": [
+      {
+        "preset": "backspin_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.5595,
+        "incomingTopspin": -70.5099,
+        "outgoingTopspin": 15.3447,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2176
+      },
+      {
+        "preset": "sidebackspin_long_forehand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.6155,
+        "incomingTopspin": -82.8142,
+        "outgoingTopspin": 16.8318,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2032
+      },
+      {
+        "preset": "sidebackspin_half_long_forehand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.4996,
+        "incomingTopspin": -82.9019,
+        "outgoingTopspin": 11.6185,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1401
+      },
+      {
+        "preset": "sidebackspin_half_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.4981,
+        "incomingTopspin": -82.7828,
+        "outgoingTopspin": 10.4962,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1268
+      },
+      {
+        "preset": "sidebackspin_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.6295,
+        "incomingTopspin": -82.7335,
+        "outgoingTopspin": 16.521,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1997
+      },
+      {
+        "preset": "sidebackspin_long_forehand_2",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.5685,
+        "incomingTopspin": -82.8517,
+        "outgoingTopspin": 15.0685,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1819
+      },
+      {
+        "preset": "sidebackspin_long_forehand_3",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.5024,
+        "incomingTopspin": -82.9117,
+        "outgoingTopspin": 11.6607,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1406
+      },
+      {
+        "preset": "backspin_long_forehand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.5363,
+        "incomingTopspin": -82.3897,
+        "outgoingTopspin": 12.8406,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1559
+      },
+      {
+        "preset": "backspin_long_forehand_2",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.5316,
+        "incomingTopspin": -75.4329,
+        "outgoingTopspin": 13.3335,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1768
+      },
+      {
+        "preset": "backspin_short_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.0967,
+        "incomingTopspin": -79.7802,
+        "outgoingTopspin": -16.4155,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.2058
+      },
+      {
+        "preset": "sidebackspin_short_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.2417,
+        "incomingTopspin": -78.865,
+        "outgoingTopspin": -46.5579,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.5903
+      }
+    ]
+  },
+  {
+    "tiltY": 2.5,
+    "angleDeg": 21.8014,
+    "wristBrakeRate": 50,
+    "okCount": 2,
+    "spinCorrectCount": 2,
+    "spinFlippedCount": 9,
+    "total": 11,
+    "rows": [
+      {
+        "preset": "backspin_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.4918,
+        "incomingTopspin": -70.5099,
+        "outgoingTopspin": 15.1522,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2149
+      },
+      {
+        "preset": "sidebackspin_long_forehand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.5725,
+        "incomingTopspin": -82.8142,
+        "outgoingTopspin": 16.6515,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2011
+      },
+      {
+        "preset": "sidebackspin_half_long_forehand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.4619,
+        "incomingTopspin": -82.9019,
+        "outgoingTopspin": 11.39,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1374
+      },
+      {
+        "preset": "sidebackspin_half_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.462,
+        "incomingTopspin": -82.7828,
+        "outgoingTopspin": 10.4015,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1256
+      },
+      {
+        "preset": "sidebackspin_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.5872,
+        "incomingTopspin": -82.7335,
+        "outgoingTopspin": 16.389,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1981
+      },
+      {
+        "preset": "sidebackspin_long_forehand_2",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.5282,
+        "incomingTopspin": -82.8517,
+        "outgoingTopspin": 14.8734,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1795
+      },
+      {
+        "preset": "sidebackspin_long_forehand_3",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.4647,
+        "incomingTopspin": -82.9117,
+        "outgoingTopspin": 11.4397,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.138
+      },
+      {
+        "preset": "backspin_long_forehand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.4928,
+        "incomingTopspin": -82.3897,
+        "outgoingTopspin": 12.6138,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1531
+      },
+      {
+        "preset": "backspin_long_forehand_2",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.4731,
+        "incomingTopspin": -75.4329,
+        "outgoingTopspin": 13.1012,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1737
+      },
+      {
+        "preset": "backspin_short_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.0705,
+        "incomingTopspin": -79.7802,
+        "outgoingTopspin": -17.3851,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.2179
+      },
+      {
+        "preset": "sidebackspin_short_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.1559,
+        "incomingTopspin": -78.865,
+        "outgoingTopspin": -36.9862,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.469
+      }
+    ]
+  },
+  {
+    "tiltY": 2.5,
+    "angleDeg": 21.8014,
+    "wristBrakeRate": 145,
+    "okCount": 3,
+    "spinCorrectCount": 2,
+    "spinFlippedCount": 9,
+    "total": 11,
+    "rows": [
+      {
+        "preset": "backspin_long_backhand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.3845,
+        "incomingTopspin": -70.5099,
+        "outgoingTopspin": 12.3623,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1753
+      },
+      {
+        "preset": "sidebackspin_long_forehand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.4957,
+        "incomingTopspin": -82.8142,
+        "outgoingTopspin": 16.398,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.198
+      },
+      {
+        "preset": "sidebackspin_half_long_forehand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.3954,
+        "incomingTopspin": -82.9019,
+        "outgoingTopspin": 11.074,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1336
+      },
+      {
+        "preset": "sidebackspin_half_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.3989,
+        "incomingTopspin": -82.7828,
+        "outgoingTopspin": 10.1703,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1229
+      },
+      {
+        "preset": "sidebackspin_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.5122,
+        "incomingTopspin": -82.7335,
+        "outgoingTopspin": 16.1478,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1952
+      },
+      {
+        "preset": "sidebackspin_long_forehand_2",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.4575,
+        "incomingTopspin": -82.8517,
+        "outgoingTopspin": 14.6048,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1763
+      },
+      {
+        "preset": "sidebackspin_long_forehand_3",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.3979,
+        "incomingTopspin": -82.9117,
+        "outgoingTopspin": 11.1271,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1342
+      },
+      {
+        "preset": "backspin_long_forehand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.4162,
+        "incomingTopspin": -82.3897,
+        "outgoingTopspin": 12.3018,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1493
+      },
+      {
+        "preset": "backspin_long_forehand_2",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.3701,
+        "incomingTopspin": -75.4329,
+        "outgoingTopspin": 12.0756,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1601
+      },
+      {
+        "preset": "backspin_short_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.0306,
+        "incomingTopspin": -79.7802,
+        "outgoingTopspin": -22.5512,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.2827
+      },
+      {
+        "preset": "sidebackspin_short_forehand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.0186,
+        "incomingTopspin": -78.865,
+        "outgoingTopspin": -13.5617,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.172
+      }
+    ]
+  },
+  {
+    "tiltY": 2.5,
+    "angleDeg": 21.8014,
+    "wristBrakeRate": 300,
+    "okCount": 7,
+    "spinCorrectCount": 2,
+    "spinFlippedCount": 9,
+    "total": 11,
+    "rows": [
+      {
+        "preset": "backspin_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.1865,
+        "incomingTopspin": -70.5099,
+        "outgoingTopspin": 14.5763,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2067
+      },
+      {
+        "preset": "sidebackspin_long_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.392,
+        "incomingTopspin": -82.8142,
+        "outgoingTopspin": 15.387,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1858
+      },
+      {
+        "preset": "sidebackspin_half_long_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.3026,
+        "incomingTopspin": -82.9019,
+        "outgoingTopspin": 10.0551,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1213
+      },
+      {
+        "preset": "sidebackspin_half_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.3063,
+        "incomingTopspin": -82.7828,
+        "outgoingTopspin": 9.9913,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1207
+      },
+      {
+        "preset": "sidebackspin_long_backhand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.4161,
+        "incomingTopspin": -82.7335,
+        "outgoingTopspin": 14.415,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1742
+      },
+      {
+        "preset": "sidebackspin_long_forehand_2",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.3565,
+        "incomingTopspin": -82.8517,
+        "outgoingTopspin": 13.8575,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1673
+      },
+      {
+        "preset": "sidebackspin_long_forehand_3",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.3056,
+        "incomingTopspin": -82.9117,
+        "outgoingTopspin": 9.9647,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1202
+      },
+      {
+        "preset": "backspin_long_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.3085,
+        "incomingTopspin": -82.3897,
+        "outgoingTopspin": 11.3855,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1382
+      },
+      {
+        "preset": "backspin_long_forehand_2",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.2148,
+        "incomingTopspin": -75.4329,
+        "outgoingTopspin": 11.6438,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1544
+      },
+      {
+        "preset": "backspin_short_forehand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.0694,
+        "incomingTopspin": -79.7802,
+        "outgoingTopspin": -17.8239,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.2234
+      },
+      {
+        "preset": "sidebackspin_short_forehand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.1507,
+        "incomingTopspin": -78.865,
+        "outgoingTopspin": -14.3856,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.1824
+      }
+    ]
+  },
+  {
+    "tiltY": 2.5,
+    "angleDeg": 21.8014,
+    "wristBrakeRate": 500,
+    "okCount": 4,
+    "spinCorrectCount": 2,
+    "spinFlippedCount": 9,
+    "total": 11,
+    "rows": [
+      {
+        "preset": "backspin_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.0004,
+        "incomingTopspin": -70.5099,
+        "outgoingTopspin": 14.4866,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2055
+      },
+      {
+        "preset": "sidebackspin_long_forehand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.2755,
+        "incomingTopspin": -82.8142,
+        "outgoingTopspin": 16.0357,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1936
+      },
+      {
+        "preset": "sidebackspin_half_long_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.1982,
+        "incomingTopspin": -82.9019,
+        "outgoingTopspin": 10.4615,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1262
+      },
+      {
+        "preset": "sidebackspin_half_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.2097,
+        "incomingTopspin": -82.7828,
+        "outgoingTopspin": 10.0043,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1209
+      },
+      {
+        "preset": "sidebackspin_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.2965,
+        "incomingTopspin": -82.7335,
+        "outgoingTopspin": 15.9239,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1925
+      },
+      {
+        "preset": "sidebackspin_long_forehand_2",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.25,
+        "incomingTopspin": -82.8517,
+        "outgoingTopspin": 14.1686,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.171
+      },
+      {
+        "preset": "sidebackspin_long_forehand_3",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.1991,
+        "incomingTopspin": -82.9117,
+        "outgoingTopspin": 10.6795,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1288
+      },
+      {
+        "preset": "backspin_long_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.1908,
+        "incomingTopspin": -82.3897,
+        "outgoingTopspin": 11.5914,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1407
+      },
+      {
+        "preset": "backspin_long_forehand_2",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.051,
+        "incomingTopspin": -75.4329,
+        "outgoingTopspin": 12.049,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1597
+      },
+      {
+        "preset": "backspin_short_forehand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.1006,
+        "incomingTopspin": -79.7802,
+        "outgoingTopspin": -18.6228,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.2334
+      },
+      {
+        "preset": "sidebackspin_short_forehand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.3074,
+        "incomingTopspin": -78.865,
+        "outgoingTopspin": -14.8556,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.1884
+      }
+    ]
+  },
+  {
+    "tiltY": 2.5,
+    "angleDeg": 21.8014,
+    "wristBrakeRate": 800,
+    "okCount": 2,
+    "spinCorrectCount": 2,
+    "spinFlippedCount": 9,
+    "total": 11,
+    "rows": [
+      {
+        "preset": "backspin_long_backhand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.1965,
+        "incomingTopspin": -70.5099,
+        "outgoingTopspin": 14.5123,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2058
+      },
+      {
+        "preset": "sidebackspin_long_forehand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.1647,
+        "incomingTopspin": -82.8142,
+        "outgoingTopspin": 15.9976,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1932
+      },
+      {
+        "preset": "sidebackspin_half_long_forehand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.0951,
+        "incomingTopspin": -82.9019,
+        "outgoingTopspin": 10.5119,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1268
+      },
+      {
+        "preset": "sidebackspin_half_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.1114,
+        "incomingTopspin": -82.7828,
+        "outgoingTopspin": 10.1265,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1223
+      },
+      {
+        "preset": "sidebackspin_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.1878,
+        "incomingTopspin": -82.7335,
+        "outgoingTopspin": 15.9971,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1934
+      },
+      {
+        "preset": "sidebackspin_long_forehand_2",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.1407,
+        "incomingTopspin": -82.8517,
+        "outgoingTopspin": 14.302,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1726
+      },
+      {
+        "preset": "sidebackspin_long_forehand_3",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.0964,
+        "incomingTopspin": -82.9117,
+        "outgoingTopspin": 10.625,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1281
+      },
+      {
+        "preset": "backspin_long_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.0703,
+        "incomingTopspin": -82.3897,
+        "outgoingTopspin": 11.786,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1431
+      },
+      {
+        "preset": "backspin_long_forehand_2",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.1193,
+        "incomingTopspin": -75.4329,
+        "outgoingTopspin": 12.21,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1619
+      },
+      {
+        "preset": "backspin_short_forehand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.0613,
+        "incomingTopspin": -79.7802,
+        "outgoingTopspin": -19.2324,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.2411
+      },
+      {
+        "preset": "sidebackspin_short_forehand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.4968,
+        "incomingTopspin": -78.865,
+        "outgoingTopspin": -15.0672,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.1911
+      }
+    ]
+  },
+  {
+    "tiltY": 4,
+    "angleDeg": 14.0362,
+    "wristBrakeRate": 0,
+    "okCount": 2,
+    "spinCorrectCount": 2,
+    "spinFlippedCount": 9,
+    "total": 11,
+    "rows": [
+      {
+        "preset": "backspin_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.6686,
+        "incomingTopspin": -70.5099,
+        "outgoingTopspin": 20.5774,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2918
+      },
+      {
+        "preset": "sidebackspin_long_forehand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.742,
+        "incomingTopspin": -82.8142,
+        "outgoingTopspin": 22.7476,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2747
+      },
+      {
+        "preset": "sidebackspin_half_long_forehand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.6034,
+        "incomingTopspin": -82.9019,
+        "outgoingTopspin": 16.9922,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.205
+      },
+      {
+        "preset": "sidebackspin_half_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.6024,
+        "incomingTopspin": -82.7828,
+        "outgoingTopspin": 15.6336,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1889
+      },
+      {
+        "preset": "sidebackspin_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.7586,
+        "incomingTopspin": -82.7335,
+        "outgoingTopspin": 22.3566,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2702
+      },
+      {
+        "preset": "sidebackspin_long_forehand_2",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.6859,
+        "incomingTopspin": -82.8517,
+        "outgoingTopspin": 20.7698,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2507
+      },
+      {
+        "preset": "sidebackspin_long_forehand_3",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.6068,
+        "incomingTopspin": -82.9117,
+        "outgoingTopspin": 17.0493,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2056
+      },
+      {
+        "preset": "backspin_long_forehand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.6472,
+        "incomingTopspin": -82.3897,
+        "outgoingTopspin": 18.3282,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2225
+      },
+      {
+        "preset": "backspin_long_forehand_2",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.639,
+        "incomingTopspin": -75.4329,
+        "outgoingTopspin": 18.571,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2462
+      },
+      {
+        "preset": "backspin_short_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.1231,
+        "incomingTopspin": -79.7802,
+        "outgoingTopspin": -14.0061,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.1756
+      },
+      {
+        "preset": "sidebackspin_short_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.2858,
+        "incomingTopspin": -78.865,
+        "outgoingTopspin": -45.5653,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.5778
+      }
+    ]
+  },
+  {
+    "tiltY": 4,
+    "angleDeg": 14.0362,
+    "wristBrakeRate": 50,
+    "okCount": 2,
+    "spinCorrectCount": 2,
+    "spinFlippedCount": 9,
+    "total": 11,
+    "rows": [
+      {
+        "preset": "backspin_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.5933,
+        "incomingTopspin": -70.5099,
+        "outgoingTopspin": 20.1736,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2861
+      },
+      {
+        "preset": "sidebackspin_long_forehand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.6953,
+        "incomingTopspin": -82.8142,
+        "outgoingTopspin": 22.3528,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2699
+      },
+      {
+        "preset": "sidebackspin_half_long_forehand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.5639,
+        "incomingTopspin": -82.9019,
+        "outgoingTopspin": 16.5487,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1996
+      },
+      {
+        "preset": "sidebackspin_half_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.5643,
+        "incomingTopspin": -82.7828,
+        "outgoingTopspin": 15.3546,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1855
+      },
+      {
+        "preset": "sidebackspin_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.7125,
+        "incomingTopspin": -82.7335,
+        "outgoingTopspin": 22.0253,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2662
+      },
+      {
+        "preset": "sidebackspin_long_forehand_2",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.6423,
+        "incomingTopspin": -82.8517,
+        "outgoingTopspin": 20.3572,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2457
+      },
+      {
+        "preset": "sidebackspin_long_forehand_3",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.5671,
+        "incomingTopspin": -82.9117,
+        "outgoingTopspin": 16.615,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2004
+      },
+      {
+        "preset": "backspin_long_forehand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.6001,
+        "incomingTopspin": -82.3897,
+        "outgoingTopspin": 17.8862,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2171
+      },
+      {
+        "preset": "backspin_long_forehand_2",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.5745,
+        "incomingTopspin": -75.4329,
+        "outgoingTopspin": 18.1241,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2403
+      },
+      {
+        "preset": "backspin_short_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.0967,
+        "incomingTopspin": -79.7802,
+        "outgoingTopspin": -15.6206,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.1958
+      },
+      {
+        "preset": "sidebackspin_short_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.1923,
+        "incomingTopspin": -78.865,
+        "outgoingTopspin": -35.7371,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.4531
+      }
+    ]
+  },
+  {
+    "tiltY": 4,
+    "angleDeg": 14.0362,
+    "wristBrakeRate": 145,
+    "okCount": 3,
+    "spinCorrectCount": 2,
+    "spinFlippedCount": 9,
+    "total": 11,
+    "rows": [
+      {
+        "preset": "backspin_long_backhand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.4719,
+        "incomingTopspin": -70.5099,
+        "outgoingTopspin": 16.7969,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2382
+      },
+      {
+        "preset": "sidebackspin_long_forehand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.6121,
+        "incomingTopspin": -82.8142,
+        "outgoingTopspin": 21.8059,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2633
+      },
+      {
+        "preset": "sidebackspin_half_long_forehand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.49,
+        "incomingTopspin": -82.9019,
+        "outgoingTopspin": 15.9367,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1922
+      },
+      {
+        "preset": "sidebackspin_half_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.4941,
+        "incomingTopspin": -82.7828,
+        "outgoingTopspin": 14.8633,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1795
+      },
+      {
+        "preset": "sidebackspin_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.6296,
+        "incomingTopspin": -82.7335,
+        "outgoingTopspin": 21.5062,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2599
+      },
+      {
+        "preset": "sidebackspin_long_forehand_2",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.5645,
+        "incomingTopspin": -82.8517,
+        "outgoingTopspin": 19.7934,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2389
+      },
+      {
+        "preset": "sidebackspin_long_forehand_3",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.4929,
+        "incomingTopspin": -82.9117,
+        "outgoingTopspin": 16.0086,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1931
+      },
+      {
+        "preset": "backspin_long_forehand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.5155,
+        "incomingTopspin": -82.3897,
+        "outgoingTopspin": 17.2791,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2097
+      },
+      {
+        "preset": "backspin_long_forehand_2",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.4592,
+        "incomingTopspin": -75.4329,
+        "outgoingTopspin": 16.7088,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2215
+      },
+      {
+        "preset": "backspin_short_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.0478,
+        "incomingTopspin": -79.7802,
+        "outgoingTopspin": -19.0224,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.2384
+      },
+      {
+        "preset": "sidebackspin_short_forehand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.0062,
+        "incomingTopspin": -78.865,
+        "outgoingTopspin": -11.334,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.1437
+      }
+    ]
+  },
+  {
+    "tiltY": 4,
+    "angleDeg": 14.0362,
+    "wristBrakeRate": 300,
+    "okCount": 5,
+    "spinCorrectCount": 2,
+    "spinFlippedCount": 9,
+    "total": 11,
+    "rows": [
+      {
+        "preset": "backspin_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.2479,
+        "incomingTopspin": -70.5099,
+        "outgoingTopspin": 19.0323,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2699
+      },
+      {
+        "preset": "sidebackspin_long_forehand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.4937,
+        "incomingTopspin": -82.8142,
+        "outgoingTopspin": 20.4063,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2464
+      },
+      {
+        "preset": "sidebackspin_half_long_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.3861,
+        "incomingTopspin": -82.9019,
+        "outgoingTopspin": 14.5454,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1755
+      },
+      {
+        "preset": "sidebackspin_half_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.3904,
+        "incomingTopspin": -82.7828,
+        "outgoingTopspin": 14.4314,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1743
+      },
+      {
+        "preset": "sidebackspin_long_backhand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.5217,
+        "incomingTopspin": -82.7335,
+        "outgoingTopspin": 19.2711,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2329
+      },
+      {
+        "preset": "sidebackspin_long_forehand_2",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.453,
+        "incomingTopspin": -82.8517,
+        "outgoingTopspin": 18.7027,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2257
+      },
+      {
+        "preset": "sidebackspin_long_forehand_3",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.3836,
+        "incomingTopspin": -82.9117,
+        "outgoingTopspin": 15.4337,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1861
+      },
+      {
+        "preset": "backspin_long_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.3939,
+        "incomingTopspin": -82.3897,
+        "outgoingTopspin": 16.0625,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.195
+      },
+      {
+        "preset": "backspin_long_forehand_2",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.2842,
+        "incomingTopspin": -75.4329,
+        "outgoingTopspin": 16.0076,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2122
+      },
+      {
+        "preset": "backspin_short_forehand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.0539,
+        "incomingTopspin": -79.7802,
+        "outgoingTopspin": -16.2121,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.2032
+      },
+      {
+        "preset": "sidebackspin_short_forehand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.1371,
+        "incomingTopspin": -78.865,
+        "outgoingTopspin": -12.4402,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.1577
+      }
+    ]
+  },
+  {
+    "tiltY": 4,
+    "angleDeg": 14.0362,
+    "wristBrakeRate": 500,
+    "okCount": 3,
+    "spinCorrectCount": 2,
+    "spinFlippedCount": 9,
+    "total": 11,
+    "rows": [
+      {
+        "preset": "backspin_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.0269,
+        "incomingTopspin": -70.5099,
+        "outgoingTopspin": 18.7725,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2662
+      },
+      {
+        "preset": "sidebackspin_long_forehand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.3596,
+        "incomingTopspin": -82.8142,
+        "outgoingTopspin": 20.9792,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2533
+      },
+      {
+        "preset": "sidebackspin_half_long_forehand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.2659,
+        "incomingTopspin": -82.9019,
+        "outgoingTopspin": 14.9863,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1808
+      },
+      {
+        "preset": "sidebackspin_half_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.2799,
+        "incomingTopspin": -82.7828,
+        "outgoingTopspin": 14.2843,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1726
+      },
+      {
+        "preset": "sidebackspin_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.3838,
+        "incomingTopspin": -82.7335,
+        "outgoingTopspin": 20.8481,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.252
+      },
+      {
+        "preset": "sidebackspin_long_forehand_2",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.3286,
+        "incomingTopspin": -82.8517,
+        "outgoingTopspin": 18.8998,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2281
+      },
+      {
+        "preset": "sidebackspin_long_forehand_3",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.2679,
+        "incomingTopspin": -82.9117,
+        "outgoingTopspin": 15.0955,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1821
+      },
+      {
+        "preset": "backspin_long_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.259,
+        "incomingTopspin": -82.3897,
+        "outgoingTopspin": 16.0807,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1952
+      },
+      {
+        "preset": "backspin_long_forehand_2",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.0914,
+        "incomingTopspin": -75.4329,
+        "outgoingTopspin": 16.2909,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.216
+      },
+      {
+        "preset": "backspin_short_forehand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.1048,
+        "incomingTopspin": -79.7802,
+        "outgoingTopspin": -17.2421,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.2161
+      },
+      {
+        "preset": "sidebackspin_short_forehand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.3099,
+        "incomingTopspin": -78.865,
+        "outgoingTopspin": -13.1033,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.1661
+      }
+    ]
+  },
+  {
+    "tiltY": 4,
+    "angleDeg": 14.0362,
+    "wristBrakeRate": 800,
+    "okCount": 2,
+    "spinCorrectCount": 2,
+    "spinFlippedCount": 9,
+    "total": 11,
+    "rows": [
+      {
+        "preset": "backspin_long_backhand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.2071,
+        "incomingTopspin": -70.5099,
+        "outgoingTopspin": 18.697,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2652
+      },
+      {
+        "preset": "sidebackspin_long_forehand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.2299,
+        "incomingTopspin": -82.8142,
+        "outgoingTopspin": 20.8348,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2516
+      },
+      {
+        "preset": "sidebackspin_half_long_forehand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.1469,
+        "incomingTopspin": -82.9019,
+        "outgoingTopspin": 14.7976,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1785
+      },
+      {
+        "preset": "sidebackspin_half_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.1658,
+        "incomingTopspin": -82.7828,
+        "outgoingTopspin": 14.3182,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.173
+      },
+      {
+        "preset": "sidebackspin_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.2566,
+        "incomingTopspin": -82.7335,
+        "outgoingTopspin": 20.8268,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2517
+      },
+      {
+        "preset": "sidebackspin_long_forehand_2",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.2009,
+        "incomingTopspin": -82.8517,
+        "outgoingTopspin": 18.9989,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2293
+      },
+      {
+        "preset": "sidebackspin_long_forehand_3",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.1484,
+        "incomingTopspin": -82.9117,
+        "outgoingTopspin": 14.9346,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1801
+      },
+      {
+        "preset": "backspin_long_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.1209,
+        "incomingTopspin": -82.3897,
+        "outgoingTopspin": 16.2483,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.1972
+      },
+      {
+        "preset": "backspin_long_forehand_2",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.1095,
+        "incomingTopspin": -75.4329,
+        "outgoingTopspin": 16.3661,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.217
+      },
+      {
+        "preset": "backspin_short_forehand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.0557,
+        "incomingTopspin": -79.7802,
+        "outgoingTopspin": -18.0503,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.2263
+      },
+      {
+        "preset": "sidebackspin_short_forehand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.5213,
+        "incomingTopspin": -78.865,
+        "outgoingTopspin": -13.4445,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.1705
+      }
+    ]
+  },
+  {
+    "tiltY": 6,
+    "angleDeg": 9.4623,
+    "wristBrakeRate": 0,
+    "okCount": 2,
+    "spinCorrectCount": 2,
+    "spinFlippedCount": 9,
+    "total": 11,
+    "rows": [
+      {
+        "preset": "backspin_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.7291,
+        "incomingTopspin": -70.5099,
+        "outgoingTopspin": 23.5961,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.3346
+      },
+      {
+        "preset": "sidebackspin_long_forehand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.8161,
+        "incomingTopspin": -82.8142,
+        "outgoingTopspin": 26.1626,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.3159
+      },
+      {
+        "preset": "sidebackspin_half_long_forehand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.6644,
+        "incomingTopspin": -82.9019,
+        "outgoingTopspin": 20.0943,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2424
+      },
+      {
+        "preset": "sidebackspin_half_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.664,
+        "incomingTopspin": -82.7828,
+        "outgoingTopspin": 18.5684,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2243
+      },
+      {
+        "preset": "sidebackspin_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.8344,
+        "incomingTopspin": -82.7335,
+        "outgoingTopspin": 25.71,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.3108
+      },
+      {
+        "preset": "sidebackspin_long_forehand_2",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.7547,
+        "incomingTopspin": -82.8517,
+        "outgoingTopspin": 24.0601,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2904
+      },
+      {
+        "preset": "sidebackspin_long_forehand_3",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.6682,
+        "incomingTopspin": -82.9117,
+        "outgoingTopspin": 20.1597,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2431
+      },
+      {
+        "preset": "backspin_long_forehand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.7119,
+        "incomingTopspin": -82.3897,
+        "outgoingTopspin": 21.4961,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2609
+      },
+      {
+        "preset": "backspin_long_forehand_2",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.6996,
+        "incomingTopspin": -75.4329,
+        "outgoingTopspin": 21.5948,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2863
+      },
+      {
+        "preset": "backspin_short_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.137,
+        "incomingTopspin": -79.7802,
+        "outgoingTopspin": -12.2352,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.1534
+      },
+      {
+        "preset": "sidebackspin_short_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.3105,
+        "incomingTopspin": -78.865,
+        "outgoingTopspin": -45.0511,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.5712
+      }
+    ]
+  },
+  {
+    "tiltY": 6,
+    "angleDeg": 9.4623,
+    "wristBrakeRate": 50,
+    "okCount": 1,
+    "spinCorrectCount": 2,
+    "spinFlippedCount": 9,
+    "total": 11,
+    "rows": [
+      {
+        "preset": "backspin_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.6477,
+        "incomingTopspin": -70.5099,
+        "outgoingTopspin": 23.0694,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.3272
+      },
+      {
+        "preset": "sidebackspin_long_forehand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.7662,
+        "incomingTopspin": -82.8142,
+        "outgoingTopspin": 25.6396,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.3096
+      },
+      {
+        "preset": "sidebackspin_half_long_forehand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.6226,
+        "incomingTopspin": -82.9019,
+        "outgoingTopspin": 19.5226,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2355
+      },
+      {
+        "preset": "sidebackspin_half_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.6236,
+        "incomingTopspin": -82.7828,
+        "outgoingTopspin": 18.1854,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2197
+      },
+      {
+        "preset": "sidebackspin_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.7853,
+        "incomingTopspin": -82.7335,
+        "outgoingTopspin": 25.2601,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.3053
+      },
+      {
+        "preset": "sidebackspin_long_forehand_2",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.7084,
+        "incomingTopspin": -82.8517,
+        "outgoingTopspin": 23.5193,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2839
+      },
+      {
+        "preset": "sidebackspin_long_forehand_3",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.626,
+        "incomingTopspin": -82.9117,
+        "outgoingTopspin": 19.5993,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2364
+      },
+      {
+        "preset": "backspin_long_forehand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.6616,
+        "incomingTopspin": -82.3897,
+        "outgoingTopspin": 20.9267,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.254
+      },
+      {
+        "preset": "backspin_long_forehand_2",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.6302,
+        "incomingTopspin": -75.4329,
+        "outgoingTopspin": 21.0214,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2787
+      },
+      {
+        "preset": "backspin_short_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.1107,
+        "incomingTopspin": -79.7802,
+        "outgoingTopspin": -14.3379,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.1797
+      },
+      {
+        "preset": "sidebackspin_short_forehand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.1123,
+        "incomingTopspin": -78.865,
+        "outgoingTopspin": -8.7333,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.1107
+      }
+    ]
+  },
+  {
+    "tiltY": 6,
+    "angleDeg": 9.4623,
+    "wristBrakeRate": 145,
+    "okCount": 3,
+    "spinCorrectCount": 2,
+    "spinFlippedCount": 9,
+    "total": 11,
+    "rows": [
+      {
+        "preset": "backspin_long_backhand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.5147,
+        "incomingTopspin": -70.5099,
+        "outgoingTopspin": 19.3244,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2741
+      },
+      {
+        "preset": "sidebackspin_long_forehand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.6766,
+        "incomingTopspin": -82.8142,
+        "outgoingTopspin": 24.9194,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.3009
+      },
+      {
+        "preset": "sidebackspin_half_long_forehand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.5433,
+        "incomingTopspin": -82.9019,
+        "outgoingTopspin": 18.737,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.226
+      },
+      {
+        "preset": "sidebackspin_half_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.5483,
+        "incomingTopspin": -82.7828,
+        "outgoingTopspin": 17.5444,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2119
+      },
+      {
+        "preset": "sidebackspin_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.6976,
+        "incomingTopspin": -82.7335,
+        "outgoingTopspin": 24.581,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2971
+      },
+      {
+        "preset": "sidebackspin_long_forehand_2",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.6248,
+        "incomingTopspin": -82.8517,
+        "outgoingTopspin": 22.781,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.275
+      },
+      {
+        "preset": "sidebackspin_long_forehand_3",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.5465,
+        "incomingTopspin": -82.9117,
+        "outgoingTopspin": 18.8186,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.227
+      },
+      {
+        "preset": "backspin_long_forehand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.5706,
+        "incomingTopspin": -82.3897,
+        "outgoingTopspin": 20.1461,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2445
+      },
+      {
+        "preset": "backspin_long_forehand_2",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.5047,
+        "incomingTopspin": -75.4329,
+        "outgoingTopspin": 19.4201,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2574
+      },
+      {
+        "preset": "backspin_short_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.0628,
+        "incomingTopspin": -79.7802,
+        "outgoingTopspin": -19.1278,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.2398
+      },
+      {
+        "preset": "sidebackspin_short_forehand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.0183,
+        "incomingTopspin": -78.865,
+        "outgoingTopspin": -10.0604,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.1276
+      }
+    ]
+  },
+  {
+    "tiltY": 6,
+    "angleDeg": 9.4623,
+    "wristBrakeRate": 300,
+    "okCount": 5,
+    "spinCorrectCount": 2,
+    "spinFlippedCount": 9,
+    "total": 11,
+    "rows": [
+      {
+        "preset": "backspin_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.2684,
+        "incomingTopspin": -70.5099,
+        "outgoingTopspin": 21.5969,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.3063
+      },
+      {
+        "preset": "sidebackspin_long_forehand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.5406,
+        "incomingTopspin": -82.8142,
+        "outgoingTopspin": 24.2321,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2926
+      },
+      {
+        "preset": "sidebackspin_half_long_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.4304,
+        "incomingTopspin": -82.9019,
+        "outgoingTopspin": 17.1234,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2065
+      },
+      {
+        "preset": "sidebackspin_half_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.4356,
+        "incomingTopspin": -82.7828,
+        "outgoingTopspin": 16.9654,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2049
+      },
+      {
+        "preset": "sidebackspin_long_backhand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.5779,
+        "incomingTopspin": -82.7335,
+        "outgoingTopspin": 22.037,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2664
+      },
+      {
+        "preset": "sidebackspin_long_forehand_2",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.5032,
+        "incomingTopspin": -82.8517,
+        "outgoingTopspin": 21.4795,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2593
+      },
+      {
+        "preset": "sidebackspin_long_forehand_3",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.4277,
+        "incomingTopspin": -82.9117,
+        "outgoingTopspin": 18.0763,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.218
+      },
+      {
+        "preset": "backspin_long_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.4379,
+        "incomingTopspin": -82.3897,
+        "outgoingTopspin": 18.7159,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2272
+      },
+      {
+        "preset": "backspin_long_forehand_2",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.3123,
+        "incomingTopspin": -75.4329,
+        "outgoingTopspin": 18.5441,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2458
+      },
+      {
+        "preset": "backspin_short_forehand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.0463,
+        "incomingTopspin": -79.7802,
+        "outgoingTopspin": -15.3044,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.1918
+      },
+      {
+        "preset": "sidebackspin_short_forehand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.134,
+        "incomingTopspin": -78.865,
+        "outgoingTopspin": -11.3339,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.1437
+      }
+    ]
+  },
+  {
+    "tiltY": 6,
+    "angleDeg": 9.4623,
+    "wristBrakeRate": 500,
+    "okCount": 3,
+    "spinCorrectCount": 2,
+    "spinFlippedCount": 9,
+    "total": 11,
+    "rows": [
+      {
+        "preset": "backspin_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.0217,
+        "incomingTopspin": -70.5099,
+        "outgoingTopspin": 21.2342,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.3012
+      },
+      {
+        "preset": "sidebackspin_long_forehand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.399,
+        "incomingTopspin": -82.8142,
+        "outgoingTopspin": 23.8188,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2876
+      },
+      {
+        "preset": "sidebackspin_half_long_forehand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.3005,
+        "incomingTopspin": -82.9019,
+        "outgoingTopspin": 17.508,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2112
+      },
+      {
+        "preset": "sidebackspin_half_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.3161,
+        "incomingTopspin": -82.7828,
+        "outgoingTopspin": 16.7269,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2021
+      },
+      {
+        "preset": "sidebackspin_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.4254,
+        "incomingTopspin": -82.7335,
+        "outgoingTopspin": 23.6689,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2861
+      },
+      {
+        "preset": "sidebackspin_long_forehand_2",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.3659,
+        "incomingTopspin": -82.8517,
+        "outgoingTopspin": 21.6199,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2609
+      },
+      {
+        "preset": "sidebackspin_long_forehand_3",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.3026,
+        "incomingTopspin": -82.9117,
+        "outgoingTopspin": 17.6326,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2127
+      },
+      {
+        "preset": "backspin_long_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.289,
+        "incomingTopspin": -82.3897,
+        "outgoingTopspin": 18.6597,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2265
+      },
+      {
+        "preset": "backspin_long_forehand_2",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.0986,
+        "incomingTopspin": -75.4329,
+        "outgoingTopspin": 18.7278,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2483
+      },
+      {
+        "preset": "backspin_short_forehand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.1045,
+        "incomingTopspin": -79.7802,
+        "outgoingTopspin": -16.4797,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.2066
+      },
+      {
+        "preset": "sidebackspin_short_forehand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.3191,
+        "incomingTopspin": -78.865,
+        "outgoingTopspin": -12.1119,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.1536
+      }
+    ]
+  },
+  {
+    "tiltY": 6,
+    "angleDeg": 9.4623,
+    "wristBrakeRate": 800,
+    "okCount": 2,
+    "spinCorrectCount": 2,
+    "spinFlippedCount": 9,
+    "total": 11,
+    "rows": [
+      {
+        "preset": "backspin_long_backhand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.2421,
+        "incomingTopspin": -70.5099,
+        "outgoingTopspin": 21.1012,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2993
+      },
+      {
+        "preset": "sidebackspin_long_forehand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.2541,
+        "incomingTopspin": -82.8142,
+        "outgoingTopspin": 23.6108,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2851
+      },
+      {
+        "preset": "sidebackspin_half_long_forehand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.1657,
+        "incomingTopspin": -82.9019,
+        "outgoingTopspin": 17.2547,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2081
+      },
+      {
+        "preset": "sidebackspin_half_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.1869,
+        "incomingTopspin": -82.7828,
+        "outgoingTopspin": 16.7096,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2018
+      },
+      {
+        "preset": "sidebackspin_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.2832,
+        "incomingTopspin": -82.7335,
+        "outgoingTopspin": 23.5923,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2852
+      },
+      {
+        "preset": "sidebackspin_long_forehand_2",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.2234,
+        "incomingTopspin": -82.8517,
+        "outgoingTopspin": 21.7009,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2619
+      },
+      {
+        "preset": "sidebackspin_long_forehand_3",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.1674,
+        "incomingTopspin": -82.9117,
+        "outgoingTopspin": 17.4089,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.21
+      },
+      {
+        "preset": "backspin_long_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.1349,
+        "incomingTopspin": -82.3897,
+        "outgoingTopspin": 18.8196,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2284
+      },
+      {
+        "preset": "backspin_long_forehand_2",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.1267,
+        "incomingTopspin": -75.4329,
+        "outgoingTopspin": 18.7508,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2486
+      },
+      {
+        "preset": "backspin_short_forehand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.0499,
+        "incomingTopspin": -79.7802,
+        "outgoingTopspin": -17.4249,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.2184
+      },
+      {
+        "preset": "sidebackspin_short_forehand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.5471,
+        "incomingTopspin": -78.865,
+        "outgoingTopspin": -12.5342,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.1589
+      }
+    ]
+  },
+  {
+    "tiltY": 10,
+    "angleDeg": 5.7106,
+    "wristBrakeRate": 0,
+    "okCount": 2,
+    "spinCorrectCount": 2,
+    "spinFlippedCount": 9,
+    "total": 11,
+    "rows": [
+      {
+        "preset": "backspin_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.7758,
+        "incomingTopspin": -70.5099,
+        "outgoingTopspin": 26.0342,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.3692
+      },
+      {
+        "preset": "sidebackspin_long_forehand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.8761,
+        "incomingTopspin": -82.8142,
+        "outgoingTopspin": 28.9219,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.3492
+      },
+      {
+        "preset": "sidebackspin_half_long_forehand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.7141,
+        "incomingTopspin": -82.9019,
+        "outgoingTopspin": 22.601,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2726
+      },
+      {
+        "preset": "sidebackspin_half_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.7145,
+        "incomingTopspin": -82.7828,
+        "outgoingTopspin": 20.9193,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2527
+      },
+      {
+        "preset": "sidebackspin_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.8961,
+        "incomingTopspin": -82.7335,
+        "outgoingTopspin": 28.4073,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.3434
+      },
+      {
+        "preset": "sidebackspin_long_forehand_2",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.8107,
+        "incomingTopspin": -82.8517,
+        "outgoingTopspin": 26.7182,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.3225
+      },
+      {
+        "preset": "sidebackspin_long_forehand_3",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.7181,
+        "incomingTopspin": -82.9117,
+        "outgoingTopspin": 22.6731,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2735
+      },
+      {
+        "preset": "backspin_long_forehand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.7641,
+        "incomingTopspin": -82.3897,
+        "outgoingTopspin": 24.0559,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.292
+      },
+      {
+        "preset": "backspin_long_forehand_2",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.7471,
+        "incomingTopspin": -75.4329,
+        "outgoingTopspin": 24.0384,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.3187
+      },
+      {
+        "preset": "backspin_short_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.1504,
+        "incomingTopspin": -79.7802,
+        "outgoingTopspin": -11.5437,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.1447
+      },
+      {
+        "preset": "sidebackspin_short_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.3297,
+        "incomingTopspin": -78.865,
+        "outgoingTopspin": -44.6707,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.5664
+      }
+    ]
+  },
+  {
+    "tiltY": 10,
+    "angleDeg": 5.7106,
+    "wristBrakeRate": 50,
+    "okCount": 1,
+    "spinCorrectCount": 2,
+    "spinFlippedCount": 9,
+    "total": 11,
+    "rows": [
+      {
+        "preset": "backspin_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.6883,
+        "incomingTopspin": -70.5099,
+        "outgoingTopspin": 25.4073,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.3603
+      },
+      {
+        "preset": "sidebackspin_long_forehand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.8231,
+        "incomingTopspin": -82.8142,
+        "outgoingTopspin": 28.2937,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.3417
+      },
+      {
+        "preset": "sidebackspin_half_long_forehand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.6697,
+        "incomingTopspin": -82.9019,
+        "outgoingTopspin": 21.9236,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2645
+      },
+      {
+        "preset": "sidebackspin_half_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.6717,
+        "incomingTopspin": -82.7828,
+        "outgoingTopspin": 20.4527,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2471
+      },
+      {
+        "preset": "sidebackspin_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.8438,
+        "incomingTopspin": -82.7335,
+        "outgoingTopspin": 27.8631,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.3368
+      },
+      {
+        "preset": "sidebackspin_long_forehand_2",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.7615,
+        "incomingTopspin": -82.8517,
+        "outgoingTopspin": 26.072,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.3147
+      },
+      {
+        "preset": "sidebackspin_long_forehand_3",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.6734,
+        "incomingTopspin": -82.9117,
+        "outgoingTopspin": 22.0074,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2654
+      },
+      {
+        "preset": "backspin_long_forehand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.7121,
+        "incomingTopspin": -82.3897,
+        "outgoingTopspin": 23.3817,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2838
+      },
+      {
+        "preset": "backspin_long_forehand_2",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.6729,
+        "incomingTopspin": -75.4329,
+        "outgoingTopspin": 23.3605,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.3097
+      },
+      {
+        "preset": "backspin_short_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.1204,
+        "incomingTopspin": -79.7802,
+        "outgoingTopspin": -12.869,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.1613
+      },
+      {
+        "preset": "sidebackspin_short_forehand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.125,
+        "incomingTopspin": -78.865,
+        "outgoingTopspin": -7.572,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.096
+      }
+    ]
+  },
+  {
+    "tiltY": 10,
+    "angleDeg": 5.7106,
+    "wristBrakeRate": 145,
+    "okCount": 3,
+    "spinCorrectCount": 2,
+    "spinFlippedCount": 9,
+    "total": 11,
+    "rows": [
+      {
+        "preset": "backspin_long_backhand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.5457,
+        "incomingTopspin": -70.5099,
+        "outgoingTopspin": 21.3478,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.3028
+      },
+      {
+        "preset": "sidebackspin_long_forehand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.7269,
+        "incomingTopspin": -82.8142,
+        "outgoingTopspin": 27.4314,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.3312
+      },
+      {
+        "preset": "sidebackspin_half_long_forehand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.5851,
+        "incomingTopspin": -82.9019,
+        "outgoingTopspin": 20.9951,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2533
+      },
+      {
+        "preset": "sidebackspin_half_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.5911,
+        "incomingTopspin": -82.7828,
+        "outgoingTopspin": 19.6926,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2379
+      },
+      {
+        "preset": "sidebackspin_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.7496,
+        "incomingTopspin": -82.7335,
+        "outgoingTopspin": 27.0538,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.327
+      },
+      {
+        "preset": "sidebackspin_long_forehand_2",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.6719,
+        "incomingTopspin": -82.8517,
+        "outgoingTopspin": 25.1887,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.304
+      },
+      {
+        "preset": "sidebackspin_long_forehand_3",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.5884,
+        "incomingTopspin": -82.9117,
+        "outgoingTopspin": 21.085,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2543
+      },
+      {
+        "preset": "backspin_long_forehand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.6131,
+        "incomingTopspin": -82.3897,
+        "outgoingTopspin": 22.4584,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2726
+      },
+      {
+        "preset": "backspin_long_forehand_2",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.5388,
+        "incomingTopspin": -75.4329,
+        "outgoingTopspin": 21.6828,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2874
+      },
+      {
+        "preset": "backspin_short_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.0691,
+        "incomingTopspin": -79.7802,
+        "outgoingTopspin": -17.4504,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.2187
+      },
+      {
+        "preset": "sidebackspin_short_forehand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.0271,
+        "incomingTopspin": -78.865,
+        "outgoingTopspin": -9.0379,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.1146
+      }
+    ]
+  },
+  {
+    "tiltY": 10,
+    "angleDeg": 5.7106,
+    "wristBrakeRate": 300,
+    "okCount": 5,
+    "spinCorrectCount": 2,
+    "spinFlippedCount": 9,
+    "total": 11,
+    "rows": [
+      {
+        "preset": "backspin_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.2745,
+        "incomingTopspin": -70.5099,
+        "outgoingTopspin": 23.665,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.3356
+      },
+      {
+        "preset": "sidebackspin_long_forehand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.5816,
+        "incomingTopspin": -82.8142,
+        "outgoingTopspin": 26.6061,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.3213
+      },
+      {
+        "preset": "sidebackspin_half_long_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.4628,
+        "incomingTopspin": -82.9019,
+        "outgoingTopspin": 19.1948,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2315
+      },
+      {
+        "preset": "sidebackspin_half_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.4692,
+        "incomingTopspin": -82.7828,
+        "outgoingTopspin": 18.9958,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2295
+      },
+      {
+        "preset": "sidebackspin_long_backhand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.6191,
+        "incomingTopspin": -82.7335,
+        "outgoingTopspin": 24.2509,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2931
+      },
+      {
+        "preset": "sidebackspin_long_forehand_2",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.5399,
+        "incomingTopspin": -82.8517,
+        "outgoingTopspin": 23.7206,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2863
+      },
+      {
+        "preset": "sidebackspin_long_forehand_3",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.46,
+        "incomingTopspin": -82.9117,
+        "outgoingTopspin": 20.2054,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2437
+      },
+      {
+        "preset": "backspin_long_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.4687,
+        "incomingTopspin": -82.3897,
+        "outgoingTopspin": 20.9048,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2537
+      },
+      {
+        "preset": "backspin_long_forehand_2",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.3271,
+        "incomingTopspin": -75.4329,
+        "outgoingTopspin": 20.561,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2726
+      },
+      {
+        "preset": "backspin_short_forehand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.0419,
+        "incomingTopspin": -79.7802,
+        "outgoingTopspin": -14.5874,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.1828
+      },
+      {
+        "preset": "sidebackspin_short_forehand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.1345,
+        "incomingTopspin": -78.865,
+        "outgoingTopspin": -10.4496,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.1325
+      }
+    ]
+  },
+  {
+    "tiltY": 10,
+    "angleDeg": 5.7106,
+    "wristBrakeRate": 500,
+    "okCount": 3,
+    "spinCorrectCount": 2,
+    "spinFlippedCount": 9,
+    "total": 11,
+    "rows": [
+      {
+        "preset": "backspin_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.0018,
+        "incomingTopspin": -70.5099,
+        "outgoingTopspin": 23.2176,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.3293
+      },
+      {
+        "preset": "sidebackspin_long_forehand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.4266,
+        "incomingTopspin": -82.8142,
+        "outgoingTopspin": 26.1058,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.3152
+      },
+      {
+        "preset": "sidebackspin_half_long_forehand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.3209,
+        "incomingTopspin": -82.9019,
+        "outgoingTopspin": 19.5376,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2357
+      },
+      {
+        "preset": "sidebackspin_half_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.3385,
+        "incomingTopspin": -82.7828,
+        "outgoingTopspin": 18.682,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2257
+      },
+      {
+        "preset": "sidebackspin_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.4519,
+        "incomingTopspin": -82.7335,
+        "outgoingTopspin": 25.9354,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.3135
+      },
+      {
+        "preset": "sidebackspin_long_forehand_2",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.3895,
+        "incomingTopspin": -82.8517,
+        "outgoingTopspin": 23.8132,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2874
+      },
+      {
+        "preset": "sidebackspin_long_forehand_3",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.3232,
+        "incomingTopspin": -82.9117,
+        "outgoingTopspin": 19.6734,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2373
+      },
+      {
+        "preset": "backspin_long_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.3058,
+        "incomingTopspin": -82.3897,
+        "outgoingTopspin": 20.738,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2517
+      },
+      {
+        "preset": "backspin_long_forehand_2",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.0919,
+        "incomingTopspin": -75.4329,
+        "outgoingTopspin": 20.6913,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2743
+      },
+      {
+        "preset": "backspin_short_forehand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.1018,
+        "incomingTopspin": -79.7802,
+        "outgoingTopspin": -15.8879,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.1991
+      },
+      {
+        "preset": "sidebackspin_short_forehand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.3313,
+        "incomingTopspin": -78.865,
+        "outgoingTopspin": -11.3256,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.1436
+      }
+    ]
+  },
+  {
+    "tiltY": 10,
+    "angleDeg": 5.7106,
+    "wristBrakeRate": 800,
+    "okCount": 2,
+    "spinCorrectCount": 2,
+    "spinFlippedCount": 9,
+    "total": 11,
+    "rows": [
+      {
+        "preset": "backspin_long_backhand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.287,
+        "incomingTopspin": -70.5099,
+        "outgoingTopspin": 23.0357,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.3267
+      },
+      {
+        "preset": "sidebackspin_long_forehand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.2627,
+        "incomingTopspin": -82.8142,
+        "outgoingTopspin": 25.8457,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.3121
+      },
+      {
+        "preset": "sidebackspin_half_long_forehand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.1723,
+        "incomingTopspin": -82.9019,
+        "outgoingTopspin": 19.231,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.232
+      },
+      {
+        "preset": "sidebackspin_half_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.1959,
+        "incomingTopspin": -82.7828,
+        "outgoingTopspin": 18.623,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.225
+      },
+      {
+        "preset": "sidebackspin_long_backhand",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.2942,
+        "incomingTopspin": -82.7335,
+        "outgoingTopspin": 25.8138,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.312
+      },
+      {
+        "preset": "sidebackspin_long_forehand_2",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.2319,
+        "incomingTopspin": -82.8517,
+        "outgoingTopspin": 23.8782,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2882
+      },
+      {
+        "preset": "sidebackspin_long_forehand_3",
+        "ok": false,
+        "reason": "出界",
+        "netClearance": 0.174,
+        "incomingTopspin": -82.9117,
+        "outgoingTopspin": 19.3971,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2339
+      },
+      {
+        "preset": "backspin_long_forehand",
+        "ok": true,
+        "reason": "成功",
+        "netClearance": 0.1355,
+        "incomingTopspin": -82.3897,
+        "outgoingTopspin": 20.8923,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.2536
+      },
+      {
+        "preset": "backspin_long_forehand_2",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.1536,
+        "incomingTopspin": -75.4329,
+        "outgoingTopspin": 20.67,
+        "spinFlipped": true,
+        "spinCorrect": false,
+        "spinRetainedFrac": -0.274
+      },
+      {
+        "preset": "backspin_short_forehand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.048,
+        "incomingTopspin": -79.7802,
+        "outgoingTopspin": -16.9622,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.2126
+      },
+      {
+        "preset": "sidebackspin_short_forehand",
+        "ok": false,
+        "reason": "掛網",
+        "netClearance": -0.5755,
+        "incomingTopspin": -78.865,
+        "outgoingTopspin": -11.8165,
+        "spinFlipped": false,
+        "spinCorrect": true,
+        "spinRetainedFrac": 0.1498
+      }
+    ]
+  }
+]
+```
+
+---
+
+## 2026-07-13 追加：鏡射(mirror)校正必要性驗證結果 — 結論：本次 sweep 的 spinCorrect 判斷法「不需要」修正，原始數字有效
+
+**背景疑慮：** 有人提出，`simulateReturnForPreset`（本 sweep 底層用的函式）跟 `runRallyReal`（連續對打模式，`return-studio.html:1589-1626`）不同，前者直接對原始 hitVel/hitSpin 呼叫 `makeReturnVelocity`，完全沒有套用 `mirrorVec`/`mirrorSpin`（`return-studio.html:1579-1580`）鏡射機制；而 `docs/ARCHIVE/physics-engine-v2-plan.md:869-878` 明確記載過一次「用真實座標號判斷會誤判」的實測案例（canonical +63.94 被判定為方向錯誤，但真實座標鏡射回來卻是 -63.94，若直接看真實座標號會誤判成「負值=下旋=正確」）。因此懷疑本 sweep 用「直接看 `simulateReturnForPreset` 回傳的原始 outgoing topspin 正負號」（`spinCorrect = outgoingTopspin <= 0`）也犯了同一種誤判。
+
+**逐行核對 `runRallyReal` 後確認：這個疑慮不成立，原因是 flip 旗標的行為。**
+
+- `runRallyReal` 第一拍（round=1）`flip` 初始值是 `false`（`return-studio.html:1598`）。
+- `flip=false` 時：`canonicalHitVel = hitVel`、`canonicalHitSpin = hitSpin`（未經過 `mirrorVec`/`mirrorSpin`，`return-studio.html:1602-1604`）；輸出端 `returnVelReal`/`returnSpinReal` 同樣因為 `flip=false` 直接等於 canonical 值，未鏡射（`return-studio.html:1606-1607`）。
+- 也就是說，**round 1 的 canonical 座標系「就等於」真實座標系**——`mirrorSpin` 從未被呼叫。`docs/ARCHIVE/physics-engine-v2-plan.md:869-878` 那個「必須看 canonical、不能看真實座標」的陷阱案例，核對數字後確認那是 **`flip=true` 的偶數拍**（真實入球旋轉 -30.44 需要先鏡射成 canonical +30.44 才能餵進技術公式）——鏡射只在偶數拍（`flip` 每拍 `!flip` 切換一次，`return-studio.html:1623`）才會發生數值上的差異。
+- `simulateReturnForPreset`（`return-studio.html:1007-1019`，本 sweep 呼叫的函式）在物理與資料流上，跟 `runRallyReal` 的 round 1（`flip=false` 那一拍）完全等價：都是「serve 原始 hitVel/hitSpin 直接餵給 `makeReturnVelocity`，不鏡射」。既然 round 1 的 canonical == 真實座標，`runRallyReal` 自己內部依循的「必須用 canonical 值判斷」規則，套用在 round 1 上，結果數值上就等於直接看原始輸出——跟本 sweep 的 `spinCorrect = outgoingTopspin <= 0` 做法完全一致，沒有分歧。
+
+**物理面交叉驗證：** 查閱 `bounceOffPlane`（`return-studio.html:441-473`）確認球拍/桌面反彈是完整 3D 剛體接觸模型（`omega × r` 算滑動、庫倫摩擦），旋轉對彈跳的真實效果本來就是相對於球「當下飛行方向」而定義的功能性概念（跟 `physics-engine-v2-plan.md:878` 講的一致）——但這正是為什麼鏡射機制設計成「只在座標系不匹配時（`flip=true`）才需要」：round 1 時，來球方向（+z）跟 push 技術公式原生假設的方向本來就對齊，不需要額外鏡射；不匹配只發生在後續交替拍。
+
+**確認：** 沒有需要重跑任何 grid 模擬——原始 JSON（本檔案內每個 preset 的 `incomingTopspin`/`outgoingTopspin` 欄位）已經是可直接使用的真實座標值，跟 round-1-canonical 座標值相同，不需轉換。
+
+**結論（不變）：**
+- 目前部署基準 `tiltY=0.8, wristBrakeRate=0`：`spinCorrect=11/11`（不變，原始數字有效）。
+- 「平拍+強煞車」區域（`tiltY≈4~10`、高 `wristBrakeRate`）：`spinCorrect` 仍停留在原本報告的低分區間（約 2/11 量級，各組合請見上方 Summary 表）。
+- 原始 sweep #2 的方向性結論（目前部署基準在旋轉正確性上明顯優於平拍+強煞車區域）**維持不變，不需推翻**。
+
+（`AI_CONTEXT/push_tiltxy_sweep_output.txt`：sweep #1 本身未做旋轉方向評分（只評落點 pass/fail），跟本次疑慮無關，不需要追加修正章節。）

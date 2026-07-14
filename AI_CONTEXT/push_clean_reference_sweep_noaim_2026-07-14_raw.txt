@@ -1,0 +1,1624 @@
+{
+  "generatedAt": "2026-07-14T11:12:32.968Z",
+  "note": "Aim-solver-bypassed variant — planeVel built directly as {x:0,y:lift,z:-drive}, solveRacketVelXForTargetLandingX never called.",
+  "representativeCase": {
+    "presetId": "backspin_long_backhand",
+    "hitPoint": {
+      "x": -0.8814,
+      "y": 0.8927,
+      "z": 2.1382
+    },
+    "hitVel": {
+      "x": -1.4111,
+      "y": -0.1538,
+      "z": 3.389
+    },
+    "hitSpin": {
+      "topspin": -27.0698,
+      "sidespin": 55.1965
+    },
+    "hitSpeedXZ": 3.6711,
+    "gravity": -4.2,
+    "deployedLift": 0.2132,
+    "deployedDrive": 0.2425,
+    "deployedTiltY": 1
+  },
+  "sweep1": {
+    "tiltYValues": [
+      0.3,
+      0.4,
+      0.5,
+      0.6,
+      0.7,
+      0.8,
+      0.9,
+      1,
+      1.1,
+      1.2,
+      1.3,
+      1.4,
+      1.5,
+      1.6,
+      1.7,
+      1.8,
+      1.9,
+      2
+    ],
+    "rows": [
+      {
+        "tiltY": 0.3,
+        "lift": 0.2132,
+        "drive": 0.2425,
+        "outTopspin": -3.758,
+        "outSidespin": 61.2714,
+        "outSpeed": 3.5755,
+        "netClearance": -0.4408,
+        "clearsNet": false,
+        "landing": "no_bounce_recorded",
+        "firstBounceRaw": null,
+        "dwellMs": 5.44,
+        "regime": null,
+        "effectiveEpsilon": -0.9479
+      },
+      {
+        "tiltY": 0.4,
+        "lift": 0.2132,
+        "drive": 0.2425,
+        "outTopspin": -0.3942,
+        "outSidespin": 62.1891,
+        "outSpeed": 3.579,
+        "netClearance": -0.3504,
+        "clearsNet": false,
+        "landing": "no_bounce_recorded",
+        "firstBounceRaw": null,
+        "dwellMs": 5.44,
+        "regime": null,
+        "effectiveEpsilon": -0.9497
+      },
+      {
+        "tiltY": 0.5,
+        "lift": 0.2132,
+        "drive": 0.2425,
+        "outTopspin": 2.7356,
+        "outSidespin": 62.9852,
+        "outSpeed": 3.5803,
+        "netClearance": -0.269,
+        "clearsNet": false,
+        "landing": "no_bounce_recorded",
+        "firstBounceRaw": null,
+        "dwellMs": 5.44,
+        "regime": null,
+        "effectiveEpsilon": -0.9514
+      },
+      {
+        "tiltY": 0.6,
+        "lift": 0.2132,
+        "drive": 0.2425,
+        "outTopspin": 5.6138,
+        "outSidespin": 63.6686,
+        "outSpeed": 3.5801,
+        "netClearance": -0.1964,
+        "clearsNet": false,
+        "landing": "no_bounce_recorded",
+        "firstBounceRaw": null,
+        "dwellMs": 5.44,
+        "regime": null,
+        "effectiveEpsilon": -0.9531
+      },
+      {
+        "tiltY": 0.7,
+        "lift": 0.2132,
+        "drive": 0.2425,
+        "outTopspin": 8.2376,
+        "outSidespin": 64.2511,
+        "outSpeed": 3.5785,
+        "netClearance": -0.1319,
+        "clearsNet": false,
+        "landing": "no_bounce_recorded",
+        "firstBounceRaw": null,
+        "dwellMs": 5.44,
+        "regime": null,
+        "effectiveEpsilon": -0.9547
+      },
+      {
+        "tiltY": 0.8,
+        "lift": 0.2132,
+        "drive": 0.2425,
+        "outTopspin": 10.6152,
+        "outSidespin": 64.7458,
+        "outSpeed": 3.576,
+        "netClearance": -0.075,
+        "clearsNet": false,
+        "landing": "no_bounce_recorded",
+        "firstBounceRaw": null,
+        "dwellMs": 5.44,
+        "regime": null,
+        "effectiveEpsilon": -0.9562
+      },
+      {
+        "tiltY": 0.9,
+        "lift": 0.2132,
+        "drive": 0.2425,
+        "outTopspin": 12.7616,
+        "outSidespin": 65.1654,
+        "outSpeed": 3.5729,
+        "netClearance": -0.025,
+        "clearsNet": false,
+        "landing": "no_bounce_recorded",
+        "firstBounceRaw": null,
+        "dwellMs": 5.44,
+        "regime": null,
+        "effectiveEpsilon": -0.9575
+      },
+      {
+        "tiltY": 1,
+        "lift": 0.2132,
+        "drive": 0.2425,
+        "outTopspin": 14.6955,
+        "outSidespin": 65.5218,
+        "outSpeed": 3.5693,
+        "netClearance": 0.0189,
+        "clearsNet": true,
+        "landing": "no_bounce_recorded",
+        "firstBounceRaw": null,
+        "dwellMs": 5.44,
+        "regime": null,
+        "effectiveEpsilon": -0.9588
+      },
+      {
+        "tiltY": 1.1,
+        "lift": 0.2132,
+        "drive": 0.2425,
+        "outTopspin": 16.4371,
+        "outSidespin": 65.8252,
+        "outSpeed": 3.5654,
+        "netClearance": 0.0574,
+        "clearsNet": true,
+        "landing": "no_bounce_recorded",
+        "firstBounceRaw": null,
+        "dwellMs": 5.44,
+        "regime": null,
+        "effectiveEpsilon": -0.96
+      },
+      {
+        "tiltY": 1.2,
+        "lift": 0.2132,
+        "drive": 0.2425,
+        "outTopspin": 18.0065,
+        "outSidespin": 66.0843,
+        "outSpeed": 3.5614,
+        "netClearance": 0.0912,
+        "clearsNet": true,
+        "landing": "no_bounce_recorded",
+        "firstBounceRaw": null,
+        "dwellMs": 5.44,
+        "regime": null,
+        "effectiveEpsilon": -0.9611
+      },
+      {
+        "tiltY": 1.3,
+        "lift": 0.2132,
+        "drive": 0.2425,
+        "outTopspin": 19.4226,
+        "outSidespin": 66.3066,
+        "outSpeed": 3.5574,
+        "netClearance": 0.1208,
+        "clearsNet": true,
+        "landing": "no_bounce_recorded",
+        "firstBounceRaw": null,
+        "dwellMs": 5.44,
+        "regime": null,
+        "effectiveEpsilon": -0.9621
+      },
+      {
+        "tiltY": 1.4,
+        "lift": 0.2132,
+        "drive": 0.2425,
+        "outTopspin": 20.7028,
+        "outSidespin": 66.4982,
+        "outSpeed": 3.5534,
+        "netClearance": 0.1469,
+        "clearsNet": true,
+        "landing": "no_bounce_recorded",
+        "firstBounceRaw": null,
+        "dwellMs": 5.44,
+        "regime": null,
+        "effectiveEpsilon": -0.963
+      },
+      {
+        "tiltY": 1.5,
+        "lift": 0.2132,
+        "drive": 0.2425,
+        "outTopspin": 21.8627,
+        "outSidespin": 66.6641,
+        "outSpeed": 3.5495,
+        "netClearance": 0.1698,
+        "clearsNet": true,
+        "landing": "no_bounce_recorded",
+        "firstBounceRaw": null,
+        "dwellMs": 5.44,
+        "regime": null,
+        "effectiveEpsilon": -0.9639
+      },
+      {
+        "tiltY": 1.6,
+        "lift": 0.2132,
+        "drive": 0.2425,
+        "outTopspin": 22.9162,
+        "outSidespin": 66.8084,
+        "outSpeed": 3.5457,
+        "netClearance": 0.19,
+        "clearsNet": true,
+        "landing": "no_bounce_recorded",
+        "firstBounceRaw": null,
+        "dwellMs": 5.44,
+        "regime": null,
+        "effectiveEpsilon": -0.9647
+      },
+      {
+        "tiltY": 1.7,
+        "lift": 0.2132,
+        "drive": 0.2425,
+        "outTopspin": 23.8757,
+        "outSidespin": 66.9347,
+        "outSpeed": 3.5421,
+        "netClearance": 0.2078,
+        "clearsNet": true,
+        "landing": "no_bounce_recorded",
+        "firstBounceRaw": null,
+        "dwellMs": 5.44,
+        "regime": null,
+        "effectiveEpsilon": -0.9654
+      },
+      {
+        "tiltY": 1.8,
+        "lift": 0.2132,
+        "drive": 0.2425,
+        "outTopspin": 24.7519,
+        "outSidespin": 67.0457,
+        "outSpeed": 3.5385,
+        "netClearance": 0.2236,
+        "clearsNet": true,
+        "landing": "no_bounce_recorded",
+        "firstBounceRaw": null,
+        "dwellMs": 5.44,
+        "regime": null,
+        "effectiveEpsilon": -0.9661
+      },
+      {
+        "tiltY": 1.9,
+        "lift": 0.2132,
+        "drive": 0.2425,
+        "outTopspin": 25.5541,
+        "outSidespin": 67.1437,
+        "outSpeed": 3.5352,
+        "netClearance": 0.2375,
+        "clearsNet": true,
+        "landing": "no_bounce_recorded",
+        "firstBounceRaw": null,
+        "dwellMs": 5.44,
+        "regime": null,
+        "effectiveEpsilon": -0.9668
+      },
+      {
+        "tiltY": 2,
+        "lift": 0.2132,
+        "drive": 0.2425,
+        "outTopspin": 26.2907,
+        "outSidespin": 67.2306,
+        "outSpeed": 3.532,
+        "netClearance": 0.2499,
+        "clearsNet": true,
+        "landing": "no_bounce_recorded",
+        "firstBounceRaw": null,
+        "dwellMs": 5.44,
+        "regime": null,
+        "effectiveEpsilon": -0.9673
+      }
+    ],
+    "sensitivity": {
+      "outTopspin": {
+        "label": "tiltY -> outTopspin",
+        "segments": [
+          {
+            "from": 0.3,
+            "to": 0.4,
+            "dx": 0.1,
+            "dy": 3.3638,
+            "slope": 33.638
+          },
+          {
+            "from": 0.4,
+            "to": 0.5,
+            "dx": 0.1,
+            "dy": 3.1298,
+            "slope": 31.298
+          },
+          {
+            "from": 0.5,
+            "to": 0.6,
+            "dx": 0.1,
+            "dy": 2.8782,
+            "slope": 28.782
+          },
+          {
+            "from": 0.6,
+            "to": 0.7,
+            "dx": 0.1,
+            "dy": 2.6238,
+            "slope": 26.238
+          },
+          {
+            "from": 0.7,
+            "to": 0.8,
+            "dx": 0.1,
+            "dy": 2.3776,
+            "slope": 23.776
+          },
+          {
+            "from": 0.8,
+            "to": 0.9,
+            "dx": 0.1,
+            "dy": 2.1464,
+            "slope": 21.464
+          },
+          {
+            "from": 0.9,
+            "to": 1,
+            "dx": 0.1,
+            "dy": 1.9339,
+            "slope": 19.339
+          },
+          {
+            "from": 1,
+            "to": 1.1,
+            "dx": 0.1,
+            "dy": 1.7416,
+            "slope": 17.416
+          },
+          {
+            "from": 1.1,
+            "to": 1.2,
+            "dx": 0.1,
+            "dy": 1.5694,
+            "slope": 15.694
+          },
+          {
+            "from": 1.2,
+            "to": 1.3,
+            "dx": 0.1,
+            "dy": 1.4161,
+            "slope": 14.161
+          },
+          {
+            "from": 1.3,
+            "to": 1.4,
+            "dx": 0.1,
+            "dy": 1.2802,
+            "slope": 12.802
+          },
+          {
+            "from": 1.4,
+            "to": 1.5,
+            "dx": 0.1,
+            "dy": 1.1599,
+            "slope": 11.599
+          },
+          {
+            "from": 1.5,
+            "to": 1.6,
+            "dx": 0.1,
+            "dy": 1.0535,
+            "slope": 10.535
+          },
+          {
+            "from": 1.6,
+            "to": 1.7,
+            "dx": 0.1,
+            "dy": 0.9595,
+            "slope": 9.595
+          },
+          {
+            "from": 1.7,
+            "to": 1.8,
+            "dx": 0.1,
+            "dy": 0.8762,
+            "slope": 8.762
+          },
+          {
+            "from": 1.8,
+            "to": 1.9,
+            "dx": 0.1,
+            "dy": 0.8022,
+            "slope": 8.022
+          },
+          {
+            "from": 1.9,
+            "to": 2,
+            "dx": 0.1,
+            "dy": 0.7366,
+            "slope": 7.366
+          }
+        ],
+        "medianAbsSlope": 15.694,
+        "flagged": []
+      },
+      "outSpeed": {
+        "label": "tiltY -> outSpeed",
+        "segments": [
+          {
+            "from": 0.3,
+            "to": 0.4,
+            "dx": 0.1,
+            "dy": 0.0035,
+            "slope": 0.035
+          },
+          {
+            "from": 0.4,
+            "to": 0.5,
+            "dx": 0.1,
+            "dy": 0.0013,
+            "slope": 0.013
+          },
+          {
+            "from": 0.5,
+            "to": 0.6,
+            "dx": 0.1,
+            "dy": -0.0002,
+            "slope": -0.002
+          },
+          {
+            "from": 0.6,
+            "to": 0.7,
+            "dx": 0.1,
+            "dy": -0.0016,
+            "slope": -0.016
+          },
+          {
+            "from": 0.7,
+            "to": 0.8,
+            "dx": 0.1,
+            "dy": -0.0025,
+            "slope": -0.025
+          },
+          {
+            "from": 0.8,
+            "to": 0.9,
+            "dx": 0.1,
+            "dy": -0.0031,
+            "slope": -0.031
+          },
+          {
+            "from": 0.9,
+            "to": 1,
+            "dx": 0.1,
+            "dy": -0.0036,
+            "slope": -0.036
+          },
+          {
+            "from": 1,
+            "to": 1.1,
+            "dx": 0.1,
+            "dy": -0.0039,
+            "slope": -0.039
+          },
+          {
+            "from": 1.1,
+            "to": 1.2,
+            "dx": 0.1,
+            "dy": -0.004,
+            "slope": -0.04
+          },
+          {
+            "from": 1.2,
+            "to": 1.3,
+            "dx": 0.1,
+            "dy": -0.004,
+            "slope": -0.04
+          },
+          {
+            "from": 1.3,
+            "to": 1.4,
+            "dx": 0.1,
+            "dy": -0.004,
+            "slope": -0.04
+          },
+          {
+            "from": 1.4,
+            "to": 1.5,
+            "dx": 0.1,
+            "dy": -0.0039,
+            "slope": -0.039
+          },
+          {
+            "from": 1.5,
+            "to": 1.6,
+            "dx": 0.1,
+            "dy": -0.0038,
+            "slope": -0.038
+          },
+          {
+            "from": 1.6,
+            "to": 1.7,
+            "dx": 0.1,
+            "dy": -0.0036,
+            "slope": -0.036
+          },
+          {
+            "from": 1.7,
+            "to": 1.8,
+            "dx": 0.1,
+            "dy": -0.0036,
+            "slope": -0.036
+          },
+          {
+            "from": 1.8,
+            "to": 1.9,
+            "dx": 0.1,
+            "dy": -0.0033,
+            "slope": -0.033
+          },
+          {
+            "from": 1.9,
+            "to": 2,
+            "dx": 0.1,
+            "dy": -0.0032,
+            "slope": -0.032
+          }
+        ],
+        "medianAbsSlope": 0.036,
+        "flagged": []
+      },
+      "netClearance": {
+        "label": "tiltY -> netClearance",
+        "segments": [
+          {
+            "from": 0.3,
+            "to": 0.4,
+            "dx": 0.1,
+            "dy": 0.0904,
+            "slope": 0.904
+          },
+          {
+            "from": 0.4,
+            "to": 0.5,
+            "dx": 0.1,
+            "dy": 0.0814,
+            "slope": 0.814
+          },
+          {
+            "from": 0.5,
+            "to": 0.6,
+            "dx": 0.1,
+            "dy": 0.0726,
+            "slope": 0.726
+          },
+          {
+            "from": 0.6,
+            "to": 0.7,
+            "dx": 0.1,
+            "dy": 0.0645,
+            "slope": 0.645
+          },
+          {
+            "from": 0.7,
+            "to": 0.8,
+            "dx": 0.1,
+            "dy": 0.0569,
+            "slope": 0.569
+          },
+          {
+            "from": 0.8,
+            "to": 0.9,
+            "dx": 0.1,
+            "dy": 0.05,
+            "slope": 0.5
+          },
+          {
+            "from": 0.9,
+            "to": 1,
+            "dx": 0.1,
+            "dy": 0.0439,
+            "slope": 0.439
+          },
+          {
+            "from": 1,
+            "to": 1.1,
+            "dx": 0.1,
+            "dy": 0.0385,
+            "slope": 0.385
+          },
+          {
+            "from": 1.1,
+            "to": 1.2,
+            "dx": 0.1,
+            "dy": 0.0338,
+            "slope": 0.338
+          },
+          {
+            "from": 1.2,
+            "to": 1.3,
+            "dx": 0.1,
+            "dy": 0.0296,
+            "slope": 0.296
+          },
+          {
+            "from": 1.3,
+            "to": 1.4,
+            "dx": 0.1,
+            "dy": 0.0261,
+            "slope": 0.261
+          },
+          {
+            "from": 1.4,
+            "to": 1.5,
+            "dx": 0.1,
+            "dy": 0.0229,
+            "slope": 0.229
+          },
+          {
+            "from": 1.5,
+            "to": 1.6,
+            "dx": 0.1,
+            "dy": 0.0202,
+            "slope": 0.202
+          },
+          {
+            "from": 1.6,
+            "to": 1.7,
+            "dx": 0.1,
+            "dy": 0.0178,
+            "slope": 0.178
+          },
+          {
+            "from": 1.7,
+            "to": 1.8,
+            "dx": 0.1,
+            "dy": 0.0158,
+            "slope": 0.158
+          },
+          {
+            "from": 1.8,
+            "to": 1.9,
+            "dx": 0.1,
+            "dy": 0.0139,
+            "slope": 0.139
+          },
+          {
+            "from": 1.9,
+            "to": 2,
+            "dx": 0.1,
+            "dy": 0.0124,
+            "slope": 0.124
+          }
+        ],
+        "medianAbsSlope": 0.338,
+        "flagged": []
+      }
+    },
+    "signFlip": {
+      "between": [
+        0.4,
+        0.5
+      ],
+      "values": [
+        -0.3942,
+        2.7356
+      ]
+    }
+  },
+  "sweep2": {
+    "scaleValues": [
+      0.5,
+      0.6,
+      0.7,
+      0.8,
+      0.9,
+      1,
+      1.1,
+      1.2,
+      1.3,
+      1.4,
+      1.5,
+      1.6,
+      1.7,
+      1.8,
+      1.9,
+      2
+    ],
+    "rows": [
+      {
+        "scale": 0.5,
+        "incomingSpeedXZ": 1.8355,
+        "lift": 0.2866,
+        "drive": 0.5912,
+        "outTopspin": 3.9641,
+        "outSidespin": 58.4632,
+        "outSpeed": 2.7504,
+        "netClearance": -0.6649,
+        "clearsNet": false,
+        "landing": "no_bounce_recorded",
+        "firstBounceRaw": null,
+        "dwellMs": 5.44,
+        "regime": null,
+        "effectiveEpsilon": -1.1879
+      },
+      {
+        "scale": 0.6,
+        "incomingSpeedXZ": 2.2026,
+        "lift": 0.2719,
+        "drive": 0.5215,
+        "outTopspin": 6.1074,
+        "outSidespin": 59.9936,
+        "outSpeed": 2.9158,
+        "netClearance": -0.4866,
+        "clearsNet": false,
+        "landing": "no_bounce_recorded",
+        "firstBounceRaw": null,
+        "dwellMs": 5.44,
+        "regime": null,
+        "effectiveEpsilon": -1.1254
+      },
+      {
+        "scale": 0.7,
+        "incomingSpeedXZ": 2.5698,
+        "lift": 0.2572,
+        "drive": 0.4517,
+        "outTopspin": 8.2522,
+        "outSidespin": 61.4472,
+        "outSpeed": 3.0807,
+        "netClearance": -0.3331,
+        "clearsNet": false,
+        "landing": "no_bounce_recorded",
+        "firstBounceRaw": null,
+        "dwellMs": 5.44,
+        "regime": null,
+        "effectiveEpsilon": -1.0736
+      },
+      {
+        "scale": 0.8,
+        "incomingSpeedXZ": 2.9369,
+        "lift": 0.2425,
+        "drive": 0.382,
+        "outTopspin": 10.3995,
+        "outSidespin": 62.8448,
+        "outSpeed": 3.2447,
+        "netClearance": -0.1999,
+        "clearsNet": false,
+        "landing": "no_bounce_recorded",
+        "firstBounceRaw": null,
+        "dwellMs": 5.44,
+        "regime": null,
+        "effectiveEpsilon": -1.0296
+      },
+      {
+        "scale": 0.9,
+        "incomingSpeedXZ": 3.304,
+        "lift": 0.2278,
+        "drive": 0.3122,
+        "outTopspin": 12.5472,
+        "outSidespin": 64.1998,
+        "outSpeed": 3.4076,
+        "netClearance": -0.0836,
+        "clearsNet": false,
+        "landing": "no_bounce_recorded",
+        "firstBounceRaw": null,
+        "dwellMs": 5.44,
+        "regime": null,
+        "effectiveEpsilon": -0.9918
+      },
+      {
+        "scale": 1,
+        "incomingSpeedXZ": 3.6711,
+        "lift": 0.2132,
+        "drive": 0.2425,
+        "outTopspin": 14.6955,
+        "outSidespin": 65.5218,
+        "outSpeed": 3.5693,
+        "netClearance": 0.0189,
+        "clearsNet": true,
+        "landing": "no_bounce_recorded",
+        "firstBounceRaw": null,
+        "dwellMs": 5.44,
+        "regime": null,
+        "effectiveEpsilon": -0.9588
+      },
+      {
+        "scale": 1.1,
+        "incomingSpeedXZ": 4.0382,
+        "lift": 0.1985,
+        "drive": 0.1727,
+        "outTopspin": 16.8447,
+        "outSidespin": 66.818,
+        "outSpeed": 3.7295,
+        "netClearance": 0.1097,
+        "clearsNet": true,
+        "landing": "no_bounce_recorded",
+        "firstBounceRaw": null,
+        "dwellMs": 5.44,
+        "regime": null,
+        "effectiveEpsilon": -0.9296
+      },
+      {
+        "scale": 1.2,
+        "incomingSpeedXZ": 4.4053,
+        "lift": 0.1838,
+        "drive": 0.103,
+        "outTopspin": 18.9957,
+        "outSidespin": 68.0938,
+        "outSpeed": 3.8883,
+        "netClearance": 0.1907,
+        "clearsNet": true,
+        "landing": "no_bounce_recorded",
+        "firstBounceRaw": null,
+        "dwellMs": 5.44,
+        "regime": null,
+        "effectiveEpsilon": -0.9035
+      },
+      {
+        "scale": 1.3,
+        "incomingSpeedXZ": 4.7724,
+        "lift": 0.1691,
+        "drive": 0.1,
+        "outTopspin": 21.6845,
+        "outSidespin": 69.328,
+        "outSpeed": 4.1502,
+        "netClearance": 0.2943,
+        "clearsNet": true,
+        "landing": "no_bounce_recorded",
+        "firstBounceRaw": null,
+        "dwellMs": 5.44,
+        "regime": null,
+        "effectiveEpsilon": -0.8929
+      },
+      {
+        "scale": 1.4,
+        "incomingSpeedXZ": 5.1395,
+        "lift": 0.1544,
+        "drive": 0.1,
+        "outTopspin": 24.3982,
+        "outSidespin": 70.5475,
+        "outSpeed": 4.4086,
+        "netClearance": 0.3782,
+        "clearsNet": true,
+        "landing": "no_bounce_recorded",
+        "firstBounceRaw": null,
+        "dwellMs": 5.46,
+        "regime": null,
+        "effectiveEpsilon": -0.8824
+      },
+      {
+        "scale": 1.5,
+        "incomingSpeedXZ": 5.5066,
+        "lift": 0.1397,
+        "drive": 0.1,
+        "outTopspin": 27.1135,
+        "outSidespin": 71.7564,
+        "outSpeed": 4.6681,
+        "netClearance": 0.4485,
+        "clearsNet": true,
+        "landing": "no_bounce_recorded",
+        "firstBounceRaw": null,
+        "dwellMs": 5.46,
+        "regime": null,
+        "effectiveEpsilon": -0.8734
+      },
+      {
+        "scale": 1.6,
+        "incomingSpeedXZ": 5.8737,
+        "lift": 0.1251,
+        "drive": 0.1,
+        "outTopspin": 29.8283,
+        "outSidespin": 72.9562,
+        "outSpeed": 4.9241,
+        "netClearance": 0.5072,
+        "clearsNet": true,
+        "landing": "no_bounce_recorded",
+        "firstBounceRaw": null,
+        "dwellMs": 5.46,
+        "regime": null,
+        "effectiveEpsilon": -0.8648
+      },
+      {
+        "scale": 1.7,
+        "incomingSpeedXZ": 6.2408,
+        "lift": 0.1104,
+        "drive": 0.1,
+        "outTopspin": 32.5443,
+        "outSidespin": 74.149,
+        "outSpeed": 5.1765,
+        "netClearance": 0.5567,
+        "clearsNet": true,
+        "landing": "no_bounce_recorded",
+        "firstBounceRaw": null,
+        "dwellMs": 5.46,
+        "regime": null,
+        "effectiveEpsilon": -0.8565
+      },
+      {
+        "scale": 1.8,
+        "incomingSpeedXZ": 6.6079,
+        "lift": 0.0957,
+        "drive": 0.1,
+        "outTopspin": 35.2599,
+        "outSidespin": 75.3356,
+        "outSpeed": 5.4255,
+        "netClearance": 0.5991,
+        "clearsNet": true,
+        "landing": "no_bounce_recorded",
+        "firstBounceRaw": null,
+        "dwellMs": 5.46,
+        "regime": null,
+        "effectiveEpsilon": -0.8485
+      },
+      {
+        "scale": 1.9,
+        "incomingSpeedXZ": 6.975,
+        "lift": 0.081,
+        "drive": 0.1,
+        "outTopspin": 37.9758,
+        "outSidespin": 76.5172,
+        "outSpeed": 5.6709,
+        "netClearance": 0.6356,
+        "clearsNet": true,
+        "landing": "no_bounce_recorded",
+        "firstBounceRaw": null,
+        "dwellMs": 5.46,
+        "regime": null,
+        "effectiveEpsilon": -0.8406
+      },
+      {
+        "scale": 2,
+        "incomingSpeedXZ": 7.3421,
+        "lift": 0.0663,
+        "drive": 0.1,
+        "outTopspin": 40.6921,
+        "outSidespin": 77.6946,
+        "outSpeed": 5.9127,
+        "netClearance": 0.6674,
+        "clearsNet": true,
+        "landing": "no_bounce_recorded",
+        "firstBounceRaw": null,
+        "dwellMs": 5.46,
+        "regime": null,
+        "effectiveEpsilon": -0.833
+      }
+    ],
+    "sensitivity": {
+      "lift": {
+        "label": "scale -> lift",
+        "segments": [
+          {
+            "from": 0.5,
+            "to": 0.6,
+            "dx": 0.1,
+            "dy": -0.0147,
+            "slope": -0.147
+          },
+          {
+            "from": 0.6,
+            "to": 0.7,
+            "dx": 0.1,
+            "dy": -0.0147,
+            "slope": -0.147
+          },
+          {
+            "from": 0.7,
+            "to": 0.8,
+            "dx": 0.1,
+            "dy": -0.0147,
+            "slope": -0.147
+          },
+          {
+            "from": 0.8,
+            "to": 0.9,
+            "dx": 0.1,
+            "dy": -0.0147,
+            "slope": -0.147
+          },
+          {
+            "from": 0.9,
+            "to": 1,
+            "dx": 0.1,
+            "dy": -0.0146,
+            "slope": -0.146
+          },
+          {
+            "from": 1,
+            "to": 1.1,
+            "dx": 0.1,
+            "dy": -0.0147,
+            "slope": -0.147
+          },
+          {
+            "from": 1.1,
+            "to": 1.2,
+            "dx": 0.1,
+            "dy": -0.0147,
+            "slope": -0.147
+          },
+          {
+            "from": 1.2,
+            "to": 1.3,
+            "dx": 0.1,
+            "dy": -0.0147,
+            "slope": -0.147
+          },
+          {
+            "from": 1.3,
+            "to": 1.4,
+            "dx": 0.1,
+            "dy": -0.0147,
+            "slope": -0.147
+          },
+          {
+            "from": 1.4,
+            "to": 1.5,
+            "dx": 0.1,
+            "dy": -0.0147,
+            "slope": -0.147
+          },
+          {
+            "from": 1.5,
+            "to": 1.6,
+            "dx": 0.1,
+            "dy": -0.0146,
+            "slope": -0.146
+          },
+          {
+            "from": 1.6,
+            "to": 1.7,
+            "dx": 0.1,
+            "dy": -0.0147,
+            "slope": -0.147
+          },
+          {
+            "from": 1.7,
+            "to": 1.8,
+            "dx": 0.1,
+            "dy": -0.0147,
+            "slope": -0.147
+          },
+          {
+            "from": 1.8,
+            "to": 1.9,
+            "dx": 0.1,
+            "dy": -0.0147,
+            "slope": -0.147
+          },
+          {
+            "from": 1.9,
+            "to": 2,
+            "dx": 0.1,
+            "dy": -0.0147,
+            "slope": -0.147
+          }
+        ],
+        "medianAbsSlope": 0.147,
+        "flagged": []
+      },
+      "drive": {
+        "label": "scale -> drive",
+        "segments": [
+          {
+            "from": 0.5,
+            "to": 0.6,
+            "dx": 0.1,
+            "dy": -0.0697,
+            "slope": -0.697
+          },
+          {
+            "from": 0.6,
+            "to": 0.7,
+            "dx": 0.1,
+            "dy": -0.0698,
+            "slope": -0.698
+          },
+          {
+            "from": 0.7,
+            "to": 0.8,
+            "dx": 0.1,
+            "dy": -0.0697,
+            "slope": -0.697
+          },
+          {
+            "from": 0.8,
+            "to": 0.9,
+            "dx": 0.1,
+            "dy": -0.0698,
+            "slope": -0.698
+          },
+          {
+            "from": 0.9,
+            "to": 1,
+            "dx": 0.1,
+            "dy": -0.0697,
+            "slope": -0.697
+          },
+          {
+            "from": 1,
+            "to": 1.1,
+            "dx": 0.1,
+            "dy": -0.0698,
+            "slope": -0.698
+          },
+          {
+            "from": 1.1,
+            "to": 1.2,
+            "dx": 0.1,
+            "dy": -0.0697,
+            "slope": -0.697
+          },
+          {
+            "from": 1.2,
+            "to": 1.3,
+            "dx": 0.1,
+            "dy": -0.003,
+            "slope": -0.03
+          },
+          {
+            "from": 1.3,
+            "to": 1.4,
+            "dx": 0.1,
+            "dy": 0,
+            "slope": 0
+          },
+          {
+            "from": 1.4,
+            "to": 1.5,
+            "dx": 0.1,
+            "dy": 0,
+            "slope": 0
+          },
+          {
+            "from": 1.5,
+            "to": 1.6,
+            "dx": 0.1,
+            "dy": 0,
+            "slope": 0
+          },
+          {
+            "from": 1.6,
+            "to": 1.7,
+            "dx": 0.1,
+            "dy": 0,
+            "slope": 0
+          },
+          {
+            "from": 1.7,
+            "to": 1.8,
+            "dx": 0.1,
+            "dy": 0,
+            "slope": 0
+          },
+          {
+            "from": 1.8,
+            "to": 1.9,
+            "dx": 0.1,
+            "dy": 0,
+            "slope": 0
+          },
+          {
+            "from": 1.9,
+            "to": 2,
+            "dx": 0.1,
+            "dy": 0,
+            "slope": 0
+          }
+        ],
+        "medianAbsSlope": 0.03,
+        "flagged": [
+          {
+            "from": 0.5,
+            "to": 0.6,
+            "dx": 0.1,
+            "dy": -0.0697,
+            "slope": -0.697,
+            "medianAbsSlope": 0.03,
+            "ratio": 23.23
+          },
+          {
+            "from": 0.6,
+            "to": 0.7,
+            "dx": 0.1,
+            "dy": -0.0698,
+            "slope": -0.698,
+            "medianAbsSlope": 0.03,
+            "ratio": 23.27
+          },
+          {
+            "from": 0.7,
+            "to": 0.8,
+            "dx": 0.1,
+            "dy": -0.0697,
+            "slope": -0.697,
+            "medianAbsSlope": 0.03,
+            "ratio": 23.23
+          },
+          {
+            "from": 0.8,
+            "to": 0.9,
+            "dx": 0.1,
+            "dy": -0.0698,
+            "slope": -0.698,
+            "medianAbsSlope": 0.03,
+            "ratio": 23.27
+          },
+          {
+            "from": 0.9,
+            "to": 1,
+            "dx": 0.1,
+            "dy": -0.0697,
+            "slope": -0.697,
+            "medianAbsSlope": 0.03,
+            "ratio": 23.23
+          },
+          {
+            "from": 1,
+            "to": 1.1,
+            "dx": 0.1,
+            "dy": -0.0698,
+            "slope": -0.698,
+            "medianAbsSlope": 0.03,
+            "ratio": 23.27
+          },
+          {
+            "from": 1.1,
+            "to": 1.2,
+            "dx": 0.1,
+            "dy": -0.0697,
+            "slope": -0.697,
+            "medianAbsSlope": 0.03,
+            "ratio": 23.23
+          }
+        ]
+      },
+      "outTopspin": {
+        "label": "scale -> outTopspin",
+        "segments": [
+          {
+            "from": 0.5,
+            "to": 0.6,
+            "dx": 0.1,
+            "dy": 2.1433,
+            "slope": 21.433
+          },
+          {
+            "from": 0.6,
+            "to": 0.7,
+            "dx": 0.1,
+            "dy": 2.1448,
+            "slope": 21.448
+          },
+          {
+            "from": 0.7,
+            "to": 0.8,
+            "dx": 0.1,
+            "dy": 2.1473,
+            "slope": 21.473
+          },
+          {
+            "from": 0.8,
+            "to": 0.9,
+            "dx": 0.1,
+            "dy": 2.1477,
+            "slope": 21.477
+          },
+          {
+            "from": 0.9,
+            "to": 1,
+            "dx": 0.1,
+            "dy": 2.1483,
+            "slope": 21.483
+          },
+          {
+            "from": 1,
+            "to": 1.1,
+            "dx": 0.1,
+            "dy": 2.1492,
+            "slope": 21.492
+          },
+          {
+            "from": 1.1,
+            "to": 1.2,
+            "dx": 0.1,
+            "dy": 2.151,
+            "slope": 21.51
+          },
+          {
+            "from": 1.2,
+            "to": 1.3,
+            "dx": 0.1,
+            "dy": 2.6888,
+            "slope": 26.888
+          },
+          {
+            "from": 1.3,
+            "to": 1.4,
+            "dx": 0.1,
+            "dy": 2.7137,
+            "slope": 27.137
+          },
+          {
+            "from": 1.4,
+            "to": 1.5,
+            "dx": 0.1,
+            "dy": 2.7153,
+            "slope": 27.153
+          },
+          {
+            "from": 1.5,
+            "to": 1.6,
+            "dx": 0.1,
+            "dy": 2.7148,
+            "slope": 27.148
+          },
+          {
+            "from": 1.6,
+            "to": 1.7,
+            "dx": 0.1,
+            "dy": 2.716,
+            "slope": 27.16
+          },
+          {
+            "from": 1.7,
+            "to": 1.8,
+            "dx": 0.1,
+            "dy": 2.7156,
+            "slope": 27.156
+          },
+          {
+            "from": 1.8,
+            "to": 1.9,
+            "dx": 0.1,
+            "dy": 2.7159,
+            "slope": 27.159
+          },
+          {
+            "from": 1.9,
+            "to": 2,
+            "dx": 0.1,
+            "dy": 2.7163,
+            "slope": 27.163
+          }
+        ],
+        "medianAbsSlope": 26.888,
+        "flagged": []
+      },
+      "outSpeed": {
+        "label": "scale -> outSpeed",
+        "segments": [
+          {
+            "from": 0.5,
+            "to": 0.6,
+            "dx": 0.1,
+            "dy": 0.1654,
+            "slope": 1.654
+          },
+          {
+            "from": 0.6,
+            "to": 0.7,
+            "dx": 0.1,
+            "dy": 0.1649,
+            "slope": 1.649
+          },
+          {
+            "from": 0.7,
+            "to": 0.8,
+            "dx": 0.1,
+            "dy": 0.164,
+            "slope": 1.64
+          },
+          {
+            "from": 0.8,
+            "to": 0.9,
+            "dx": 0.1,
+            "dy": 0.1629,
+            "slope": 1.629
+          },
+          {
+            "from": 0.9,
+            "to": 1,
+            "dx": 0.1,
+            "dy": 0.1617,
+            "slope": 1.617
+          },
+          {
+            "from": 1,
+            "to": 1.1,
+            "dx": 0.1,
+            "dy": 0.1602,
+            "slope": 1.602
+          },
+          {
+            "from": 1.1,
+            "to": 1.2,
+            "dx": 0.1,
+            "dy": 0.1588,
+            "slope": 1.588
+          },
+          {
+            "from": 1.2,
+            "to": 1.3,
+            "dx": 0.1,
+            "dy": 0.2619,
+            "slope": 2.619
+          },
+          {
+            "from": 1.3,
+            "to": 1.4,
+            "dx": 0.1,
+            "dy": 0.2584,
+            "slope": 2.584
+          },
+          {
+            "from": 1.4,
+            "to": 1.5,
+            "dx": 0.1,
+            "dy": 0.2595,
+            "slope": 2.595
+          },
+          {
+            "from": 1.5,
+            "to": 1.6,
+            "dx": 0.1,
+            "dy": 0.256,
+            "slope": 2.56
+          },
+          {
+            "from": 1.6,
+            "to": 1.7,
+            "dx": 0.1,
+            "dy": 0.2524,
+            "slope": 2.524
+          },
+          {
+            "from": 1.7,
+            "to": 1.8,
+            "dx": 0.1,
+            "dy": 0.249,
+            "slope": 2.49
+          },
+          {
+            "from": 1.8,
+            "to": 1.9,
+            "dx": 0.1,
+            "dy": 0.2454,
+            "slope": 2.454
+          },
+          {
+            "from": 1.9,
+            "to": 2,
+            "dx": 0.1,
+            "dy": 0.2418,
+            "slope": 2.418
+          }
+        ],
+        "medianAbsSlope": 2.418,
+        "flagged": []
+      },
+      "netClearance": {
+        "label": "scale -> netClearance",
+        "segments": [
+          {
+            "from": 0.5,
+            "to": 0.6,
+            "dx": 0.1,
+            "dy": 0.1783,
+            "slope": 1.783
+          },
+          {
+            "from": 0.6,
+            "to": 0.7,
+            "dx": 0.1,
+            "dy": 0.1535,
+            "slope": 1.535
+          },
+          {
+            "from": 0.7,
+            "to": 0.8,
+            "dx": 0.1,
+            "dy": 0.1332,
+            "slope": 1.332
+          },
+          {
+            "from": 0.8,
+            "to": 0.9,
+            "dx": 0.1,
+            "dy": 0.1163,
+            "slope": 1.163
+          },
+          {
+            "from": 0.9,
+            "to": 1,
+            "dx": 0.1,
+            "dy": 0.1025,
+            "slope": 1.025
+          },
+          {
+            "from": 1,
+            "to": 1.1,
+            "dx": 0.1,
+            "dy": 0.0908,
+            "slope": 0.908
+          },
+          {
+            "from": 1.1,
+            "to": 1.2,
+            "dx": 0.1,
+            "dy": 0.081,
+            "slope": 0.81
+          },
+          {
+            "from": 1.2,
+            "to": 1.3,
+            "dx": 0.1,
+            "dy": 0.1036,
+            "slope": 1.036
+          },
+          {
+            "from": 1.3,
+            "to": 1.4,
+            "dx": 0.1,
+            "dy": 0.0839,
+            "slope": 0.839
+          },
+          {
+            "from": 1.4,
+            "to": 1.5,
+            "dx": 0.1,
+            "dy": 0.0703,
+            "slope": 0.703
+          },
+          {
+            "from": 1.5,
+            "to": 1.6,
+            "dx": 0.1,
+            "dy": 0.0587,
+            "slope": 0.587
+          },
+          {
+            "from": 1.6,
+            "to": 1.7,
+            "dx": 0.1,
+            "dy": 0.0495,
+            "slope": 0.495
+          },
+          {
+            "from": 1.7,
+            "to": 1.8,
+            "dx": 0.1,
+            "dy": 0.0424,
+            "slope": 0.424
+          },
+          {
+            "from": 1.8,
+            "to": 1.9,
+            "dx": 0.1,
+            "dy": 0.0365,
+            "slope": 0.365
+          },
+          {
+            "from": 1.9,
+            "to": 2,
+            "dx": 0.1,
+            "dy": 0.0318,
+            "slope": 0.318
+          }
+        ],
+        "medianAbsSlope": 0.839,
+        "flagged": []
+      }
+    },
+    "liftClampPlateauAt": [],
+    "driveClampPlateauAt": [
+      1.4,
+      1.5,
+      1.6,
+      1.7,
+      1.8,
+      1.9,
+      2
+    ]
+  }
+}

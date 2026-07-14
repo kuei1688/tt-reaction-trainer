@@ -1,0 +1,2182 @@
+{
+  "generatedAt": "2026-07-14T10:24:57.761Z",
+  "tool": "push-contact-param-sweep.js",
+  "note": "All spin values in real rad/s (×D=1.528). Fixed: backspin_long_backhand, deployed tiltY/lift/drive.",
+  "representativeCase": {
+    "presetId": "backspin_long_backhand",
+    "hitVel": {
+      "x": -1.4111,
+      "y": -0.1538,
+      "z": 3.389
+    },
+    "hitSpin": {
+      "topspin": -41.3497,
+      "sidespin": 84.314
+    },
+    "deployedTiltY": 1,
+    "deployedLift": 0.2132,
+    "deployedDrive": 0.2425
+  },
+  "experiments": {
+    "6A_TANGENT_KP": {
+      "param": "TANGENT_KP",
+      "deployed": 1,
+      "range": [
+        0.5,
+        1.5
+      ],
+      "values": [
+        1,
+        0.6,
+        0.72,
+        0.833,
+        0.9444,
+        1.05556,
+        1.166667,
+        1.2777778,
+        1.38888889,
+        1.5
+      ],
+      "rows": [
+        {
+          "param": "TANGENT_KP",
+          "value": 0.5,
+          "outTopspin": 17.0405,
+          "outSidespin": 98.7494,
+          "outSpeed": 3.5852,
+          "netClearance": 0.045,
+          "clearsNet": true,
+          "landing": "no_bounce_recorded",
+          "dwellMs": 5.44,
+          "regime": null,
+          "effectiveEpsilon": -0.9588
+        },
+        {
+          "param": "TANGENT_KP",
+          "value": 0.6111,
+          "outTopspin": 19.4235,
+          "outSidespin": 99.3386,
+          "outSpeed": 3.5781,
+          "netClearance": 0.0335,
+          "clearsNet": true,
+          "landing": "no_bounce_recorded",
+          "dwellMs": 5.44,
+          "regime": null,
+          "effectiveEpsilon": -0.9588
+        },
+        {
+          "param": "TANGENT_KP",
+          "value": 0.7222,
+          "outTopspin": 20.8559,
+          "outSidespin": 99.6927,
+          "outSpeed": 3.5739,
+          "netClearance": 0.0266,
+          "clearsNet": true,
+          "landing": "no_bounce_recorded",
+          "dwellMs": 5.44,
+          "regime": null,
+          "effectiveEpsilon": -0.9588
+        },
+        {
+          "param": "TANGENT_KP",
+          "value": 0.8333,
+          "outTopspin": 21.7276,
+          "outSidespin": 99.9082,
+          "outSpeed": 3.5713,
+          "netClearance": 0.0224,
+          "clearsNet": true,
+          "landing": "no_bounce_recorded",
+          "dwellMs": 5.44,
+          "regime": null,
+          "effectiveEpsilon": -0.9588
+        },
+        {
+          "param": "TANGENT_KP",
+          "value": 0.9444,
+          "outTopspin": 22.2625,
+          "outSidespin": 100.0404,
+          "outSpeed": 3.5698,
+          "netClearance": 0.0198,
+          "clearsNet": true,
+          "landing": "no_bounce_recorded",
+          "dwellMs": 5.44,
+          "regime": null,
+          "effectiveEpsilon": -0.9588
+        },
+        {
+          "param": "TANGENT_KP",
+          "value": 1.0556,
+          "outTopspin": 22.5942,
+          "outSidespin": 100.1224,
+          "outSpeed": 3.5689,
+          "netClearance": 0.0182,
+          "clearsNet": true,
+          "landing": "no_bounce_recorded",
+          "dwellMs": 5.44,
+          "regime": null,
+          "effectiveEpsilon": -0.9588
+        },
+        {
+          "param": "TANGENT_KP",
+          "value": 1.1667,
+          "outTopspin": 22.8024,
+          "outSidespin": 100.1739,
+          "outSpeed": 3.5683,
+          "netClearance": 0.0172,
+          "clearsNet": true,
+          "landing": "no_bounce_recorded",
+          "dwellMs": 5.44,
+          "regime": null,
+          "effectiveEpsilon": -0.9588
+        },
+        {
+          "param": "TANGENT_KP",
+          "value": 1.2778,
+          "outTopspin": 22.9338,
+          "outSidespin": 100.2064,
+          "outSpeed": 3.5679,
+          "netClearance": 0.0166,
+          "clearsNet": true,
+          "landing": "no_bounce_recorded",
+          "dwellMs": 5.44,
+          "regime": null,
+          "effectiveEpsilon": -0.9588
+        },
+        {
+          "param": "TANGENT_KP",
+          "value": 1.3889,
+          "outTopspin": 23.0161,
+          "outSidespin": 100.2268,
+          "outSpeed": 3.5676,
+          "netClearance": 0.0162,
+          "clearsNet": true,
+          "landing": "no_bounce_recorded",
+          "dwellMs": 5.44,
+          "regime": null,
+          "effectiveEpsilon": -0.9588
+        },
+        {
+          "param": "TANGENT_KP",
+          "value": 1.5,
+          "outTopspin": 23.0681,
+          "outSidespin": 100.2396,
+          "outSpeed": 3.5675,
+          "netClearance": 0.0159,
+          "clearsNet": true,
+          "landing": "no_bounce_recorded",
+          "dwellMs": 5.44,
+          "regime": null,
+          "effectiveEpsilon": -0.9588
+        }
+      ],
+      "sensitivity": {
+        "outTopspin": {
+          "label": "TANGENT_KP→outTopspin",
+          "segments": [
+            {
+              "from": 0.5,
+              "to": 0.6111,
+              "dx": 0.1111,
+              "dy": 2.383,
+              "slope": 21.447
+            },
+            {
+              "from": 0.6111,
+              "to": 0.7222,
+              "dx": 0.1111,
+              "dy": 1.4324,
+              "slope": 12.8916
+            },
+            {
+              "from": 0.7222,
+              "to": 0.8333,
+              "dx": 0.1111,
+              "dy": 0.8717,
+              "slope": 7.8453
+            },
+            {
+              "from": 0.8333,
+              "to": 0.9444,
+              "dx": 0.1111,
+              "dy": 0.5349,
+              "slope": 4.8141
+            },
+            {
+              "from": 0.9444,
+              "to": 1.0556,
+              "dx": 0.1111,
+              "dy": 0.3317,
+              "slope": 2.9853
+            },
+            {
+              "from": 1.0556,
+              "to": 1.1667,
+              "dx": 0.1111,
+              "dy": 0.2082,
+              "slope": 1.8738
+            },
+            {
+              "from": 1.1667,
+              "to": 1.2778,
+              "dx": 0.1111,
+              "dy": 0.1314,
+              "slope": 1.1826
+            },
+            {
+              "from": 1.2778,
+              "to": 1.3889,
+              "dx": 0.1111,
+              "dy": 0.0823,
+              "slope": 0.7407
+            },
+            {
+              "from": 1.3889,
+              "to": 1.5,
+              "dx": 0.1111,
+              "dy": 0.052,
+              "slope": 0.468
+            }
+          ],
+          "medianAbsSlope": 2.9853,
+          "flagged": [
+            {
+              "from": 0.5,
+              "to": 0.6111,
+              "dx": 0.1111,
+              "dy": 2.383,
+              "slope": 21.447,
+              "medianAbsSlope": 2.9853,
+              "ratio": 7.18
+            },
+            {
+              "from": 0.6111,
+              "to": 0.7222,
+              "dx": 0.1111,
+              "dy": 1.4324,
+              "slope": 12.8916,
+              "medianAbsSlope": 2.9853,
+              "ratio": 4.32
+            }
+          ]
+        },
+        "outSpeed": {
+          "label": "TANGENT_KP→outSpeed",
+          "segments": [
+            {
+              "from": 0.5,
+              "to": 0.6111,
+              "dx": 0.1111,
+              "dy": -0.0071,
+              "slope": -0.0639
+            },
+            {
+              "from": 0.6111,
+              "to": 0.7222,
+              "dx": 0.1111,
+              "dy": -0.0042,
+              "slope": -0.0378
+            },
+            {
+              "from": 0.7222,
+              "to": 0.8333,
+              "dx": 0.1111,
+              "dy": -0.0026,
+              "slope": -0.0234
+            },
+            {
+              "from": 0.8333,
+              "to": 0.9444,
+              "dx": 0.1111,
+              "dy": -0.0015,
+              "slope": -0.0135
+            },
+            {
+              "from": 0.9444,
+              "to": 1.0556,
+              "dx": 0.1111,
+              "dy": -0.0009,
+              "slope": -0.0081
+            },
+            {
+              "from": 1.0556,
+              "to": 1.1667,
+              "dx": 0.1111,
+              "dy": -0.0006,
+              "slope": -0.0054
+            },
+            {
+              "from": 1.1667,
+              "to": 1.2778,
+              "dx": 0.1111,
+              "dy": -0.0004,
+              "slope": -0.0036
+            },
+            {
+              "from": 1.2778,
+              "to": 1.3889,
+              "dx": 0.1111,
+              "dy": -0.0003,
+              "slope": -0.0027
+            },
+            {
+              "from": 1.3889,
+              "to": 1.5,
+              "dx": 0.1111,
+              "dy": -0.0001,
+              "slope": -0.0009
+            }
+          ],
+          "medianAbsSlope": 0.0081,
+          "flagged": [
+            {
+              "from": 0.5,
+              "to": 0.6111,
+              "dx": 0.1111,
+              "dy": -0.0071,
+              "slope": -0.0639,
+              "medianAbsSlope": 0.0081,
+              "ratio": 7.89
+            },
+            {
+              "from": 0.6111,
+              "to": 0.7222,
+              "dx": 0.1111,
+              "dy": -0.0042,
+              "slope": -0.0378,
+              "medianAbsSlope": 0.0081,
+              "ratio": 4.67
+            }
+          ]
+        },
+        "netClearance": {
+          "label": "TANGENT_KP→netClearance",
+          "segments": [
+            {
+              "from": 0.5,
+              "to": 0.6111,
+              "dx": 0.1111,
+              "dy": -0.0115,
+              "slope": -0.1035
+            },
+            {
+              "from": 0.6111,
+              "to": 0.7222,
+              "dx": 0.1111,
+              "dy": -0.0069,
+              "slope": -0.0621
+            },
+            {
+              "from": 0.7222,
+              "to": 0.8333,
+              "dx": 0.1111,
+              "dy": -0.0042,
+              "slope": -0.0378
+            },
+            {
+              "from": 0.8333,
+              "to": 0.9444,
+              "dx": 0.1111,
+              "dy": -0.0026,
+              "slope": -0.0234
+            },
+            {
+              "from": 0.9444,
+              "to": 1.0556,
+              "dx": 0.1111,
+              "dy": -0.0016,
+              "slope": -0.0144
+            },
+            {
+              "from": 1.0556,
+              "to": 1.1667,
+              "dx": 0.1111,
+              "dy": -0.001,
+              "slope": -0.009
+            },
+            {
+              "from": 1.1667,
+              "to": 1.2778,
+              "dx": 0.1111,
+              "dy": -0.0006,
+              "slope": -0.0054
+            },
+            {
+              "from": 1.2778,
+              "to": 1.3889,
+              "dx": 0.1111,
+              "dy": -0.0004,
+              "slope": -0.0036
+            },
+            {
+              "from": 1.3889,
+              "to": 1.5,
+              "dx": 0.1111,
+              "dy": -0.0003,
+              "slope": -0.0027
+            }
+          ],
+          "medianAbsSlope": 0.0144,
+          "flagged": [
+            {
+              "from": 0.5,
+              "to": 0.6111,
+              "dx": 0.1111,
+              "dy": -0.0115,
+              "slope": -0.1035,
+              "medianAbsSlope": 0.0144,
+              "ratio": 7.19
+            },
+            {
+              "from": 0.6111,
+              "to": 0.7222,
+              "dx": 0.1111,
+              "dy": -0.0069,
+              "slope": -0.0621,
+              "medianAbsSlope": 0.0144,
+              "ratio": 4.31
+            }
+          ]
+        }
+      }
+    },
+    "6B_PADDLE_BLEND": {
+      "param": "PADDLE_BLEND",
+      "deployed": 0.65,
+      "range": [
+        0.3,
+        0.95
+      ],
+      "values": [
+        0,
+        0.4,
+        0.44,
+        0.517,
+        0.5889,
+        0.66111,
+        0.733333,
+        0.8055556,
+        0.87777778,
+        0.95
+      ],
+      "rows": [
+        {
+          "param": "PADDLE_BLEND",
+          "value": 0.3,
+          "outTopspin": 59.1635,
+          "outSidespin": 104.274,
+          "outSpeed": 3.4591,
+          "netClearance": 0.3483,
+          "clearsNet": true,
+          "landing": "no_bounce_recorded",
+          "dwellMs": 5.44,
+          "regime": null,
+          "effectiveEpsilon": -0.9786
+        },
+        {
+          "param": "PADDLE_BLEND",
+          "value": 0.3722,
+          "outTopspin": 51.9116,
+          "outSidespin": 103.8194,
+          "outSpeed": 3.4913,
+          "netClearance": 0.3443,
+          "clearsNet": true,
+          "landing": "no_bounce_recorded",
+          "dwellMs": 5.44,
+          "regime": null,
+          "effectiveEpsilon": -0.974
+        },
+        {
+          "param": "PADDLE_BLEND",
+          "value": 0.4444,
+          "outTopspin": 44.4726,
+          "outSidespin": 103.1644,
+          "outSpeed": 3.5186,
+          "netClearance": 0.2929,
+          "clearsNet": true,
+          "landing": "no_bounce_recorded",
+          "dwellMs": 5.44,
+          "regime": null,
+          "effectiveEpsilon": -0.9697
+        },
+        {
+          "param": "PADDLE_BLEND",
+          "value": 0.5167,
+          "outTopspin": 36.8567,
+          "outSidespin": 102.294,
+          "outSpeed": 3.5411,
+          "netClearance": 0.2124,
+          "clearsNet": true,
+          "landing": "no_bounce_recorded",
+          "dwellMs": 5.44,
+          "regime": null,
+          "effectiveEpsilon": -0.9656
+        },
+        {
+          "param": "PADDLE_BLEND",
+          "value": 0.5889,
+          "outTopspin": 29.1057,
+          "outSidespin": 101.1983,
+          "outSpeed": 3.5585,
+          "netClearance": 0.1132,
+          "clearsNet": true,
+          "landing": "no_bounce_recorded",
+          "dwellMs": 5.44,
+          "regime": null,
+          "effectiveEpsilon": -0.9618
+        },
+        {
+          "param": "PADDLE_BLEND",
+          "value": 0.6611,
+          "outTopspin": 21.2296,
+          "outSidespin": 99.8656,
+          "outSpeed": 3.5708,
+          "netClearance": 0.0009,
+          "clearsNet": true,
+          "landing": "no_bounce_recorded",
+          "dwellMs": 5.44,
+          "regime": null,
+          "effectiveEpsilon": -0.9583
+        },
+        {
+          "param": "PADDLE_BLEND",
+          "value": 0.7333,
+          "outTopspin": 13.2492,
+          "outSidespin": 98.2873,
+          "outSpeed": 3.5782,
+          "netClearance": -0.1214,
+          "clearsNet": false,
+          "landing": "no_bounce_recorded",
+          "dwellMs": 5.44,
+          "regime": null,
+          "effectiveEpsilon": -0.9549
+        },
+        {
+          "param": "PADDLE_BLEND",
+          "value": 0.8056,
+          "outTopspin": 5.1745,
+          "outSidespin": 96.4541,
+          "outSpeed": 3.5804,
+          "netClearance": -0.2524,
+          "clearsNet": false,
+          "landing": "no_bounce_recorded",
+          "dwellMs": 5.44,
+          "regime": null,
+          "effectiveEpsilon": -0.9518
+        },
+        {
+          "param": "PADDLE_BLEND",
+          "value": 0.8778,
+          "outTopspin": -2.951,
+          "outSidespin": 94.3668,
+          "outSpeed": 3.5776,
+          "netClearance": -0.3914,
+          "clearsNet": false,
+          "landing": "no_bounce_recorded",
+          "dwellMs": 5.44,
+          "regime": null,
+          "effectiveEpsilon": -0.9489
+        },
+        {
+          "param": "PADDLE_BLEND",
+          "value": 0.95,
+          "outTopspin": -11.1167,
+          "outSidespin": 92.021,
+          "outSpeed": 3.5698,
+          "netClearance": -0.5388,
+          "clearsNet": false,
+          "landing": "no_bounce_recorded",
+          "dwellMs": 5.44,
+          "regime": null,
+          "effectiveEpsilon": -0.9461
+        }
+      ],
+      "sensitivity": {
+        "outTopspin": {
+          "label": "PADDLE_BLEND→outTopspin",
+          "segments": [
+            {
+              "from": 0.3,
+              "to": 0.3722,
+              "dx": 0.0722,
+              "dy": -7.2519,
+              "slope": -100.4109
+            },
+            {
+              "from": 0.3722,
+              "to": 0.4444,
+              "dx": 0.0722,
+              "dy": -7.439,
+              "slope": -103.0015
+            },
+            {
+              "from": 0.4444,
+              "to": 0.5167,
+              "dx": 0.0722,
+              "dy": -7.6159,
+              "slope": -105.4509
+            },
+            {
+              "from": 0.5167,
+              "to": 0.5889,
+              "dx": 0.0722,
+              "dy": -7.751,
+              "slope": -107.3215
+            },
+            {
+              "from": 0.5889,
+              "to": 0.6611,
+              "dx": 0.0722,
+              "dy": -7.8761,
+              "slope": -109.0537
+            },
+            {
+              "from": 0.6611,
+              "to": 0.7333,
+              "dx": 0.0722,
+              "dy": -7.9804,
+              "slope": -110.4978
+            },
+            {
+              "from": 0.7333,
+              "to": 0.8056,
+              "dx": 0.0722,
+              "dy": -8.0747,
+              "slope": -111.8035
+            },
+            {
+              "from": 0.8056,
+              "to": 0.8778,
+              "dx": 0.0722,
+              "dy": -8.1255,
+              "slope": -112.5069
+            },
+            {
+              "from": 0.8778,
+              "to": 0.95,
+              "dx": 0.0722,
+              "dy": -8.1657,
+              "slope": -113.0635
+            }
+          ],
+          "medianAbsSlope": 109.0537,
+          "flagged": []
+        },
+        "outSpeed": {
+          "label": "PADDLE_BLEND→outSpeed",
+          "segments": [
+            {
+              "from": 0.3,
+              "to": 0.3722,
+              "dx": 0.0722,
+              "dy": 0.0322,
+              "slope": 0.4458
+            },
+            {
+              "from": 0.3722,
+              "to": 0.4444,
+              "dx": 0.0722,
+              "dy": 0.0273,
+              "slope": 0.378
+            },
+            {
+              "from": 0.4444,
+              "to": 0.5167,
+              "dx": 0.0722,
+              "dy": 0.0225,
+              "slope": 0.3115
+            },
+            {
+              "from": 0.5167,
+              "to": 0.5889,
+              "dx": 0.0722,
+              "dy": 0.0174,
+              "slope": 0.2409
+            },
+            {
+              "from": 0.5889,
+              "to": 0.6611,
+              "dx": 0.0722,
+              "dy": 0.0123,
+              "slope": 0.1703
+            },
+            {
+              "from": 0.6611,
+              "to": 0.7333,
+              "dx": 0.0722,
+              "dy": 0.0074,
+              "slope": 0.1025
+            },
+            {
+              "from": 0.7333,
+              "to": 0.8056,
+              "dx": 0.0722,
+              "dy": 0.0022,
+              "slope": 0.0305
+            },
+            {
+              "from": 0.8056,
+              "to": 0.8778,
+              "dx": 0.0722,
+              "dy": -0.0028,
+              "slope": -0.0388
+            },
+            {
+              "from": 0.8778,
+              "to": 0.95,
+              "dx": 0.0722,
+              "dy": -0.0078,
+              "slope": -0.108
+            }
+          ],
+          "medianAbsSlope": 0.1703,
+          "flagged": []
+        },
+        "netClearance": {
+          "label": "PADDLE_BLEND→netClearance",
+          "segments": [
+            {
+              "from": 0.3,
+              "to": 0.3722,
+              "dx": 0.0722,
+              "dy": -0.004,
+              "slope": -0.0554
+            },
+            {
+              "from": 0.3722,
+              "to": 0.4444,
+              "dx": 0.0722,
+              "dy": -0.0514,
+              "slope": -0.7117
+            },
+            {
+              "from": 0.4444,
+              "to": 0.5167,
+              "dx": 0.0722,
+              "dy": -0.0805,
+              "slope": -1.1146
+            },
+            {
+              "from": 0.5167,
+              "to": 0.5889,
+              "dx": 0.0722,
+              "dy": -0.0992,
+              "slope": -1.3735
+            },
+            {
+              "from": 0.5889,
+              "to": 0.6611,
+              "dx": 0.0722,
+              "dy": -0.1123,
+              "slope": -1.5549
+            },
+            {
+              "from": 0.6611,
+              "to": 0.7333,
+              "dx": 0.0722,
+              "dy": -0.1223,
+              "slope": -1.6934
+            },
+            {
+              "from": 0.7333,
+              "to": 0.8056,
+              "dx": 0.0722,
+              "dy": -0.131,
+              "slope": -1.8138
+            },
+            {
+              "from": 0.8056,
+              "to": 0.8778,
+              "dx": 0.0722,
+              "dy": -0.139,
+              "slope": -1.9246
+            },
+            {
+              "from": 0.8778,
+              "to": 0.95,
+              "dx": 0.0722,
+              "dy": -0.1474,
+              "slope": -2.0409
+            }
+          ],
+          "medianAbsSlope": 1.5549,
+          "flagged": []
+        }
+      }
+    },
+    "6C_PADDLE_SPRING_K": {
+      "param": "PADDLE_SPRING_K",
+      "deployed_halfPeriod_ms": 5,
+      "range_ms": [
+        3,
+        7
+      ],
+      "values_ms": [
+        3,
+        3.44,
+        3.89,
+        4.33,
+        4.78,
+        5.22,
+        5.67,
+        6.11,
+        6.56,
+        7
+      ],
+      "rows": [
+        {
+          "param": "PADDLE_SPRING_K",
+          "halfPeriod_ms": 3,
+          "springK": 2960.88,
+          "outTopspin": 20.5285,
+          "outSidespin": 99.6118,
+          "outSpeed": 3.6329,
+          "netClearance": 0.0599,
+          "clearsNet": true,
+          "landing": "no_bounce_recorded",
+          "dwellMs": 3.7,
+          "regime": null,
+          "effectiveEpsilon": -0.976
+        },
+        {
+          "param": "PADDLE_SPRING_K",
+          "halfPeriod_ms": 3.44,
+          "springK": 2246.08,
+          "outTopspin": 21.1928,
+          "outSidespin": 99.776,
+          "outSpeed": 3.6147,
+          "netClearance": 0.048,
+          "clearsNet": true,
+          "landing": "no_bounce_recorded",
+          "dwellMs": 4.08,
+          "regime": null,
+          "effectiveEpsilon": -0.9712
+        },
+        {
+          "param": "PADDLE_SPRING_K",
+          "halfPeriod_ms": 3.89,
+          "springK": 1762.03,
+          "outTopspin": 21.6961,
+          "outSidespin": 99.9004,
+          "outSpeed": 3.6043,
+          "netClearance": 0.0408,
+          "clearsNet": true,
+          "landing": "no_bounce_recorded",
+          "dwellMs": 4.46,
+          "regime": null,
+          "effectiveEpsilon": -0.9686
+        },
+        {
+          "param": "PADDLE_SPRING_K",
+          "halfPeriod_ms": 4.33,
+          "springK": 1419.12,
+          "outTopspin": 22.0589,
+          "outSidespin": 99.9901,
+          "outSpeed": 3.5896,
+          "netClearance": 0.0315,
+          "clearsNet": true,
+          "landing": "no_bounce_recorded",
+          "dwellMs": 4.86,
+          "regime": null,
+          "effectiveEpsilon": -0.9645
+        },
+        {
+          "param": "PADDLE_SPRING_K",
+          "halfPeriod_ms": 4.78,
+          "springK": 1167.38,
+          "outTopspin": 22.3331,
+          "outSidespin": 100.0579,
+          "outSpeed": 3.5766,
+          "netClearance": 0.0233,
+          "clearsNet": true,
+          "landing": "no_bounce_recorded",
+          "dwellMs": 5.24,
+          "regime": null,
+          "effectiveEpsilon": -0.9609
+        },
+        {
+          "param": "PADDLE_SPRING_K",
+          "halfPeriod_ms": 5.22,
+          "springK": 977.13,
+          "outTopspin": 22.5508,
+          "outSidespin": 100.1117,
+          "outSpeed": 3.5606,
+          "netClearance": 0.0137,
+          "clearsNet": true,
+          "landing": "no_bounce_recorded",
+          "dwellMs": 5.66,
+          "regime": null,
+          "effectiveEpsilon": -0.9563
+        },
+        {
+          "param": "PADDLE_SPRING_K",
+          "halfPeriod_ms": 5.67,
+          "springK": 829.87,
+          "outTopspin": 22.7181,
+          "outSidespin": 100.1531,
+          "outSpeed": 3.5515,
+          "netClearance": 0.0079,
+          "clearsNet": true,
+          "landing": "no_bounce_recorded",
+          "dwellMs": 6.08,
+          "regime": null,
+          "effectiveEpsilon": -0.9538
+        },
+        {
+          "param": "PADDLE_SPRING_K",
+          "halfPeriod_ms": 6.11,
+          "springK": 713.55,
+          "outTopspin": 22.8364,
+          "outSidespin": 100.1823,
+          "outSpeed": 3.5443,
+          "netClearance": 0.0034,
+          "clearsNet": true,
+          "landing": "no_bounce_recorded",
+          "dwellMs": 6.5,
+          "regime": null,
+          "effectiveEpsilon": -0.9517
+        },
+        {
+          "param": "PADDLE_SPRING_K",
+          "halfPeriod_ms": 6.56,
+          "springK": 620.08,
+          "outTopspin": 22.9215,
+          "outSidespin": 100.2034,
+          "outSpeed": 3.539,
+          "netClearance": 0.0001,
+          "clearsNet": true,
+          "landing": "no_bounce_recorded",
+          "dwellMs": 6.9,
+          "regime": null,
+          "effectiveEpsilon": -0.9503
+        },
+        {
+          "param": "PADDLE_SPRING_K",
+          "halfPeriod_ms": 7,
+          "springK": 543.84,
+          "outTopspin": 22.9872,
+          "outSidespin": 100.2196,
+          "outSpeed": 3.53,
+          "netClearance": -0.0054,
+          "clearsNet": false,
+          "landing": "no_bounce_recorded",
+          "dwellMs": 7.34,
+          "regime": null,
+          "effectiveEpsilon": -0.9476
+        }
+      ],
+      "sensitivity": {
+        "outTopspin": {
+          "label": "halfPeriod→outTopspin",
+          "segments": [
+            {
+              "from": 0.003,
+              "to": 0.0034,
+              "dx": 0.0004,
+              "dy": 0.6643,
+              "slope": 1494.675
+            },
+            {
+              "from": 0.0034,
+              "to": 0.0039,
+              "dx": 0.0004,
+              "dy": 0.5033,
+              "slope": 1132.425
+            },
+            {
+              "from": 0.0039,
+              "to": 0.0043,
+              "dx": 0.0004,
+              "dy": 0.3628,
+              "slope": 816.3
+            },
+            {
+              "from": 0.0043,
+              "to": 0.0048,
+              "dx": 0.0004,
+              "dy": 0.2742,
+              "slope": 616.95
+            },
+            {
+              "from": 0.0048,
+              "to": 0.0052,
+              "dx": 0.0004,
+              "dy": 0.2177,
+              "slope": 489.825
+            },
+            {
+              "from": 0.0052,
+              "to": 0.0057,
+              "dx": 0.0004,
+              "dy": 0.1673,
+              "slope": 376.425
+            },
+            {
+              "from": 0.0057,
+              "to": 0.0061,
+              "dx": 0.0004,
+              "dy": 0.1183,
+              "slope": 266.175
+            },
+            {
+              "from": 0.0061,
+              "to": 0.0066,
+              "dx": 0.0004,
+              "dy": 0.0851,
+              "slope": 191.475
+            },
+            {
+              "from": 0.0066,
+              "to": 0.007,
+              "dx": 0.0004,
+              "dy": 0.0657,
+              "slope": 147.825
+            }
+          ],
+          "medianAbsSlope": 489.825,
+          "flagged": [
+            {
+              "from": 0.003,
+              "to": 0.0034,
+              "dx": 0.0004,
+              "dy": 0.6643,
+              "slope": 1494.675,
+              "medianAbsSlope": 489.825,
+              "ratio": 3.05
+            }
+          ]
+        },
+        "outSpeed": {
+          "label": "halfPeriod→outSpeed",
+          "segments": [
+            {
+              "from": 0.003,
+              "to": 0.0034,
+              "dx": 0.0004,
+              "dy": -0.0182,
+              "slope": -40.95
+            },
+            {
+              "from": 0.0034,
+              "to": 0.0039,
+              "dx": 0.0004,
+              "dy": -0.0104,
+              "slope": -23.4
+            },
+            {
+              "from": 0.0039,
+              "to": 0.0043,
+              "dx": 0.0004,
+              "dy": -0.0147,
+              "slope": -33.075
+            },
+            {
+              "from": 0.0043,
+              "to": 0.0048,
+              "dx": 0.0004,
+              "dy": -0.013,
+              "slope": -29.25
+            },
+            {
+              "from": 0.0048,
+              "to": 0.0052,
+              "dx": 0.0004,
+              "dy": -0.016,
+              "slope": -36
+            },
+            {
+              "from": 0.0052,
+              "to": 0.0057,
+              "dx": 0.0004,
+              "dy": -0.0091,
+              "slope": -20.475
+            },
+            {
+              "from": 0.0057,
+              "to": 0.0061,
+              "dx": 0.0004,
+              "dy": -0.0072,
+              "slope": -16.2
+            },
+            {
+              "from": 0.0061,
+              "to": 0.0066,
+              "dx": 0.0004,
+              "dy": -0.0053,
+              "slope": -11.925
+            },
+            {
+              "from": 0.0066,
+              "to": 0.007,
+              "dx": 0.0004,
+              "dy": -0.009,
+              "slope": -20.25
+            }
+          ],
+          "medianAbsSlope": 23.4,
+          "flagged": []
+        },
+        "netClearance": {
+          "label": "halfPeriod→netClearance",
+          "segments": [
+            {
+              "from": 0.003,
+              "to": 0.0034,
+              "dx": 0.0004,
+              "dy": -0.0119,
+              "slope": -26.775
+            },
+            {
+              "from": 0.0034,
+              "to": 0.0039,
+              "dx": 0.0004,
+              "dy": -0.0072,
+              "slope": -16.2
+            },
+            {
+              "from": 0.0039,
+              "to": 0.0043,
+              "dx": 0.0004,
+              "dy": -0.0093,
+              "slope": -20.925
+            },
+            {
+              "from": 0.0043,
+              "to": 0.0048,
+              "dx": 0.0004,
+              "dy": -0.0082,
+              "slope": -18.45
+            },
+            {
+              "from": 0.0048,
+              "to": 0.0052,
+              "dx": 0.0004,
+              "dy": -0.0096,
+              "slope": -21.6
+            },
+            {
+              "from": 0.0052,
+              "to": 0.0057,
+              "dx": 0.0004,
+              "dy": -0.0058,
+              "slope": -13.05
+            },
+            {
+              "from": 0.0057,
+              "to": 0.0061,
+              "dx": 0.0004,
+              "dy": -0.0045,
+              "slope": -10.125
+            },
+            {
+              "from": 0.0061,
+              "to": 0.0066,
+              "dx": 0.0004,
+              "dy": -0.0033,
+              "slope": -7.425
+            },
+            {
+              "from": 0.0066,
+              "to": 0.007,
+              "dx": 0.0004,
+              "dy": -0.0055,
+              "slope": -12.375
+            }
+          ],
+          "medianAbsSlope": 16.2,
+          "flagged": []
+        }
+      }
+    },
+    "6D_PADDLE_RESTITUTION_LOW": {
+      "param": "PADDLE_RESTITUTION_LOW",
+      "deployed": 0.9,
+      "range": [
+        0.7,
+        1
+      ],
+      "values": [
+        1,
+        0.7,
+        0.79,
+        0.829,
+        0.8714,
+        0.91429,
+        0.957143,
+        1
+      ],
+      "rows": [
+        {
+          "param": "PADDLE_RESTITUTION_LOW",
+          "value": 0.7,
+          "outTopspin": 22.4199,
+          "outSidespin": 100.0794,
+          "outSpeed": 3.2032,
+          "netClearance": -0.2352,
+          "clearsNet": false,
+          "landing": "no_bounce_recorded",
+          "dwellMs": 5.48,
+          "regime": null,
+          "effectiveEpsilon": -0.8498
+        },
+        {
+          "param": "PADDLE_RESTITUTION_LOW",
+          "value": 0.7429,
+          "outTopspin": 22.4276,
+          "outSidespin": 100.0813,
+          "outSpeed": 3.28,
+          "netClearance": -0.1728,
+          "clearsNet": false,
+          "landing": "no_bounce_recorded",
+          "dwellMs": 5.48,
+          "regime": null,
+          "effectiveEpsilon": -0.8728
+        },
+        {
+          "param": "PADDLE_RESTITUTION_LOW",
+          "value": 0.7857,
+          "outTopspin": 22.4345,
+          "outSidespin": 100.083,
+          "outSpeed": 3.3617,
+          "netClearance": -0.1122,
+          "clearsNet": false,
+          "landing": "no_bounce_recorded",
+          "dwellMs": 5.46,
+          "regime": null,
+          "effectiveEpsilon": -0.8971
+        },
+        {
+          "param": "PADDLE_RESTITUTION_LOW",
+          "value": 0.8286,
+          "outTopspin": 22.4397,
+          "outSidespin": 100.0842,
+          "outSpeed": 3.4382,
+          "netClearance": -0.0604,
+          "clearsNet": false,
+          "landing": "no_bounce_recorded",
+          "dwellMs": 5.46,
+          "regime": null,
+          "effectiveEpsilon": -0.9199
+        },
+        {
+          "param": "PADDLE_RESTITUTION_LOW",
+          "value": 0.8714,
+          "outTopspin": 22.4451,
+          "outSidespin": 100.0856,
+          "outSpeed": 3.5185,
+          "netClearance": -0.0105,
+          "clearsNet": false,
+          "landing": "no_bounce_recorded",
+          "dwellMs": 5.44,
+          "regime": null,
+          "effectiveEpsilon": -0.9438
+        },
+        {
+          "param": "PADDLE_RESTITUTION_LOW",
+          "value": 0.9143,
+          "outTopspin": 22.4499,
+          "outSidespin": 100.0868,
+          "outSpeed": 3.5947,
+          "netClearance": 0.033,
+          "clearsNet": true,
+          "landing": "no_bounce_recorded",
+          "dwellMs": 5.44,
+          "regime": null,
+          "effectiveEpsilon": -0.9663
+        },
+        {
+          "param": "PADDLE_RESTITUTION_LOW",
+          "value": 0.9571,
+          "outTopspin": 22.4516,
+          "outSidespin": 100.0872,
+          "outSpeed": 3.671,
+          "netClearance": 0.0733,
+          "clearsNet": true,
+          "landing": "no_bounce_recorded",
+          "dwellMs": 5.44,
+          "regime": null,
+          "effectiveEpsilon": -0.9889
+        },
+        {
+          "param": "PADDLE_RESTITUTION_LOW",
+          "value": 1,
+          "outTopspin": 22.4548,
+          "outSidespin": 100.088,
+          "outSpeed": 3.7495,
+          "netClearance": 0.1115,
+          "clearsNet": true,
+          "landing": "no_bounce_recorded",
+          "dwellMs": 5.42,
+          "regime": null,
+          "effectiveEpsilon": -1.0121
+        }
+      ],
+      "sensitivity": {
+        "outTopspin": {
+          "label": "REST_LOW→outTopspin",
+          "segments": [
+            {
+              "from": 0.7,
+              "to": 0.7429,
+              "dx": 0.0429,
+              "dy": 0.0077,
+              "slope": 0.1797
+            },
+            {
+              "from": 0.7429,
+              "to": 0.7857,
+              "dx": 0.0429,
+              "dy": 0.0069,
+              "slope": 0.161
+            },
+            {
+              "from": 0.7857,
+              "to": 0.8286,
+              "dx": 0.0429,
+              "dy": 0.0052,
+              "slope": 0.1213
+            },
+            {
+              "from": 0.8286,
+              "to": 0.8714,
+              "dx": 0.0429,
+              "dy": 0.0054,
+              "slope": 0.126
+            },
+            {
+              "from": 0.8714,
+              "to": 0.9143,
+              "dx": 0.0429,
+              "dy": 0.0048,
+              "slope": 0.112
+            },
+            {
+              "from": 0.9143,
+              "to": 0.9571,
+              "dx": 0.0429,
+              "dy": 0.0017,
+              "slope": 0.0397
+            },
+            {
+              "from": 0.9571,
+              "to": 1,
+              "dx": 0.0429,
+              "dy": 0.0032,
+              "slope": 0.0747
+            }
+          ],
+          "medianAbsSlope": 0.1213,
+          "flagged": []
+        },
+        "outSpeed": {
+          "label": "REST_LOW→outSpeed",
+          "segments": [
+            {
+              "from": 0.7,
+              "to": 0.7429,
+              "dx": 0.0429,
+              "dy": 0.0768,
+              "slope": 1.792
+            },
+            {
+              "from": 0.7429,
+              "to": 0.7857,
+              "dx": 0.0429,
+              "dy": 0.0817,
+              "slope": 1.9063
+            },
+            {
+              "from": 0.7857,
+              "to": 0.8286,
+              "dx": 0.0429,
+              "dy": 0.0765,
+              "slope": 1.785
+            },
+            {
+              "from": 0.8286,
+              "to": 0.8714,
+              "dx": 0.0429,
+              "dy": 0.0803,
+              "slope": 1.8737
+            },
+            {
+              "from": 0.8714,
+              "to": 0.9143,
+              "dx": 0.0429,
+              "dy": 0.0762,
+              "slope": 1.778
+            },
+            {
+              "from": 0.9143,
+              "to": 0.9571,
+              "dx": 0.0429,
+              "dy": 0.0763,
+              "slope": 1.7803
+            },
+            {
+              "from": 0.9571,
+              "to": 1,
+              "dx": 0.0429,
+              "dy": 0.0785,
+              "slope": 1.8317
+            }
+          ],
+          "medianAbsSlope": 1.792,
+          "flagged": []
+        },
+        "netClearance": {
+          "label": "REST_LOW→netClearance",
+          "segments": [
+            {
+              "from": 0.7,
+              "to": 0.7429,
+              "dx": 0.0429,
+              "dy": 0.0624,
+              "slope": 1.456
+            },
+            {
+              "from": 0.7429,
+              "to": 0.7857,
+              "dx": 0.0429,
+              "dy": 0.0606,
+              "slope": 1.414
+            },
+            {
+              "from": 0.7857,
+              "to": 0.8286,
+              "dx": 0.0429,
+              "dy": 0.0518,
+              "slope": 1.2087
+            },
+            {
+              "from": 0.8286,
+              "to": 0.8714,
+              "dx": 0.0429,
+              "dy": 0.0499,
+              "slope": 1.1643
+            },
+            {
+              "from": 0.8714,
+              "to": 0.9143,
+              "dx": 0.0429,
+              "dy": 0.0435,
+              "slope": 1.015
+            },
+            {
+              "from": 0.9143,
+              "to": 0.9571,
+              "dx": 0.0429,
+              "dy": 0.0403,
+              "slope": 0.9403
+            },
+            {
+              "from": 0.9571,
+              "to": 1,
+              "dx": 0.0429,
+              "dy": 0.0382,
+              "slope": 0.8913
+            }
+          ],
+          "medianAbsSlope": 1.1643,
+          "flagged": []
+        }
+      }
+    },
+    "6E_PADDLE_RESTITUTION_HIGH": {
+      "param": "PADDLE_RESTITUTION_HIGH",
+      "deployed": 0.75,
+      "range": [
+        0.6,
+        0.9
+      ],
+      "values": [
+        1,
+        0.6,
+        0.69,
+        0.729,
+        0.7714,
+        0.81429,
+        0.857143,
+        0.9
+      ],
+      "rows": [
+        {
+          "param": "PADDLE_RESTITUTION_HIGH",
+          "value": 0.6,
+          "outTopspin": 22.4398,
+          "outSidespin": 100.0843,
+          "outSpeed": 3.4268,
+          "netClearance": -0.0678,
+          "clearsNet": false,
+          "landing": "no_bounce_recorded",
+          "dwellMs": 5.46,
+          "regime": null,
+          "effectiveEpsilon": -0.9165
+        },
+        {
+          "param": "PADDLE_RESTITUTION_HIGH",
+          "value": 0.6429,
+          "outTopspin": 22.4423,
+          "outSidespin": 100.0849,
+          "outSpeed": 3.4665,
+          "netClearance": -0.0423,
+          "clearsNet": false,
+          "landing": "no_bounce_recorded",
+          "dwellMs": 5.46,
+          "regime": null,
+          "effectiveEpsilon": -0.9283
+        },
+        {
+          "param": "PADDLE_RESTITUTION_HIGH",
+          "value": 0.6857,
+          "outTopspin": 22.4444,
+          "outSidespin": 100.0854,
+          "outSpeed": 3.5062,
+          "netClearance": -0.0178,
+          "clearsNet": false,
+          "landing": "no_bounce_recorded",
+          "dwellMs": 5.46,
+          "regime": null,
+          "effectiveEpsilon": -0.9401
+        },
+        {
+          "param": "PADDLE_RESTITUTION_HIGH",
+          "value": 0.7286,
+          "outTopspin": 22.4466,
+          "outSidespin": 100.0859,
+          "outSpeed": 3.5495,
+          "netClearance": 0.0076,
+          "clearsNet": true,
+          "landing": "no_bounce_recorded",
+          "dwellMs": 5.44,
+          "regime": null,
+          "effectiveEpsilon": -0.953
+        },
+        {
+          "param": "PADDLE_RESTITUTION_HIGH",
+          "value": 0.7714,
+          "outTopspin": 22.4494,
+          "outSidespin": 100.0866,
+          "outSpeed": 3.5891,
+          "netClearance": 0.0299,
+          "clearsNet": true,
+          "landing": "no_bounce_recorded",
+          "dwellMs": 5.44,
+          "regime": null,
+          "effectiveEpsilon": -0.9647
+        },
+        {
+          "param": "PADDLE_RESTITUTION_HIGH",
+          "value": 0.8143,
+          "outTopspin": 22.4506,
+          "outSidespin": 100.0869,
+          "outSpeed": 3.6286,
+          "netClearance": 0.0513,
+          "clearsNet": true,
+          "landing": "no_bounce_recorded",
+          "dwellMs": 5.44,
+          "regime": null,
+          "effectiveEpsilon": -0.9764
+        },
+        {
+          "param": "PADDLE_RESTITUTION_HIGH",
+          "value": 0.8571,
+          "outTopspin": 22.4513,
+          "outSidespin": 100.0871,
+          "outSpeed": 3.6683,
+          "netClearance": 0.0719,
+          "clearsNet": true,
+          "landing": "no_bounce_recorded",
+          "dwellMs": 5.44,
+          "regime": null,
+          "effectiveEpsilon": -0.9881
+        },
+        {
+          "param": "PADDLE_RESTITUTION_HIGH",
+          "value": 0.9,
+          "outTopspin": 22.4546,
+          "outSidespin": 100.0879,
+          "outSpeed": 3.7079,
+          "netClearance": 0.0916,
+          "clearsNet": true,
+          "landing": "no_bounce_recorded",
+          "dwellMs": 5.44,
+          "regime": null,
+          "effectiveEpsilon": -0.9998
+        }
+      ],
+      "sensitivity": {
+        "outTopspin": {
+          "label": "REST_HIGH→outTopspin",
+          "segments": [
+            {
+              "from": 0.6,
+              "to": 0.6429,
+              "dx": 0.0429,
+              "dy": 0.0025,
+              "slope": 0.0583
+            },
+            {
+              "from": 0.6429,
+              "to": 0.6857,
+              "dx": 0.0429,
+              "dy": 0.0021,
+              "slope": 0.049
+            },
+            {
+              "from": 0.6857,
+              "to": 0.7286,
+              "dx": 0.0429,
+              "dy": 0.0022,
+              "slope": 0.0513
+            },
+            {
+              "from": 0.7286,
+              "to": 0.7714,
+              "dx": 0.0429,
+              "dy": 0.0028,
+              "slope": 0.0653
+            },
+            {
+              "from": 0.7714,
+              "to": 0.8143,
+              "dx": 0.0429,
+              "dy": 0.0012,
+              "slope": 0.028
+            },
+            {
+              "from": 0.8143,
+              "to": 0.8571,
+              "dx": 0.0429,
+              "dy": 0.0007,
+              "slope": 0.0163
+            },
+            {
+              "from": 0.8571,
+              "to": 0.9,
+              "dx": 0.0429,
+              "dy": 0.0033,
+              "slope": 0.077
+            }
+          ],
+          "medianAbsSlope": 0.0513,
+          "flagged": []
+        },
+        "outSpeed": {
+          "label": "REST_HIGH→outSpeed",
+          "segments": [
+            {
+              "from": 0.6,
+              "to": 0.6429,
+              "dx": 0.0429,
+              "dy": 0.0397,
+              "slope": 0.9263
+            },
+            {
+              "from": 0.6429,
+              "to": 0.6857,
+              "dx": 0.0429,
+              "dy": 0.0397,
+              "slope": 0.9263
+            },
+            {
+              "from": 0.6857,
+              "to": 0.7286,
+              "dx": 0.0429,
+              "dy": 0.0433,
+              "slope": 1.0103
+            },
+            {
+              "from": 0.7286,
+              "to": 0.7714,
+              "dx": 0.0429,
+              "dy": 0.0396,
+              "slope": 0.924
+            },
+            {
+              "from": 0.7714,
+              "to": 0.8143,
+              "dx": 0.0429,
+              "dy": 0.0395,
+              "slope": 0.9217
+            },
+            {
+              "from": 0.8143,
+              "to": 0.8571,
+              "dx": 0.0429,
+              "dy": 0.0397,
+              "slope": 0.9263
+            },
+            {
+              "from": 0.8571,
+              "to": 0.9,
+              "dx": 0.0429,
+              "dy": 0.0396,
+              "slope": 0.924
+            }
+          ],
+          "medianAbsSlope": 0.9263,
+          "flagged": []
+        },
+        "netClearance": {
+          "label": "REST_HIGH→netClearance",
+          "segments": [
+            {
+              "from": 0.6,
+              "to": 0.6429,
+              "dx": 0.0429,
+              "dy": 0.0255,
+              "slope": 0.595
+            },
+            {
+              "from": 0.6429,
+              "to": 0.6857,
+              "dx": 0.0429,
+              "dy": 0.0245,
+              "slope": 0.5717
+            },
+            {
+              "from": 0.6857,
+              "to": 0.7286,
+              "dx": 0.0429,
+              "dy": 0.0254,
+              "slope": 0.5927
+            },
+            {
+              "from": 0.7286,
+              "to": 0.7714,
+              "dx": 0.0429,
+              "dy": 0.0223,
+              "slope": 0.5203
+            },
+            {
+              "from": 0.7714,
+              "to": 0.8143,
+              "dx": 0.0429,
+              "dy": 0.0214,
+              "slope": 0.4993
+            },
+            {
+              "from": 0.8143,
+              "to": 0.8571,
+              "dx": 0.0429,
+              "dy": 0.0206,
+              "slope": 0.4807
+            },
+            {
+              "from": 0.8571,
+              "to": 0.9,
+              "dx": 0.0429,
+              "dy": 0.0197,
+              "slope": 0.4597
+            }
+          ],
+          "medianAbsSlope": 0.5203,
+          "flagged": []
+        }
+      }
+    },
+    "6F_PADDLE_FRICTION": {
+      "param": "PADDLE_FRICTION",
+      "deployed": 0.4,
+      "range": [
+        0.2,
+        0.6
+      ],
+      "values": [
+        0,
+        0.2,
+        0.29,
+        0.333,
+        0.3778,
+        0.42222,
+        0.466667,
+        0.5111111,
+        0.55555556,
+        0.6
+      ],
+      "rows": [
+        {
+          "param": "PADDLE_FRICTION",
+          "value": 0.2,
+          "outTopspin": 22.0015,
+          "outSidespin": 99.9759,
+          "outSpeed": 3.5705,
+          "netClearance": 0.021,
+          "clearsNet": true,
+          "landing": "no_bounce_recorded",
+          "dwellMs": 5.44,
+          "regime": null,
+          "effectiveEpsilon": -0.9588
+        },
+        {
+          "param": "PADDLE_FRICTION",
+          "value": 0.2444,
+          "outTopspin": 22.1838,
+          "outSidespin": 100.021,
+          "outSpeed": 3.57,
+          "netClearance": 0.0202,
+          "clearsNet": true,
+          "landing": "no_bounce_recorded",
+          "dwellMs": 5.44,
+          "regime": null,
+          "effectiveEpsilon": -0.9588
+        },
+        {
+          "param": "PADDLE_FRICTION",
+          "value": 0.2889,
+          "outTopspin": 22.2949,
+          "outSidespin": 100.0484,
+          "outSpeed": 3.5697,
+          "netClearance": 0.0196,
+          "clearsNet": true,
+          "landing": "no_bounce_recorded",
+          "dwellMs": 5.44,
+          "regime": null,
+          "effectiveEpsilon": -0.9588
+        },
+        {
+          "param": "PADDLE_FRICTION",
+          "value": 0.3333,
+          "outTopspin": 22.3707,
+          "outSidespin": 100.0672,
+          "outSpeed": 3.5695,
+          "netClearance": 0.0193,
+          "clearsNet": true,
+          "landing": "no_bounce_recorded",
+          "dwellMs": 5.44,
+          "regime": null,
+          "effectiveEpsilon": -0.9588
+        },
+        {
+          "param": "PADDLE_FRICTION",
+          "value": 0.3778,
+          "outTopspin": 22.4254,
+          "outSidespin": 100.0807,
+          "outSpeed": 3.5693,
+          "netClearance": 0.019,
+          "clearsNet": true,
+          "landing": "no_bounce_recorded",
+          "dwellMs": 5.44,
+          "regime": null,
+          "effectiveEpsilon": -0.9588
+        },
+        {
+          "param": "PADDLE_FRICTION",
+          "value": 0.4222,
+          "outTopspin": 22.4675,
+          "outSidespin": 100.0911,
+          "outSpeed": 3.5692,
+          "netClearance": 0.0188,
+          "clearsNet": true,
+          "landing": "no_bounce_recorded",
+          "dwellMs": 5.44,
+          "regime": null,
+          "effectiveEpsilon": -0.9588
+        },
+        {
+          "param": "PADDLE_FRICTION",
+          "value": 0.4667,
+          "outTopspin": 22.5009,
+          "outSidespin": 100.0994,
+          "outSpeed": 3.5691,
+          "netClearance": 0.0186,
+          "clearsNet": true,
+          "landing": "no_bounce_recorded",
+          "dwellMs": 5.44,
+          "regime": null,
+          "effectiveEpsilon": -0.9588
+        },
+        {
+          "param": "PADDLE_FRICTION",
+          "value": 0.5111,
+          "outTopspin": 22.5279,
+          "outSidespin": 100.106,
+          "outSpeed": 3.569,
+          "netClearance": 0.0185,
+          "clearsNet": true,
+          "landing": "no_bounce_recorded",
+          "dwellMs": 5.44,
+          "regime": null,
+          "effectiveEpsilon": -0.9588
+        },
+        {
+          "param": "PADDLE_FRICTION",
+          "value": 0.5556,
+          "outTopspin": 22.55,
+          "outSidespin": 100.1115,
+          "outSpeed": 3.569,
+          "netClearance": 0.0184,
+          "clearsNet": true,
+          "landing": "no_bounce_recorded",
+          "dwellMs": 5.44,
+          "regime": null,
+          "effectiveEpsilon": -0.9588
+        },
+        {
+          "param": "PADDLE_FRICTION",
+          "value": 0.6,
+          "outTopspin": 22.5685,
+          "outSidespin": 100.1161,
+          "outSpeed": 3.5689,
+          "netClearance": 0.0183,
+          "clearsNet": true,
+          "landing": "no_bounce_recorded",
+          "dwellMs": 5.44,
+          "regime": null,
+          "effectiveEpsilon": -0.9588
+        }
+      ],
+      "sensitivity": {
+        "outTopspin": {
+          "label": "FRICTION→outTopspin",
+          "segments": [
+            {
+              "from": 0.2,
+              "to": 0.2444,
+              "dx": 0.0444,
+              "dy": 0.1823,
+              "slope": 4.1018
+            },
+            {
+              "from": 0.2444,
+              "to": 0.2889,
+              "dx": 0.0444,
+              "dy": 0.1111,
+              "slope": 2.4997
+            },
+            {
+              "from": 0.2889,
+              "to": 0.3333,
+              "dx": 0.0444,
+              "dy": 0.0758,
+              "slope": 1.7055
+            },
+            {
+              "from": 0.3333,
+              "to": 0.3778,
+              "dx": 0.0444,
+              "dy": 0.0547,
+              "slope": 1.2308
+            },
+            {
+              "from": 0.3778,
+              "to": 0.4222,
+              "dx": 0.0444,
+              "dy": 0.0421,
+              "slope": 0.9473
+            },
+            {
+              "from": 0.4222,
+              "to": 0.4667,
+              "dx": 0.0444,
+              "dy": 0.0334,
+              "slope": 0.7515
+            },
+            {
+              "from": 0.4667,
+              "to": 0.5111,
+              "dx": 0.0444,
+              "dy": 0.027,
+              "slope": 0.6075
+            },
+            {
+              "from": 0.5111,
+              "to": 0.5556,
+              "dx": 0.0444,
+              "dy": 0.0221,
+              "slope": 0.4973
+            },
+            {
+              "from": 0.5556,
+              "to": 0.6,
+              "dx": 0.0444,
+              "dy": 0.0185,
+              "slope": 0.4162
+            }
+          ],
+          "medianAbsSlope": 0.9473,
+          "flagged": [
+            {
+              "from": 0.2,
+              "to": 0.2444,
+              "dx": 0.0444,
+              "dy": 0.1823,
+              "slope": 4.1018,
+              "medianAbsSlope": 0.9473,
+              "ratio": 4.33
+            }
+          ]
+        },
+        "outSpeed": {
+          "label": "FRICTION→outSpeed",
+          "segments": [
+            {
+              "from": 0.2,
+              "to": 0.2444,
+              "dx": 0.0444,
+              "dy": -0.0005,
+              "slope": -0.0113
+            },
+            {
+              "from": 0.2444,
+              "to": 0.2889,
+              "dx": 0.0444,
+              "dy": -0.0003,
+              "slope": -0.0067
+            },
+            {
+              "from": 0.2889,
+              "to": 0.3333,
+              "dx": 0.0444,
+              "dy": -0.0002,
+              "slope": -0.0045
+            },
+            {
+              "from": 0.3333,
+              "to": 0.3778,
+              "dx": 0.0444,
+              "dy": -0.0002,
+              "slope": -0.0045
+            },
+            {
+              "from": 0.3778,
+              "to": 0.4222,
+              "dx": 0.0444,
+              "dy": -0.0001,
+              "slope": -0.0023
+            },
+            {
+              "from": 0.4222,
+              "to": 0.4667,
+              "dx": 0.0444,
+              "dy": -0.0001,
+              "slope": -0.0022
+            },
+            {
+              "from": 0.4667,
+              "to": 0.5111,
+              "dx": 0.0444,
+              "dy": -0.0001,
+              "slope": -0.0023
+            },
+            {
+              "from": 0.5111,
+              "to": 0.5556,
+              "dx": 0.0444,
+              "dy": 0,
+              "slope": 0
+            },
+            {
+              "from": 0.5556,
+              "to": 0.6,
+              "dx": 0.0444,
+              "dy": -0.0001,
+              "slope": -0.0022
+            }
+          ],
+          "medianAbsSlope": 0.0023,
+          "flagged": [
+            {
+              "from": 0.2,
+              "to": 0.2444,
+              "dx": 0.0444,
+              "dy": -0.0005,
+              "slope": -0.0113,
+              "medianAbsSlope": 0.0023,
+              "ratio": 4.91
+            }
+          ]
+        },
+        "netClearance": {
+          "label": "FRICTION→netClearance",
+          "segments": [
+            {
+              "from": 0.2,
+              "to": 0.2444,
+              "dx": 0.0444,
+              "dy": -0.0008,
+              "slope": -0.018
+            },
+            {
+              "from": 0.2444,
+              "to": 0.2889,
+              "dx": 0.0444,
+              "dy": -0.0006,
+              "slope": -0.0135
+            },
+            {
+              "from": 0.2889,
+              "to": 0.3333,
+              "dx": 0.0444,
+              "dy": -0.0003,
+              "slope": -0.0067
+            },
+            {
+              "from": 0.3333,
+              "to": 0.3778,
+              "dx": 0.0444,
+              "dy": -0.0003,
+              "slope": -0.0068
+            },
+            {
+              "from": 0.3778,
+              "to": 0.4222,
+              "dx": 0.0444,
+              "dy": -0.0002,
+              "slope": -0.0045
+            },
+            {
+              "from": 0.4222,
+              "to": 0.4667,
+              "dx": 0.0444,
+              "dy": -0.0002,
+              "slope": -0.0045
+            },
+            {
+              "from": 0.4667,
+              "to": 0.5111,
+              "dx": 0.0444,
+              "dy": -0.0001,
+              "slope": -0.0022
+            },
+            {
+              "from": 0.5111,
+              "to": 0.5556,
+              "dx": 0.0444,
+              "dy": -0.0001,
+              "slope": -0.0022
+            },
+            {
+              "from": 0.5556,
+              "to": 0.6,
+              "dx": 0.0444,
+              "dy": -0.0001,
+              "slope": -0.0022
+            }
+          ],
+          "medianAbsSlope": 0.0045,
+          "flagged": [
+            {
+              "from": 0.2,
+              "to": 0.2444,
+              "dx": 0.0444,
+              "dy": -0.0008,
+              "slope": -0.018,
+              "medianAbsSlope": 0.0045,
+              "ratio": 4
+            },
+            {
+              "from": 0.2444,
+              "to": 0.2889,
+              "dx": 0.0444,
+              "dy": -0.0006,
+              "slope": -0.0135,
+              "medianAbsSlope": 0.0045,
+              "ratio": 3
+            }
+          ]
+        }
+      }
+    }
+  }
+}

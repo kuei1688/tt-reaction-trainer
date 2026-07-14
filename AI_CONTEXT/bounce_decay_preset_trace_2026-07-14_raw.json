@@ -1,0 +1,1081 @@
+{
+  "generatedAt": "2026-07-14T10:23:56.956Z",
+  "tool": "bounce-decay-preset-trace.js",
+  "note": "All spin values in real rad/s (multiplied by D=1.528). Uses real preset trajectories with two-bounce tracking.",
+  "simTimeDilation": 1.5275,
+  "presetTraces": [
+    {
+      "presetId": "backspin_long_backhand",
+      "hitPoint": {
+        "x": -0.8814,
+        "y": 0.8927,
+        "z": 2.1382
+      },
+      "hitVel": {
+        "x": -1.4111,
+        "y": -0.1538,
+        "z": 3.389
+      },
+      "hitSpinReal": {
+        "topspin": -41.3497,
+        "sidespin": 84.314
+      },
+      "contactResult": {
+        "outTopspin": 22.4477,
+        "outSidespin": 100.0862,
+        "outSpeed": 3.5693,
+        "dwellMs": 5.44,
+        "regime": null
+      },
+      "serveBounces": [
+        {
+          "bounceNumber": 1,
+          "position": {
+            "x": 0.6307,
+            "y": 0.781,
+            "z": -1.2106
+          },
+          "spinBefore": {
+            "topspin": -125.6637,
+            "sidespin": 0
+          },
+          "spinAfter": {
+            "topspin": -76.7383,
+            "sidespin": 48.9254
+          },
+          "velBefore": {
+            "x": -2.147,
+            "y": -1.86,
+            "z": 4.125
+          },
+          "velAfter": {
+            "x": -1.72,
+            "y": 1.39,
+            "z": 3.6979
+          }
+        },
+        {
+          "bounceNumber": 2,
+          "position": {
+            "x": -0.4934,
+            "y": 0.781,
+            "z": 1.2062
+          },
+          "spinBefore": {
+            "topspin": -76.7383,
+            "sidespin": 48.9254
+          },
+          "spinAfter": {
+            "topspin": -41.3497,
+            "sidespin": 84.314
+          },
+          "velBefore": {
+            "x": -1.72,
+            "y": -1.34,
+            "z": 3.6979
+          },
+          "velAfter": {
+            "x": -1.4111,
+            "y": 1.0012,
+            "z": 3.389
+          }
+        }
+      ],
+      "returnBounces": [],
+      "opponentReceive": {
+        "index": 0,
+        "spinReal": {
+          "topspin": 22.4477,
+          "sidespin": 100.0862
+        },
+        "vel": {
+          "x": -0.9987,
+          "y": 1.5397,
+          "z": -3.0613
+        }
+      }
+    },
+    {
+      "presetId": "no_spin_long_forehand",
+      "hitPoint": {
+        "x": 0.5405,
+        "y": 0.8597,
+        "z": 1.917
+      },
+      "hitVel": {
+        "x": -0.0121,
+        "y": -0.1644,
+        "z": 3.459
+      },
+      "hitSpinReal": {
+        "topspin": 69.3677,
+        "sidespin": 0.9221
+      },
+      "contactResult": {
+        "outTopspin": 68.5455,
+        "outSidespin": 1.0445,
+        "outSpeed": 3.6708,
+        "dwellMs": 5.44,
+        "regime": null
+      },
+      "serveBounces": [
+        {
+          "bounceNumber": 1,
+          "position": {
+            "x": 0.55,
+            "y": 0.781,
+            "z": -0.94
+          },
+          "spinBefore": {
+            "topspin": 0,
+            "sidespin": 0
+          },
+          "spinAfter": {
+            "topspin": 39.5529,
+            "sidespin": 0.9221
+          },
+          "velBefore": {
+            "x": -0.0201,
+            "y": -1.462,
+            "z": 4.0645
+          },
+          "velAfter": {
+            "x": -0.0121,
+            "y": 1.1587,
+            "z": 3.7193
+          }
+        },
+        {
+          "bounceNumber": 2,
+          "position": {
+            "x": 0.5434,
+            "y": 0.781,
+            "z": 1.0811
+          },
+          "spinBefore": {
+            "topspin": 39.5529,
+            "sidespin": 0.9221
+          },
+          "spinAfter": {
+            "topspin": 69.3677,
+            "sidespin": 0.9221
+          },
+          "velBefore": {
+            "x": -0.0121,
+            "y": -1.1163,
+            "z": 3.7193
+          },
+          "velAfter": {
+            "x": -0.0121,
+            "y": 0.8506,
+            "z": 3.459
+          }
+        }
+      ],
+      "returnBounces": [
+        {
+          "bounceNumber": 1,
+          "position": {
+            "x": 0.5312,
+            "y": 0.781,
+            "z": -1.2013
+          },
+          "spinBefore": {
+            "topspin": 68.5455,
+            "sidespin": 1.0445
+          },
+          "spinAfter": {
+            "topspin": 7.5936,
+            "sidespin": 0.825
+          },
+          "velBefore": {
+            "x": -0.0089,
+            "y": -2.2396,
+            "z": -2.9858
+          },
+          "velAfter": {
+            "x": -0.0108,
+            "y": 1.818,
+            "z": -2.4537
+          }
+        }
+      ],
+      "opponentReceive": {
+        "index": 0,
+        "spinReal": {
+          "topspin": 68.5455,
+          "sidespin": 1.0445
+        },
+        "vel": {
+          "x": -0.0089,
+          "y": 2.1354,
+          "z": -2.9858
+        }
+      }
+    },
+    {
+      "presetId": "backspin_long_forehand",
+      "hitPoint": {
+        "x": 0.4225,
+        "y": 0.843,
+        "z": 1.8285
+      },
+      "hitVel": {
+        "x": 0.1803,
+        "y": -0.1795,
+        "z": 3.587
+      },
+      "hitSpinReal": {
+        "topspin": -59.4819,
+        "sidespin": -13.7727
+      },
+      "contactResult": {
+        "outTopspin": 17.3109,
+        "outSidespin": -15.594,
+        "outSpeed": 3.6045,
+        "dwellMs": 5.44,
+        "regime": null
+      },
+      "serveBounces": [
+        {
+          "bounceNumber": 1,
+          "position": {
+            "x": 0.29,
+            "y": 0.781,
+            "z": -0.93
+          },
+          "spinBefore": {
+            "topspin": -125.66,
+            "sidespin": 0
+          },
+          "spinAfter": {
+            "topspin": -86.9937,
+            "sidespin": -13.7727
+          },
+          "velBefore": {
+            "x": 0.3005,
+            "y": -1.4729,
+            "z": 4.1647
+          },
+          "velAfter": {
+            "x": 0.1803,
+            "y": 1.0883,
+            "z": 3.8272
+          }
+        },
+        {
+          "bounceNumber": 2,
+          "position": {
+            "x": 0.3819,
+            "y": 0.781,
+            "z": 1.0214
+          },
+          "spinBefore": {
+            "topspin": -86.9937,
+            "sidespin": -13.7727
+          },
+          "spinAfter": {
+            "topspin": -59.4819,
+            "sidespin": -13.7727
+          },
+          "velBefore": {
+            "x": 0.1803,
+            "y": -1.0467,
+            "z": 3.8272
+          },
+          "velAfter": {
+            "x": 0.1803,
+            "y": 0.7655,
+            "z": 3.587
+          }
+        }
+      ],
+      "returnBounces": [
+        {
+          "bounceNumber": 1,
+          "position": {
+            "x": 0.5241,
+            "y": 0.781,
+            "z": -0.66
+          },
+          "spinBefore": {
+            "topspin": 17.3109,
+            "sidespin": -15.594
+          },
+          "spinAfter": {
+            "topspin": -27.5252,
+            "sidespin": -12.3263
+          },
+          "velBefore": {
+            "x": 0.1329,
+            "y": -1.6433,
+            "z": -3.2554
+          },
+          "velAfter": {
+            "x": 0.1614,
+            "y": 1.3322,
+            "z": -2.8641
+          }
+        }
+      ],
+      "opponentReceive": {
+        "index": 0,
+        "spinReal": {
+          "topspin": 17.3109,
+          "sidespin": -15.594
+        },
+        "vel": {
+          "x": 0.1329,
+          "y": 1.5417,
+          "z": -3.2554
+        }
+      }
+    }
+  ],
+  "topspinSweepByPreset": {
+    "backspin_long_backhand": {
+      "presetId": "backspin_long_backhand",
+      "bounceCount": 2,
+      "topspinValues": [
+        -250,
+        -232.1,
+        -214.29,
+        -196.429,
+        -178.5714,
+        -160.71429,
+        -142.857143,
+        -125,
+        -107.14285714,
+        -89.285714286,
+        -71.4285714286,
+        -53.57142857143,
+        -35.714285714286,
+        -17.8571428571429,
+        0
+      ],
+      "rows": [
+        {
+          "initialTopspin": -250,
+          "bounce1_topspin": -203.404,
+          "bounce1_regime": "sliding",
+          "bounce2_topspin": -169.9124,
+          "bounce2_regime": "sliding",
+          "finalRetention": 67.96
+        },
+        {
+          "initialTopspin": -232.1429,
+          "bounce1_topspin": -185.349,
+          "bounce1_regime": "sliding",
+          "bounce2_topspin": -151.7176,
+          "bounce2_regime": "sliding",
+          "finalRetention": 65.36
+        },
+        {
+          "initialTopspin": -214.2857,
+          "bounce1_topspin": -167.294,
+          "bounce1_regime": "sliding",
+          "bounce2_topspin": -133.5238,
+          "bounce2_regime": "sliding",
+          "finalRetention": 62.31
+        },
+        {
+          "initialTopspin": -196.4286,
+          "bounce1_topspin": -149.239,
+          "bounce1_regime": "sliding",
+          "bounce2_topspin": -115.3311,
+          "bounce2_regime": "sliding",
+          "finalRetention": 58.71
+        },
+        {
+          "initialTopspin": -178.5714,
+          "bounce1_topspin": -131.184,
+          "bounce1_regime": "sliding",
+          "bounce2_topspin": -97.14,
+          "bounce2_regime": "sliding",
+          "finalRetention": 54.4
+        },
+        {
+          "initialTopspin": -160.7143,
+          "bounce1_topspin": -113.129,
+          "bounce1_regime": "sliding",
+          "bounce2_topspin": -78.9513,
+          "bounce2_regime": "sliding",
+          "finalRetention": 49.13
+        },
+        {
+          "initialTopspin": -142.8571,
+          "bounce1_topspin": -95.0739,
+          "bounce1_regime": "sliding",
+          "bounce2_topspin": -60.766,
+          "bounce2_regime": "sliding",
+          "finalRetention": 42.54
+        },
+        {
+          "initialTopspin": -125,
+          "bounce1_topspin": -77.0189,
+          "bounce1_regime": "sliding",
+          "bounce2_topspin": -42.5859,
+          "bounce2_regime": "sliding",
+          "finalRetention": 34.07
+        },
+        {
+          "initialTopspin": -107.1429,
+          "bounce1_topspin": -58.9639,
+          "bounce1_regime": "sliding",
+          "bounce2_topspin": -24.4144,
+          "bounce2_regime": "sliding",
+          "finalRetention": 22.79
+        },
+        {
+          "initialTopspin": -89.2857,
+          "bounce1_topspin": -40.9089,
+          "bounce1_regime": "sliding",
+          "bounce2_topspin": -6.2573,
+          "bounce2_regime": "sliding",
+          "finalRetention": 7.01
+        },
+        {
+          "initialTopspin": -71.4286,
+          "bounce1_topspin": -22.8539,
+          "bounce1_regime": "sliding",
+          "bounce2_topspin": 11.875,
+          "bounce2_regime": "sliding",
+          "finalRetention": -16.63
+        },
+        {
+          "initialTopspin": -53.5714,
+          "bounce1_topspin": -4.7989,
+          "bounce1_regime": "sliding",
+          "bounce2_topspin": 29.9673,
+          "bounce2_regime": "sliding",
+          "finalRetention": -55.94
+        },
+        {
+          "initialTopspin": -35.7143,
+          "bounce1_topspin": 13.2561,
+          "bounce1_regime": "sliding",
+          "bounce2_topspin": 48.0085,
+          "bounce2_regime": "sliding",
+          "finalRetention": -134.42
+        },
+        {
+          "initialTopspin": -17.8571,
+          "bounce1_topspin": 31.3111,
+          "bounce1_regime": "sliding",
+          "bounce2_topspin": 66.0032,
+          "bounce2_regime": "sliding",
+          "finalRetention": -369.62
+        },
+        {
+          "initialTopspin": 0,
+          "bounce1_topspin": 49.3661,
+          "bounce1_regime": "sliding",
+          "bounce2_topspin": 83.9662,
+          "bounce2_regime": "sliding",
+          "finalRetention": null
+        }
+      ],
+      "sensitivity": {
+        "label": "topspin→final_after_2bounces (backspin_long_backhand)",
+        "segments": [
+          {
+            "from": -250,
+            "to": -232.1429,
+            "dx": 17.8571,
+            "dy": 18.1948,
+            "slope": 1.0189
+          },
+          {
+            "from": -232.1429,
+            "to": -214.2857,
+            "dx": 17.8571,
+            "dy": 18.1938,
+            "slope": 1.0189
+          },
+          {
+            "from": -214.2857,
+            "to": -196.4286,
+            "dx": 17.8571,
+            "dy": 18.1927,
+            "slope": 1.0188
+          },
+          {
+            "from": -196.4286,
+            "to": -178.5714,
+            "dx": 17.8571,
+            "dy": 18.1911,
+            "slope": 1.0187
+          },
+          {
+            "from": -178.5714,
+            "to": -160.7143,
+            "dx": 17.8571,
+            "dy": 18.1887,
+            "slope": 1.0186
+          },
+          {
+            "from": -160.7143,
+            "to": -142.8571,
+            "dx": 17.8571,
+            "dy": 18.1853,
+            "slope": 1.0184
+          },
+          {
+            "from": -142.8571,
+            "to": -125,
+            "dx": 17.8571,
+            "dy": 18.1801,
+            "slope": 1.0181
+          },
+          {
+            "from": -125,
+            "to": -107.1429,
+            "dx": 17.8571,
+            "dy": 18.1715,
+            "slope": 1.0176
+          },
+          {
+            "from": -107.1429,
+            "to": -89.2857,
+            "dx": 17.8571,
+            "dy": 18.1571,
+            "slope": 1.0168
+          },
+          {
+            "from": -89.2857,
+            "to": -71.4286,
+            "dx": 17.8571,
+            "dy": 18.1323,
+            "slope": 1.0154
+          },
+          {
+            "from": -71.4286,
+            "to": -53.5714,
+            "dx": 17.8571,
+            "dy": 18.0923,
+            "slope": 1.0132
+          },
+          {
+            "from": -53.5714,
+            "to": -35.7143,
+            "dx": 17.8571,
+            "dy": 18.0412,
+            "slope": 1.0103
+          },
+          {
+            "from": -35.7143,
+            "to": -17.8571,
+            "dx": 17.8571,
+            "dy": 17.9947,
+            "slope": 1.0077
+          },
+          {
+            "from": -17.8571,
+            "to": 0,
+            "dx": 17.8571,
+            "dy": 17.963,
+            "slope": 1.0059
+          }
+        ],
+        "medianAbsSlope": 1.0181,
+        "flagged": []
+      }
+    },
+    "no_spin_long_forehand": {
+      "presetId": "no_spin_long_forehand",
+      "bounceCount": 2,
+      "topspinValues": [
+        -250,
+        -232.1,
+        -214.29,
+        -196.429,
+        -178.5714,
+        -160.71429,
+        -142.857143,
+        -125,
+        -107.14285714,
+        -89.285714286,
+        -71.4285714286,
+        -53.57142857143,
+        -35.714285714286,
+        -17.8571428571429,
+        0
+      ],
+      "rows": [
+        {
+          "initialTopspin": -250,
+          "bounce1_topspin": -213.6036,
+          "bounce1_regime": "sliding",
+          "bounce2_topspin": -185.916,
+          "bounce2_regime": "sliding",
+          "finalRetention": 74.37
+        },
+        {
+          "initialTopspin": -232.1429,
+          "bounce1_topspin": -195.5909,
+          "bounce1_regime": "sliding",
+          "bounce2_topspin": -167.7835,
+          "bounce2_regime": "sliding",
+          "finalRetention": 72.28
+        },
+        {
+          "initialTopspin": -214.2857,
+          "bounce1_topspin": -177.5783,
+          "bounce1_regime": "sliding",
+          "bounce2_topspin": -149.6511,
+          "bounce2_regime": "sliding",
+          "finalRetention": 69.84
+        },
+        {
+          "initialTopspin": -196.4286,
+          "bounce1_topspin": -159.5656,
+          "bounce1_regime": "sliding",
+          "bounce2_topspin": -131.5186,
+          "bounce2_regime": "sliding",
+          "finalRetention": 66.95
+        },
+        {
+          "initialTopspin": -178.5714,
+          "bounce1_topspin": -141.5529,
+          "bounce1_regime": "sliding",
+          "bounce2_topspin": -113.3861,
+          "bounce2_regime": "sliding",
+          "finalRetention": 63.5
+        },
+        {
+          "initialTopspin": -160.7143,
+          "bounce1_topspin": -123.5402,
+          "bounce1_regime": "sliding",
+          "bounce2_topspin": -95.2537,
+          "bounce2_regime": "sliding",
+          "finalRetention": 59.27
+        },
+        {
+          "initialTopspin": -142.8571,
+          "bounce1_topspin": -105.5276,
+          "bounce1_regime": "sliding",
+          "bounce2_topspin": -77.1212,
+          "bounce2_regime": "sliding",
+          "finalRetention": 53.98
+        },
+        {
+          "initialTopspin": -125,
+          "bounce1_topspin": -87.5149,
+          "bounce1_regime": "sliding",
+          "bounce2_topspin": -58.9888,
+          "bounce2_regime": "sliding",
+          "finalRetention": 47.19
+        },
+        {
+          "initialTopspin": -107.1429,
+          "bounce1_topspin": -69.5022,
+          "bounce1_regime": "sliding",
+          "bounce2_topspin": -40.8563,
+          "bounce2_regime": "sliding",
+          "finalRetention": 38.13
+        },
+        {
+          "initialTopspin": -89.2857,
+          "bounce1_topspin": -51.4896,
+          "bounce1_regime": "sliding",
+          "bounce2_topspin": -22.7239,
+          "bounce2_regime": "sliding",
+          "finalRetention": 25.45
+        },
+        {
+          "initialTopspin": -71.4286,
+          "bounce1_topspin": -33.4769,
+          "bounce1_regime": "sliding",
+          "bounce2_topspin": -4.5914,
+          "bounce2_regime": "sliding",
+          "finalRetention": 6.43
+        },
+        {
+          "initialTopspin": -53.5714,
+          "bounce1_topspin": -15.4642,
+          "bounce1_regime": "sliding",
+          "bounce2_topspin": 13.5409,
+          "bounce2_regime": "sliding",
+          "finalRetention": -25.28
+        },
+        {
+          "initialTopspin": -35.7143,
+          "bounce1_topspin": 2.5485,
+          "bounce1_regime": "sliding",
+          "bounce2_topspin": 31.6386,
+          "bounce2_regime": "sliding",
+          "finalRetention": -88.59
+        },
+        {
+          "initialTopspin": -17.8571,
+          "bounce1_topspin": 20.5611,
+          "bounce1_regime": "sliding",
+          "bounce2_topspin": 49.5324,
+          "bounce2_regime": "sliding",
+          "finalRetention": -277.38
+        },
+        {
+          "initialTopspin": 0,
+          "bounce1_topspin": 38.5738,
+          "bounce1_regime": "sliding",
+          "bounce2_topspin": 67.4254,
+          "bounce2_regime": "sliding",
+          "finalRetention": null
+        }
+      ],
+      "sensitivity": {
+        "label": "topspin→final_after_2bounces (no_spin_long_forehand)",
+        "segments": [
+          {
+            "from": -250,
+            "to": -232.1429,
+            "dx": 17.8571,
+            "dy": 18.1325,
+            "slope": 1.0154
+          },
+          {
+            "from": -232.1429,
+            "to": -214.2857,
+            "dx": 17.8571,
+            "dy": 18.1324,
+            "slope": 1.0154
+          },
+          {
+            "from": -214.2857,
+            "to": -196.4286,
+            "dx": 17.8571,
+            "dy": 18.1325,
+            "slope": 1.0154
+          },
+          {
+            "from": -196.4286,
+            "to": -178.5714,
+            "dx": 17.8571,
+            "dy": 18.1325,
+            "slope": 1.0154
+          },
+          {
+            "from": -178.5714,
+            "to": -160.7143,
+            "dx": 17.8571,
+            "dy": 18.1324,
+            "slope": 1.0154
+          },
+          {
+            "from": -160.7143,
+            "to": -142.8571,
+            "dx": 17.8571,
+            "dy": 18.1325,
+            "slope": 1.0154
+          },
+          {
+            "from": -142.8571,
+            "to": -125,
+            "dx": 17.8571,
+            "dy": 18.1324,
+            "slope": 1.0154
+          },
+          {
+            "from": -125,
+            "to": -107.1429,
+            "dx": 17.8571,
+            "dy": 18.1325,
+            "slope": 1.0154
+          },
+          {
+            "from": -107.1429,
+            "to": -89.2857,
+            "dx": 17.8571,
+            "dy": 18.1324,
+            "slope": 1.0154
+          },
+          {
+            "from": -89.2857,
+            "to": -71.4286,
+            "dx": 17.8571,
+            "dy": 18.1325,
+            "slope": 1.0154
+          },
+          {
+            "from": -71.4286,
+            "to": -53.5714,
+            "dx": 17.8571,
+            "dy": 18.1323,
+            "slope": 1.0154
+          },
+          {
+            "from": -53.5714,
+            "to": -35.7143,
+            "dx": 17.8571,
+            "dy": 18.0977,
+            "slope": 1.0135
+          },
+          {
+            "from": -35.7143,
+            "to": -17.8571,
+            "dx": 17.8571,
+            "dy": 17.8938,
+            "slope": 1.0021
+          },
+          {
+            "from": -17.8571,
+            "to": 0,
+            "dx": 17.8571,
+            "dy": 17.893,
+            "slope": 1.002
+          }
+        ],
+        "medianAbsSlope": 1.0154,
+        "flagged": []
+      }
+    },
+    "backspin_long_forehand": {
+      "presetId": "backspin_long_forehand",
+      "bounceCount": 2,
+      "topspinValues": [
+        -250,
+        -232.1,
+        -214.29,
+        -196.429,
+        -178.5714,
+        -160.71429,
+        -142.857143,
+        -125,
+        -107.14285714,
+        -89.285714286,
+        -71.4285714286,
+        -53.57142857143,
+        -35.714285714286,
+        -17.8571428571429,
+        0
+      ],
+      "rows": [
+        {
+          "initialTopspin": -250,
+          "bounce1_topspin": -213.3774,
+          "bounce1_regime": "sliding",
+          "bounce2_topspin": -187.6099,
+          "bounce2_regime": "sliding",
+          "finalRetention": 75.04
+        },
+        {
+          "initialTopspin": -232.1429,
+          "bounce1_topspin": -195.3636,
+          "bounce1_regime": "sliding",
+          "bounce2_topspin": -169.484,
+          "bounce2_regime": "sliding",
+          "finalRetention": 73.01
+        },
+        {
+          "initialTopspin": -214.2857,
+          "bounce1_topspin": -177.3497,
+          "bounce1_regime": "sliding",
+          "bounce2_topspin": -151.3582,
+          "bounce2_regime": "sliding",
+          "finalRetention": 70.63
+        },
+        {
+          "initialTopspin": -196.4286,
+          "bounce1_topspin": -159.3359,
+          "bounce1_regime": "sliding",
+          "bounce2_topspin": -133.2324,
+          "bounce2_regime": "sliding",
+          "finalRetention": 67.83
+        },
+        {
+          "initialTopspin": -178.5714,
+          "bounce1_topspin": -141.3221,
+          "bounce1_regime": "sliding",
+          "bounce2_topspin": -115.1067,
+          "bounce2_regime": "sliding",
+          "finalRetention": 64.46
+        },
+        {
+          "initialTopspin": -160.7143,
+          "bounce1_topspin": -123.3082,
+          "bounce1_regime": "sliding",
+          "bounce2_topspin": -96.9811,
+          "bounce2_regime": "sliding",
+          "finalRetention": 60.34
+        },
+        {
+          "initialTopspin": -142.8571,
+          "bounce1_topspin": -105.2944,
+          "bounce1_regime": "sliding",
+          "bounce2_topspin": -78.8558,
+          "bounce2_regime": "sliding",
+          "finalRetention": 55.2
+        },
+        {
+          "initialTopspin": -125,
+          "bounce1_topspin": -87.2806,
+          "bounce1_regime": "sliding",
+          "bounce2_topspin": -60.7308,
+          "bounce2_regime": "sliding",
+          "finalRetention": 48.58
+        },
+        {
+          "initialTopspin": -107.1429,
+          "bounce1_topspin": -69.2667,
+          "bounce1_regime": "sliding",
+          "bounce2_topspin": -42.6063,
+          "bounce2_regime": "sliding",
+          "finalRetention": 39.77
+        },
+        {
+          "initialTopspin": -89.2857,
+          "bounce1_topspin": -51.2529,
+          "bounce1_regime": "sliding",
+          "bounce2_topspin": -24.4831,
+          "bounce2_regime": "sliding",
+          "finalRetention": 27.42
+        },
+        {
+          "initialTopspin": -71.4286,
+          "bounce1_topspin": -33.2391,
+          "bounce1_regime": "sliding",
+          "bounce2_topspin": -6.3626,
+          "bounce2_regime": "sliding",
+          "finalRetention": 8.91
+        },
+        {
+          "initialTopspin": -53.5714,
+          "bounce1_topspin": -15.2252,
+          "bounce1_regime": "sliding",
+          "bounce2_topspin": 11.7475,
+          "bounce2_regime": "sliding",
+          "finalRetention": -21.93
+        },
+        {
+          "initialTopspin": -35.7143,
+          "bounce1_topspin": 2.7886,
+          "bounce1_regime": "sliding",
+          "bounce2_topspin": 29.8018,
+          "bounce2_regime": "sliding",
+          "finalRetention": -83.45
+        },
+        {
+          "initialTopspin": -17.8571,
+          "bounce1_topspin": 20.8024,
+          "bounce1_regime": "sliding",
+          "bounce2_topspin": 47.7476,
+          "bounce2_regime": "sliding",
+          "finalRetention": -267.39
+        },
+        {
+          "initialTopspin": 0,
+          "bounce1_topspin": 38.8163,
+          "bounce1_regime": "sliding",
+          "bounce2_topspin": 65.6602,
+          "bounce2_regime": "sliding",
+          "finalRetention": null
+        }
+      ],
+      "sensitivity": {
+        "label": "topspin→final_after_2bounces (backspin_long_forehand)",
+        "segments": [
+          {
+            "from": -250,
+            "to": -232.1429,
+            "dx": 17.8571,
+            "dy": 18.1259,
+            "slope": 1.0151
+          },
+          {
+            "from": -232.1429,
+            "to": -214.2857,
+            "dx": 17.8571,
+            "dy": 18.1258,
+            "slope": 1.015
+          },
+          {
+            "from": -214.2857,
+            "to": -196.4286,
+            "dx": 17.8571,
+            "dy": 18.1258,
+            "slope": 1.015
+          },
+          {
+            "from": -196.4286,
+            "to": -178.5714,
+            "dx": 17.8571,
+            "dy": 18.1257,
+            "slope": 1.015
+          },
+          {
+            "from": -178.5714,
+            "to": -160.7143,
+            "dx": 17.8571,
+            "dy": 18.1256,
+            "slope": 1.015
+          },
+          {
+            "from": -160.7143,
+            "to": -142.8571,
+            "dx": 17.8571,
+            "dy": 18.1253,
+            "slope": 1.015
+          },
+          {
+            "from": -142.8571,
+            "to": -125,
+            "dx": 17.8571,
+            "dy": 18.125,
+            "slope": 1.015
+          },
+          {
+            "from": -125,
+            "to": -107.1429,
+            "dx": 17.8571,
+            "dy": 18.1245,
+            "slope": 1.015
+          },
+          {
+            "from": -107.1429,
+            "to": -89.2857,
+            "dx": 17.8571,
+            "dy": 18.1232,
+            "slope": 1.0149
+          },
+          {
+            "from": -89.2857,
+            "to": -71.4286,
+            "dx": 17.8571,
+            "dy": 18.1205,
+            "slope": 1.0147
+          },
+          {
+            "from": -71.4286,
+            "to": -53.5714,
+            "dx": 17.8571,
+            "dy": 18.1101,
+            "slope": 1.0142
+          },
+          {
+            "from": -53.5714,
+            "to": -35.7143,
+            "dx": 17.8571,
+            "dy": 18.0543,
+            "slope": 1.011
+          },
+          {
+            "from": -35.7143,
+            "to": -17.8571,
+            "dx": 17.8571,
+            "dy": 17.9458,
+            "slope": 1.005
+          },
+          {
+            "from": -17.8571,
+            "to": 0,
+            "dx": 17.8571,
+            "dy": 17.9126,
+            "slope": 1.0031
+          }
+        ],
+        "medianAbsSlope": 1.015,
+        "flagged": []
+      }
+    }
+  }
+}

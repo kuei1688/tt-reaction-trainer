@@ -1,0 +1,7202 @@
+{
+  "generatedAt": "2026-07-14T10:28:32.348Z",
+  "tool": "push-rally-closed-loop-sweep.js",
+  "note": "All spin in real rad/s (×D=1.528). Bypasses aim solver. MAX_ROUNDS=10",
+  "grid": {
+    "tiltY": [
+      0.7,
+      0.85,
+      1,
+      1.15,
+      1.3
+    ],
+    "lift": [
+      0.15,
+      0.22,
+      0.3,
+      0.4
+    ],
+    "drive": [
+      0.3,
+      0.45,
+      0.56,
+      0.7
+    ],
+    "totalPerPreset": 80
+  },
+  "presets": {
+    "backspin_long_backhand": {
+      "presetId": "backspin_long_backhand",
+      "grid": {
+        "tiltY": [
+          0.7,
+          0.85,
+          1,
+          1.15,
+          1.3
+        ],
+        "lift": [
+          0.15,
+          0.22,
+          0.3,
+          0.4
+        ],
+        "drive": [
+          0.3,
+          0.45,
+          0.56,
+          0.7
+        ],
+        "totalPoints": 80
+      },
+      "rows": [
+        {
+          "tiltY": 0.7,
+          "lift": 0.15,
+          "drive": 0.3,
+          "rounds": 0,
+          "failReason": "掛網",
+          "classification": "掛網",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -41.3497,
+              "outgoingTS": 14.0665,
+              "outSpeed": 3.6445,
+              "netClearance": -0.1463,
+              "inBounds": false,
+              "netOk": false,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.6445,
+            "minOutSpeed": 3.6445,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 0.7,
+          "lift": 0.15,
+          "drive": 0.45,
+          "rounds": 0,
+          "failReason": "掛網",
+          "classification": "掛網",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -41.3497,
+              "outgoingTS": 15.5117,
+              "outSpeed": 3.8955,
+              "netClearance": -0.0521,
+              "inBounds": false,
+              "netOk": false,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.8955,
+            "minOutSpeed": 3.8955,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 0.7,
+          "lift": 0.15,
+          "drive": 0.56,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -41.3497,
+              "outgoingTS": 16.5724,
+              "outSpeed": 4.0802,
+              "netClearance": 0.0036,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.0802,
+            "minOutSpeed": 4.0802,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 0.7,
+          "lift": 0.15,
+          "drive": 0.7,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -41.3497,
+              "outgoingTS": 17.9235,
+              "outSpeed": 4.3159,
+              "netClearance": 0.062,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.3159,
+            "minOutSpeed": 4.3159,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 0.7,
+          "lift": 0.22,
+          "drive": 0.3,
+          "rounds": 0,
+          "failReason": "掛網",
+          "classification": "掛網",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -41.3497,
+              "outgoingTS": 13.0362,
+              "outSpeed": 3.6773,
+              "netClearance": -0.0846,
+              "inBounds": false,
+              "netOk": false,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.6773,
+            "minOutSpeed": 3.6773,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 0.7,
+          "lift": 0.22,
+          "drive": 0.45,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -41.3497,
+              "outgoingTS": 14.4792,
+              "outSpeed": 3.9269,
+              "netClearance": 0.005,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.9269,
+            "minOutSpeed": 3.9269,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 0.7,
+          "lift": 0.22,
+          "drive": 0.56,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -41.3497,
+              "outgoingTS": 15.5386,
+              "outSpeed": 4.1106,
+              "netClearance": 0.0577,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.1106,
+            "minOutSpeed": 4.1106,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 0.7,
+          "lift": 0.22,
+          "drive": 0.7,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -41.3497,
+              "outgoingTS": 16.888,
+              "outSpeed": 4.3451,
+              "netClearance": 0.1127,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.3451,
+            "minOutSpeed": 4.3451,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 0.7,
+          "lift": 0.3,
+          "drive": 0.3,
+          "rounds": 0,
+          "failReason": "掛網",
+          "classification": "掛網",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -41.3497,
+              "outgoingTS": 11.8697,
+              "outSpeed": 3.7184,
+              "netClearance": -0.0135,
+              "inBounds": false,
+              "netOk": false,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.7184,
+            "minOutSpeed": 3.7184,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 0.7,
+          "lift": 0.3,
+          "drive": 0.45,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -41.3497,
+              "outgoingTS": 13.31,
+              "outSpeed": 3.9662,
+              "netClearance": 0.0706,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.9662,
+            "minOutSpeed": 3.9662,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 0.7,
+          "lift": 0.3,
+          "drive": 0.56,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -41.3497,
+              "outgoingTS": 14.3677,
+              "outSpeed": 4.1487,
+              "netClearance": 0.1199,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.1487,
+            "minOutSpeed": 4.1487,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 0.7,
+          "lift": 0.3,
+          "drive": 0.7,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -41.3497,
+              "outgoingTS": 15.7148,
+              "outSpeed": 4.3817,
+              "netClearance": 0.171,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.3817,
+            "minOutSpeed": 4.3817,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 0.7,
+          "lift": 0.4,
+          "drive": 0.3,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -41.3497,
+              "outgoingTS": 10.4273,
+              "outSpeed": 3.775,
+              "netClearance": 0.076,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.775,
+            "minOutSpeed": 3.775,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 0.7,
+          "lift": 0.4,
+          "drive": 0.45,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -41.3497,
+              "outgoingTS": 11.8637,
+              "outSpeed": 4.0202,
+              "netClearance": 0.1533,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.0202,
+            "minOutSpeed": 4.0202,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 0.7,
+          "lift": 0.4,
+          "drive": 0.56,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -41.3497,
+              "outgoingTS": 12.9191,
+              "outSpeed": 4.201,
+              "netClearance": 0.1981,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.201,
+            "minOutSpeed": 4.201,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 0.7,
+          "lift": 0.4,
+          "drive": 0.7,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -41.3497,
+              "outgoingTS": 14.2629,
+              "outSpeed": 4.432,
+              "netClearance": 0.2443,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.432,
+            "minOutSpeed": 4.432,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 0.85,
+          "lift": 0.15,
+          "drive": 0.3,
+          "rounds": 0,
+          "failReason": "掛網",
+          "classification": "掛網",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -41.3497,
+              "outgoingTS": 19.4473,
+              "outSpeed": 3.6362,
+              "netClearance": -0.0635,
+              "inBounds": false,
+              "netOk": false,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.6362,
+            "minOutSpeed": 3.6362,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 0.85,
+          "lift": 0.15,
+          "drive": 0.45,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -41.3497,
+              "outgoingTS": 21.1092,
+              "outSpeed": 3.8841,
+              "netClearance": 0.0325,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.8841,
+            "minOutSpeed": 3.8841,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 0.85,
+          "lift": 0.15,
+          "drive": 0.56,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -41.3497,
+              "outgoingTS": 22.3285,
+              "outSpeed": 4.0666,
+              "netClearance": 0.0889,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.0666,
+            "minOutSpeed": 4.0666,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 0.85,
+          "lift": 0.15,
+          "drive": 0.7,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -41.3497,
+              "outgoingTS": 23.8821,
+              "outSpeed": 4.2996,
+              "netClearance": 0.1478,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.2996,
+            "minOutSpeed": 4.2996,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 0.85,
+          "lift": 0.22,
+          "drive": 0.3,
+          "rounds": 0,
+          "failReason": "掛網",
+          "classification": "掛網",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -41.3497,
+              "outgoingTS": 18.4345,
+              "outSpeed": 3.6723,
+              "netClearance": -0.0008,
+              "inBounds": false,
+              "netOk": false,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.6723,
+            "minOutSpeed": 3.6723,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 0.85,
+          "lift": 0.22,
+          "drive": 0.45,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -41.3497,
+              "outgoingTS": 20.094,
+              "outSpeed": 3.9187,
+              "netClearance": 0.0905,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.9187,
+            "minOutSpeed": 3.9187,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 0.85,
+          "lift": 0.22,
+          "drive": 0.56,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -41.3497,
+              "outgoingTS": 21.3117,
+              "outSpeed": 4.1001,
+              "netClearance": 0.1439,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.1001,
+            "minOutSpeed": 4.1001,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 0.85,
+          "lift": 0.22,
+          "drive": 0.7,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -41.3497,
+              "outgoingTS": 22.8633,
+              "outSpeed": 4.3318,
+              "netClearance": 0.1994,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.3318,
+            "minOutSpeed": 4.3318,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 0.85,
+          "lift": 0.3,
+          "drive": 0.3,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -41.3497,
+              "outgoingTS": 17.2901,
+              "outSpeed": 3.717,
+              "netClearance": 0.0716,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.717,
+            "minOutSpeed": 3.717,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 0.85,
+          "lift": 0.3,
+          "drive": 0.45,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -41.3497,
+              "outgoingTS": 18.9463,
+              "outSpeed": 3.9615,
+              "netClearance": 0.1573,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.9615,
+            "minOutSpeed": 3.9615,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 0.85,
+          "lift": 0.3,
+          "drive": 0.56,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -41.3497,
+              "outgoingTS": 20.1621,
+              "outSpeed": 4.1416,
+              "netClearance": 0.2073,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.1416,
+            "minOutSpeed": 4.1416,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 0.85,
+          "lift": 0.3,
+          "drive": 0.7,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -41.3497,
+              "outgoingTS": 21.711,
+              "outSpeed": 4.3718,
+              "netClearance": 0.2587,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.3718,
+            "minOutSpeed": 4.3718,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 0.85,
+          "lift": 0.4,
+          "drive": 0.3,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -41.3497,
+              "outgoingTS": 15.8782,
+              "outSpeed": 3.7781,
+              "netClearance": 0.1628,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.7781,
+            "minOutSpeed": 3.7781,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 0.85,
+          "lift": 0.4,
+          "drive": 0.45,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -41.3497,
+              "outgoingTS": 17.5299,
+              "outSpeed": 4.0199,
+              "netClearance": 0.2416,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.0199,
+            "minOutSpeed": 4.0199,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 0.85,
+          "lift": 0.4,
+          "drive": 0.56,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -41.3497,
+              "outgoingTS": 18.7429,
+              "outSpeed": 4.1982,
+              "netClearance": 0.287,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.1982,
+            "minOutSpeed": 4.1982,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 0.85,
+          "lift": 0.4,
+          "drive": 0.7,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -41.3497,
+              "outgoingTS": 20.2881,
+              "outSpeed": 4.4263,
+              "netClearance": 0.3335,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.4263,
+            "minOutSpeed": 4.4263,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1,
+          "lift": 0.15,
+          "drive": 0.3,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -41.3497,
+              "outgoingTS": 24.0548,
+              "outSpeed": 3.6272,
+              "netClearance": 0.0049,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.6272,
+            "minOutSpeed": 3.6272,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1,
+          "lift": 0.15,
+          "drive": 0.45,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -41.3497,
+              "outgoingTS": 25.9023,
+              "outSpeed": 3.8721,
+              "netClearance": 0.1034,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.8721,
+            "minOutSpeed": 3.8721,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1,
+          "lift": 0.15,
+          "drive": 0.56,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -41.3497,
+              "outgoingTS": 27.2572,
+              "outSpeed": 4.0525,
+              "netClearance": 0.161,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.0525,
+            "minOutSpeed": 4.0525,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1,
+          "lift": 0.15,
+          "drive": 0.7,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -41.3497,
+              "outgoingTS": 28.9839,
+              "outSpeed": 4.2829,
+              "netClearance": 0.2207,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.2829,
+            "minOutSpeed": 4.2829,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1,
+          "lift": 0.22,
+          "drive": 0.3,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -41.3497,
+              "outgoingTS": 23.0581,
+              "outSpeed": 3.6661,
+              "netClearance": 0.0688,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.6661,
+            "minOutSpeed": 3.6661,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1,
+          "lift": 0.22,
+          "drive": 0.45,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -41.3497,
+              "outgoingTS": 24.9028,
+              "outSpeed": 3.9093,
+              "netClearance": 0.1624,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.9093,
+            "minOutSpeed": 3.9093,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1,
+          "lift": 0.22,
+          "drive": 0.56,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -41.3497,
+              "outgoingTS": 26.256,
+              "outSpeed": 4.0886,
+              "netClearance": 0.2169,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.0886,
+            "minOutSpeed": 4.0886,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1,
+          "lift": 0.22,
+          "drive": 0.7,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -41.3497,
+              "outgoingTS": 27.9805,
+              "outSpeed": 4.3177,
+              "netClearance": 0.2732,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.3177,
+            "minOutSpeed": 4.3177,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1,
+          "lift": 0.3,
+          "drive": 0.3,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -41.3497,
+              "outgoingTS": 21.9338,
+              "outSpeed": 3.7139,
+              "netClearance": 0.1424,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.7139,
+            "minOutSpeed": 3.7139,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1,
+          "lift": 0.3,
+          "drive": 0.45,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -41.3497,
+              "outgoingTS": 23.7748,
+              "outSpeed": 3.9551,
+              "netClearance": 0.2305,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.9551,
+            "minOutSpeed": 3.9551,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1,
+          "lift": 0.3,
+          "drive": 0.56,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -41.3497,
+              "outgoingTS": 25.1258,
+              "outSpeed": 4.1331,
+              "netClearance": 0.2814,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.1331,
+            "minOutSpeed": 4.1331,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1,
+          "lift": 0.3,
+          "drive": 0.7,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -41.3497,
+              "outgoingTS": 26.8473,
+              "outSpeed": 4.3605,
+              "netClearance": 0.3337,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.3605,
+            "minOutSpeed": 4.3605,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1,
+          "lift": 0.4,
+          "drive": 0.3,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -41.3497,
+              "outgoingTS": 20.5496,
+              "outSpeed": 3.7787,
+              "netClearance": 0.2355,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.7787,
+            "minOutSpeed": 3.7787,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1,
+          "lift": 0.4,
+          "drive": 0.45,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -41.3497,
+              "outgoingTS": 22.3855,
+              "outSpeed": 4.0171,
+              "netClearance": 0.3164,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.0171,
+            "minOutSpeed": 4.0171,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1,
+          "lift": 0.4,
+          "drive": 0.56,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -41.3497,
+              "outgoingTS": 23.7333,
+              "outSpeed": 4.1932,
+              "netClearance": 0.3628,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.1932,
+            "minOutSpeed": 4.1932,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1,
+          "lift": 0.4,
+          "drive": 0.7,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -41.3497,
+              "outgoingTS": 25.4506,
+              "outSpeed": 4.4185,
+              "netClearance": 0.4099,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.4185,
+            "minOutSpeed": 4.4185,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1.15,
+          "lift": 0.15,
+          "drive": 0.3,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -41.3497,
+              "outgoingTS": 27.9926,
+              "outSpeed": 3.6181,
+              "netClearance": 0.0614,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.6181,
+            "minOutSpeed": 3.6181,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1.15,
+          "lift": 0.15,
+          "drive": 0.45,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -41.3497,
+              "outgoingTS": 29.9984,
+              "outSpeed": 3.8602,
+              "netClearance": 0.1628,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.8602,
+            "minOutSpeed": 3.8602,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1.15,
+          "lift": 0.15,
+          "drive": 0.56,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -41.3497,
+              "outgoingTS": 31.4693,
+              "outSpeed": 4.0386,
+              "netClearance": 0.2218,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.0386,
+            "minOutSpeed": 4.0386,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1.15,
+          "lift": 0.15,
+          "drive": 0.7,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -41.3497,
+              "outgoingTS": 33.3436,
+              "outSpeed": 4.2665,
+              "netClearance": 0.2827,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.2665,
+            "minOutSpeed": 4.2665,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1.15,
+          "lift": 0.22,
+          "drive": 0.3,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -41.3497,
+              "outgoingTS": 27.0103,
+              "outSpeed": 3.6593,
+              "netClearance": 0.1263,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.6593,
+            "minOutSpeed": 3.6593,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1.15,
+          "lift": 0.22,
+          "drive": 0.45,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -41.3497,
+              "outgoingTS": 29.0131,
+              "outSpeed": 3.8996,
+              "netClearance": 0.2228,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.8996,
+            "minOutSpeed": 3.8996,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1.15,
+          "lift": 0.22,
+          "drive": 0.56,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -41.3497,
+              "outgoingTS": 30.482,
+              "outSpeed": 4.0769,
+              "netClearance": 0.2787,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.0769,
+            "minOutSpeed": 4.0769,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1.15,
+          "lift": 0.22,
+          "drive": 0.7,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -41.3497,
+              "outgoingTS": 32.3541,
+              "outSpeed": 4.3035,
+              "netClearance": 0.3361,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.3035,
+            "minOutSpeed": 4.3035,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1.15,
+          "lift": 0.3,
+          "drive": 0.3,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -41.3497,
+              "outgoingTS": 25.9039,
+              "outSpeed": 3.7097,
+              "netClearance": 0.2013,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.7097,
+            "minOutSpeed": 3.7097,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1.15,
+          "lift": 0.3,
+          "drive": 0.45,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -41.3497,
+              "outgoingTS": 27.9028,
+              "outSpeed": 3.948,
+              "netClearance": 0.2922,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.948,
+            "minOutSpeed": 3.948,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1.15,
+          "lift": 0.3,
+          "drive": 0.56,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -41.3497,
+              "outgoingTS": 29.3692,
+              "outSpeed": 4.1238,
+              "netClearance": 0.3444,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.1238,
+            "minOutSpeed": 4.1238,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1.15,
+          "lift": 0.3,
+          "drive": 0.7,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -41.3497,
+              "outgoingTS": 31.2382,
+              "outSpeed": 4.3487,
+              "netClearance": 0.3976,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.3487,
+            "minOutSpeed": 4.3487,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1.15,
+          "lift": 0.4,
+          "drive": 0.3,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -41.3497,
+              "outgoingTS": 24.5445,
+              "outSpeed": 3.7777,
+              "netClearance": 0.2961,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.7777,
+            "minOutSpeed": 3.7777,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1.15,
+          "lift": 0.4,
+          "drive": 0.45,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -41.3497,
+              "outgoingTS": 26.5378,
+              "outSpeed": 4.013,
+              "netClearance": 0.3797,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.013,
+            "minOutSpeed": 4.013,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1.15,
+          "lift": 0.4,
+          "drive": 0.56,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -41.3497,
+              "outgoingTS": 28.0007,
+              "outSpeed": 4.187,
+              "netClearance": 0.4272,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.187,
+            "minOutSpeed": 4.187,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1.15,
+          "lift": 0.4,
+          "drive": 0.7,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -41.3497,
+              "outgoingTS": 29.865,
+              "outSpeed": 4.4096,
+              "netClearance": 0.4752,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.4096,
+            "minOutSpeed": 4.4096,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1.3,
+          "lift": 0.15,
+          "drive": 0.3,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -41.3497,
+              "outgoingTS": 31.3635,
+              "outSpeed": 3.6092,
+              "netClearance": 0.1081,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.6092,
+            "minOutSpeed": 3.6092,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1.3,
+          "lift": 0.15,
+          "drive": 0.45,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -41.3497,
+              "outgoingTS": 33.5048,
+              "outSpeed": 3.8487,
+              "netClearance": 0.2126,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.8487,
+            "minOutSpeed": 3.8487,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1.3,
+          "lift": 0.15,
+          "drive": 0.56,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -41.3497,
+              "outgoingTS": 35.0752,
+              "outSpeed": 4.0253,
+              "netClearance": 0.2732,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.0253,
+            "minOutSpeed": 4.0253,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1.3,
+          "lift": 0.15,
+          "drive": 0.7,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -41.3497,
+              "outgoingTS": 37.0751,
+              "outSpeed": 4.251,
+              "netClearance": 0.3354,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.251,
+            "minOutSpeed": 4.251,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1.3,
+          "lift": 0.22,
+          "drive": 0.3,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -41.3497,
+              "outgoingTS": 30.3942,
+              "outSpeed": 3.6524,
+              "netClearance": 0.174,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.6524,
+            "minOutSpeed": 3.6524,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1.3,
+          "lift": 0.22,
+          "drive": 0.45,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -41.3497,
+              "outgoingTS": 32.5324,
+              "outSpeed": 3.8901,
+              "netClearance": 0.2737,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.8901,
+            "minOutSpeed": 3.8901,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1.3,
+          "lift": 0.22,
+          "drive": 0.56,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -41.3497,
+              "outgoingTS": 34.1005,
+              "outSpeed": 4.0655,
+              "netClearance": 0.331,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.0655,
+            "minOutSpeed": 4.0655,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1.3,
+          "lift": 0.22,
+          "drive": 0.7,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -41.3497,
+              "outgoingTS": 36.0982,
+              "outSpeed": 4.2898,
+              "netClearance": 0.3897,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.2898,
+            "minOutSpeed": 4.2898,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1.3,
+          "lift": 0.3,
+          "drive": 0.3,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -41.3497,
+              "outgoingTS": 29.304,
+              "outSpeed": 3.705,
+              "netClearance": 0.2503,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.705,
+            "minOutSpeed": 3.705,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1.3,
+          "lift": 0.3,
+          "drive": 0.45,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -41.3497,
+              "outgoingTS": 31.4379,
+              "outSpeed": 3.9405,
+              "netClearance": 0.3441,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.9405,
+            "minOutSpeed": 3.9405,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1.3,
+          "lift": 0.3,
+          "drive": 0.56,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -41.3497,
+              "outgoingTS": 33.0031,
+              "outSpeed": 4.1145,
+              "netClearance": 0.3978,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.1145,
+            "minOutSpeed": 4.1145,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1.3,
+          "lift": 0.3,
+          "drive": 0.7,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -41.3497,
+              "outgoingTS": 34.9978,
+              "outSpeed": 4.3371,
+              "netClearance": 0.4523,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.3371,
+            "minOutSpeed": 4.3371,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1.3,
+          "lift": 0.4,
+          "drive": 0.3,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -41.3497,
+              "outgoingTS": 27.9666,
+              "outSpeed": 3.7756,
+              "netClearance": 0.3468,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.7756,
+            "minOutSpeed": 3.7756,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1.3,
+          "lift": 0.4,
+          "drive": 0.45,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -41.3497,
+              "outgoingTS": 30.0944,
+              "outSpeed": 4.0082,
+              "netClearance": 0.4332,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.0082,
+            "minOutSpeed": 4.0082,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1.3,
+          "lift": 0.4,
+          "drive": 0.56,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -41.3497,
+              "outgoingTS": 31.6556,
+              "outSpeed": 4.1802,
+              "netClearance": 0.4821,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.1802,
+            "minOutSpeed": 4.1802,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1.3,
+          "lift": 0.4,
+          "drive": 0.7,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -41.3497,
+              "outgoingTS": 33.6457,
+              "outSpeed": 4.4005,
+              "netClearance": 0.5313,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.4005,
+            "minOutSpeed": 4.4005,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        }
+      ],
+      "classificationCounts": {
+        "掛網": 6,
+        "飛出界": 74
+      },
+      "stableBounds": {
+        "count": 0
+      }
+    },
+    "no_spin_long_forehand": {
+      "presetId": "no_spin_long_forehand",
+      "grid": {
+        "tiltY": [
+          0.7,
+          0.85,
+          1,
+          1.15,
+          1.3
+        ],
+        "lift": [
+          0.15,
+          0.22,
+          0.3,
+          0.4
+        ],
+        "drive": [
+          0.3,
+          0.45,
+          0.56,
+          0.7
+        ],
+        "totalPoints": 80
+      },
+      "rows": [
+        {
+          "tiltY": 0.7,
+          "lift": 0.15,
+          "drive": 0.3,
+          "rounds": 1,
+          "failReason": "掛網",
+          "classification": "掛網",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": 69.3677,
+              "outgoingTS": 59.5388,
+              "outSpeed": 3.6584,
+              "netClearance": 0.2362,
+              "inBounds": true,
+              "netOk": true,
+              "isBackspin": false
+            },
+            {
+              "round": 2,
+              "incomingTS": -8.3921,
+              "outgoingTS": 21.3677,
+              "outSpeed": 3.0279,
+              "netClearance": -0.1115,
+              "inBounds": false,
+              "netOk": false,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.6584,
+            "minOutSpeed": 3.0279,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": -0.6305
+          }
+        },
+        {
+          "tiltY": 0.7,
+          "lift": 0.15,
+          "drive": 0.45,
+          "rounds": 1,
+          "failReason": "掛網",
+          "classification": "掛網",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": 69.3677,
+              "outgoingTS": 60.9837,
+              "outSpeed": 3.9092,
+              "netClearance": 0.2904,
+              "inBounds": true,
+              "netOk": true,
+              "isBackspin": false
+            },
+            {
+              "round": 2,
+              "incomingTS": -9.2598,
+              "outgoingTS": 25.0958,
+              "outSpeed": 3.4935,
+              "netClearance": -0.069,
+              "inBounds": false,
+              "netOk": false,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.9092,
+            "minOutSpeed": 3.4935,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": -0.4157
+          }
+        },
+        {
+          "tiltY": 0.7,
+          "lift": 0.15,
+          "drive": 0.56,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": 69.3677,
+              "outgoingTS": 62.0426,
+              "outSpeed": 4.0938,
+              "netClearance": 0.3207,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.0938,
+            "minOutSpeed": 4.0938,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 0.7,
+          "lift": 0.15,
+          "drive": 0.7,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": 69.3677,
+              "outgoingTS": 63.3903,
+              "outSpeed": 4.3292,
+              "netClearance": 0.3507,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.3292,
+            "minOutSpeed": 4.3292,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 0.7,
+          "lift": 0.22,
+          "drive": 0.3,
+          "rounds": 1,
+          "failReason": "掛網",
+          "classification": "掛網",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": 69.3677,
+              "outgoingTS": 58.5003,
+              "outSpeed": 3.698,
+              "netClearance": 0.2914,
+              "inBounds": true,
+              "netOk": true,
+              "isBackspin": false
+            },
+            {
+              "round": 2,
+              "incomingTS": -5.1016,
+              "outgoingTS": 21.4211,
+              "outSpeed": 3.0451,
+              "netClearance": -0.1272,
+              "inBounds": false,
+              "netOk": false,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.698,
+            "minOutSpeed": 3.0451,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": -0.6529
+          }
+        },
+        {
+          "tiltY": 0.7,
+          "lift": 0.22,
+          "drive": 0.45,
+          "rounds": 1,
+          "failReason": "掛網",
+          "classification": "掛網",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": 69.3677,
+              "outgoingTS": 59.9436,
+              "outSpeed": 3.9468,
+              "netClearance": 0.3417,
+              "inBounds": true,
+              "netOk": true,
+              "isBackspin": false
+            },
+            {
+              "round": 2,
+              "incomingTS": -5.9642,
+              "outgoingTS": 25.144,
+              "outSpeed": 3.5077,
+              "netClearance": -0.0816,
+              "inBounds": false,
+              "netOk": false,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.9468,
+            "minOutSpeed": 3.5077,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": -0.4391
+          }
+        },
+        {
+          "tiltY": 0.7,
+          "lift": 0.22,
+          "drive": 0.56,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": 69.3677,
+              "outgoingTS": 61.0011,
+              "outSpeed": 4.13,
+              "netClearance": 0.3695,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.13,
+            "minOutSpeed": 4.13,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 0.7,
+          "lift": 0.22,
+          "drive": 0.7,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": 69.3677,
+              "outgoingTS": 62.3474,
+              "outSpeed": 4.3639,
+              "netClearance": 0.3966,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.3639,
+            "minOutSpeed": 4.3639,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 0.7,
+          "lift": 0.3,
+          "drive": 0.3,
+          "rounds": 1,
+          "failReason": "掛網",
+          "classification": "掛網",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": 69.3677,
+              "outgoingTS": 57.3245,
+              "outSpeed": 3.7467,
+              "netClearance": 0.3551,
+              "inBounds": true,
+              "netOk": true,
+              "isBackspin": false
+            },
+            {
+              "round": 2,
+              "incomingTS": -1.0856,
+              "outgoingTS": 21.3439,
+              "outSpeed": 3.0718,
+              "netClearance": -0.0893,
+              "inBounds": false,
+              "netOk": false,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.7467,
+            "minOutSpeed": 3.0718,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": -0.6749
+          }
+        },
+        {
+          "tiltY": 0.7,
+          "lift": 0.3,
+          "drive": 0.45,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": 69.3677,
+              "outgoingTS": 58.7655,
+              "outSpeed": 3.993,
+              "netClearance": 0.4008,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.993,
+            "minOutSpeed": 3.993,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 0.7,
+          "lift": 0.3,
+          "drive": 0.56,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": 69.3677,
+              "outgoingTS": 59.8215,
+              "outSpeed": 4.1745,
+              "netClearance": 0.4256,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.1745,
+            "minOutSpeed": 4.1745,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 0.7,
+          "lift": 0.3,
+          "drive": 0.7,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": 69.3677,
+              "outgoingTS": 61.1658,
+              "outSpeed": 4.4065,
+              "netClearance": 0.4493,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.4065,
+            "minOutSpeed": 4.4065,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 0.7,
+          "lift": 0.4,
+          "drive": 0.3,
+          "rounds": 1,
+          "failReason": "掛網",
+          "classification": "掛網",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": 69.3677,
+              "outgoingTS": 55.8707,
+              "outSpeed": 3.8123,
+              "netClearance": 0.4356,
+              "inBounds": true,
+              "netOk": true,
+              "isBackspin": false
+            },
+            {
+              "round": 2,
+              "incomingTS": 3.4214,
+              "outgoingTS": 21.7704,
+              "outSpeed": 3.1091,
+              "netClearance": -0.0443,
+              "inBounds": false,
+              "netOk": false,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.8123,
+            "minOutSpeed": 3.1091,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": -0.7032
+          }
+        },
+        {
+          "tiltY": 0.7,
+          "lift": 0.4,
+          "drive": 0.45,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": 69.3677,
+              "outgoingTS": 57.3084,
+              "outSpeed": 4.0553,
+              "netClearance": 0.4755,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.0553,
+            "minOutSpeed": 4.0553,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 0.7,
+          "lift": 0.4,
+          "drive": 0.56,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": 69.3677,
+              "outgoingTS": 58.362,
+              "outSpeed": 4.2347,
+              "netClearance": 0.4964,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.2347,
+            "minOutSpeed": 4.2347,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 0.7,
+          "lift": 0.4,
+          "drive": 0.7,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": 69.3677,
+              "outgoingTS": 59.7035,
+              "outSpeed": 4.4641,
+              "netClearance": 0.5158,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.4641,
+            "minOutSpeed": 4.4641,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 0.85,
+          "lift": 0.15,
+          "drive": 0.3,
+          "rounds": 1,
+          "failReason": "掛網",
+          "classification": "掛網",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": 69.3677,
+              "outgoingTS": 65.0576,
+              "outSpeed": 3.6559,
+              "netClearance": 0.3191,
+              "inBounds": true,
+              "netOk": true,
+              "isBackspin": false
+            },
+            {
+              "round": 2,
+              "incomingTS": -9.6107,
+              "outgoingTS": 23.795,
+              "outSpeed": 2.912,
+              "netClearance": -0.0501,
+              "inBounds": false,
+              "netOk": false,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.6559,
+            "minOutSpeed": 2.912,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": -0.7439
+          }
+        },
+        {
+          "tiltY": 0.85,
+          "lift": 0.15,
+          "drive": 0.45,
+          "rounds": 1,
+          "failReason": "掛網",
+          "classification": "掛網",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": 69.3677,
+              "outgoingTS": 66.719,
+              "outSpeed": 3.9029,
+              "netClearance": 0.375,
+              "inBounds": true,
+              "netOk": true,
+              "isBackspin": false
+            },
+            {
+              "round": 2,
+              "incomingTS": -10.8703,
+              "outgoingTS": 27.8478,
+              "outSpeed": 3.3746,
+              "netClearance": -0.1068,
+              "inBounds": false,
+              "netOk": false,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.9029,
+            "minOutSpeed": 3.3746,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": -0.5283
+          }
+        },
+        {
+          "tiltY": 0.85,
+          "lift": 0.15,
+          "drive": 0.56,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": 69.3677,
+              "outgoingTS": 67.9374,
+              "outSpeed": 4.0849,
+              "netClearance": 0.4058,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.0849,
+            "minOutSpeed": 4.0849,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 0.85,
+          "lift": 0.15,
+          "drive": 0.7,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": 69.3677,
+              "outgoingTS": 69.4881,
+              "outSpeed": 4.3171,
+              "netClearance": 0.4359,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.3171,
+            "minOutSpeed": 4.3171,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 0.85,
+          "lift": 0.22,
+          "drive": 0.3,
+          "rounds": 1,
+          "failReason": "掛網",
+          "classification": "掛網",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": 69.3677,
+              "outgoingTS": 64.0357,
+              "outSpeed": 3.6987,
+              "netClearance": 0.3757,
+              "inBounds": true,
+              "netOk": true,
+              "isBackspin": false
+            },
+            {
+              "round": 2,
+              "incomingTS": -6.3286,
+              "outgoingTS": 23.8229,
+              "outSpeed": 2.9322,
+              "netClearance": -0.0141,
+              "inBounds": false,
+              "netOk": false,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.6987,
+            "minOutSpeed": 2.9322,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": -0.7665
+          }
+        },
+        {
+          "tiltY": 0.85,
+          "lift": 0.22,
+          "drive": 0.45,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": 69.3677,
+              "outgoingTS": 65.6953,
+              "outSpeed": 3.9436,
+              "netClearance": 0.4276,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.9436,
+            "minOutSpeed": 3.9436,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 0.85,
+          "lift": 0.22,
+          "drive": 0.56,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": 69.3677,
+              "outgoingTS": 66.9121,
+              "outSpeed": 4.1241,
+              "netClearance": 0.4558,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.1241,
+            "minOutSpeed": 4.1241,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 0.85,
+          "lift": 0.22,
+          "drive": 0.7,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": 69.3677,
+              "outgoingTS": 68.4611,
+              "outSpeed": 4.3547,
+              "netClearance": 0.4829,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.3547,
+            "minOutSpeed": 4.3547,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 0.85,
+          "lift": 0.3,
+          "drive": 0.3,
+          "rounds": 1,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": 69.3677,
+              "outgoingTS": 62.8809,
+              "outSpeed": 3.7509,
+              "netClearance": 0.4411,
+              "inBounds": true,
+              "netOk": true,
+              "isBackspin": false
+            },
+            {
+              "round": 2,
+              "incomingTS": -2.3261,
+              "outgoingTS": 24.2115,
+              "outSpeed": 2.9564,
+              "netClearance": 0.0314,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.7509,
+            "minOutSpeed": 2.9564,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": -0.7945
+          }
+        },
+        {
+          "tiltY": 0.85,
+          "lift": 0.3,
+          "drive": 0.45,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": 69.3677,
+              "outgoingTS": 64.5378,
+              "outSpeed": 3.9932,
+              "netClearance": 0.4883,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.9932,
+            "minOutSpeed": 3.9932,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 0.85,
+          "lift": 0.3,
+          "drive": 0.56,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": 69.3677,
+              "outgoingTS": 65.7527,
+              "outSpeed": 4.172,
+              "netClearance": 0.5134,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.172,
+            "minOutSpeed": 4.172,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 0.85,
+          "lift": 0.3,
+          "drive": 0.7,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": 69.3677,
+              "outgoingTS": 67.2994,
+              "outSpeed": 4.4006,
+              "netClearance": 0.5371,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.4006,
+            "minOutSpeed": 4.4006,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 0.85,
+          "lift": 0.4,
+          "drive": 0.3,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": 69.3677,
+              "outgoingTS": 61.4562,
+              "outSpeed": 3.8208,
+              "netClearance": 0.5239,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.8208,
+            "minOutSpeed": 3.8208,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 0.85,
+          "lift": 0.4,
+          "drive": 0.45,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": 69.3677,
+              "outgoingTS": 63.1093,
+              "outSpeed": 4.0597,
+              "netClearance": 0.565,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.0597,
+            "minOutSpeed": 4.0597,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 0.85,
+          "lift": 0.4,
+          "drive": 0.56,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": 69.3677,
+              "outgoingTS": 64.3214,
+              "outSpeed": 4.2363,
+              "netClearance": 0.5862,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.2363,
+            "minOutSpeed": 4.2363,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 0.85,
+          "lift": 0.4,
+          "drive": 0.7,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": 69.3677,
+              "outgoingTS": 65.8647,
+              "outSpeed": 4.4622,
+              "netClearance": 0.6054,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.4622,
+            "minOutSpeed": 4.4622,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1,
+          "lift": 0.15,
+          "drive": 0.3,
+          "rounds": 1,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": 69.3677,
+              "outgoingTS": 69.7874,
+              "outSpeed": 3.6518,
+              "netClearance": 0.3894,
+              "inBounds": true,
+              "netOk": true,
+              "isBackspin": false
+            },
+            {
+              "round": 2,
+              "incomingTS": -11.2363,
+              "outgoingTS": 25.2515,
+              "outSpeed": 2.808,
+              "netClearance": 0.0486,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.6518,
+            "minOutSpeed": 2.808,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": -0.8438
+          }
+        },
+        {
+          "tiltY": 1,
+          "lift": 0.15,
+          "drive": 0.45,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": 69.3677,
+              "outgoingTS": 71.6348,
+              "outSpeed": 3.8952,
+              "netClearance": 0.4475,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.8952,
+            "minOutSpeed": 3.8952,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1,
+          "lift": 0.15,
+          "drive": 0.56,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": 69.3677,
+              "outgoingTS": 72.9892,
+              "outSpeed": 4.0747,
+              "netClearance": 0.4792,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.0747,
+            "minOutSpeed": 4.0747,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1,
+          "lift": 0.15,
+          "drive": 0.7,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": 69.3677,
+              "outgoingTS": 74.7137,
+              "outSpeed": 4.3039,
+              "netClearance": 0.5098,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.3039,
+            "minOutSpeed": 4.3039,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1,
+          "lift": 0.22,
+          "drive": 0.3,
+          "rounds": 1,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": 69.3677,
+              "outgoingTS": 68.7807,
+              "outSpeed": 3.6973,
+              "netClearance": 0.4474,
+              "inBounds": true,
+              "netOk": true,
+              "isBackspin": false
+            },
+            {
+              "round": 2,
+              "incomingTS": -7.9609,
+              "outgoingTS": 25.2588,
+              "outSpeed": 2.8307,
+              "netClearance": 0.0943,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.6973,
+            "minOutSpeed": 2.8307,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": -0.8666
+          }
+        },
+        {
+          "tiltY": 1,
+          "lift": 0.22,
+          "drive": 0.45,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": 69.3677,
+              "outgoingTS": 70.6257,
+              "outSpeed": 3.9385,
+              "netClearance": 0.5014,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.9385,
+            "minOutSpeed": 3.9385,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1,
+          "lift": 0.22,
+          "drive": 0.56,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": 69.3677,
+              "outgoingTS": 71.9787,
+              "outSpeed": 4.1165,
+              "netClearance": 0.5304,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.1165,
+            "minOutSpeed": 4.1165,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1,
+          "lift": 0.22,
+          "drive": 0.7,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": 69.3677,
+              "outgoingTS": 73.7012,
+              "outSpeed": 4.344,
+              "netClearance": 0.558,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.344,
+            "minOutSpeed": 4.344,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1,
+          "lift": 0.3,
+          "drive": 0.3,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": 69.3677,
+              "outgoingTS": 67.6451,
+              "outSpeed": 3.7524,
+              "netClearance": 0.5146,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.7524,
+            "minOutSpeed": 3.7524,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1,
+          "lift": 0.3,
+          "drive": 0.45,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": 69.3677,
+              "outgoingTS": 69.4869,
+              "outSpeed": 3.991,
+              "netClearance": 0.5637,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.991,
+            "minOutSpeed": 3.991,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1,
+          "lift": 0.3,
+          "drive": 0.56,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": 69.3677,
+              "outgoingTS": 70.8378,
+              "outSpeed": 4.1672,
+              "netClearance": 0.5896,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.1672,
+            "minOutSpeed": 4.1672,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1,
+          "lift": 0.3,
+          "drive": 0.7,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": 69.3677,
+              "outgoingTS": 72.5578,
+              "outSpeed": 4.3927,
+              "netClearance": 0.6135,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.3927,
+            "minOutSpeed": 4.3927,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1,
+          "lift": 0.4,
+          "drive": 0.3,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": 69.3677,
+              "outgoingTS": 66.247,
+              "outSpeed": 3.8259,
+              "netClearance": 0.5996,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.8259,
+            "minOutSpeed": 3.8259,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1,
+          "lift": 0.4,
+          "drive": 0.45,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": 69.3677,
+              "outgoingTS": 68.0843,
+              "outSpeed": 4.061,
+              "netClearance": 0.6425,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.061,
+            "minOutSpeed": 4.061,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1,
+          "lift": 0.4,
+          "drive": 0.56,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": 69.3677,
+              "outgoingTS": 69.4321,
+              "outSpeed": 4.2349,
+              "netClearance": 0.6643,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.2349,
+            "minOutSpeed": 4.2349,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1,
+          "lift": 0.4,
+          "drive": 0.7,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": 69.3677,
+              "outgoingTS": 71.1482,
+              "outSpeed": 4.4577,
+              "netClearance": 0.6836,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.4577,
+            "minOutSpeed": 4.4577,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1.15,
+          "lift": 0.15,
+          "drive": 0.3,
+          "rounds": 1,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": 69.3677,
+              "outgoingTS": 73.8329,
+              "outSpeed": 3.6468,
+              "netClearance": 0.4488,
+              "inBounds": true,
+              "netOk": true,
+              "isBackspin": false
+            },
+            {
+              "round": 2,
+              "incomingTS": -12.527,
+              "outgoingTS": 26.5309,
+              "outSpeed": 2.7088,
+              "netClearance": 0.1307,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.6468,
+            "minOutSpeed": 2.7088,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": -0.938
+          }
+        },
+        {
+          "tiltY": 1.15,
+          "lift": 0.15,
+          "drive": 0.45,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": 69.3677,
+              "outgoingTS": 75.8393,
+              "outSpeed": 3.8869,
+              "netClearance": 0.5095,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.8869,
+            "minOutSpeed": 3.8869,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1.15,
+          "lift": 0.15,
+          "drive": 0.56,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": 69.3677,
+              "outgoingTS": 77.3099,
+              "outSpeed": 4.064,
+              "netClearance": 0.5424,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.064,
+            "minOutSpeed": 4.064,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1.15,
+          "lift": 0.15,
+          "drive": 0.7,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": 69.3677,
+              "outgoingTS": 79.1829,
+              "outSpeed": 4.2904,
+              "netClearance": 0.5738,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.2904,
+            "minOutSpeed": 4.2904,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1.15,
+          "lift": 0.22,
+          "drive": 0.3,
+          "rounds": 1,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": 69.3677,
+              "outgoingTS": 72.84,
+              "outSpeed": 3.6945,
+              "netClearance": 0.5082,
+              "inBounds": true,
+              "netOk": true,
+              "isBackspin": false
+            },
+            {
+              "round": 2,
+              "incomingTS": -9.2572,
+              "outgoingTS": 26.5161,
+              "outSpeed": 2.7331,
+              "netClearance": 0.1835,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.6945,
+            "minOutSpeed": 2.7331,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": -0.9614
+          }
+        },
+        {
+          "tiltY": 1.15,
+          "lift": 0.22,
+          "drive": 0.45,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": 69.3677,
+              "outgoingTS": 74.8438,
+              "outSpeed": 3.9324,
+              "netClearance": 0.5647,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.9324,
+            "minOutSpeed": 3.9324,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1.15,
+          "lift": 0.22,
+          "drive": 0.56,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": 69.3677,
+              "outgoingTS": 76.3127,
+              "outSpeed": 4.108,
+              "netClearance": 0.5948,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.108,
+            "minOutSpeed": 4.108,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1.15,
+          "lift": 0.22,
+          "drive": 0.7,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": 69.3677,
+              "outgoingTS": 78.1836,
+              "outSpeed": 4.3327,
+              "netClearance": 0.6231,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.3327,
+            "minOutSpeed": 4.3327,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1.15,
+          "lift": 0.3,
+          "drive": 0.3,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": 69.3677,
+              "outgoingTS": 71.7216,
+              "outSpeed": 3.7522,
+              "netClearance": 0.577,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.7522,
+            "minOutSpeed": 3.7522,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1.15,
+          "lift": 0.3,
+          "drive": 0.45,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": 69.3677,
+              "outgoingTS": 73.7219,
+              "outSpeed": 3.9873,
+              "netClearance": 0.6286,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.9873,
+            "minOutSpeed": 3.9873,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1.15,
+          "lift": 0.3,
+          "drive": 0.56,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": 69.3677,
+              "outgoingTS": 75.1886,
+              "outSpeed": 4.1612,
+              "netClearance": 0.6554,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.1612,
+            "minOutSpeed": 4.1612,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1.15,
+          "lift": 0.3,
+          "drive": 0.7,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": 69.3677,
+              "outgoingTS": 77.0565,
+              "outSpeed": 4.3837,
+              "netClearance": 0.68,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.3837,
+            "minOutSpeed": 4.3837,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1.15,
+          "lift": 0.4,
+          "drive": 0.3,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": 69.3677,
+              "outgoingTS": 70.3472,
+              "outSpeed": 3.8286,
+              "netClearance": 0.6643,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.8286,
+            "minOutSpeed": 3.8286,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1.15,
+          "lift": 0.4,
+          "drive": 0.45,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": 69.3677,
+              "outgoingTS": 72.3422,
+              "outSpeed": 4.0603,
+              "netClearance": 0.7094,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.0603,
+            "minOutSpeed": 4.0603,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1.15,
+          "lift": 0.4,
+          "drive": 0.56,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": 69.3677,
+              "outgoingTS": 73.8057,
+              "outSpeed": 4.2318,
+              "netClearance": 0.7321,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.2318,
+            "minOutSpeed": 4.2318,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1.15,
+          "lift": 0.4,
+          "drive": 0.7,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": 69.3677,
+              "outgoingTS": 75.6695,
+              "outSpeed": 4.4516,
+              "netClearance": 0.7518,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.4516,
+            "minOutSpeed": 4.4516,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1.3,
+          "lift": 0.15,
+          "drive": 0.3,
+          "rounds": 1,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": 69.3677,
+              "outgoingTS": 77.2987,
+              "outSpeed": 3.6414,
+              "netClearance": 0.4989,
+              "inBounds": true,
+              "netOk": true,
+              "isBackspin": false
+            },
+            {
+              "round": 2,
+              "incomingTS": -13.6984,
+              "outgoingTS": 27.1907,
+              "outSpeed": 2.6211,
+              "netClearance": 0.2073,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.6414,
+            "minOutSpeed": 2.6211,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": -1.0203
+          }
+        },
+        {
+          "tiltY": 1.3,
+          "lift": 0.15,
+          "drive": 0.45,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": 69.3677,
+              "outgoingTS": 79.4413,
+              "outSpeed": 3.8785,
+              "netClearance": 0.5626,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.8785,
+            "minOutSpeed": 3.8785,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1.3,
+          "lift": 0.15,
+          "drive": 0.56,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": 69.3677,
+              "outgoingTS": 81.0113,
+              "outSpeed": 4.0535,
+              "netClearance": 0.5967,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.0535,
+            "minOutSpeed": 4.0535,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1.3,
+          "lift": 0.15,
+          "drive": 0.7,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": 69.3677,
+              "outgoingTS": 83.0114,
+              "outSpeed": 4.2774,
+              "netClearance": 0.6291,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.2774,
+            "minOutSpeed": 4.2774,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1.3,
+          "lift": 0.22,
+          "drive": 0.3,
+          "rounds": 1,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": 69.3677,
+              "outgoingTS": 76.3181,
+              "outSpeed": 3.691,
+              "netClearance": 0.5596,
+              "inBounds": true,
+              "netOk": true,
+              "isBackspin": false
+            },
+            {
+              "round": 2,
+              "incomingTS": -10.433,
+              "outgoingTS": 27.1602,
+              "outSpeed": 2.6471,
+              "netClearance": 0.2654,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.691,
+            "minOutSpeed": 2.6471,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": -1.0439
+          }
+        },
+        {
+          "tiltY": 1.3,
+          "lift": 0.22,
+          "drive": 0.45,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": 69.3677,
+              "outgoingTS": 78.458,
+              "outSpeed": 3.9258,
+              "netClearance": 0.6191,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.9258,
+            "minOutSpeed": 3.9258,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1.3,
+          "lift": 0.22,
+          "drive": 0.56,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": 69.3677,
+              "outgoingTS": 80.0261,
+              "outSpeed": 4.0993,
+              "netClearance": 0.6504,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.0993,
+            "minOutSpeed": 4.0993,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1.3,
+          "lift": 0.22,
+          "drive": 0.7,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": 69.3677,
+              "outgoingTS": 82.024,
+              "outSpeed": 4.3214,
+              "netClearance": 0.6795,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.3214,
+            "minOutSpeed": 4.3214,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1.3,
+          "lift": 0.3,
+          "drive": 0.3,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": 69.3677,
+              "outgoingTS": 75.2151,
+              "outSpeed": 3.7507,
+              "netClearance": 0.63,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.7507,
+            "minOutSpeed": 3.7507,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1.3,
+          "lift": 0.3,
+          "drive": 0.45,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": 69.3677,
+              "outgoingTS": 77.3512,
+              "outSpeed": 3.9828,
+              "netClearance": 0.6843,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.9828,
+            "minOutSpeed": 3.9828,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1.3,
+          "lift": 0.3,
+          "drive": 0.56,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": 69.3677,
+              "outgoingTS": 78.9169,
+              "outSpeed": 4.1545,
+              "netClearance": 0.7123,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.1545,
+            "minOutSpeed": 4.1545,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1.3,
+          "lift": 0.3,
+          "drive": 0.7,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": 69.3677,
+              "outgoingTS": 80.9116,
+              "outSpeed": 4.3745,
+              "netClearance": 0.7377,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.3745,
+            "minOutSpeed": 4.3745,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1.3,
+          "lift": 0.4,
+          "drive": 0.3,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": 69.3677,
+              "outgoingTS": 73.8618,
+              "outSpeed": 3.8297,
+              "netClearance": 0.7193,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.8297,
+            "minOutSpeed": 3.8297,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1.3,
+          "lift": 0.4,
+          "drive": 0.45,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": 69.3677,
+              "outgoingTS": 75.9921,
+              "outSpeed": 4.0583,
+              "netClearance": 0.7671,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.0583,
+            "minOutSpeed": 4.0583,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1.3,
+          "lift": 0.4,
+          "drive": 0.56,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": 69.3677,
+              "outgoingTS": 77.5544,
+              "outSpeed": 4.2276,
+              "netClearance": 0.7908,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.2276,
+            "minOutSpeed": 4.2276,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1.3,
+          "lift": 0.4,
+          "drive": 0.7,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": 69.3677,
+              "outgoingTS": 79.5446,
+              "outSpeed": 4.4447,
+              "netClearance": 0.8112,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.4447,
+            "minOutSpeed": 4.4447,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        }
+      ],
+      "classificationCounts": {
+        "掛網": 9,
+        "飛出界": 71
+      },
+      "stableBounds": {
+        "count": 0
+      }
+    },
+    "sidebackspin_long_forehand_2": {
+      "presetId": "sidebackspin_long_forehand_2",
+      "grid": {
+        "tiltY": [
+          0.7,
+          0.85,
+          1,
+          1.15,
+          1.3
+        ],
+        "lift": [
+          0.15,
+          0.22,
+          0.3,
+          0.4
+        ],
+        "drive": [
+          0.3,
+          0.45,
+          0.56,
+          0.7
+        ],
+        "totalPoints": 80
+      },
+      "rows": [
+        {
+          "tiltY": 0.7,
+          "lift": 0.15,
+          "drive": 0.3,
+          "rounds": 0,
+          "failReason": "掛網",
+          "classification": "掛網",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -60.1492,
+              "outgoingTS": 9.7116,
+              "outSpeed": 3.8132,
+              "netClearance": -0.0324,
+              "inBounds": false,
+              "netOk": false,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.8132,
+            "minOutSpeed": 3.8132,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 0.7,
+          "lift": 0.15,
+          "drive": 0.45,
+          "rounds": 1,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -60.1492,
+              "outgoingTS": 11.158,
+              "outSpeed": 4.0716,
+              "netClearance": 0.0214,
+              "inBounds": true,
+              "netOk": true,
+              "isBackspin": false
+            },
+            {
+              "round": 2,
+              "incomingTS": 25.7062,
+              "outgoingTS": 44.1786,
+              "outSpeed": 3.9512,
+              "netClearance": 0.2874,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.0716,
+            "minOutSpeed": 3.9512,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": -0.1204
+          }
+        },
+        {
+          "tiltY": 0.7,
+          "lift": 0.15,
+          "drive": 0.56,
+          "rounds": 1,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -60.1492,
+              "outgoingTS": 12.2173,
+              "outSpeed": 4.2608,
+              "netClearance": 0.0537,
+              "inBounds": true,
+              "netOk": true,
+              "isBackspin": false
+            },
+            {
+              "round": 2,
+              "incomingTS": 24.6486,
+              "outgoingTS": 46.5709,
+              "outSpeed": 4.2838,
+              "netClearance": 0.3171,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.2838,
+            "minOutSpeed": 4.2608,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": 0.023
+          }
+        },
+        {
+          "tiltY": 0.7,
+          "lift": 0.15,
+          "drive": 0.7,
+          "rounds": 1,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -60.1492,
+              "outgoingTS": 13.5641,
+              "outSpeed": 4.5014,
+              "netClearance": 0.088,
+              "inBounds": true,
+              "netOk": true,
+              "isBackspin": false
+            },
+            {
+              "round": 2,
+              "incomingTS": 24.0087,
+              "outgoingTS": 50.1636,
+              "outSpeed": 4.6929,
+              "netClearance": 0.3601,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.6929,
+            "minOutSpeed": 4.5014,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": 0.1915
+          }
+        },
+        {
+          "tiltY": 0.7,
+          "lift": 0.22,
+          "drive": 0.3,
+          "rounds": 1,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -60.1492,
+              "outgoingTS": 8.6794,
+              "outSpeed": 3.8446,
+              "netClearance": 0.0178,
+              "inBounds": true,
+              "netOk": true,
+              "isBackspin": false
+            },
+            {
+              "round": 2,
+              "incomingTS": 29.7611,
+              "outgoingTS": 40.4902,
+              "outSpeed": 3.5256,
+              "netClearance": 0.2897,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.8446,
+            "minOutSpeed": 3.5256,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": -0.319
+          }
+        },
+        {
+          "tiltY": 0.7,
+          "lift": 0.22,
+          "drive": 0.45,
+          "rounds": 1,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -60.1492,
+              "outgoingTS": 10.124,
+              "outSpeed": 4.1017,
+              "netClearance": 0.0681,
+              "inBounds": true,
+              "netOk": true,
+              "isBackspin": false
+            },
+            {
+              "round": 2,
+              "incomingTS": 28.9364,
+              "outgoingTS": 44.228,
+              "outSpeed": 3.9742,
+              "netClearance": 0.3336,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.1017,
+            "minOutSpeed": 3.9742,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": -0.1275
+          }
+        },
+        {
+          "tiltY": 0.7,
+          "lift": 0.22,
+          "drive": 0.56,
+          "rounds": 1,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -60.1492,
+              "outgoingTS": 11.1822,
+              "outSpeed": 4.2901,
+              "netClearance": 0.0982,
+              "inBounds": true,
+              "netOk": true,
+              "isBackspin": false
+            },
+            {
+              "round": 2,
+              "incomingTS": 27.8846,
+              "outgoingTS": 46.6202,
+              "outSpeed": 4.305,
+              "netClearance": 0.3656,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.305,
+            "minOutSpeed": 4.2901,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": 0.0149
+          }
+        },
+        {
+          "tiltY": 0.7,
+          "lift": 0.22,
+          "drive": 0.7,
+          "rounds": 1,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -60.1492,
+              "outgoingTS": 12.5274,
+              "outSpeed": 4.5296,
+              "netClearance": 0.1298,
+              "inBounds": true,
+              "netOk": true,
+              "isBackspin": false
+            },
+            {
+              "round": 2,
+              "incomingTS": 28.2171,
+              "outgoingTS": 50.4435,
+              "outSpeed": 4.7067,
+              "netClearance": 0.4184,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.7067,
+            "minOutSpeed": 4.5296,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": 0.1771
+          }
+        },
+        {
+          "tiltY": 0.7,
+          "lift": 0.3,
+          "drive": 0.3,
+          "rounds": 1,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -60.1492,
+              "outgoingTS": 7.51,
+              "outSpeed": 3.884,
+              "netClearance": 0.0754,
+              "inBounds": true,
+              "netOk": true,
+              "isBackspin": false
+            },
+            {
+              "round": 2,
+              "incomingTS": 32.7317,
+              "outgoingTS": 40.6799,
+              "outSpeed": 3.5616,
+              "netClearance": 0.33,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.884,
+            "minOutSpeed": 3.5616,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": -0.3224
+          }
+        },
+        {
+          "tiltY": 0.7,
+          "lift": 0.3,
+          "drive": 0.45,
+          "rounds": 1,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -60.1492,
+              "outgoingTS": 8.9523,
+              "outSpeed": 4.1393,
+              "netClearance": 0.1217,
+              "inBounds": true,
+              "netOk": true,
+              "isBackspin": false
+            },
+            {
+              "round": 2,
+              "incomingTS": 32.8827,
+              "outgoingTS": 44.6495,
+              "outSpeed": 4.0013,
+              "netClearance": 0.3837,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.1393,
+            "minOutSpeed": 4.0013,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": -0.138
+          }
+        },
+        {
+          "tiltY": 0.7,
+          "lift": 0.3,
+          "drive": 0.56,
+          "rounds": 1,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -60.1492,
+              "outgoingTS": 10.0087,
+              "outSpeed": 4.3266,
+              "netClearance": 0.1492,
+              "inBounds": true,
+              "netOk": true,
+              "isBackspin": false
+            },
+            {
+              "round": 2,
+              "incomingTS": 31.8382,
+              "outgoingTS": 47.0419,
+              "outSpeed": 4.33,
+              "netClearance": 0.4194,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.33,
+            "minOutSpeed": 4.3266,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": 0.0034
+          }
+        },
+        {
+          "tiltY": 0.7,
+          "lift": 0.3,
+          "drive": 0.7,
+          "rounds": 1,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -60.1492,
+              "outgoingTS": 11.3521,
+              "outSpeed": 4.5649,
+              "netClearance": 0.1779,
+              "inBounds": true,
+              "netOk": true,
+              "isBackspin": false
+            },
+            {
+              "round": 2,
+              "incomingTS": 32.1796,
+              "outgoingTS": 50.3471,
+              "outSpeed": 4.7325,
+              "netClearance": 0.4768,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.7325,
+            "minOutSpeed": 4.5649,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": 0.1676
+          }
+        },
+        {
+          "tiltY": 0.7,
+          "lift": 0.4,
+          "drive": 0.3,
+          "rounds": 1,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -60.1492,
+              "outgoingTS": 6.0626,
+              "outSpeed": 3.9382,
+              "netClearance": 0.1479,
+              "inBounds": true,
+              "netOk": true,
+              "isBackspin": false
+            },
+            {
+              "round": 2,
+              "incomingTS": 38.1021,
+              "outgoingTS": 40.8243,
+              "outSpeed": 3.6099,
+              "netClearance": 0.3795,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.9382,
+            "minOutSpeed": 3.6099,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": -0.3283
+          }
+        },
+        {
+          "tiltY": 0.7,
+          "lift": 0.4,
+          "drive": 0.45,
+          "rounds": 1,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -60.1492,
+              "outgoingTS": 7.5016,
+              "outSpeed": 4.1912,
+              "netClearance": 0.1891,
+              "inBounds": true,
+              "netOk": true,
+              "isBackspin": false
+            },
+            {
+              "round": 2,
+              "incomingTS": 37.3019,
+              "outgoingTS": 44.5525,
+              "outSpeed": 4.0483,
+              "netClearance": 0.4375,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.1912,
+            "minOutSpeed": 4.0483,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": -0.1429
+          }
+        },
+        {
+          "tiltY": 0.7,
+          "lift": 0.4,
+          "drive": 0.56,
+          "rounds": 1,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -60.1492,
+              "outgoingTS": 8.5557,
+              "outSpeed": 4.3768,
+              "netClearance": 0.2133,
+              "inBounds": true,
+              "netOk": true,
+              "isBackspin": false
+            },
+            {
+              "round": 2,
+              "incomingTS": 37.2326,
+              "outgoingTS": 47.177,
+              "outSpeed": 4.3687,
+              "netClearance": 0.4843,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.3768,
+            "minOutSpeed": 4.3687,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": -0.0081
+          }
+        },
+        {
+          "tiltY": 0.7,
+          "lift": 0.4,
+          "drive": 0.7,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -60.1492,
+              "outgoingTS": 9.8962,
+              "outSpeed": 4.6133,
+              "netClearance": 0.2382,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.6133,
+            "minOutSpeed": 4.6133,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 0.85,
+          "lift": 0.15,
+          "drive": 0.3,
+          "rounds": 1,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -60.1492,
+              "outgoingTS": 15.6356,
+              "outSpeed": 3.7989,
+              "netClearance": 0.0506,
+              "inBounds": true,
+              "netOk": true,
+              "isBackspin": false
+            },
+            {
+              "round": 2,
+              "incomingTS": 24.4337,
+              "outgoingTS": 43.8208,
+              "outSpeed": 3.4007,
+              "netClearance": 0.2787,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.7989,
+            "minOutSpeed": 3.4007,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": -0.3982
+          }
+        },
+        {
+          "tiltY": 0.85,
+          "lift": 0.15,
+          "drive": 0.45,
+          "rounds": 1,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -60.1492,
+              "outgoingTS": 17.2989,
+              "outSpeed": 4.0544,
+              "netClearance": 0.1044,
+              "inBounds": true,
+              "netOk": true,
+              "isBackspin": false
+            },
+            {
+              "round": 2,
+              "incomingTS": 24.1785,
+              "outgoingTS": 48.1123,
+              "outSpeed": 3.8437,
+              "netClearance": 0.3329,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.0544,
+            "minOutSpeed": 3.8437,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": -0.2107
+          }
+        },
+        {
+          "tiltY": 0.85,
+          "lift": 0.15,
+          "drive": 0.56,
+          "rounds": 1,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -60.1492,
+              "outgoingTS": 18.5164,
+              "outSpeed": 4.2417,
+              "netClearance": 0.1364,
+              "inBounds": true,
+              "netOk": true,
+              "isBackspin": false
+            },
+            {
+              "round": 2,
+              "incomingTS": 23.8028,
+              "outgoingTS": 50.9749,
+              "outSpeed": 4.1687,
+              "netClearance": 0.3754,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.2417,
+            "minOutSpeed": 4.1687,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": -0.073
+          }
+        },
+        {
+          "tiltY": 0.85,
+          "lift": 0.15,
+          "drive": 0.7,
+          "rounds": 1,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -60.1492,
+              "outgoingTS": 20.0658,
+              "outSpeed": 4.4798,
+              "netClearance": 0.1701,
+              "inBounds": true,
+              "netOk": true,
+              "isBackspin": false
+            },
+            {
+              "round": 2,
+              "incomingTS": 22.8018,
+              "outgoingTS": 54.8709,
+              "outSpeed": 4.5801,
+              "netClearance": 0.4308,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.5801,
+            "minOutSpeed": 4.4798,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": 0.1003
+          }
+        },
+        {
+          "tiltY": 0.85,
+          "lift": 0.22,
+          "drive": 0.3,
+          "rounds": 1,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -60.1492,
+              "outgoingTS": 14.621,
+              "outSpeed": 3.8338,
+              "netClearance": 0.1017,
+              "inBounds": true,
+              "netOk": true,
+              "isBackspin": false
+            },
+            {
+              "round": 2,
+              "incomingTS": 27.643,
+              "outgoingTS": 43.8497,
+              "outSpeed": 3.4293,
+              "netClearance": 0.3065,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.8338,
+            "minOutSpeed": 3.4293,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": -0.4045
+          }
+        },
+        {
+          "tiltY": 0.85,
+          "lift": 0.22,
+          "drive": 0.45,
+          "rounds": 1,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -60.1492,
+              "outgoingTS": 16.2822,
+              "outSpeed": 4.0879,
+              "netClearance": 0.1519,
+              "inBounds": true,
+              "netOk": true,
+              "isBackspin": false
+            },
+            {
+              "round": 2,
+              "incomingTS": 27.3967,
+              "outgoingTS": 48.1388,
+              "outSpeed": 3.8692,
+              "netClearance": 0.366,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.0879,
+            "minOutSpeed": 3.8692,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": -0.2187
+          }
+        },
+        {
+          "tiltY": 0.85,
+          "lift": 0.22,
+          "drive": 0.56,
+          "rounds": 1,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -60.1492,
+              "outgoingTS": 17.4982,
+              "outSpeed": 4.2742,
+              "netClearance": 0.1816,
+              "inBounds": true,
+              "netOk": true,
+              "isBackspin": false
+            },
+            {
+              "round": 2,
+              "incomingTS": 27.0273,
+              "outgoingTS": 51.0019,
+              "outSpeed": 4.1925,
+              "netClearance": 0.4122,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.2742,
+            "minOutSpeed": 4.1925,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": -0.0817
+          }
+        },
+        {
+          "tiltY": 0.85,
+          "lift": 0.22,
+          "drive": 0.7,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -60.1492,
+              "outgoingTS": 19.0459,
+              "outSpeed": 4.5112,
+              "netClearance": 0.2127,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.5112,
+            "minOutSpeed": 4.5112,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 0.85,
+          "lift": 0.3,
+          "drive": 0.3,
+          "rounds": 1,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -60.1492,
+              "outgoingTS": 13.4734,
+              "outSpeed": 3.8771,
+              "netClearance": 0.1605,
+              "inBounds": true,
+              "netOk": true,
+              "isBackspin": false
+            },
+            {
+              "round": 2,
+              "incomingTS": 31.5614,
+              "outgoingTS": 44.2398,
+              "outSpeed": 3.463,
+              "netClearance": 0.3322,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.8771,
+            "minOutSpeed": 3.463,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": -0.4141
+          }
+        },
+        {
+          "tiltY": 0.85,
+          "lift": 0.3,
+          "drive": 0.45,
+          "rounds": 1,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -60.1492,
+              "outgoingTS": 15.1318,
+              "outSpeed": 4.1293,
+              "netClearance": 0.2066,
+              "inBounds": true,
+              "netOk": true,
+              "isBackspin": false
+            },
+            {
+              "round": 2,
+              "incomingTS": 31.3263,
+              "outgoingTS": 48.0245,
+              "outSpeed": 3.9033,
+              "netClearance": 0.3978,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.1293,
+            "minOutSpeed": 3.9033,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": -0.226
+          }
+        },
+        {
+          "tiltY": 0.85,
+          "lift": 0.3,
+          "drive": 0.56,
+          "rounds": 1,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -60.1492,
+              "outgoingTS": 16.3459,
+              "outSpeed": 4.3144,
+              "netClearance": 0.2336,
+              "inBounds": true,
+              "netOk": true,
+              "isBackspin": false
+            },
+            {
+              "round": 2,
+              "incomingTS": 30.9647,
+              "outgoingTS": 51.3907,
+              "outSpeed": 4.2205,
+              "netClearance": 0.4513,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.3144,
+            "minOutSpeed": 4.2205,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": -0.0939
+          }
+        },
+        {
+          "tiltY": 0.85,
+          "lift": 0.3,
+          "drive": 0.7,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -60.1492,
+              "outgoingTS": 17.8912,
+              "outSpeed": 4.55,
+              "netClearance": 0.2617,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.55,
+            "minOutSpeed": 4.55,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 0.85,
+          "lift": 0.4,
+          "drive": 0.3,
+          "rounds": 1,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -60.1492,
+              "outgoingTS": 12.056,
+              "outSpeed": 3.9361,
+              "netClearance": 0.2344,
+              "inBounds": true,
+              "netOk": true,
+              "isBackspin": false
+            },
+            {
+              "round": 2,
+              "incomingTS": 36.9053,
+              "outgoingTS": 44.3511,
+              "outSpeed": 3.5152,
+              "netClearance": 0.3465,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.9361,
+            "minOutSpeed": 3.5152,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": -0.4209
+          }
+        },
+        {
+          "tiltY": 0.85,
+          "lift": 0.4,
+          "drive": 0.45,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -60.1492,
+              "outgoingTS": 13.7105,
+              "outSpeed": 4.1858,
+              "netClearance": 0.2754,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.1858,
+            "minOutSpeed": 4.1858,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 0.85,
+          "lift": 0.4,
+          "drive": 0.56,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -60.1492,
+              "outgoingTS": 14.9219,
+              "outSpeed": 4.3692,
+              "netClearance": 0.299,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.3692,
+            "minOutSpeed": 4.3692,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 0.85,
+          "lift": 0.4,
+          "drive": 0.7,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -60.1492,
+              "outgoingTS": 16.4639,
+              "outSpeed": 4.6028,
+              "netClearance": 0.3233,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.6028,
+            "minOutSpeed": 4.6028,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1,
+          "lift": 0.15,
+          "drive": 0.3,
+          "rounds": 1,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -60.1492,
+              "outgoingTS": 20.7075,
+              "outSpeed": 3.7846,
+              "netClearance": 0.1211,
+              "inBounds": true,
+              "netOk": true,
+              "isBackspin": false
+            },
+            {
+              "round": 2,
+              "incomingTS": 23.0111,
+              "outgoingTS": 46.4006,
+              "outSpeed": 3.3043,
+              "netClearance": 0.2718,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.7846,
+            "minOutSpeed": 3.3043,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": -0.4803
+          }
+        },
+        {
+          "tiltY": 1,
+          "lift": 0.15,
+          "drive": 0.45,
+          "rounds": 1,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -60.1492,
+              "outgoingTS": 22.5554,
+              "outSpeed": 4.0373,
+              "netClearance": 0.1753,
+              "inBounds": true,
+              "netOk": true,
+              "isBackspin": false
+            },
+            {
+              "round": 2,
+              "incomingTS": 22.4278,
+              "outgoingTS": 50.9629,
+              "outSpeed": 3.7439,
+              "netClearance": 0.3352,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.0373,
+            "minOutSpeed": 3.7439,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": -0.2934
+          }
+        },
+        {
+          "tiltY": 1,
+          "lift": 0.15,
+          "drive": 0.56,
+          "rounds": 1,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -60.1492,
+              "outgoingTS": 23.9091,
+              "outSpeed": 4.2226,
+              "netClearance": 0.2073,
+              "inBounds": true,
+              "netOk": true,
+              "isBackspin": false
+            },
+            {
+              "round": 2,
+              "incomingTS": 21.8111,
+              "outgoingTS": 54.0248,
+              "outSpeed": 4.0666,
+              "netClearance": 0.385,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.2226,
+            "minOutSpeed": 4.0666,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": -0.156
+          }
+        },
+        {
+          "tiltY": 1,
+          "lift": 0.15,
+          "drive": 0.7,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -60.1492,
+              "outgoingTS": 25.6318,
+              "outSpeed": 4.4584,
+              "netClearance": 0.2408,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.4584,
+            "minOutSpeed": 4.4584,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1,
+          "lift": 0.22,
+          "drive": 0.3,
+          "rounds": 1,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -60.1492,
+              "outgoingTS": 19.7088,
+              "outSpeed": 3.8224,
+              "netClearance": 0.1732,
+              "inBounds": true,
+              "netOk": true,
+              "isBackspin": false
+            },
+            {
+              "round": 2,
+              "incomingTS": 26.2101,
+              "outgoingTS": 46.4096,
+              "outSpeed": 3.3351,
+              "netClearance": 0.2813,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.8224,
+            "minOutSpeed": 3.3351,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": -0.4873
+          }
+        },
+        {
+          "tiltY": 1,
+          "lift": 0.22,
+          "drive": 0.45,
+          "rounds": 1,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -60.1492,
+              "outgoingTS": 21.5545,
+              "outSpeed": 4.0736,
+              "netClearance": 0.2237,
+              "inBounds": true,
+              "netOk": true,
+              "isBackspin": false
+            },
+            {
+              "round": 2,
+              "incomingTS": 25.6361,
+              "outgoingTS": 50.9692,
+              "outSpeed": 3.7715,
+              "netClearance": 0.3534,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.0736,
+            "minOutSpeed": 3.7715,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": -0.3021
+          }
+        },
+        {
+          "tiltY": 1,
+          "lift": 0.22,
+          "drive": 0.56,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -60.1492,
+              "outgoingTS": 22.9064,
+              "outSpeed": 4.2579,
+              "netClearance": 0.2534,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.2579,
+            "minOutSpeed": 4.2579,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1,
+          "lift": 0.22,
+          "drive": 0.7,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -60.1492,
+              "outgoingTS": 24.6272,
+              "outSpeed": 4.4925,
+              "netClearance": 0.2843,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.4925,
+            "minOutSpeed": 4.4925,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1,
+          "lift": 0.3,
+          "drive": 0.3,
+          "rounds": 1,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -60.1492,
+              "outgoingTS": 18.581,
+              "outSpeed": 3.869,
+              "netClearance": 0.2331,
+              "inBounds": true,
+              "netOk": true,
+              "isBackspin": false
+            },
+            {
+              "round": 2,
+              "incomingTS": 30.1139,
+              "outgoingTS": 46.2821,
+              "outSpeed": 3.3762,
+              "netClearance": 0.2784,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.869,
+            "minOutSpeed": 3.3762,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": -0.4928
+          }
+        },
+        {
+          "tiltY": 1,
+          "lift": 0.3,
+          "drive": 0.45,
+          "rounds": 1,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -60.1492,
+              "outgoingTS": 20.4235,
+              "outSpeed": 4.1182,
+              "netClearance": 0.2795,
+              "inBounds": true,
+              "netOk": true,
+              "isBackspin": false
+            },
+            {
+              "round": 2,
+              "incomingTS": 29.5517,
+              "outgoingTS": 50.8346,
+              "outSpeed": 3.808,
+              "netClearance": 0.3643,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.1182,
+            "minOutSpeed": 3.808,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": -0.3102
+          }
+        },
+        {
+          "tiltY": 1,
+          "lift": 0.3,
+          "drive": 0.56,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -60.1492,
+              "outgoingTS": 21.7734,
+              "outSpeed": 4.3012,
+              "netClearance": 0.3064,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.3012,
+            "minOutSpeed": 4.3012,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1,
+          "lift": 0.3,
+          "drive": 0.7,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -60.1492,
+              "outgoingTS": 23.4915,
+              "outSpeed": 4.5343,
+              "netClearance": 0.3342,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.5343,
+            "minOutSpeed": 4.5343,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1,
+          "lift": 0.4,
+          "drive": 0.3,
+          "rounds": 1,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -60.1492,
+              "outgoingTS": 17.1908,
+              "outSpeed": 3.932,
+              "netClearance": 0.3087,
+              "inBounds": true,
+              "netOk": true,
+              "isBackspin": false
+            },
+            {
+              "round": 2,
+              "incomingTS": 35.4355,
+              "outgoingTS": 46.8535,
+              "outSpeed": 3.4264,
+              "netClearance": 0.2597,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.932,
+            "minOutSpeed": 3.4264,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": -0.5056
+          }
+        },
+        {
+          "tiltY": 1,
+          "lift": 0.4,
+          "drive": 0.45,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -60.1492,
+              "outgoingTS": 19.0289,
+              "outSpeed": 4.1786,
+              "netClearance": 0.3497,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.1786,
+            "minOutSpeed": 4.1786,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1,
+          "lift": 0.4,
+          "drive": 0.56,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -60.1492,
+              "outgoingTS": 20.3757,
+              "outSpeed": 4.3598,
+              "netClearance": 0.3732,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.3598,
+            "minOutSpeed": 4.3598,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1,
+          "lift": 0.4,
+          "drive": 0.7,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -60.1492,
+              "outgoingTS": 22.0901,
+              "outSpeed": 4.5908,
+              "netClearance": 0.397,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.5908,
+            "minOutSpeed": 4.5908,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1.15,
+          "lift": 0.15,
+          "drive": 0.3,
+          "rounds": 1,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -60.1492,
+              "outgoingTS": 25.0413,
+              "outSpeed": 3.7707,
+              "netClearance": 0.181,
+              "inBounds": true,
+              "netOk": true,
+              "isBackspin": false
+            },
+            {
+              "round": 2,
+              "incomingTS": 22.032,
+              "outgoingTS": 48.2501,
+              "outSpeed": 3.2143,
+              "netClearance": 0.2301,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.7707,
+            "minOutSpeed": 3.2143,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": -0.5564
+          }
+        },
+        {
+          "tiltY": 1.15,
+          "lift": 0.15,
+          "drive": 0.45,
+          "rounds": 1,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -60.1492,
+              "outgoingTS": 27.0469,
+              "outSpeed": 4.0208,
+              "netClearance": 0.2359,
+              "inBounds": true,
+              "netOk": true,
+              "isBackspin": false
+            },
+            {
+              "round": 2,
+              "incomingTS": 21.1707,
+              "outgoingTS": 53.0388,
+              "outSpeed": 3.6503,
+              "netClearance": 0.3053,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.0208,
+            "minOutSpeed": 3.6503,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": -0.3705
+          }
+        },
+        {
+          "tiltY": 1.15,
+          "lift": 0.15,
+          "drive": 0.56,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -60.1492,
+              "outgoingTS": 28.5168,
+              "outSpeed": 4.2043,
+              "netClearance": 0.2681,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.2043,
+            "minOutSpeed": 4.2043,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1.15,
+          "lift": 0.15,
+          "drive": 0.7,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -60.1492,
+              "outgoingTS": 30.3877,
+              "outSpeed": 4.4378,
+              "netClearance": 0.3017,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.4378,
+            "minOutSpeed": 4.4378,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1.15,
+          "lift": 0.22,
+          "drive": 0.3,
+          "rounds": 1,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -60.1492,
+              "outgoingTS": 24.0571,
+              "outSpeed": 3.8111,
+              "netClearance": 0.234,
+              "inBounds": true,
+              "netOk": true,
+              "isBackspin": false
+            },
+            {
+              "round": 2,
+              "incomingTS": 25.2223,
+              "outgoingTS": 48.2435,
+              "outSpeed": 3.247,
+              "netClearance": 0.2192,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.8111,
+            "minOutSpeed": 3.247,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": -0.5641
+          }
+        },
+        {
+          "tiltY": 1.15,
+          "lift": 0.22,
+          "drive": 0.45,
+          "rounds": 1,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -60.1492,
+              "outgoingTS": 26.0601,
+              "outSpeed": 4.0596,
+              "netClearance": 0.2853,
+              "inBounds": true,
+              "netOk": true,
+              "isBackspin": false
+            },
+            {
+              "round": 2,
+              "incomingTS": 24.3708,
+              "outgoingTS": 53.0285,
+              "outSpeed": 3.6798,
+              "netClearance": 0.3069,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.0596,
+            "minOutSpeed": 3.6798,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": -0.3798
+          }
+        },
+        {
+          "tiltY": 1.15,
+          "lift": 0.22,
+          "drive": 0.56,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -60.1492,
+              "outgoingTS": 27.5283,
+              "outSpeed": 4.2419,
+              "netClearance": 0.3151,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.2419,
+            "minOutSpeed": 4.2419,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1.15,
+          "lift": 0.22,
+          "drive": 0.7,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -60.1492,
+              "outgoingTS": 29.3968,
+              "outSpeed": 4.4742,
+              "netClearance": 0.3459,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.4742,
+            "minOutSpeed": 4.4742,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1.15,
+          "lift": 0.3,
+          "drive": 0.3,
+          "rounds": 1,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -60.1492,
+              "outgoingTS": 22.947,
+              "outSpeed": 3.8605,
+              "netClearance": 0.2952,
+              "inBounds": true,
+              "netOk": true,
+              "isBackspin": false
+            },
+            {
+              "round": 2,
+              "incomingTS": 29.114,
+              "outgoingTS": 48.1021,
+              "outSpeed": 3.2905,
+              "netClearance": 0.1873,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.8605,
+            "minOutSpeed": 3.2905,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": -0.57
+          }
+        },
+        {
+          "tiltY": 1.15,
+          "lift": 0.3,
+          "drive": 0.45,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -60.1492,
+              "outgoingTS": 24.9467,
+              "outSpeed": 4.1069,
+              "netClearance": 0.3421,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.1069,
+            "minOutSpeed": 4.1069,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1.15,
+          "lift": 0.3,
+          "drive": 0.56,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -60.1492,
+              "outgoingTS": 26.4125,
+              "outSpeed": 4.2879,
+              "netClearance": 0.3692,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.2879,
+            "minOutSpeed": 4.2879,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1.15,
+          "lift": 0.3,
+          "drive": 0.7,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -60.1492,
+              "outgoingTS": 28.2783,
+              "outSpeed": 4.5186,
+              "netClearance": 0.3968,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.5186,
+            "minOutSpeed": 4.5186,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1.15,
+          "lift": 0.4,
+          "drive": 0.3,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -60.1492,
+              "outgoingTS": 21.5811,
+              "outSpeed": 3.9268,
+              "netClearance": 0.3722,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.9268,
+            "minOutSpeed": 3.9268,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1.15,
+          "lift": 0.4,
+          "drive": 0.45,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -60.1492,
+              "outgoingTS": 23.576,
+              "outSpeed": 4.1705,
+              "netClearance": 0.4137,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.1705,
+            "minOutSpeed": 4.1705,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1.15,
+          "lift": 0.4,
+          "drive": 0.56,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -60.1492,
+              "outgoingTS": 25.0384,
+              "outSpeed": 4.3497,
+              "netClearance": 0.4373,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.3497,
+            "minOutSpeed": 4.3497,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1.15,
+          "lift": 0.4,
+          "drive": 0.7,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -60.1492,
+              "outgoingTS": 26.9002,
+              "outSpeed": 4.5782,
+              "netClearance": 0.4609,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.5782,
+            "minOutSpeed": 4.5782,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1.3,
+          "lift": 0.15,
+          "drive": 0.3,
+          "rounds": 1,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -60.1492,
+              "outgoingTS": 28.7509,
+              "outSpeed": 3.7577,
+              "netClearance": 0.2319,
+              "inBounds": true,
+              "netOk": true,
+              "isBackspin": false
+            },
+            {
+              "round": 2,
+              "incomingTS": 21.2646,
+              "outgoingTS": 49.4288,
+              "outSpeed": 3.1331,
+              "netClearance": 0.1584,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.7577,
+            "minOutSpeed": 3.1331,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": -0.6246
+          }
+        },
+        {
+          "tiltY": 1.3,
+          "lift": 0.15,
+          "drive": 0.45,
+          "rounds": 1,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -60.1492,
+              "outgoingTS": 30.8913,
+              "outSpeed": 4.0053,
+              "netClearance": 0.2878,
+              "inBounds": true,
+              "netOk": true,
+              "isBackspin": false
+            },
+            {
+              "round": 2,
+              "incomingTS": 20.1674,
+              "outgoingTS": 54.4064,
+              "outSpeed": 3.5655,
+              "netClearance": 0.2477,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.0053,
+            "minOutSpeed": 3.5655,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": -0.4398
+          }
+        },
+        {
+          "tiltY": 1.3,
+          "lift": 0.15,
+          "drive": 0.56,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -60.1492,
+              "outgoingTS": 32.4607,
+              "outSpeed": 4.1871,
+              "netClearance": 0.3205,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.1871,
+            "minOutSpeed": 4.1871,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1.3,
+          "lift": 0.15,
+          "drive": 0.7,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -60.1492,
+              "outgoingTS": 34.4582,
+              "outSpeed": 4.4185,
+              "netClearance": 0.3542,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.4185,
+            "minOutSpeed": 4.4185,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1.3,
+          "lift": 0.22,
+          "drive": 0.3,
+          "rounds": 1,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -60.1492,
+              "outgoingTS": 27.7796,
+              "outSpeed": 3.8002,
+              "netClearance": 0.286,
+              "inBounds": true,
+              "netOk": true,
+              "isBackspin": false
+            },
+            {
+              "round": 2,
+              "incomingTS": 24.4477,
+              "outgoingTS": 49.4123,
+              "outSpeed": 3.1678,
+              "netClearance": 0.1255,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.8002,
+            "minOutSpeed": 3.1678,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": -0.6324
+          }
+        },
+        {
+          "tiltY": 1.3,
+          "lift": 0.22,
+          "drive": 0.45,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -60.1492,
+              "outgoingTS": 29.9172,
+              "outSpeed": 4.0461,
+              "netClearance": 0.3381,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.0461,
+            "minOutSpeed": 4.0461,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1.3,
+          "lift": 0.22,
+          "drive": 0.56,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -60.1492,
+              "outgoingTS": 31.4848,
+              "outSpeed": 4.2267,
+              "netClearance": 0.3683,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.2267,
+            "minOutSpeed": 4.2267,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1.3,
+          "lift": 0.22,
+          "drive": 0.7,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -60.1492,
+              "outgoingTS": 33.4799,
+              "outSpeed": 4.4568,
+              "netClearance": 0.3992,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.4568,
+            "minOutSpeed": 4.4568,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1.3,
+          "lift": 0.3,
+          "drive": 0.3,
+          "rounds": 1,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -60.1492,
+              "outgoingTS": 26.6854,
+              "outSpeed": 3.8519,
+              "netClearance": 0.3482,
+              "inBounds": true,
+              "netOk": true,
+              "isBackspin": false
+            },
+            {
+              "round": 2,
+              "incomingTS": 28.3293,
+              "outgoingTS": 49.7315,
+              "outSpeed": 3.2081,
+              "netClearance": 0.0752,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.8519,
+            "minOutSpeed": 3.2081,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": -0.6438
+          }
+        },
+        {
+          "tiltY": 1.3,
+          "lift": 0.3,
+          "drive": 0.45,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -60.1492,
+              "outgoingTS": 28.8196,
+              "outSpeed": 4.0957,
+              "netClearance": 0.396,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.0957,
+            "minOutSpeed": 4.0957,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1.3,
+          "lift": 0.3,
+          "drive": 0.56,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -60.1492,
+              "outgoingTS": 30.3845,
+              "outSpeed": 4.275,
+              "netClearance": 0.4233,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.275,
+            "minOutSpeed": 4.275,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1.3,
+          "lift": 0.3,
+          "drive": 0.7,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -60.1492,
+              "outgoingTS": 32.3767,
+              "outSpeed": 4.5034,
+              "netClearance": 0.451,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.5034,
+            "minOutSpeed": 4.5034,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1.3,
+          "lift": 0.4,
+          "drive": 0.3,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -60.1492,
+              "outgoingTS": 25.3412,
+              "outSpeed": 3.9211,
+              "netClearance": 0.4268,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 3.9211,
+            "minOutSpeed": 3.9211,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1.3,
+          "lift": 0.4,
+          "drive": 0.45,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -60.1492,
+              "outgoingTS": 27.4702,
+              "outSpeed": 4.1622,
+              "netClearance": 0.4689,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.1622,
+            "minOutSpeed": 4.1622,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1.3,
+          "lift": 0.4,
+          "drive": 0.56,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -60.1492,
+              "outgoingTS": 29.0314,
+              "outSpeed": 4.3395,
+              "netClearance": 0.4927,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.3395,
+            "minOutSpeed": 4.3395,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        },
+        {
+          "tiltY": 1.3,
+          "lift": 0.4,
+          "drive": 0.7,
+          "rounds": 0,
+          "failReason": "出界",
+          "classification": "飛出界",
+          "roundStats": [
+            {
+              "round": 1,
+              "incomingTS": -60.1492,
+              "outgoingTS": 31.0192,
+              "outSpeed": 4.5657,
+              "netClearance": 0.5163,
+              "inBounds": false,
+              "netOk": true,
+              "isBackspin": false
+            }
+          ],
+          "summary": {
+            "maxOutSpeed": 4.5657,
+            "minOutSpeed": 4.5657,
+            "backspinRounds": 0,
+            "spinFlipped": true,
+            "speedTrend": null
+          }
+        }
+      ],
+      "classificationCounts": {
+        "掛網": 1,
+        "飛出界": 79
+      },
+      "stableBounds": {
+        "count": 0
+      }
+    }
+  },
+  "stableRegionComparison": {
+    "backspin_long_backhand": {
+      "count": 0
+    },
+    "no_spin_long_forehand": {
+      "count": 0
+    },
+    "sidebackspin_long_forehand_2": {
+      "count": 0
+    }
+  }
+}

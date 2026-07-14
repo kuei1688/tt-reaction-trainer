@@ -1,0 +1,109 @@
+# Push rally round-2 collapse: root cause diagnosis
+
+> Follow-up to AI_CONTEXT/push_candidate_rally_and_timing_validation.txt (which
+> measured the symptom: ~1.2 rounds survived on average, almost always failing
+> round 2 with '出界'). This file explains WHY, using a fresh instrumented
+> re-implementation of runRallyReal (return-studio.html:1589-1626) that logs
+> every round's incoming/outgoing state in both real and canonical (mirrored)
+> coordinates, for the tiltY=1.0/driveScale=0.8 candidate, on 3 representative
+> failing presets: backspin_long_backhand, sidebackspin_long_forehand,
+> backspin_long_forehand_2. Read-only; return-studio.html was not modified.
+
+## Verdict: (a) calibration-envelope mismatch, not a rally-loop/mirroring bug
+
+The mirroring/detection mechanics (mirrorVec, mirrorSpin, mirrorPathForDetection,
+findPushHitIndex) check out as correct. For every failing case the detected
+next-hit point is a sane, plausible location: e.g. backspin_long_backhand's
+round-1 next hit point is (x=0.32, y=0.97, z=-1.80) — paddle height just above
+the table (table top y=0.781), roughly centered in x, and ~0.43m behind the
+table's own baseline (half-length 1.37) in z, which is a normal place to make
+contact with a push. detectionPath's mirrored copy of that same point is
+(0.32, 0.97, +1.80) — only the z sign flips, x/y untouched, matching
+mirrorPathForDetection's definition exactly. nextIdx landed consistently in the
+~129-133 range across all three presets (not an erratic/garbage index), and
+flip alternates correctly (false -> true -> ...) each round. No evidence of an
+index, sign, or coordinate-system bug in the round-to-round data flow.
+
+## What actually changes between round 1 and round 2: a spin regime flip
+
+The 11-preset calibration set (see envelope below) is exclusively backspin:
+canonical incoming topspin at the push contact point ranges from about -70 to
+-83 (i.e. strong backspin only; sign is always negative). computeAdaptivePushLift
+/computeAdaptivePushDrive/PUSH_TILT_Y and the push contact model itself were
+tuned (via push-tilty-sweep-calibration.js) exclusively against that -70..-83
+backspin envelope.
+
+Round 1's push return neutralizes that incoming backspin almost completely —
+returnSpinCanonical.topspin is only about -3 to -4 (near zero) right at contact,
+which is the intended "high-tolerance push cancels incoming spin" behavior.
+But by the time that ball travels, bounces once on the opponent's side, and is
+re-detected as round 2's incoming ball, its *canonical* topspin has grown to
+roughly **+31 to +33 — i.e. flipped sign into genuine topspin**, not backspin,
+and not just decayed-toward-zero backspin. This is a completely different
+physical regime than anything in the 11-preset calibration envelope, which
+never contains a single positive-topspin (topspin-incoming) case.
+
+Concretely, across the 3 traced presets:
+- Round-1 canonical incoming topspin: -70.5, -82.8, -75.4 (within/matching the
+  11-preset envelope of -70..-83).
+- Round-2 canonical incoming topspin: +33.4, +31.4, +32.2 — opposite sign,
+  ~40-45% of the calibration envelope's magnitude, and entirely outside the
+  range (min envelope value is -70.5; round-2 values are all positive).
+- Round-2 canonical incoming sidespin also drifts outside the envelope's
+  observed range in some cases (e.g. 92.7, 106.4 vs. envelope max magnitude
+  ~104), though this is a smaller/less consistent effect than the topspin
+  sign flip.
+- Round-1 incoming speed/depth stay within the calibration envelope in all 3
+  traced cases (speed 3.4-4.3 m/s vs. envelope 1.2-4.3 m/s; hit-point z~2.0-2.1
+  vs. round-2's z~1.8-2.35 — similar range), so speed and depth are not the
+  driver of the failure.
+
+The push contact model, applied to this un-modeled topspin-incoming case,
+produces a round-2 return that sails out with no first bounce at all
+(firstBounce: null in all 3 traced cases) and net clearance ~0.6m (far above
+the ~0.09-0.16m clearance seen in round 1) — i.e. it doesn't dip down and land
+on the table at all, consistent with a technique whose lift/drive/tiltY were
+tuned to counteract backspin (which needs to be "lifted" to clear the net
+safely) now over-lifting/over-driving a ball that already has topspin (which
+naturally dives) and sending it long.
+
+## Is this fixable?
+
+Yes, but not by re-tuning tiltY/driveScale further within the current
+single-fixed-parameter design — that was already swept (push-tilty-sweep-
+calibration.js) against the backspin-only envelope and any fixed setting that
+survives backspin serves has no information about the topspin-incoming case,
+because that case never appears in the training/calibration set at all. The
+gap is architectural: the push technique currently has exactly one calibrated
+mode (receive strong backspin, output near-zero-spin lob), and
+runRallyReal's round 2 is the first time it's ever asked to receive a ball
+that isn't backspin. Closing it requires either (1) extending the
+calibration/formula so computeAdaptivePushLift/Drive/tiltY respond to
+incoming spin sign (not just incoming speed, which is all they currently use
+— note PUSH_LIFT_K/PUSH_DRIVE_K are both 0, so despite the "Adaptive" name
+they are constant regardless of incoming ball state today), i.e. a genuinely
+different lift/drive/tilt response for a topspin-incoming ball than for a
+backspin-incoming ball, or (2) accepting that the push technique in its
+current form is only validated for "return a served backspin," and that
+sustained push-vs-push rallies are out of scope until a topspin-aware push
+(or the push's own tendency to leave the ball topspin-neutral rather than
+flipping to topspin) is separately investigated.
+
+## Calibration envelope (11-preset set, round-1 canonical incoming at push contact)
+
+preset | speed (m/s) | topspin | sidespin
+--- | --- | --- | ---
+backspin_long_backhand | 3.68 | -70.51 | 55.15
+sidebackspin_long_forehand | 4.03 | -82.81 | -82.81
+sidebackspin_half_long_forehand | 3.55 | -82.90 | -82.90
+sidebackspin_half_long_backhand | 3.99 | -82.78 | -82.78
+sidebackspin_long_backhand | 4.28 | -82.73 | -82.73
+sidebackspin_long_forehand_2 | 3.78 | -82.85 | -82.85
+sidebackspin_long_forehand_3 | 3.63 | -82.91 | -82.91
+backspin_long_forehand | 3.60 | -82.39 | -9.02
+backspin_long_forehand_2 | 3.41 | -75.43 | -19.61
+backspin_short_forehand | 1.20 | -79.78 | -7.76
+sidebackspin_short_forehand | 1.81 | -78.87 | -104.01
+
+All topspin values negative (pure backspin envelope) — round 2's ~+31 to +33
+values fall entirely outside this range.

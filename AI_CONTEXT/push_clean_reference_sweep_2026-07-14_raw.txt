@@ -1,0 +1,1723 @@
+{
+  "generatedAt": "2026-07-14T04:24:00.108Z",
+  "representativeCase": {
+    "presetId": "backspin_long_backhand",
+    "hitPoint": {
+      "x": -0.8816,
+      "y": 0.8915,
+      "z": 2.1384
+    },
+    "hitVel": {
+      "x": -1.4116,
+      "y": -0.1582,
+      "z": 3.3896
+    },
+    "hitSpin": {
+      "topspin": -70.5099,
+      "sidespin": 55.1538
+    },
+    "hitSpeedXZ": 3.6718,
+    "gravity": -4.2,
+    "deployedLift": 0.2131,
+    "deployedDrive": 0.2424,
+    "deployedTiltY": 1
+  },
+  "sweep1": {
+    "tiltYValues": [
+      0.3,
+      0.4,
+      0.5,
+      0.6,
+      0.7,
+      0.8,
+      0.9,
+      1,
+      1.1,
+      1.2,
+      1.3,
+      1.4,
+      1.5,
+      1.6,
+      1.7,
+      1.8,
+      1.9,
+      2
+    ],
+    "rows": [
+      {
+        "tiltY": 0.3,
+        "lift": 0.2131,
+        "drive": 0.2424,
+        "outTopspin": -21.7265,
+        "outSidespin": 68.1984,
+        "outSpeed": 3.4813,
+        "netClearance": -0.6286,
+        "inBounds": false,
+        "reason": "掛網",
+        "firstBounce": null,
+        "dwellMs": 5.44,
+        "regime": null,
+        "aimedX": 1.4116
+      },
+      {
+        "tiltY": 0.4,
+        "lift": 0.2131,
+        "drive": 0.2424,
+        "outTopspin": -18.3874,
+        "outSidespin": 70.3851,
+        "outSpeed": 3.4768,
+        "netClearance": -0.5359,
+        "inBounds": false,
+        "reason": "掛網",
+        "firstBounce": null,
+        "dwellMs": 5.44,
+        "regime": null,
+        "aimedX": 1.4116
+      },
+      {
+        "tiltY": 0.5,
+        "lift": 0.2131,
+        "drive": 0.2424,
+        "outTopspin": -15.2818,
+        "outSidespin": 72.3585,
+        "outSpeed": 3.4708,
+        "netClearance": -0.453,
+        "inBounds": false,
+        "reason": "掛網",
+        "firstBounce": null,
+        "dwellMs": 5.44,
+        "regime": null,
+        "aimedX": 1.4116
+      },
+      {
+        "tiltY": 0.6,
+        "lift": 0.2131,
+        "drive": 0.2424,
+        "outTopspin": -12.4269,
+        "outSidespin": 74.1214,
+        "outSpeed": 3.4637,
+        "netClearance": -0.3792,
+        "inBounds": false,
+        "reason": "掛網",
+        "firstBounce": null,
+        "dwellMs": 5.44,
+        "regime": null,
+        "aimedX": 1.4116
+      },
+      {
+        "tiltY": 0.7,
+        "lift": 0.2131,
+        "drive": 0.2424,
+        "outTopspin": -9.8253,
+        "outSidespin": 75.6854,
+        "outSpeed": 3.4559,
+        "netClearance": -0.314,
+        "inBounds": false,
+        "reason": "掛網",
+        "firstBounce": null,
+        "dwellMs": 5.44,
+        "regime": null,
+        "aimedX": 1.4116
+      },
+      {
+        "tiltY": 0.8,
+        "lift": 0.2131,
+        "drive": 0.2424,
+        "outTopspin": -7.4687,
+        "outSidespin": 77.0673,
+        "outSpeed": 3.4477,
+        "netClearance": -0.2566,
+        "inBounds": false,
+        "reason": "掛網",
+        "firstBounce": null,
+        "dwellMs": 5.44,
+        "regime": null,
+        "aimedX": 1.4116
+      },
+      {
+        "tiltY": 0.9,
+        "lift": 0.2131,
+        "drive": 0.2424,
+        "outTopspin": -5.3421,
+        "outSidespin": 78.2861,
+        "outSpeed": 3.4394,
+        "netClearance": -0.2062,
+        "inBounds": false,
+        "reason": "掛網",
+        "firstBounce": null,
+        "dwellMs": 5.44,
+        "regime": null,
+        "aimedX": 1.4116
+      },
+      {
+        "tiltY": 1,
+        "lift": 0.2131,
+        "drive": 0.2424,
+        "outTopspin": -3.4267,
+        "outSidespin": 79.3609,
+        "outSpeed": 3.431,
+        "netClearance": -0.162,
+        "inBounds": false,
+        "reason": "掛網",
+        "firstBounce": null,
+        "dwellMs": 5.44,
+        "regime": null,
+        "aimedX": 1.4116
+      },
+      {
+        "tiltY": 1.1,
+        "lift": 0.2131,
+        "drive": 0.2424,
+        "outTopspin": -20.1494,
+        "outSidespin": 122.5859,
+        "outSpeed": 3.6009,
+        "netClearance": 0.0072,
+        "inBounds": true,
+        "reason": "成功落在對方桌面",
+        "firstBounce": {
+          "x": 0.0288,
+          "z": -0.2618
+        },
+        "dwellMs": 5.44,
+        "regime": null,
+        "aimedX": 7.9
+      },
+      {
+        "tiltY": 1.2,
+        "lift": 0.2131,
+        "drive": 0.2424,
+        "outTopspin": -13.88,
+        "outSidespin": 124.3633,
+        "outSpeed": 3.5773,
+        "netClearance": 0.0073,
+        "inBounds": true,
+        "reason": "成功落在對方桌面",
+        "firstBounce": {
+          "x": 0.0066,
+          "z": -0.2589
+        },
+        "dwellMs": 5.44,
+        "regime": null,
+        "aimedX": 7
+      },
+      {
+        "tiltY": 1.3,
+        "lift": 0.2131,
+        "drive": 0.2424,
+        "outTopspin": -10.9197,
+        "outSidespin": 126.1376,
+        "outSpeed": 3.5616,
+        "netClearance": 0.026,
+        "inBounds": true,
+        "reason": "成功落在對方桌面",
+        "firstBounce": {
+          "x": 0.0089,
+          "z": -0.2885
+        },
+        "dwellMs": 5.44,
+        "regime": null,
+        "aimedX": 6.7
+      },
+      {
+        "tiltY": 1.4,
+        "lift": 0.2131,
+        "drive": 0.2424,
+        "outTopspin": -6.3126,
+        "outSidespin": 127.4143,
+        "outSpeed": 3.5416,
+        "netClearance": 0.0287,
+        "inBounds": true,
+        "reason": "成功落在對方桌面",
+        "firstBounce": {
+          "x": -0.0093,
+          "z": -0.2899
+        },
+        "dwellMs": 5.44,
+        "regime": null,
+        "aimedX": 6.2
+      },
+      {
+        "tiltY": 1.5,
+        "lift": 0.2131,
+        "drive": 0.2424,
+        "outTopspin": -3.8826,
+        "outSidespin": 128.7189,
+        "outSpeed": 3.5272,
+        "netClearance": 0.0429,
+        "inBounds": true,
+        "reason": "成功落在對方桌面",
+        "firstBounce": {
+          "x": -0.011,
+          "z": -0.3104
+        },
+        "dwellMs": 5.44,
+        "regime": null,
+        "aimedX": 6
+      },
+      {
+        "tiltY": 1.6,
+        "lift": 0.2131,
+        "drive": 0.2424,
+        "outTopspin": -4.0197,
+        "outSidespin": 130.2017,
+        "outSpeed": 3.5201,
+        "netClearance": 0.0717,
+        "inBounds": true,
+        "reason": "成功落在對方桌面",
+        "firstBounce": {
+          "x": 0.0089,
+          "z": -0.3534
+        },
+        "dwellMs": 5.44,
+        "regime": null,
+        "aimedX": 6.1
+      },
+      {
+        "tiltY": 1.7,
+        "lift": 0.2131,
+        "drive": 0.2424,
+        "outTopspin": -2.5485,
+        "outSidespin": 131.2877,
+        "outSpeed": 3.5089,
+        "netClearance": 0.0863,
+        "inBounds": true,
+        "reason": "成功落在對方桌面",
+        "firstBounce": {
+          "x": 0.0106,
+          "z": -0.3723
+        },
+        "dwellMs": 5.44,
+        "regime": null,
+        "aimedX": 6
+      },
+      {
+        "tiltY": 1.8,
+        "lift": 0.2131,
+        "drive": 0.2424,
+        "outTopspin": -1.1119,
+        "outSidespin": 132.2317,
+        "outSpeed": 3.4981,
+        "netClearance": 0.0984,
+        "inBounds": true,
+        "reason": "成功落在對方桌面",
+        "firstBounce": {
+          "x": 0.0102,
+          "z": -0.3871
+        },
+        "dwellMs": 5.44,
+        "regime": null,
+        "aimedX": 5.9
+      },
+      {
+        "tiltY": 1.9,
+        "lift": 0.2131,
+        "drive": 0.2424,
+        "outTopspin": 2.164,
+        "outSidespin": 132.7296,
+        "outSpeed": 3.4823,
+        "netClearance": 0.0957,
+        "inBounds": true,
+        "reason": "成功落在對方桌面",
+        "firstBounce": {
+          "x": -0.0106,
+          "z": -0.3793
+        },
+        "dwellMs": 5.44,
+        "regime": null,
+        "aimedX": 5.6
+      },
+      {
+        "tiltY": 2,
+        "lift": 0.2131,
+        "drive": 0.2424,
+        "outTopspin": 0.761,
+        "outSidespin": 133.9212,
+        "outSpeed": 3.4804,
+        "netClearance": 0.1232,
+        "inBounds": true,
+        "reason": "成功落在對方桌面",
+        "firstBounce": {
+          "x": 0.014,
+          "z": -0.4155
+        },
+        "dwellMs": 5.44,
+        "regime": null,
+        "aimedX": 5.8
+      }
+    ],
+    "sensitivity": {
+      "outTopspin": {
+        "label": "tiltY -> outTopspin",
+        "segments": [
+          {
+            "from": 0.3,
+            "to": 0.4,
+            "dx": 0.1,
+            "dy": 3.3391,
+            "slope": 33.391
+          },
+          {
+            "from": 0.4,
+            "to": 0.5,
+            "dx": 0.1,
+            "dy": 3.1056,
+            "slope": 31.056
+          },
+          {
+            "from": 0.5,
+            "to": 0.6,
+            "dx": 0.1,
+            "dy": 2.8549,
+            "slope": 28.549
+          },
+          {
+            "from": 0.6,
+            "to": 0.7,
+            "dx": 0.1,
+            "dy": 2.6016,
+            "slope": 26.016
+          },
+          {
+            "from": 0.7,
+            "to": 0.8,
+            "dx": 0.1,
+            "dy": 2.3566,
+            "slope": 23.566
+          },
+          {
+            "from": 0.8,
+            "to": 0.9,
+            "dx": 0.1,
+            "dy": 2.1266,
+            "slope": 21.266
+          },
+          {
+            "from": 0.9,
+            "to": 1,
+            "dx": 0.1,
+            "dy": 1.9154,
+            "slope": 19.154
+          },
+          {
+            "from": 1,
+            "to": 1.1,
+            "dx": 0.1,
+            "dy": -16.7227,
+            "slope": -167.227
+          },
+          {
+            "from": 1.1,
+            "to": 1.2,
+            "dx": 0.1,
+            "dy": 6.2694,
+            "slope": 62.694
+          },
+          {
+            "from": 1.2,
+            "to": 1.3,
+            "dx": 0.1,
+            "dy": 2.9603,
+            "slope": 29.603
+          },
+          {
+            "from": 1.3,
+            "to": 1.4,
+            "dx": 0.1,
+            "dy": 4.6071,
+            "slope": 46.071
+          },
+          {
+            "from": 1.4,
+            "to": 1.5,
+            "dx": 0.1,
+            "dy": 2.43,
+            "slope": 24.3
+          },
+          {
+            "from": 1.5,
+            "to": 1.6,
+            "dx": 0.1,
+            "dy": -0.1371,
+            "slope": -1.371
+          },
+          {
+            "from": 1.6,
+            "to": 1.7,
+            "dx": 0.1,
+            "dy": 1.4712,
+            "slope": 14.712
+          },
+          {
+            "from": 1.7,
+            "to": 1.8,
+            "dx": 0.1,
+            "dy": 1.4366,
+            "slope": 14.366
+          },
+          {
+            "from": 1.8,
+            "to": 1.9,
+            "dx": 0.1,
+            "dy": 3.2759,
+            "slope": 32.759
+          },
+          {
+            "from": 1.9,
+            "to": 2,
+            "dx": 0.1,
+            "dy": -1.403,
+            "slope": -14.03
+          }
+        ],
+        "medianAbsSlope": 26.016,
+        "flagged": [
+          {
+            "from": 1,
+            "to": 1.1,
+            "dx": 0.1,
+            "dy": -16.7227,
+            "slope": -167.227,
+            "medianAbsSlope": 26.016,
+            "ratio": 6.43
+          }
+        ]
+      },
+      "outSpeed": {
+        "label": "tiltY -> outSpeed",
+        "segments": [
+          {
+            "from": 0.3,
+            "to": 0.4,
+            "dx": 0.1,
+            "dy": -0.0045,
+            "slope": -0.045
+          },
+          {
+            "from": 0.4,
+            "to": 0.5,
+            "dx": 0.1,
+            "dy": -0.006,
+            "slope": -0.06
+          },
+          {
+            "from": 0.5,
+            "to": 0.6,
+            "dx": 0.1,
+            "dy": -0.0071,
+            "slope": -0.071
+          },
+          {
+            "from": 0.6,
+            "to": 0.7,
+            "dx": 0.1,
+            "dy": -0.0078,
+            "slope": -0.078
+          },
+          {
+            "from": 0.7,
+            "to": 0.8,
+            "dx": 0.1,
+            "dy": -0.0082,
+            "slope": -0.082
+          },
+          {
+            "from": 0.8,
+            "to": 0.9,
+            "dx": 0.1,
+            "dy": -0.0083,
+            "slope": -0.083
+          },
+          {
+            "from": 0.9,
+            "to": 1,
+            "dx": 0.1,
+            "dy": -0.0084,
+            "slope": -0.084
+          },
+          {
+            "from": 1,
+            "to": 1.1,
+            "dx": 0.1,
+            "dy": 0.1699,
+            "slope": 1.699
+          },
+          {
+            "from": 1.1,
+            "to": 1.2,
+            "dx": 0.1,
+            "dy": -0.0236,
+            "slope": -0.236
+          },
+          {
+            "from": 1.2,
+            "to": 1.3,
+            "dx": 0.1,
+            "dy": -0.0157,
+            "slope": -0.157
+          },
+          {
+            "from": 1.3,
+            "to": 1.4,
+            "dx": 0.1,
+            "dy": -0.02,
+            "slope": -0.2
+          },
+          {
+            "from": 1.4,
+            "to": 1.5,
+            "dx": 0.1,
+            "dy": -0.0144,
+            "slope": -0.144
+          },
+          {
+            "from": 1.5,
+            "to": 1.6,
+            "dx": 0.1,
+            "dy": -0.0071,
+            "slope": -0.071
+          },
+          {
+            "from": 1.6,
+            "to": 1.7,
+            "dx": 0.1,
+            "dy": -0.0112,
+            "slope": -0.112
+          },
+          {
+            "from": 1.7,
+            "to": 1.8,
+            "dx": 0.1,
+            "dy": -0.0108,
+            "slope": -0.108
+          },
+          {
+            "from": 1.8,
+            "to": 1.9,
+            "dx": 0.1,
+            "dy": -0.0158,
+            "slope": -0.158
+          },
+          {
+            "from": 1.9,
+            "to": 2,
+            "dx": 0.1,
+            "dy": -0.0019,
+            "slope": -0.019
+          }
+        ],
+        "medianAbsSlope": 0.084,
+        "flagged": [
+          {
+            "from": 1,
+            "to": 1.1,
+            "dx": 0.1,
+            "dy": 0.1699,
+            "slope": 1.699,
+            "medianAbsSlope": 0.084,
+            "ratio": 20.23
+          }
+        ]
+      },
+      "netClearance": {
+        "label": "tiltY -> netClearance",
+        "segments": [
+          {
+            "from": 0.3,
+            "to": 0.4,
+            "dx": 0.1,
+            "dy": 0.0927,
+            "slope": 0.927
+          },
+          {
+            "from": 0.4,
+            "to": 0.5,
+            "dx": 0.1,
+            "dy": 0.0829,
+            "slope": 0.829
+          },
+          {
+            "from": 0.5,
+            "to": 0.6,
+            "dx": 0.1,
+            "dy": 0.0738,
+            "slope": 0.738
+          },
+          {
+            "from": 0.6,
+            "to": 0.7,
+            "dx": 0.1,
+            "dy": 0.0652,
+            "slope": 0.652
+          },
+          {
+            "from": 0.7,
+            "to": 0.8,
+            "dx": 0.1,
+            "dy": 0.0574,
+            "slope": 0.574
+          },
+          {
+            "from": 0.8,
+            "to": 0.9,
+            "dx": 0.1,
+            "dy": 0.0504,
+            "slope": 0.504
+          },
+          {
+            "from": 0.9,
+            "to": 1,
+            "dx": 0.1,
+            "dy": 0.0442,
+            "slope": 0.442
+          },
+          {
+            "from": 1,
+            "to": 1.1,
+            "dx": 0.1,
+            "dy": 0.1692,
+            "slope": 1.692
+          },
+          {
+            "from": 1.1,
+            "to": 1.2,
+            "dx": 0.1,
+            "dy": 0.0001,
+            "slope": 0.001
+          },
+          {
+            "from": 1.2,
+            "to": 1.3,
+            "dx": 0.1,
+            "dy": 0.0187,
+            "slope": 0.187
+          },
+          {
+            "from": 1.3,
+            "to": 1.4,
+            "dx": 0.1,
+            "dy": 0.0027,
+            "slope": 0.027
+          },
+          {
+            "from": 1.4,
+            "to": 1.5,
+            "dx": 0.1,
+            "dy": 0.0142,
+            "slope": 0.142
+          },
+          {
+            "from": 1.5,
+            "to": 1.6,
+            "dx": 0.1,
+            "dy": 0.0288,
+            "slope": 0.288
+          },
+          {
+            "from": 1.6,
+            "to": 1.7,
+            "dx": 0.1,
+            "dy": 0.0146,
+            "slope": 0.146
+          },
+          {
+            "from": 1.7,
+            "to": 1.8,
+            "dx": 0.1,
+            "dy": 0.0121,
+            "slope": 0.121
+          },
+          {
+            "from": 1.8,
+            "to": 1.9,
+            "dx": 0.1,
+            "dy": -0.0027,
+            "slope": -0.027
+          },
+          {
+            "from": 1.9,
+            "to": 2,
+            "dx": 0.1,
+            "dy": 0.0275,
+            "slope": 0.275
+          }
+        ],
+        "medianAbsSlope": 0.288,
+        "flagged": [
+          {
+            "from": 0.3,
+            "to": 0.4,
+            "dx": 0.1,
+            "dy": 0.0927,
+            "slope": 0.927,
+            "medianAbsSlope": 0.288,
+            "ratio": 3.22
+          },
+          {
+            "from": 1,
+            "to": 1.1,
+            "dx": 0.1,
+            "dy": 0.1692,
+            "slope": 1.692,
+            "medianAbsSlope": 0.288,
+            "ratio": 5.88
+          }
+        ]
+      }
+    },
+    "signFlip": {
+      "between": [
+        1.8,
+        1.9
+      ],
+      "values": [
+        -1.1119,
+        2.164
+      ]
+    }
+  },
+  "sweep2": {
+    "scaleValues": [
+      0.5,
+      0.6,
+      0.7,
+      0.8,
+      0.9,
+      1,
+      1.1,
+      1.2,
+      1.3,
+      1.4,
+      1.5,
+      1.6,
+      1.7,
+      1.8,
+      1.9,
+      2
+    ],
+    "rows": [
+      {
+        "scale": 0.5,
+        "incomingSpeedXZ": 1.8359,
+        "lift": 0.2866,
+        "drive": 0.5912,
+        "outTopspin": -14.0859,
+        "outSidespin": 66.0829,
+        "outSpeed": 2.7093,
+        "netClearance": -0.8216,
+        "inBounds": false,
+        "reason": "掛網",
+        "firstBounce": null,
+        "dwellMs": 5.44,
+        "regime": null,
+        "aimedX": 0.7058
+      },
+      {
+        "scale": 0.6,
+        "incomingSpeedXZ": 2.2031,
+        "lift": 0.2719,
+        "drive": 0.5214,
+        "outTopspin": -11.9481,
+        "outSidespin": 68.9025,
+        "outSpeed": 2.855,
+        "netClearance": -0.6542,
+        "inBounds": false,
+        "reason": "掛網",
+        "firstBounce": null,
+        "dwellMs": 5.44,
+        "regime": null,
+        "aimedX": 0.847
+      },
+      {
+        "scale": 0.7,
+        "incomingSpeedXZ": 2.5703,
+        "lift": 0.2572,
+        "drive": 0.4516,
+        "outTopspin": -9.8158,
+        "outSidespin": 71.6165,
+        "outSpeed": 3.0005,
+        "netClearance": -0.5074,
+        "inBounds": false,
+        "reason": "掛網",
+        "firstBounce": null,
+        "dwellMs": 5.44,
+        "regime": null,
+        "aimedX": 0.9882
+      },
+      {
+        "scale": 0.8,
+        "incomingSpeedXZ": 2.9375,
+        "lift": 0.2425,
+        "drive": 0.3819,
+        "outTopspin": -7.6852,
+        "outSidespin": 74.2526,
+        "outSpeed": 3.1451,
+        "netClearance": -0.3783,
+        "inBounds": false,
+        "reason": "掛網",
+        "firstBounce": null,
+        "dwellMs": 5.44,
+        "regime": null,
+        "aimedX": 1.1293
+      },
+      {
+        "scale": 0.9,
+        "incomingSpeedXZ": 3.3046,
+        "lift": 0.2278,
+        "drive": 0.3121,
+        "outTopspin": -5.5545,
+        "outSidespin": 76.8301,
+        "outSpeed": 3.2887,
+        "netClearance": -0.2638,
+        "inBounds": false,
+        "reason": "掛網",
+        "firstBounce": null,
+        "dwellMs": 5.44,
+        "regime": null,
+        "aimedX": 1.2705
+      },
+      {
+        "scale": 1,
+        "incomingSpeedXZ": 3.6718,
+        "lift": 0.2131,
+        "drive": 0.2424,
+        "outTopspin": -3.4267,
+        "outSidespin": 79.3609,
+        "outSpeed": 3.431,
+        "netClearance": -0.162,
+        "inBounds": false,
+        "reason": "掛網",
+        "firstBounce": null,
+        "dwellMs": 5.44,
+        "regime": null,
+        "aimedX": 1.4116
+      },
+      {
+        "scale": 1.1,
+        "incomingSpeedXZ": 4.039,
+        "lift": 0.1984,
+        "drive": 0.1726,
+        "outTopspin": -12.2191,
+        "outSidespin": 123.1524,
+        "outSpeed": 3.7435,
+        "netClearance": 0.0057,
+        "inBounds": true,
+        "reason": "成功落在對方桌面",
+        "firstBounce": {
+          "x": 0.0106,
+          "z": -0.2904
+        },
+        "dwellMs": 5.44,
+        "regime": null,
+        "aimedX": 7.1
+      },
+      {
+        "scale": 1.2,
+        "incomingSpeedXZ": 4.4062,
+        "lift": 0.1838,
+        "drive": 0.1028,
+        "outTopspin": -3.3635,
+        "outSidespin": 126.188,
+        "outSpeed": 3.8719,
+        "netClearance": 0.0403,
+        "inBounds": true,
+        "reason": "成功落在對方桌面",
+        "firstBounce": {
+          "x": 0.0189,
+          "z": -0.3947
+        },
+        "dwellMs": 5.44,
+        "regime": null,
+        "aimedX": 6.5
+      },
+      {
+        "scale": 1.3,
+        "incomingSpeedXZ": 4.7734,
+        "lift": 0.1691,
+        "drive": 0.1,
+        "outTopspin": 1.0034,
+        "outSidespin": 125.7812,
+        "outSpeed": 4.072,
+        "netClearance": 0.1362,
+        "inBounds": true,
+        "reason": "成功落在對方桌面",
+        "firstBounce": {
+          "x": -0.0332,
+          "z": -0.7007
+        },
+        "dwellMs": 5.44,
+        "regime": null,
+        "aimedX": 6.2
+      },
+      {
+        "scale": 1.4,
+        "incomingSpeedXZ": 5.1405,
+        "lift": 0.1544,
+        "drive": 0.1,
+        "outTopspin": 4.1202,
+        "outSidespin": 126.8464,
+        "outSpeed": 4.2908,
+        "netClearance": 0.2219,
+        "inBounds": true,
+        "reason": "成功落在對方桌面",
+        "firstBounce": {
+          "x": -0.0406,
+          "z": -1.0416
+        },
+        "dwellMs": 5.46,
+        "regime": null,
+        "aimedX": 6.2
+      },
+      {
+        "scale": 1.5,
+        "incomingSpeedXZ": 5.5077,
+        "lift": 0.1397,
+        "drive": 0.1,
+        "outTopspin": 8.905,
+        "outSidespin": 91.4165,
+        "outSpeed": 4.4506,
+        "netClearance": 0.2839,
+        "inBounds": false,
+        "reason": "出界",
+        "firstBounce": null,
+        "dwellMs": 5.46,
+        "regime": null,
+        "aimedX": 2.1175
+      },
+      {
+        "scale": 1.6,
+        "incomingSpeedXZ": 5.8749,
+        "lift": 0.125,
+        "drive": 0.1,
+        "outTopspin": 11.6026,
+        "outSidespin": 93.7573,
+        "outSpeed": 4.6931,
+        "netClearance": 0.3479,
+        "inBounds": false,
+        "reason": "出界",
+        "firstBounce": null,
+        "dwellMs": 5.46,
+        "regime": null,
+        "aimedX": 2.2586
+      },
+      {
+        "scale": 1.7,
+        "incomingSpeedXZ": 6.2421,
+        "lift": 0.1103,
+        "drive": 0.1,
+        "outTopspin": 14.3012,
+        "outSidespin": 96.0907,
+        "outSpeed": 4.9321,
+        "netClearance": 0.4027,
+        "inBounds": false,
+        "reason": "出界",
+        "firstBounce": null,
+        "dwellMs": 5.46,
+        "regime": null,
+        "aimedX": 2.3998
+      },
+      {
+        "scale": 1.8,
+        "incomingSpeedXZ": 6.6093,
+        "lift": 0.0956,
+        "drive": 0.1,
+        "outTopspin": 17.0002,
+        "outSidespin": 98.4178,
+        "outSpeed": 5.1673,
+        "netClearance": 0.45,
+        "inBounds": false,
+        "reason": "出界",
+        "firstBounce": null,
+        "dwellMs": 5.46,
+        "regime": null,
+        "aimedX": 2.541
+      },
+      {
+        "scale": 1.9,
+        "incomingSpeedXZ": 6.9765,
+        "lift": 0.0809,
+        "drive": 0.1,
+        "outTopspin": 19.6974,
+        "outSidespin": 100.7384,
+        "outSpeed": 5.3989,
+        "netClearance": 0.4912,
+        "inBounds": false,
+        "reason": "出界",
+        "firstBounce": null,
+        "dwellMs": 5.46,
+        "regime": null,
+        "aimedX": 2.6821
+      },
+      {
+        "scale": 2,
+        "incomingSpeedXZ": 7.3436,
+        "lift": 0.0663,
+        "drive": 0.1,
+        "outTopspin": 22.397,
+        "outSidespin": 103.0555,
+        "outSpeed": 5.6268,
+        "netClearance": 0.5275,
+        "inBounds": false,
+        "reason": "出界",
+        "firstBounce": null,
+        "dwellMs": 5.46,
+        "regime": null,
+        "aimedX": 2.8233
+      }
+    ],
+    "sensitivity": {
+      "lift": {
+        "label": "scale -> lift",
+        "segments": [
+          {
+            "from": 0.5,
+            "to": 0.6,
+            "dx": 0.1,
+            "dy": -0.0147,
+            "slope": -0.147
+          },
+          {
+            "from": 0.6,
+            "to": 0.7,
+            "dx": 0.1,
+            "dy": -0.0147,
+            "slope": -0.147
+          },
+          {
+            "from": 0.7,
+            "to": 0.8,
+            "dx": 0.1,
+            "dy": -0.0147,
+            "slope": -0.147
+          },
+          {
+            "from": 0.8,
+            "to": 0.9,
+            "dx": 0.1,
+            "dy": -0.0147,
+            "slope": -0.147
+          },
+          {
+            "from": 0.9,
+            "to": 1,
+            "dx": 0.1,
+            "dy": -0.0147,
+            "slope": -0.147
+          },
+          {
+            "from": 1,
+            "to": 1.1,
+            "dx": 0.1,
+            "dy": -0.0147,
+            "slope": -0.147
+          },
+          {
+            "from": 1.1,
+            "to": 1.2,
+            "dx": 0.1,
+            "dy": -0.0146,
+            "slope": -0.146
+          },
+          {
+            "from": 1.2,
+            "to": 1.3,
+            "dx": 0.1,
+            "dy": -0.0147,
+            "slope": -0.147
+          },
+          {
+            "from": 1.3,
+            "to": 1.4,
+            "dx": 0.1,
+            "dy": -0.0147,
+            "slope": -0.147
+          },
+          {
+            "from": 1.4,
+            "to": 1.5,
+            "dx": 0.1,
+            "dy": -0.0147,
+            "slope": -0.147
+          },
+          {
+            "from": 1.5,
+            "to": 1.6,
+            "dx": 0.1,
+            "dy": -0.0147,
+            "slope": -0.147
+          },
+          {
+            "from": 1.6,
+            "to": 1.7,
+            "dx": 0.1,
+            "dy": -0.0147,
+            "slope": -0.147
+          },
+          {
+            "from": 1.7,
+            "to": 1.8,
+            "dx": 0.1,
+            "dy": -0.0147,
+            "slope": -0.147
+          },
+          {
+            "from": 1.8,
+            "to": 1.9,
+            "dx": 0.1,
+            "dy": -0.0147,
+            "slope": -0.147
+          },
+          {
+            "from": 1.9,
+            "to": 2,
+            "dx": 0.1,
+            "dy": -0.0146,
+            "slope": -0.146
+          }
+        ],
+        "medianAbsSlope": 0.147,
+        "flagged": []
+      },
+      "drive": {
+        "label": "scale -> drive",
+        "segments": [
+          {
+            "from": 0.5,
+            "to": 0.6,
+            "dx": 0.1,
+            "dy": -0.0698,
+            "slope": -0.698
+          },
+          {
+            "from": 0.6,
+            "to": 0.7,
+            "dx": 0.1,
+            "dy": -0.0698,
+            "slope": -0.698
+          },
+          {
+            "from": 0.7,
+            "to": 0.8,
+            "dx": 0.1,
+            "dy": -0.0697,
+            "slope": -0.697
+          },
+          {
+            "from": 0.8,
+            "to": 0.9,
+            "dx": 0.1,
+            "dy": -0.0698,
+            "slope": -0.698
+          },
+          {
+            "from": 0.9,
+            "to": 1,
+            "dx": 0.1,
+            "dy": -0.0697,
+            "slope": -0.697
+          },
+          {
+            "from": 1,
+            "to": 1.1,
+            "dx": 0.1,
+            "dy": -0.0698,
+            "slope": -0.698
+          },
+          {
+            "from": 1.1,
+            "to": 1.2,
+            "dx": 0.1,
+            "dy": -0.0698,
+            "slope": -0.698
+          },
+          {
+            "from": 1.2,
+            "to": 1.3,
+            "dx": 0.1,
+            "dy": -0.0028,
+            "slope": -0.028
+          },
+          {
+            "from": 1.3,
+            "to": 1.4,
+            "dx": 0.1,
+            "dy": 0,
+            "slope": 0
+          },
+          {
+            "from": 1.4,
+            "to": 1.5,
+            "dx": 0.1,
+            "dy": 0,
+            "slope": 0
+          },
+          {
+            "from": 1.5,
+            "to": 1.6,
+            "dx": 0.1,
+            "dy": 0,
+            "slope": 0
+          },
+          {
+            "from": 1.6,
+            "to": 1.7,
+            "dx": 0.1,
+            "dy": 0,
+            "slope": 0
+          },
+          {
+            "from": 1.7,
+            "to": 1.8,
+            "dx": 0.1,
+            "dy": 0,
+            "slope": 0
+          },
+          {
+            "from": 1.8,
+            "to": 1.9,
+            "dx": 0.1,
+            "dy": 0,
+            "slope": 0
+          },
+          {
+            "from": 1.9,
+            "to": 2,
+            "dx": 0.1,
+            "dy": 0,
+            "slope": 0
+          }
+        ],
+        "medianAbsSlope": 0.028,
+        "flagged": [
+          {
+            "from": 0.5,
+            "to": 0.6,
+            "dx": 0.1,
+            "dy": -0.0698,
+            "slope": -0.698,
+            "medianAbsSlope": 0.028,
+            "ratio": 24.93
+          },
+          {
+            "from": 0.6,
+            "to": 0.7,
+            "dx": 0.1,
+            "dy": -0.0698,
+            "slope": -0.698,
+            "medianAbsSlope": 0.028,
+            "ratio": 24.93
+          },
+          {
+            "from": 0.7,
+            "to": 0.8,
+            "dx": 0.1,
+            "dy": -0.0697,
+            "slope": -0.697,
+            "medianAbsSlope": 0.028,
+            "ratio": 24.89
+          },
+          {
+            "from": 0.8,
+            "to": 0.9,
+            "dx": 0.1,
+            "dy": -0.0698,
+            "slope": -0.698,
+            "medianAbsSlope": 0.028,
+            "ratio": 24.93
+          },
+          {
+            "from": 0.9,
+            "to": 1,
+            "dx": 0.1,
+            "dy": -0.0697,
+            "slope": -0.697,
+            "medianAbsSlope": 0.028,
+            "ratio": 24.89
+          },
+          {
+            "from": 1,
+            "to": 1.1,
+            "dx": 0.1,
+            "dy": -0.0698,
+            "slope": -0.698,
+            "medianAbsSlope": 0.028,
+            "ratio": 24.93
+          },
+          {
+            "from": 1.1,
+            "to": 1.2,
+            "dx": 0.1,
+            "dy": -0.0698,
+            "slope": -0.698,
+            "medianAbsSlope": 0.028,
+            "ratio": 24.93
+          }
+        ]
+      },
+      "outTopspin": {
+        "label": "scale -> outTopspin",
+        "segments": [
+          {
+            "from": 0.5,
+            "to": 0.6,
+            "dx": 0.1,
+            "dy": 2.1378,
+            "slope": 21.378
+          },
+          {
+            "from": 0.6,
+            "to": 0.7,
+            "dx": 0.1,
+            "dy": 2.1323,
+            "slope": 21.323
+          },
+          {
+            "from": 0.7,
+            "to": 0.8,
+            "dx": 0.1,
+            "dy": 2.1306,
+            "slope": 21.306
+          },
+          {
+            "from": 0.8,
+            "to": 0.9,
+            "dx": 0.1,
+            "dy": 2.1307,
+            "slope": 21.307
+          },
+          {
+            "from": 0.9,
+            "to": 1,
+            "dx": 0.1,
+            "dy": 2.1278,
+            "slope": 21.278
+          },
+          {
+            "from": 1,
+            "to": 1.1,
+            "dx": 0.1,
+            "dy": -8.7924,
+            "slope": -87.924
+          },
+          {
+            "from": 1.1,
+            "to": 1.2,
+            "dx": 0.1,
+            "dy": 8.8556,
+            "slope": 88.556
+          },
+          {
+            "from": 1.2,
+            "to": 1.3,
+            "dx": 0.1,
+            "dy": 4.3669,
+            "slope": 43.669
+          },
+          {
+            "from": 1.3,
+            "to": 1.4,
+            "dx": 0.1,
+            "dy": 3.1168,
+            "slope": 31.168
+          },
+          {
+            "from": 1.4,
+            "to": 1.5,
+            "dx": 0.1,
+            "dy": 4.7848,
+            "slope": 47.848
+          },
+          {
+            "from": 1.5,
+            "to": 1.6,
+            "dx": 0.1,
+            "dy": 2.6976,
+            "slope": 26.976
+          },
+          {
+            "from": 1.6,
+            "to": 1.7,
+            "dx": 0.1,
+            "dy": 2.6986,
+            "slope": 26.986
+          },
+          {
+            "from": 1.7,
+            "to": 1.8,
+            "dx": 0.1,
+            "dy": 2.699,
+            "slope": 26.99
+          },
+          {
+            "from": 1.8,
+            "to": 1.9,
+            "dx": 0.1,
+            "dy": 2.6972,
+            "slope": 26.972
+          },
+          {
+            "from": 1.9,
+            "to": 2,
+            "dx": 0.1,
+            "dy": 2.6996,
+            "slope": 26.996
+          }
+        ],
+        "medianAbsSlope": 26.986,
+        "flagged": [
+          {
+            "from": 1,
+            "to": 1.1,
+            "dx": 0.1,
+            "dy": -8.7924,
+            "slope": -87.924,
+            "medianAbsSlope": 26.986,
+            "ratio": 3.26
+          },
+          {
+            "from": 1.1,
+            "to": 1.2,
+            "dx": 0.1,
+            "dy": 8.8556,
+            "slope": 88.556,
+            "medianAbsSlope": 26.986,
+            "ratio": 3.28
+          }
+        ]
+      },
+      "outSpeed": {
+        "label": "scale -> outSpeed",
+        "segments": [
+          {
+            "from": 0.5,
+            "to": 0.6,
+            "dx": 0.1,
+            "dy": 0.1457,
+            "slope": 1.457
+          },
+          {
+            "from": 0.6,
+            "to": 0.7,
+            "dx": 0.1,
+            "dy": 0.1455,
+            "slope": 1.455
+          },
+          {
+            "from": 0.7,
+            "to": 0.8,
+            "dx": 0.1,
+            "dy": 0.1446,
+            "slope": 1.446
+          },
+          {
+            "from": 0.8,
+            "to": 0.9,
+            "dx": 0.1,
+            "dy": 0.1436,
+            "slope": 1.436
+          },
+          {
+            "from": 0.9,
+            "to": 1,
+            "dx": 0.1,
+            "dy": 0.1423,
+            "slope": 1.423
+          },
+          {
+            "from": 1,
+            "to": 1.1,
+            "dx": 0.1,
+            "dy": 0.3125,
+            "slope": 3.125
+          },
+          {
+            "from": 1.1,
+            "to": 1.2,
+            "dx": 0.1,
+            "dy": 0.1284,
+            "slope": 1.284
+          },
+          {
+            "from": 1.2,
+            "to": 1.3,
+            "dx": 0.1,
+            "dy": 0.2001,
+            "slope": 2.001
+          },
+          {
+            "from": 1.3,
+            "to": 1.4,
+            "dx": 0.1,
+            "dy": 0.2188,
+            "slope": 2.188
+          },
+          {
+            "from": 1.4,
+            "to": 1.5,
+            "dx": 0.1,
+            "dy": 0.1598,
+            "slope": 1.598
+          },
+          {
+            "from": 1.5,
+            "to": 1.6,
+            "dx": 0.1,
+            "dy": 0.2425,
+            "slope": 2.425
+          },
+          {
+            "from": 1.6,
+            "to": 1.7,
+            "dx": 0.1,
+            "dy": 0.239,
+            "slope": 2.39
+          },
+          {
+            "from": 1.7,
+            "to": 1.8,
+            "dx": 0.1,
+            "dy": 0.2352,
+            "slope": 2.352
+          },
+          {
+            "from": 1.8,
+            "to": 1.9,
+            "dx": 0.1,
+            "dy": 0.2316,
+            "slope": 2.316
+          },
+          {
+            "from": 1.9,
+            "to": 2,
+            "dx": 0.1,
+            "dy": 0.2279,
+            "slope": 2.279
+          }
+        ],
+        "medianAbsSlope": 2.001,
+        "flagged": []
+      },
+      "netClearance": {
+        "label": "scale -> netClearance",
+        "segments": [
+          {
+            "from": 0.5,
+            "to": 0.6,
+            "dx": 0.1,
+            "dy": 0.1674,
+            "slope": 1.674
+          },
+          {
+            "from": 0.6,
+            "to": 0.7,
+            "dx": 0.1,
+            "dy": 0.1468,
+            "slope": 1.468
+          },
+          {
+            "from": 0.7,
+            "to": 0.8,
+            "dx": 0.1,
+            "dy": 0.1291,
+            "slope": 1.291
+          },
+          {
+            "from": 0.8,
+            "to": 0.9,
+            "dx": 0.1,
+            "dy": 0.1145,
+            "slope": 1.145
+          },
+          {
+            "from": 0.9,
+            "to": 1,
+            "dx": 0.1,
+            "dy": 0.1018,
+            "slope": 1.018
+          },
+          {
+            "from": 1,
+            "to": 1.1,
+            "dx": 0.1,
+            "dy": 0.1677,
+            "slope": 1.677
+          },
+          {
+            "from": 1.1,
+            "to": 1.2,
+            "dx": 0.1,
+            "dy": 0.0346,
+            "slope": 0.346
+          },
+          {
+            "from": 1.2,
+            "to": 1.3,
+            "dx": 0.1,
+            "dy": 0.0959,
+            "slope": 0.959
+          },
+          {
+            "from": 1.3,
+            "to": 1.4,
+            "dx": 0.1,
+            "dy": 0.0857,
+            "slope": 0.857
+          },
+          {
+            "from": 1.4,
+            "to": 1.5,
+            "dx": 0.1,
+            "dy": 0.062,
+            "slope": 0.62
+          },
+          {
+            "from": 1.5,
+            "to": 1.6,
+            "dx": 0.1,
+            "dy": 0.064,
+            "slope": 0.64
+          },
+          {
+            "from": 1.6,
+            "to": 1.7,
+            "dx": 0.1,
+            "dy": 0.0548,
+            "slope": 0.548
+          },
+          {
+            "from": 1.7,
+            "to": 1.8,
+            "dx": 0.1,
+            "dy": 0.0473,
+            "slope": 0.473
+          },
+          {
+            "from": 1.8,
+            "to": 1.9,
+            "dx": 0.1,
+            "dy": 0.0412,
+            "slope": 0.412
+          },
+          {
+            "from": 1.9,
+            "to": 2,
+            "dx": 0.1,
+            "dy": 0.0363,
+            "slope": 0.363
+          }
+        ],
+        "medianAbsSlope": 0.857,
+        "flagged": []
+      }
+    },
+    "liftClampPlateauAt": [],
+    "driveClampPlateauAt": [
+      1.4,
+      1.5,
+      1.6,
+      1.7,
+      1.8,
+      1.9,
+      2
+    ]
+  }
+}

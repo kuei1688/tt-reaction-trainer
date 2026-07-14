@@ -1,0 +1,1172 @@
+# Return Studio Batch Validation (VAL-005)
+
+> return-studio.html 研究頁批次結果，非 game4.html 正式驗收。
+> 本報告不與 game4.html 做一致性 cross-check：兩邊的回擊公式族刻意分歧
+> （見 docs/VAL005_RETURN_STUDIO_BATCH_VALIDATION_TASKPACK.md「範圍界定」），
+> 差異比對屬於 VAL-006 / CMD-008 範圍。
+> 本工具抽取的 TECHNIQUES：等同於 TECHNIQUES 的初始值（deepClone(DEFAULT_TECHNIQUES)），不含執行期間的動態修改。
+
+Updated: 2026-07-14T01:19:01.661Z
+Presets: 16 (physics-presets.json)
+Combos: forehand_attack×forehand + backhand_attack×backhand + push×forehand + push×backhand = 64 組（side 對應依 return-studio.html syncSideLock() 現行邏輯）
+
+觀察註記：現行 simulateReturnForPreset(preset, side, techniqueKey) 的 side 參數
+在函式體內未被使用（原始碼行為快照），因此 push 的 forehand / backhand 兩側
+結果目前相同。此為 return-studio.html 現況的如實記錄，非本工具的判定。
+
+## Summary
+
+ok: 26 / 64（Exception 例外筆數: 0）
+- forehand_attack × forehand: 1 / 16 ok
+- backhand_attack × backhand: 1 / 16 ok
+- push × forehand: 12 / 16 ok
+- push × backhand: 12 / 16 ok
+
+Exit code: 0 =「腳本本身執行無例外且 64 組全部產生結果」；不代表全部組合判定成功，
+單筆 ok:false / Exception 不算腳本層級失敗（比照 VAL-003 先例）。
+
+## Results
+
+status | preset | technique | side | reason | netClearance | firstBounce(x,z)
+--- | --- | --- | --- | --- | --- | ---
+Fail | backspin_long_backhand | forehand_attack | forehand | 掛網 | -0.1112 | -0.003, 0.043
+Fail | backspin_long_backhand | backhand_attack | backhand | 掛網 | -0.1112 | -0.003, 0.043
+Fail | backspin_long_backhand | push | forehand | 掛網 | -0.1620 | null
+Fail | backspin_long_backhand | push | backhand | 掛網 | -0.1620 | null
+Fail | backspin_short_backhand_2 | forehand_attack | forehand | 掛網 | -0.0838 | -0.002, 0.450
+Fail | backspin_short_backhand_2 | backhand_attack | backhand | 掛網 | -0.0838 | -0.002, 0.450
+Pass | backspin_short_backhand_2 | push | forehand | 成功 | 0.0030 | 0.468, -0.365
+Pass | backspin_short_backhand_2 | push | backhand | 成功 | 0.0030 | 0.468, -0.365
+Fail | sidebackspin_long_forehand | forehand_attack | forehand | 掛網 | -0.1128 | 0.018, 0.313
+Fail | sidebackspin_long_forehand | backhand_attack | backhand | 掛網 | -0.1128 | 0.018, 0.313
+Pass | sidebackspin_long_forehand | push | forehand | 成功 | 0.0059 | -0.496, -0.360
+Pass | sidebackspin_long_forehand | push | backhand | 成功 | 0.0059 | -0.496, -0.360
+Fail | sidebackspin_half_long_forehand | forehand_attack | forehand | 掛網 | -0.1146 | 0.013, 0.515
+Fail | sidebackspin_half_long_forehand | backhand_attack | backhand | 掛網 | -0.1146 | 0.013, 0.515
+Pass | sidebackspin_half_long_forehand | push | forehand | 成功 | 0.0011 | -0.549, -0.383
+Pass | sidebackspin_half_long_forehand | push | backhand | 成功 | 0.0011 | -0.549, -0.383
+Fail | sidebackspin_half_long_backhand | forehand_attack | forehand | 掛網 | -0.0225 | null
+Fail | sidebackspin_half_long_backhand | backhand_attack | backhand | 掛網 | -0.0225 | null
+Pass | sidebackspin_half_long_backhand | push | forehand | 成功 | 0.1014 | -0.630, -0.601
+Pass | sidebackspin_half_long_backhand | push | backhand | 成功 | 0.1014 | -0.630, -0.601
+Fail | sidebackspin_long_backhand | forehand_attack | forehand | 掛網 | -0.0685 | -0.028, 0.111
+Fail | sidebackspin_long_backhand | backhand_attack | backhand | 掛網 | -0.0685 | -0.028, 0.111
+Pass | sidebackspin_long_backhand | push | forehand | 成功 | 0.0609 | -0.006, -0.478
+Pass | sidebackspin_long_backhand | push | backhand | 成功 | 0.0609 | -0.006, -0.478
+Fail | sidebackspin_long_forehand_2 | forehand_attack | forehand | 掛網 | -0.1298 | 0.008, 0.943
+Fail | sidebackspin_long_forehand_2 | backhand_attack | backhand | 掛網 | -0.1298 | 0.008, 0.943
+Fail | sidebackspin_long_forehand_2 | push | forehand | 掛網 | -0.0257 | 0.484, 0.095
+Fail | sidebackspin_long_forehand_2 | push | backhand | 掛網 | -0.0257 | 0.484, 0.095
+Fail | sidebackspin_long_forehand_3 | forehand_attack | forehand | 掛網 | -0.1224 | 0.008, 0.032
+Fail | sidebackspin_long_forehand_3 | backhand_attack | backhand | 掛網 | -0.1224 | 0.008, 0.032
+Pass | sidebackspin_long_forehand_3 | push | forehand | 成功 | 0.0029 | -0.205, -0.381
+Pass | sidebackspin_long_forehand_3 | push | backhand | 成功 | 0.0029 | -0.205, -0.381
+Fail | backspin_long_forehand | forehand_attack | forehand | 掛網 | -0.1272 | 0.010, 0.881
+Fail | backspin_long_forehand | backhand_attack | backhand | 掛網 | -0.1272 | 0.010, 0.881
+Fail | backspin_long_forehand | push | forehand | 掛網 | -0.0351 | 0.461, 0.087
+Fail | backspin_long_forehand | push | backhand | 掛網 | -0.0351 | 0.461, 0.087
+Fail | backspin_long_forehand_2 | forehand_attack | forehand | 掛網 | -0.1062 | 0.010, 0.885
+Fail | backspin_long_forehand_2 | backhand_attack | backhand | 掛網 | -0.1062 | 0.010, 0.885
+Fail | backspin_long_forehand_2 | push | forehand | 掛網 | -0.0894 | 0.622, 0.047
+Fail | backspin_long_forehand_2 | push | backhand | 掛網 | -0.0894 | 0.622, 0.047
+Fail | backspin_short_forehand | forehand_attack | forehand | 掛網 | -0.0544 | 0.047, 0.083
+Fail | backspin_short_forehand | backhand_attack | backhand | 掛網 | -0.0544 | 0.047, 0.083
+Pass | backspin_short_forehand | push | forehand | 成功 | 0.0036 | 0.020, -0.474
+Pass | backspin_short_forehand | push | backhand | 成功 | 0.0036 | 0.020, -0.474
+Pass | backspin_short_forehand_2 | forehand_attack | forehand | 成功 | 0.1720 | 0.581, -0.621
+Pass | backspin_short_forehand_2 | backhand_attack | backhand | 成功 | 0.1720 | 0.581, -0.621
+Pass | backspin_short_forehand_2 | push | forehand | 成功 | 0.2768 | -0.004, -0.855
+Pass | backspin_short_forehand_2 | push | backhand | 成功 | 0.2768 | -0.004, -0.855
+Fail | backspin_short_backhand | forehand_attack | forehand | 掛網 | -0.0827 | -0.015, 0.063
+Fail | backspin_short_backhand | backhand_attack | backhand | 掛網 | -0.0827 | -0.015, 0.063
+Pass | backspin_short_backhand | push | forehand | 成功 | 0.0054 | 0.040, -0.480
+Pass | backspin_short_backhand | push | backhand | 成功 | 0.0054 | 0.040, -0.480
+Fail | sidebackspin_short_forehand | forehand_attack | forehand | 掛網 | -0.0676 | null
+Fail | sidebackspin_short_forehand | backhand_attack | backhand | 掛網 | -0.0676 | null
+Pass | sidebackspin_short_forehand | push | forehand | 成功 | 0.0540 | 0.715, -0.452
+Pass | sidebackspin_short_forehand | push | backhand | 成功 | 0.0540 | 0.715, -0.452
+Fail | no_spin_long_forehand | forehand_attack | forehand | 掛網 | -0.0048 | 0.036, 0.157
+Fail | no_spin_long_forehand | backhand_attack | backhand | 掛網 | -0.0048 | 0.036, 0.157
+Pass | no_spin_long_forehand | push | forehand | 成功 | 0.4417 | -0.048, -1.201
+Pass | no_spin_long_forehand | push | backhand | 成功 | 0.4417 | -0.048, -1.201
+Fail | no_spin_long_backhand | forehand_attack | forehand | 掛網 | -0.0182 | -0.037, 0.155
+Fail | no_spin_long_backhand | backhand_attack | backhand | 掛網 | -0.0182 | -0.037, 0.155
+Pass | no_spin_long_backhand | push | forehand | 成功 | 0.4471 | 0.061, -1.215
+Pass | no_spin_long_backhand | push | backhand | 成功 | 0.4471 | 0.061, -1.215
+
+## Full JSON
+
+```json
+[
+  {
+    "preset": "backspin_long_backhand",
+    "technique": "forehand_attack",
+    "side": "forehand",
+    "ok": false,
+    "reason": "掛網",
+    "netClearance": -0.1112,
+    "firstBounce": {
+      "x": -0.0032,
+      "z": 0.0425
+    },
+    "hitPoint": {
+      "x": -0.8228,
+      "y": 0.8952,
+      "z": 1.9971
+    }
+  },
+  {
+    "preset": "backspin_long_backhand",
+    "technique": "backhand_attack",
+    "side": "backhand",
+    "ok": false,
+    "reason": "掛網",
+    "netClearance": -0.1112,
+    "firstBounce": {
+      "x": -0.0032,
+      "z": 0.0425
+    },
+    "hitPoint": {
+      "x": -0.8228,
+      "y": 0.8952,
+      "z": 1.9971
+    }
+  },
+  {
+    "preset": "backspin_long_backhand",
+    "technique": "push",
+    "side": "forehand",
+    "ok": false,
+    "reason": "掛網",
+    "netClearance": -0.162,
+    "firstBounce": null,
+    "hitPoint": {
+      "x": -0.8816,
+      "y": 0.8915,
+      "z": 2.1384
+    }
+  },
+  {
+    "preset": "backspin_long_backhand",
+    "technique": "push",
+    "side": "backhand",
+    "ok": false,
+    "reason": "掛網",
+    "netClearance": -0.162,
+    "firstBounce": null,
+    "hitPoint": {
+      "x": -0.8816,
+      "y": 0.8915,
+      "z": 2.1384
+    }
+  },
+  {
+    "preset": "backspin_short_backhand_2",
+    "technique": "forehand_attack",
+    "side": "forehand",
+    "ok": false,
+    "reason": "掛網",
+    "netClearance": -0.0838,
+    "firstBounce": {
+      "x": -0.0024,
+      "z": 0.4495
+    },
+    "hitPoint": {
+      "x": -0.1232,
+      "y": 0.8587,
+      "z": 0.8353
+    }
+  },
+  {
+    "preset": "backspin_short_backhand_2",
+    "technique": "backhand_attack",
+    "side": "backhand",
+    "ok": false,
+    "reason": "掛網",
+    "netClearance": -0.0838,
+    "firstBounce": {
+      "x": -0.0024,
+      "z": 0.4495
+    },
+    "hitPoint": {
+      "x": -0.1232,
+      "y": 0.8587,
+      "z": 0.8353
+    }
+  },
+  {
+    "preset": "backspin_short_backhand_2",
+    "technique": "push",
+    "side": "forehand",
+    "ok": true,
+    "reason": "成功",
+    "netClearance": 0.003,
+    "firstBounce": {
+      "x": 0.4675,
+      "z": -0.3646
+    },
+    "hitPoint": {
+      "x": -0.1374,
+      "y": 0.8552,
+      "z": 0.8969
+    }
+  },
+  {
+    "preset": "backspin_short_backhand_2",
+    "technique": "push",
+    "side": "backhand",
+    "ok": true,
+    "reason": "成功",
+    "netClearance": 0.003,
+    "firstBounce": {
+      "x": 0.4675,
+      "z": -0.3646
+    },
+    "hitPoint": {
+      "x": -0.1374,
+      "y": 0.8552,
+      "z": 0.8969
+    }
+  },
+  {
+    "preset": "sidebackspin_long_forehand",
+    "technique": "forehand_attack",
+    "side": "forehand",
+    "ok": false,
+    "reason": "掛網",
+    "netClearance": -0.1128,
+    "firstBounce": {
+      "x": 0.0176,
+      "z": 0.3126
+    },
+    "hitPoint": {
+      "x": 0.8307,
+      "y": 0.8373,
+      "z": 1.8454
+    }
+  },
+  {
+    "preset": "sidebackspin_long_forehand",
+    "technique": "backhand_attack",
+    "side": "backhand",
+    "ok": false,
+    "reason": "掛網",
+    "netClearance": -0.1128,
+    "firstBounce": {
+      "x": 0.0176,
+      "z": 0.3126
+    },
+    "hitPoint": {
+      "x": 0.8307,
+      "y": 0.8373,
+      "z": 1.8454
+    }
+  },
+  {
+    "preset": "sidebackspin_long_forehand",
+    "technique": "push",
+    "side": "forehand",
+    "ok": true,
+    "reason": "成功",
+    "netClearance": 0.0059,
+    "firstBounce": {
+      "x": -0.496,
+      "z": -0.3603
+    },
+    "hitPoint": {
+      "x": 0.8671,
+      "y": 0.8331,
+      "z": 2.0091
+    }
+  },
+  {
+    "preset": "sidebackspin_long_forehand",
+    "technique": "push",
+    "side": "backhand",
+    "ok": true,
+    "reason": "成功",
+    "netClearance": 0.0059,
+    "firstBounce": {
+      "x": -0.496,
+      "z": -0.3603
+    },
+    "hitPoint": {
+      "x": 0.8671,
+      "y": 0.8331,
+      "z": 2.0091
+    }
+  },
+  {
+    "preset": "sidebackspin_half_long_forehand",
+    "technique": "forehand_attack",
+    "side": "forehand",
+    "ok": false,
+    "reason": "掛網",
+    "netClearance": -0.1146,
+    "firstBounce": {
+      "x": 0.0133,
+      "z": 0.5149
+    },
+    "hitPoint": {
+      "x": 0.5534,
+      "y": 0.8418,
+      "z": 1.4914
+    }
+  },
+  {
+    "preset": "sidebackspin_half_long_forehand",
+    "technique": "backhand_attack",
+    "side": "backhand",
+    "ok": false,
+    "reason": "掛網",
+    "netClearance": -0.1146,
+    "firstBounce": {
+      "x": 0.0133,
+      "z": 0.5149
+    },
+    "hitPoint": {
+      "x": 0.5534,
+      "y": 0.8418,
+      "z": 1.4914
+    }
+  },
+  {
+    "preset": "sidebackspin_half_long_forehand",
+    "technique": "push",
+    "side": "forehand",
+    "ok": true,
+    "reason": "成功",
+    "netClearance": 0.0011,
+    "firstBounce": {
+      "x": -0.5486,
+      "z": -0.3829
+    },
+    "hitPoint": {
+      "x": 0.5819,
+      "y": 0.8373,
+      "z": 1.6663
+    }
+  },
+  {
+    "preset": "sidebackspin_half_long_forehand",
+    "technique": "push",
+    "side": "backhand",
+    "ok": true,
+    "reason": "成功",
+    "netClearance": 0.0011,
+    "firstBounce": {
+      "x": -0.5486,
+      "z": -0.3829
+    },
+    "hitPoint": {
+      "x": 0.5819,
+      "y": 0.8373,
+      "z": 1.6663
+    }
+  },
+  {
+    "preset": "sidebackspin_half_long_backhand",
+    "technique": "forehand_attack",
+    "side": "forehand",
+    "ok": false,
+    "reason": "掛網",
+    "netClearance": -0.0225,
+    "firstBounce": null,
+    "hitPoint": {
+      "x": -1.0708,
+      "y": 0.8383,
+      "z": 1.478
+    }
+  },
+  {
+    "preset": "sidebackspin_half_long_backhand",
+    "technique": "backhand_attack",
+    "side": "backhand",
+    "ok": false,
+    "reason": "掛網",
+    "netClearance": -0.0225,
+    "firstBounce": null,
+    "hitPoint": {
+      "x": -1.0708,
+      "y": 0.8383,
+      "z": 1.478
+    }
+  },
+  {
+    "preset": "sidebackspin_half_long_backhand",
+    "technique": "push",
+    "side": "forehand",
+    "ok": true,
+    "reason": "成功",
+    "netClearance": 0.1014,
+    "firstBounce": {
+      "x": -0.6298,
+      "z": -0.6012
+    },
+    "hitPoint": {
+      "x": -1.1502,
+      "y": 0.8345,
+      "z": 1.6237
+    }
+  },
+  {
+    "preset": "sidebackspin_half_long_backhand",
+    "technique": "push",
+    "side": "backhand",
+    "ok": true,
+    "reason": "成功",
+    "netClearance": 0.1014,
+    "firstBounce": {
+      "x": -0.6298,
+      "z": -0.6012
+    },
+    "hitPoint": {
+      "x": -1.1502,
+      "y": 0.8345,
+      "z": 1.6237
+    }
+  },
+  {
+    "preset": "sidebackspin_long_backhand",
+    "technique": "forehand_attack",
+    "side": "forehand",
+    "ok": false,
+    "reason": "掛網",
+    "netClearance": -0.0685,
+    "firstBounce": {
+      "x": -0.0276,
+      "z": 0.1108
+    },
+    "hitPoint": {
+      "x": -0.8853,
+      "y": 0.8357,
+      "z": 1.8113
+    }
+  },
+  {
+    "preset": "sidebackspin_long_backhand",
+    "technique": "backhand_attack",
+    "side": "backhand",
+    "ok": false,
+    "reason": "掛網",
+    "netClearance": -0.0685,
+    "firstBounce": {
+      "x": -0.0276,
+      "z": 0.1108
+    },
+    "hitPoint": {
+      "x": -0.8853,
+      "y": 0.8357,
+      "z": 1.8113
+    }
+  },
+  {
+    "preset": "sidebackspin_long_backhand",
+    "technique": "push",
+    "side": "forehand",
+    "ok": true,
+    "reason": "成功",
+    "netClearance": 0.0609,
+    "firstBounce": {
+      "x": -0.0063,
+      "z": -0.4778
+    },
+    "hitPoint": {
+      "x": -0.9654,
+      "y": 0.8312,
+      "z": 2.0096
+    }
+  },
+  {
+    "preset": "sidebackspin_long_backhand",
+    "technique": "push",
+    "side": "backhand",
+    "ok": true,
+    "reason": "成功",
+    "netClearance": 0.0609,
+    "firstBounce": {
+      "x": -0.0063,
+      "z": -0.4778
+    },
+    "hitPoint": {
+      "x": -0.9654,
+      "y": 0.8312,
+      "z": 2.0096
+    }
+  },
+  {
+    "preset": "sidebackspin_long_forehand_2",
+    "technique": "forehand_attack",
+    "side": "forehand",
+    "ok": false,
+    "reason": "掛網",
+    "netClearance": -0.1298,
+    "firstBounce": {
+      "x": 0.0077,
+      "z": 0.9432
+    },
+    "hitPoint": {
+      "x": 0.3134,
+      "y": 0.8399,
+      "z": 1.7067
+    }
+  },
+  {
+    "preset": "sidebackspin_long_forehand_2",
+    "technique": "backhand_attack",
+    "side": "backhand",
+    "ok": false,
+    "reason": "掛網",
+    "netClearance": -0.1298,
+    "firstBounce": {
+      "x": 0.0077,
+      "z": 0.9432
+    },
+    "hitPoint": {
+      "x": 0.3134,
+      "y": 0.8399,
+      "z": 1.7067
+    }
+  },
+  {
+    "preset": "sidebackspin_long_forehand_2",
+    "technique": "push",
+    "side": "forehand",
+    "ok": false,
+    "reason": "掛網",
+    "netClearance": -0.0257,
+    "firstBounce": {
+      "x": 0.4836,
+      "z": 0.0946
+    },
+    "hitPoint": {
+      "x": 0.3221,
+      "y": 0.8364,
+      "z": 1.8637
+    }
+  },
+  {
+    "preset": "sidebackspin_long_forehand_2",
+    "technique": "push",
+    "side": "backhand",
+    "ok": false,
+    "reason": "掛網",
+    "netClearance": -0.0257,
+    "firstBounce": {
+      "x": 0.4836,
+      "z": 0.0946
+    },
+    "hitPoint": {
+      "x": 0.3221,
+      "y": 0.8364,
+      "z": 1.8637
+    }
+  },
+  {
+    "preset": "sidebackspin_long_forehand_3",
+    "technique": "forehand_attack",
+    "side": "forehand",
+    "ok": false,
+    "reason": "掛網",
+    "netClearance": -0.1224,
+    "firstBounce": {
+      "x": 0.0082,
+      "z": 0.0315
+    },
+    "hitPoint": {
+      "x": 0.7863,
+      "y": 0.8415,
+      "z": 1.4986
+    }
+  },
+  {
+    "preset": "sidebackspin_long_forehand_3",
+    "technique": "backhand_attack",
+    "side": "backhand",
+    "ok": false,
+    "reason": "掛網",
+    "netClearance": -0.1224,
+    "firstBounce": {
+      "x": 0.0082,
+      "z": 0.0315
+    },
+    "hitPoint": {
+      "x": 0.7863,
+      "y": 0.8415,
+      "z": 1.4986
+    }
+  },
+  {
+    "preset": "sidebackspin_long_forehand_3",
+    "technique": "push",
+    "side": "forehand",
+    "ok": true,
+    "reason": "成功",
+    "netClearance": 0.0029,
+    "firstBounce": {
+      "x": -0.2048,
+      "z": -0.3808
+    },
+    "hitPoint": {
+      "x": 0.8324,
+      "y": 0.8369,
+      "z": 1.6741
+    }
+  },
+  {
+    "preset": "sidebackspin_long_forehand_3",
+    "technique": "push",
+    "side": "backhand",
+    "ok": true,
+    "reason": "成功",
+    "netClearance": 0.0029,
+    "firstBounce": {
+      "x": -0.2048,
+      "z": -0.3808
+    },
+    "hitPoint": {
+      "x": 0.8324,
+      "y": 0.8369,
+      "z": 1.6741
+    }
+  },
+  {
+    "preset": "backspin_long_forehand",
+    "technique": "forehand_attack",
+    "side": "forehand",
+    "ok": false,
+    "reason": "掛網",
+    "netClearance": -0.1272,
+    "firstBounce": {
+      "x": 0.0097,
+      "z": 0.881
+    },
+    "hitPoint": {
+      "x": 0.4135,
+      "y": 0.8466,
+      "z": 1.6492
+    }
+  },
+  {
+    "preset": "backspin_long_forehand",
+    "technique": "backhand_attack",
+    "side": "backhand",
+    "ok": false,
+    "reason": "掛網",
+    "netClearance": -0.1272,
+    "firstBounce": {
+      "x": 0.0097,
+      "z": 0.881
+    },
+    "hitPoint": {
+      "x": 0.4135,
+      "y": 0.8466,
+      "z": 1.6492
+    }
+  },
+  {
+    "preset": "backspin_long_forehand",
+    "technique": "push",
+    "side": "forehand",
+    "ok": false,
+    "reason": "掛網",
+    "netClearance": -0.0351,
+    "firstBounce": {
+      "x": 0.4609,
+      "z": 0.0872
+    },
+    "hitPoint": {
+      "x": 0.4225,
+      "y": 0.8418,
+      "z": 1.8286
+    }
+  },
+  {
+    "preset": "backspin_long_forehand",
+    "technique": "push",
+    "side": "backhand",
+    "ok": false,
+    "reason": "掛網",
+    "netClearance": -0.0351,
+    "firstBounce": {
+      "x": 0.4609,
+      "z": 0.0872
+    },
+    "hitPoint": {
+      "x": 0.4225,
+      "y": 0.8418,
+      "z": 1.8286
+    }
+  },
+  {
+    "preset": "backspin_long_forehand_2",
+    "technique": "forehand_attack",
+    "side": "forehand",
+    "ok": false,
+    "reason": "掛網",
+    "netClearance": -0.1062,
+    "firstBounce": {
+      "x": 0.0101,
+      "z": 0.8846
+    },
+    "hitPoint": {
+      "x": 0.5153,
+      "y": 0.8755,
+      "z": 1.827
+    }
+  },
+  {
+    "preset": "backspin_long_forehand_2",
+    "technique": "backhand_attack",
+    "side": "backhand",
+    "ok": false,
+    "reason": "掛網",
+    "netClearance": -0.1062,
+    "firstBounce": {
+      "x": 0.0101,
+      "z": 0.8846
+    },
+    "hitPoint": {
+      "x": 0.5153,
+      "y": 0.8755,
+      "z": 1.827
+    }
+  },
+  {
+    "preset": "backspin_long_forehand_2",
+    "technique": "push",
+    "side": "forehand",
+    "ok": false,
+    "reason": "掛網",
+    "netClearance": -0.0894,
+    "firstBounce": {
+      "x": 0.6223,
+      "z": 0.0467
+    },
+    "hitPoint": {
+      "x": 0.5349,
+      "y": 0.8711,
+      "z": 1.9962
+    }
+  },
+  {
+    "preset": "backspin_long_forehand_2",
+    "technique": "push",
+    "side": "backhand",
+    "ok": false,
+    "reason": "掛網",
+    "netClearance": -0.0894,
+    "firstBounce": {
+      "x": 0.6223,
+      "z": 0.0467
+    },
+    "hitPoint": {
+      "x": 0.5349,
+      "y": 0.8711,
+      "z": 1.9962
+    }
+  },
+  {
+    "preset": "backspin_short_forehand",
+    "technique": "forehand_attack",
+    "side": "forehand",
+    "ok": false,
+    "reason": "掛網",
+    "netClearance": -0.0544,
+    "firstBounce": {
+      "x": 0.0467,
+      "z": 0.0826
+    },
+    "hitPoint": {
+      "x": 0.4315,
+      "y": 0.8743,
+      "z": 0.5136
+    }
+  },
+  {
+    "preset": "backspin_short_forehand",
+    "technique": "backhand_attack",
+    "side": "backhand",
+    "ok": false,
+    "reason": "掛網",
+    "netClearance": -0.0544,
+    "firstBounce": {
+      "x": 0.0467,
+      "z": 0.0826
+    },
+    "hitPoint": {
+      "x": 0.4315,
+      "y": 0.8743,
+      "z": 0.5136
+    }
+  },
+  {
+    "preset": "backspin_short_forehand",
+    "technique": "push",
+    "side": "forehand",
+    "ok": true,
+    "reason": "成功",
+    "netClearance": 0.0036,
+    "firstBounce": {
+      "x": 0.0197,
+      "z": -0.4741
+    },
+    "hitPoint": {
+      "x": 0.4392,
+      "y": 0.8696,
+      "z": 0.5725
+    }
+  },
+  {
+    "preset": "backspin_short_forehand",
+    "technique": "push",
+    "side": "backhand",
+    "ok": true,
+    "reason": "成功",
+    "netClearance": 0.0036,
+    "firstBounce": {
+      "x": 0.0197,
+      "z": -0.4741
+    },
+    "hitPoint": {
+      "x": 0.4392,
+      "y": 0.8696,
+      "z": 0.5725
+    }
+  },
+  {
+    "preset": "backspin_short_forehand_2",
+    "technique": "forehand_attack",
+    "side": "forehand",
+    "ok": true,
+    "reason": "成功",
+    "netClearance": 0.172,
+    "firstBounce": {
+      "x": 0.5814,
+      "z": -0.6214
+    },
+    "hitPoint": {
+      "x": 0.5814,
+      "y": 1.1068,
+      "z": 0.426
+    }
+  },
+  {
+    "preset": "backspin_short_forehand_2",
+    "technique": "backhand_attack",
+    "side": "backhand",
+    "ok": true,
+    "reason": "成功",
+    "netClearance": 0.172,
+    "firstBounce": {
+      "x": 0.5814,
+      "z": -0.6214
+    },
+    "hitPoint": {
+      "x": 0.5814,
+      "y": 1.1068,
+      "z": 0.426
+    }
+  },
+  {
+    "preset": "backspin_short_forehand_2",
+    "technique": "push",
+    "side": "forehand",
+    "ok": true,
+    "reason": "成功",
+    "netClearance": 0.2768,
+    "firstBounce": {
+      "x": -0.0043,
+      "z": -0.8547
+    },
+    "hitPoint": {
+      "x": 0.587,
+      "y": 1.102,
+      "z": 0.4495
+    }
+  },
+  {
+    "preset": "backspin_short_forehand_2",
+    "technique": "push",
+    "side": "backhand",
+    "ok": true,
+    "reason": "成功",
+    "netClearance": 0.2768,
+    "firstBounce": {
+      "x": -0.0043,
+      "z": -0.8547
+    },
+    "hitPoint": {
+      "x": 0.587,
+      "y": 1.102,
+      "z": 0.4495
+    }
+  },
+  {
+    "preset": "backspin_short_backhand",
+    "technique": "forehand_attack",
+    "side": "forehand",
+    "ok": false,
+    "reason": "掛網",
+    "netClearance": -0.0827,
+    "firstBounce": {
+      "x": -0.015,
+      "z": 0.0633
+    },
+    "hitPoint": {
+      "x": -0.2847,
+      "y": 0.866,
+      "z": 0.5249
+    }
+  },
+  {
+    "preset": "backspin_short_backhand",
+    "technique": "backhand_attack",
+    "side": "backhand",
+    "ok": false,
+    "reason": "掛網",
+    "netClearance": -0.0827,
+    "firstBounce": {
+      "x": -0.015,
+      "z": 0.0633
+    },
+    "hitPoint": {
+      "x": -0.2847,
+      "y": 0.866,
+      "z": 0.5249
+    }
+  },
+  {
+    "preset": "backspin_short_backhand",
+    "technique": "push",
+    "side": "forehand",
+    "ok": true,
+    "reason": "成功",
+    "netClearance": 0.0054,
+    "firstBounce": {
+      "x": 0.0396,
+      "z": -0.4798
+    },
+    "hitPoint": {
+      "x": -0.3065,
+      "y": 0.8626,
+      "z": 0.5768
+    }
+  },
+  {
+    "preset": "backspin_short_backhand",
+    "technique": "push",
+    "side": "backhand",
+    "ok": true,
+    "reason": "成功",
+    "netClearance": 0.0054,
+    "firstBounce": {
+      "x": 0.0396,
+      "z": -0.4798
+    },
+    "hitPoint": {
+      "x": -0.3065,
+      "y": 0.8626,
+      "z": 0.5768
+    }
+  },
+  {
+    "preset": "sidebackspin_short_forehand",
+    "technique": "forehand_attack",
+    "side": "forehand",
+    "ok": false,
+    "reason": "掛網",
+    "netClearance": -0.0676,
+    "firstBounce": null,
+    "hitPoint": {
+      "x": 0.8635,
+      "y": 0.8686,
+      "z": 0.7603
+    }
+  },
+  {
+    "preset": "sidebackspin_short_forehand",
+    "technique": "backhand_attack",
+    "side": "backhand",
+    "ok": false,
+    "reason": "掛網",
+    "netClearance": -0.0676,
+    "firstBounce": null,
+    "hitPoint": {
+      "x": 0.8635,
+      "y": 0.8686,
+      "z": 0.7603
+    }
+  },
+  {
+    "preset": "sidebackspin_short_forehand",
+    "technique": "push",
+    "side": "forehand",
+    "ok": true,
+    "reason": "成功",
+    "netClearance": 0.054,
+    "firstBounce": {
+      "x": 0.7148,
+      "z": -0.4523
+    },
+    "hitPoint": {
+      "x": 0.911,
+      "y": 0.8642,
+      "z": 0.8184
+    }
+  },
+  {
+    "preset": "sidebackspin_short_forehand",
+    "technique": "push",
+    "side": "backhand",
+    "ok": true,
+    "reason": "成功",
+    "netClearance": 0.054,
+    "firstBounce": {
+      "x": 0.7148,
+      "z": -0.4523
+    },
+    "hitPoint": {
+      "x": 0.911,
+      "y": 0.8642,
+      "z": 0.8184
+    }
+  },
+  {
+    "preset": "no_spin_long_forehand",
+    "technique": "forehand_attack",
+    "side": "forehand",
+    "ok": false,
+    "reason": "掛網",
+    "netClearance": -0.0048,
+    "firstBounce": {
+      "x": 0.0362,
+      "z": 0.1565
+    },
+    "hitPoint": {
+      "x": 0.541,
+      "y": 0.8649,
+      "z": 1.7727
+    }
+  },
+  {
+    "preset": "no_spin_long_forehand",
+    "technique": "backhand_attack",
+    "side": "backhand",
+    "ok": false,
+    "reason": "掛網",
+    "netClearance": -0.0048,
+    "firstBounce": {
+      "x": 0.0362,
+      "z": 0.1565
+    },
+    "hitPoint": {
+      "x": 0.541,
+      "y": 0.8649,
+      "z": 1.7727
+    }
+  },
+  {
+    "preset": "no_spin_long_forehand",
+    "technique": "push",
+    "side": "forehand",
+    "ok": true,
+    "reason": "成功",
+    "netClearance": 0.4417,
+    "firstBounce": {
+      "x": -0.0478,
+      "z": -1.2013
+    },
+    "hitPoint": {
+      "x": 0.5405,
+      "y": 0.8612,
+      "z": 1.9168
+    }
+  },
+  {
+    "preset": "no_spin_long_forehand",
+    "technique": "push",
+    "side": "backhand",
+    "ok": true,
+    "reason": "成功",
+    "netClearance": 0.4417,
+    "firstBounce": {
+      "x": -0.0478,
+      "z": -1.2013
+    },
+    "hitPoint": {
+      "x": 0.5405,
+      "y": 0.8612,
+      "z": 1.9168
+    }
+  },
+  {
+    "preset": "no_spin_long_backhand",
+    "technique": "forehand_attack",
+    "side": "forehand",
+    "ok": false,
+    "reason": "掛網",
+    "netClearance": -0.0182,
+    "firstBounce": {
+      "x": -0.0372,
+      "z": 0.155
+    },
+    "hitPoint": {
+      "x": -0.6508,
+      "y": 0.8491,
+      "z": 1.9387
+    }
+  },
+  {
+    "preset": "no_spin_long_backhand",
+    "technique": "backhand_attack",
+    "side": "backhand",
+    "ok": false,
+    "reason": "掛網",
+    "netClearance": -0.0182,
+    "firstBounce": {
+      "x": -0.0372,
+      "z": 0.155
+    },
+    "hitPoint": {
+      "x": -0.6508,
+      "y": 0.8491,
+      "z": 1.9387
+    }
+  },
+  {
+    "preset": "no_spin_long_backhand",
+    "technique": "push",
+    "side": "forehand",
+    "ok": true,
+    "reason": "成功",
+    "netClearance": 0.4471,
+    "firstBounce": {
+      "x": 0.0612,
+      "z": -1.2151
+    },
+    "hitPoint": {
+      "x": -0.6892,
+      "y": 0.8449,
+      "z": 2.099
+    }
+  },
+  {
+    "preset": "no_spin_long_backhand",
+    "technique": "push",
+    "side": "backhand",
+    "ok": true,
+    "reason": "成功",
+    "netClearance": 0.4471,
+    "firstBounce": {
+      "x": 0.0612,
+      "z": -1.2151
+    },
+    "hitPoint": {
+      "x": -0.6892,
+      "y": 0.8449,
+      "z": 2.099
+    }
+  }
+]
+```
