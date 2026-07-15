@@ -36,21 +36,28 @@ canvas{display:block;width:100%;height:100%;touch-action:manipulation}
 .center-tip{position:absolute;left:50%;bottom:184px;transform:translateX(-50%);background:rgba(13,17,23,.88);border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-weight:800;color:var(--text);text-align:center;min-width:min(520px,calc(100% - 24px));z-index:3}
 /* 操作按鈕常駐＋浮在最上層（z-index 高於提示欄／影片／對話框），確保任何
    時候都點得到，不會被其他浮動元素蓋住。 */
-.action-pad{position:absolute;left:12px;right:12px;bottom:12px;display:grid;grid-template-columns:1fr 1fr;gap:9px;align-items:end;z-index:10}
+/* 2026-07-15 手勢化改版：方向獨立按鍵區移除，方向摺進技術鍵手勢（點按＝不修正，
+   按下後往左/右滑超過閾值＝該方向修正）。單一區、兩顆大技術鍵，單拇指可完成
+   「技術＋方向」兩個維度。 */
+.action-pad{position:absolute;left:12px;right:12px;bottom:12px;display:grid;grid-template-columns:1fr;gap:9px;align-items:end;z-index:10}
 .action-zone{display:grid;grid-template-rows:auto 1fr;gap:7px;min-height:108px;padding:8px;border:1px solid rgba(88,166,255,.34);border-radius:8px;background:rgba(13,17,23,.34);box-shadow:0 10px 26px rgba(0,0,0,.22);backdrop-filter:blur(2px)}
-.action-zone.direction-zone{border-color:rgba(210,153,34,.4)}
 .zone-label{font-size:12px;font-weight:900;color:rgba(240,246,252,.72);text-shadow:0 1px 2px rgba(0,0,0,.7)}
 .zone-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;align-content:end}
 .zone-actions button{min-height:58px;font-size:16px;background:rgba(33,38,45,.72);box-shadow:0 8px 18px rgba(0,0,0,.22)}
-.zone-actions .technique-button{min-height:68px;padding:6px;background:rgba(13,17,23,.28);border-color:rgba(240,246,252,.18);overflow:hidden}
+.zone-actions .technique-button{min-height:80px;padding:6px;background:rgba(13,17,23,.28);border-color:rgba(240,246,252,.18);overflow:hidden;touch-action:none}
 .zone-actions .technique-button:hover{background:rgba(13,17,23,.42)}
 .zone-actions .technique-button.active{background:rgba(88,166,255,.18)}
 .technique-button:disabled .technique-icon{opacity:.34;filter:grayscale(.25)}
 .technique-icon{display:block;width:100%;height:44px;object-fit:contain;opacity:.78;filter:drop-shadow(0 7px 10px rgba(0,0,0,.42));transition:opacity .15s ease, transform .15s ease}
 .technique-button:hover .technique-icon,.technique-button.active .technique-icon{opacity:1;transform:scale(1.03)}
 .technique-button{display:flex;flex-direction:column;align-items:center;gap:2px}
-.direction-button{font-size:22px;font-weight:900}
-.direction-button.active{background:rgba(210,153,34,.24);border-color:rgba(210,153,34,.75);color:var(--yellow)}
+/* 手勢中的方向即時提示：技術鍵上滑動時鍵面泛黃，代表這一拍會帶側旋修正 */
+.technique-button.dir-left,.technique-button.dir-right{border-color:rgba(210,153,34,.75);background:rgba(210,153,34,.16)}
+/* 成敗大字卡：手機版側欄整個隱藏，結果要在畫面中央大大地講 */
+.result-card{position:absolute;left:50%;top:33%;transform:translate(-50%,-50%) scale(.92);background:rgba(13,17,23,.92);border:2px solid var(--border);border-radius:14px;padding:16px 30px;font-size:26px;font-weight:900;text-align:center;opacity:0;pointer-events:none;transition:opacity .18s ease, transform .18s ease;z-index:7;white-space:nowrap}
+.result-card.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+.result-card.ok{border-color:rgba(63,185,80,.8);color:var(--green)}
+.result-card.bad{border-color:rgba(255,123,114,.8);color:var(--red)}
 .action-cue{position:absolute;left:50%;top:38%;transform:translate(-50%,-50%) scale(.94);background:rgba(13,17,23,.72);border:1px solid rgba(240,246,252,.28);border-radius:12px;padding:14px 22px;font-size:20px;font-weight:900;color:var(--text);text-align:center;pointer-events:none;opacity:0;transition:opacity 160ms ease, transform 160ms ease;z-index:5;white-space:nowrap}
 .action-cue.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
 /* 方向 C 影片配置慣例：影片浮在畫面上方一塊固定比例區域，桌面場景全程可見，
@@ -99,9 +106,9 @@ button:disabled{opacity:.45;cursor:not-allowed}
   .action-pad{left:6px;right:6px;bottom:6px;gap:6px}
   .action-zone{min-height:88px;padding:6px}
   .zone-actions button{min-height:46px;font-size:13px;padding:6px}
-  .zone-actions .technique-button{min-height:54px;padding:4px}
+  .zone-actions .technique-button{min-height:66px;padding:4px}
   .technique-icon{height:40px}
-  .direction-button{font-size:18px}
+  .result-card{font-size:19px;padding:12px 20px}
   .action-cue{font-size:16px;padding:10px 16px;top:40%}
 }
 </style>
@@ -135,21 +142,15 @@ button:disabled{opacity:.45;cursor:not-allowed}
       <button id="nextBtn">下一球</button>
     </div>
     <div class="action-pad" id="actionPad">
-      <div class="action-zone direction-zone">
-        <div class="zone-label">方向判斷（側旋修正，選填）</div>
-        <div class="zone-actions direction-actions">
-          <button class="direction-button" type="button" data-direction="left" title="判斷來球側旋需要向左修正" aria-label="向左修正">← 左</button>
-          <button class="direction-button" type="button" data-direction="right" title="判斷來球側旋需要向右修正" aria-label="向右修正">右 →</button>
-        </div>
-      </div>
       <div class="action-zone technique-zone">
-        <div class="zone-label">回擊技術</div>
+        <div class="zone-label">回擊技術（點按＝不修正 ・ 按下後往左/右滑＝側旋修正）</div>
         <div class="zone-actions">
-          <button class="technique-button" type="button" data-return-technique="push" title="切球" aria-label="切球"><img class="technique-icon" src="images/techniques/cut.png" alt="">切球</button>
-          <button class="technique-button" type="button" data-return-technique="attack" title="平推/攻球" aria-label="平推攻球"><img class="technique-icon" src="images/techniques/attack.png" alt="">平推/攻球</button>
+          <button class="technique-button" type="button" data-return-technique="push" title="切球（可滑動帶方向修正）" aria-label="切球"><img class="technique-icon" src="images/techniques/cut.png" alt="">切球</button>
+          <button class="technique-button" type="button" data-return-technique="attack" title="平推/攻球（可滑動帶方向修正）" aria-label="平推攻球"><img class="technique-icon" src="images/techniques/attack.png" alt="">平推/攻球</button>
         </div>
       </div>
     </div>
+    <div class="result-card" id="resultCard"></div>
     <div class="action-cue" id="actionCue"></div>
     <div class="center-tip" id="centerTip">讀取 physics-presets.json...</div>
   </section>
@@ -160,7 +161,7 @@ button:disabled{opacity:.45;cursor:not-allowed}
     </div>
     <div class="section">
       <h2>回擊技術</h2>
-      <div class="small">球停在可回擊點時，先判斷側旋方向（可不選），再按技術鍵即時回擊。方向鍵是固定補償量，不是每球都要按——沒有側旋的球按了方向鍵反而會出界。</div>
+      <div class="small">按技術鍵＝起拍，約 0.1 秒後在球的當下位置觸擊（起拍延遲模型）。側旋修正改用手勢：按下技術鍵後往左/右滑＝該方向修正，不滑＝不修正；修正是固定補償量，沒有側旋的球帶了修正反而會出界。按太早會揮空（beginner 自動等最佳擊球點），按太晚就是漏球。</div>
     </div>
     <div class="section" id="controlsSection">
       <h2>操作（測試／校準用，正式遊玩不需要）</h2>
@@ -183,7 +184,7 @@ button:disabled{opacity:.45;cursor:not-allowed}
         <div class="field-row" id="difficultyRow">
           <label for="difficultyControl" style="font-size:12px;font-weight:800;color:var(--muted)">難度</label>
           <select id="difficultyControl">
-            <option value="beginner" selected>beginner（全提示）</option>
+            <option value="beginner" selected>beginner（全提示＋提早按自動等最佳點）</option>
             <option value="practice">practice（只閃最高點）</option>
             <option value="match">match（關閉提示）</option>
           </select>
@@ -226,7 +227,16 @@ const MAX_STEPS = 520;
 const BALL_COLORS = {default:0xffd84d, rising:0x4488ff, sideRising:0x66bbff, apex:0xffffff, falling:0xef9f27};
 const TIMING_HINT = {threshold:0.05, flashMs:100, sideRisingHoldMs:220};
 const MISS_Y = TABLE.top - BALL_RADIUS;
-const BUILD_VERSION = 'v9j21';
+const BUILD_VERSION = 'v9k02';
+// ── 起拍延遲模型（2026-07-15）─────────────────────────────────────────────
+// 按下技術鍵＝「起拍」，觸擊發生在起拍後 SWING_DELAY_MS，接觸點就是那一刻球沿
+// 發球軌跡飛到的位置——取代舊的「按下瞬間立即回擊」模型（舊模型切球用預先算好
+// 的 pushHitPoint，球還沒下墜就按時會瞬移到後方被打出去）。真實揮拍從決策到觸
+// 球本來就有延遲，時機技能因此回歸：延遲到點時球還沒進可擊區（我方桌面第一跳
+// 之前），practice/match 直接揮空、beginner 自動改等該技術的最佳擊球點；按太晚
+// 球掉過桌面高度就是漏球。延遲除以 GAME_SPEED：慢動作測試時揮拍等比例變慢，
+// 時機語意不變。
+const SWING_DELAY_MS = 100;
 // ── 物理引擎 v2：真實觸桌接觸力學（docs/physics-engine-v2-plan.md Phase 1-4）──
 // 逐字對齊 tools/physics-v2-contact-mechanics.js，取代舊的 BOUNCE_PHYSICS/applyBounceSpin。      // kg，ITTF 2.7g // 薄殼球轉動慣量係數：I = ALPHA * M * R²
 // 回擊：球拍接觸力學（Phase 6，docs/physics-engine-v2-plan.md）。
@@ -302,6 +312,7 @@ let selectedSide = null;
 let selectedTechnique = null;
 let servePath = [];
 let serveVelocities = [];
+let serveSpins = [];
 let returnPath = [];
 let currentPath = [];
 let playStart = 0;
@@ -309,9 +320,7 @@ let animation = null;
 let hitPoint = null;
 let hitVel = null;
 let hitSpin = null;
-let pushHitPoint = null;
-let pushHitVel = null;
-let pushHitSpin = null;
+let returnPushIndex = 0; // 切球的最佳擊球點 index（beginner 提早按時自動等到這裡）
 let returnAppearIndex = 0;
 let returnHintStartIndex = 0;
 let returnLandIndex = 0;
@@ -319,6 +328,8 @@ let returnMissIndex = 0;
 let pendingReturn = null;
 let inputWindowOpen = false;
 let missResolved = false;
+let whiffedEarly = false;      // 起拍太早、球還沒進可擊區就揮空（practice/match）
+let serveFlightActive = false; // 物理球正在飛（影片播放中／發球前技術鍵不收輸入）
 let score = {ok:0, fail:0};
 // 方向判斷（側旋修正）：'left' | 'right' | null（未按＝不補償）。每次新發球重設。
 let selectedDirectionInput = null;
@@ -367,6 +378,16 @@ const camera = new THREE.PerspectiveCamera(48, 1, 0.01, 30);
 // 球桌遠端（對手那側）從畫面 224px 推到 277px，影片區塊底部在 232px，有安全
 // 間距；球桌近端在 438px，離下方常駐按鈕（約 700px 起）還有充足空間。
 const GAME5_LOOKAT_Y_BOOST = 0.5;
+// 2026-07-15 概念版：boost 從常數改成動態值——影片只在發球前段蓋住上半屏，
+// 觸球交接、影片淡出後上半屏就空了，鏡頭該把取景收回來（不然長球一彈高就
+// 飛出畫面）。beginServeFlight 把目標設 0，tickCamera 每幀 lerp 過去；
+// prepareServe 依「這球有沒有影片」直接跳回初始值（回合間切換，不用平滑）。
+let camBoostY = GAME5_LOOKAT_Y_BOOST;       // 當下實際疊加量
+let camBoostTargetY = GAME5_LOOKAT_Y_BOOST; // 目標疊加量
+let CAM_LOOKAT_BASE_Y = 0.5;                // camera-config.json 的原始 lookAt.y
+// 長球視野保護（概念版）：length=long 的發球，鏡頭跟球時額外往後拉，讓靠近
+// 鏡頭的攔截區留在畫面內。每球在 prepareServe 依 preset 長短設定。
+let camLongPullbackZ = 0;
 camera.position.set(0, 1.45, 3.25);
 camera.lookAt(0, 0.5 + GAME5_LOOKAT_Y_BOOST, 0.3);
 
@@ -421,6 +442,127 @@ let returnLine = makeLine([], 0x58a6ff, 0.85);
 scene.add(returnLine);
 setTrajectoryVisibility();
 
+// ── 擊球演出（2026-07-15 概念版）───────────────────────────────────────────
+// 起拍延遲模型有了「起拍→觸擊」的時間軸之後，把演出掛上去：起拍時球拍出現、
+// 追著球走；觸擊瞬間拍面貼上球、球閃白放大、短震動＋合成擊球聲；揮空則拍子
+// 掃過去淡出。擊球聲是玩家自己的回擊回饋，不是來球判斷線索（來球判斷仍然
+// 只靠視覺與桌面彈跳節奏），不違反「不用擊球聲當判斷提示」的既有原則。
+const paddleMatBlade = new THREE.MeshLambertMaterial({color:0xc0392b, transparent:true});
+const paddleMatHandle = new THREE.MeshLambertMaterial({color:0xd8b26e, transparent:true});
+const paddleGroup = new THREE.Group();
+const paddleBlade = new THREE.Mesh(new THREE.CylinderGeometry(0.085, 0.085, 0.014, 24), paddleMatBlade);
+paddleBlade.rotation.x = Math.PI / 2; // 圓面朝向 -z（面對來球）
+paddleGroup.add(paddleBlade);
+const paddleHandle = new THREE.Mesh(new THREE.BoxGeometry(0.032, 0.1, 0.02), paddleMatHandle);
+paddleHandle.position.y = -0.135;
+paddleGroup.add(paddleHandle);
+paddleGroup.visible = false;
+scene.add(paddleGroup);
+let paddleState = null;   // null | {mode:'approach', side} | {mode:'fade', fadeStart}
+let ballFlashUntil = 0;   // 觸擊閃白的結束時間戳
+let landingMarker = null; // 回球第一落點的桌面標記
+function startPaddleApproach(side){
+  paddleState = {mode:'approach', side};
+  paddleMatBlade.opacity = 1;
+  paddleMatHandle.opacity = 1;
+  const off = side === 'backhand' ? -0.3 : 0.3;
+  paddleGroup.position.set(ball.position.x + off, ball.position.y - 0.12, ball.position.z + 0.42);
+  paddleGroup.visible = true;
+}
+function paddleContactFx(point){
+  if(point) paddleGroup.position.set(point.x, point.y, point.z + BALL_RENDER_RADIUS + 0.012);
+  paddleGroup.visible = true;
+  paddleState = {mode:'fade', fadeStart:performance.now()};
+  ballFlashUntil = performance.now() + 150;
+  playHitSound();
+  try{ if(navigator.vibrate) navigator.vibrate(18); }catch(e){}
+}
+function paddleWhiffFx(){
+  if(paddleState && paddleState.mode === 'approach') paddleState = {mode:'fade', fadeStart:performance.now()};
+}
+function resetHitFx(){
+  paddleState = null;
+  paddleGroup.visible = false;
+  ballFlashUntil = 0;
+  ball.scale.setScalar(1);
+  clearLandingMarker();
+}
+// 每幀演出更新：起拍中球拍追球（收斂到球側後方一點點），觸擊後順勢往前送＋淡出。
+function updateFx(now){
+  if(paddleState){
+    if(paddleState.mode === 'approach'){
+      const off = paddleState.side === 'backhand' ? -0.13 : 0.13;
+      paddleGroup.position.x += (ball.position.x + off - paddleGroup.position.x) * 0.3;
+      paddleGroup.position.y += (ball.position.y - 0.03 - paddleGroup.position.y) * 0.3;
+      paddleGroup.position.z += (ball.position.z + 0.17 - paddleGroup.position.z) * 0.3;
+    } else {
+      const k = (now - paddleState.fadeStart) / 350;
+      if(k >= 1){
+        paddleGroup.visible = false;
+        paddleState = null;
+      } else {
+        paddleGroup.position.z -= 0.006; // 順勢送拍
+        paddleMatBlade.opacity = 1 - k;
+        paddleMatHandle.opacity = 1 - k;
+      }
+    }
+  }
+  if(ballFlashUntil){
+    if(now < ballFlashUntil){
+      ball.scale.setScalar(1 + 0.9 * (ballFlashUntil - now) / 150);
+      setBallColor(0xffffff);
+    } else {
+      ball.scale.setScalar(1);
+      ballFlashUntil = 0;
+      resetBallColor();
+    }
+  }
+}
+function clearLandingMarker(){
+  if(!landingMarker) return;
+  scene.remove(landingMarker);
+  landingMarker.geometry.dispose();
+  landingMarker.material.dispose();
+  landingMarker = null;
+}
+function showLandingMarker(point, ok){
+  clearLandingMarker();
+  if(!point) return;
+  landingMarker = new THREE.Mesh(
+    new THREE.CircleGeometry(0.055, 24),
+    new THREE.MeshBasicMaterial({color: ok ? 0x3fb950 : 0xff7b72, transparent:true, opacity:0.85, side:THREE.DoubleSide})
+  );
+  landingMarker.rotation.x = -Math.PI / 2;
+  landingMarker.position.set(point.x, TABLE.top + 0.004, point.z);
+  scene.add(landingMarker);
+}
+// 合成擊球聲：短促的三角波下滑音，不用外部音檔。AudioContext 要在使用者手勢
+// 裡建立/恢復（瀏覽器自動播放政策），見 ensureAudio() 的呼叫點。
+let audioCtx = null;
+function ensureAudio(){
+  try{
+    if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if(audioCtx.state === 'suspended') audioCtx.resume();
+  }catch(e){}
+}
+function playHitSound(){
+  try{
+    if(!audioCtx || audioCtx.state !== 'running') return;
+    const t = audioCtx.currentTime;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(240, t);
+    osc.frequency.exponentialRampToValueAtTime(130, t + 0.07);
+    gain.gain.setValueAtTime(0.28, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.09);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start(t);
+    osc.stop(t + 0.1);
+  }catch(e){}
+}
+
 function makeLine(points, color, opacity){
   const geometry = new THREE.BufferGeometry().setFromPoints(points.map(p=>new THREE.Vector3(p.x,p.y,p.z)));
   const material = new THREE.LineBasicMaterial({color, transparent:true, opacity});
@@ -437,10 +579,13 @@ function setTrajectoryVisibility(){
 // ── Camera follow helpers ──────────────────────────────────────────────────
 function tickCamera(){
   const f = CAM_CFG.lerpFactor ?? 0.025;
+  // 影片交接後把 lookAt boost 平滑收回（見 camBoostY 宣告處註解）
+  camBoostY += (camBoostTargetY - camBoostY) * 0.08;
+  CAM_LOOK_AT.y = CAM_LOOKAT_BASE_Y + camBoostY;
   if(phase === 'serve'){
     if(!camBounceTriggered && ball.position.z > camTriggerZ && hitPoint){
       camBounceTriggered = true;
-      camPosTarget.set(hitPoint.x, CAM_INTERCEPT_Y, CAM_HOME_POS.z);
+      camPosTarget.set(hitPoint.x, CAM_INTERCEPT_Y, CAM_HOME_POS.z + camLongPullbackZ);
     }
     camera.position.lerp(camPosTarget, f * 2);
     const tx = ball.position.x * 0.1;
@@ -465,9 +610,10 @@ function applyCamConfig(){
   CAM_INTERCEPT_Y = CAM_CFG.height ?? CAM_INTERCEPT_Y;
   CAM_HOME_POS.setY(CAM_INTERCEPT_Y);
   if(CAM_CFG.lookAt){
-    // GAME5_LOOKAT_Y_BOOST 疊加在共用設定值上面，不是取代它——camera-config.json
-    // 本身完全不改，game4 讀到的還是原始值。
-    CAM_LOOK_AT.set(CAM_CFG.lookAt.x ?? 0, (CAM_CFG.lookAt.y ?? 0.5) + GAME5_LOOKAT_Y_BOOST, CAM_CFG.lookAt.z ?? 0.3);
+    // boost 疊加在共用設定值上面，不是取代它——camera-config.json 本身完全不改，
+    // game4 讀到的還是原始值。boost 現在是動態的（camBoostY），基準值另存。
+    CAM_LOOKAT_BASE_Y = CAM_CFG.lookAt.y ?? 0.5;
+    CAM_LOOK_AT.set(CAM_CFG.lookAt.x ?? 0, CAM_LOOKAT_BASE_Y + camBoostY, CAM_CFG.lookAt.z ?? 0.3);
   }
   camera.position.y = CAM_INTERCEPT_Y;
   camera.lookAt(CAM_LOOK_AT);
@@ -486,6 +632,7 @@ function startCamReturn(){
   if(camRaf) cancelAnimationFrame(camRaf);
   function loop(){
     tickCamera();
+    try{ updateFx(performance.now()); }catch(e){}
     if(animation === null) render();
     const posDone  = camera.position.distanceTo(camPosTarget) < 0.002;
     const lookDone = camLookCurrent.distanceTo(CAM_LOOK_AT) < 0.002;
@@ -1080,8 +1227,13 @@ function setBall(point){
   ball.position.set(point.x, point.y, point.z);
 }
 function render(){ renderer.render(scene, camera); }
+// animToken：動畫世代編號。onFrame 回呼裡可能同步啟動下一段動畫（起拍延遲觸擊、
+// AUTO 模式），舊 tick 在回呼返回後還會繼續執行、把自己排進下一幀——用世代編號
+// 讓被取代的 tick 自行終止，避免新舊兩段動畫同時搶球的位置。
+let animToken = 0;
 function animatePath(points, onDone, speedMs, onFrame, velocities){
   if(animation) cancelAnimationFrame(animation);
+  const token = ++animToken;
   const safePoints = (points || []).filter(isValidPoint);
   currentPath = safePoints;
   if(!safePoints.length){
@@ -1092,11 +1244,13 @@ function animatePath(points, onDone, speedMs, onFrame, velocities){
   playStart = performance.now();
   const duration = Math.max(700, safePoints.length * (speedMs || 10));
   function tick(now){
+    if(token !== animToken) return; // 已被新動畫取代
     const progress = Math.min(1, (now - playStart) / duration);
     const index = Math.min(safePoints.length - 1, Math.floor(progress * (safePoints.length - 1)));
     onFrame?.(index, safePoints[index], progress, velocities?.[index] || null);
+    if(token !== animToken) return; // onFrame 裡可能已觸擊、啟動回球動畫
     setBall(safePoints[index]);
-    try{ tickCamera(); }catch(e){}
+    try{ tickCamera(); updateFx(now); }catch(e){}
     render();
     if(progress < 1){
       animation = requestAnimationFrame(tick);
@@ -1133,6 +1287,15 @@ function showResult(ok, reason, detail){
   el.textContent = reason;
   el.className = 'result ' + (ok ? 'ok' : 'bad');
   document.getElementById('detailText').textContent = detail || '';
+  // 中央大字卡：手機版側欄隱藏，成敗要在畫面中央講清楚（1.4 秒後自動淡出，
+  // centerTip 仍留有完整結果文字）。
+  const card = document.getElementById('resultCard');
+  if(card){
+    card.textContent = reason;
+    card.className = 'result-card show ' + (ok ? 'ok' : 'bad');
+    clearTimeout(showResult._cardTimer);
+    showResult._cardTimer = setTimeout(()=>card.classList.remove('show'), 1400);
+  }
   if(ok) score.ok += 1;
   else score.fail += 1;
   updateScore();
@@ -1150,13 +1313,16 @@ function hideReturnInput(){
   });
   document.querySelectorAll('[data-direction]').forEach(btn=>{btn.disabled = true; btn.classList.remove('active');});
 }
-function missReturn(){
+function missReturn(reason){
   if(missResolved || pendingReturn) return;
   missResolved = true;
+  serveFlightActive = false;
+  paddleWhiffFx(); // 起拍中的球拍（若有）掃過淡出
   hideReturnInput();
-  showResult(false, '漏球', `發球：${currentPreset().label}`);
+  const label = reason || (whiffedEarly ? '揮空（出手太早）' : '漏球');
+  showResult(false, label, `發球：${currentPreset().label}`);
   setPhase('result');
-  document.getElementById('centerTip').textContent = '漏球，請按下一球';
+  document.getElementById('centerTip').textContent = `${label}，請按下一球`;
 }
 function prepareServe(){
   resetCam(false);
@@ -1173,10 +1339,13 @@ function prepareServe(){
   selectedSide = null;
   selectedTechnique = null;
   pendingReturn = null;
-  // 2026-07-15：先不鎖時間，按鈕從發球準備好那一刻就可以按，不用等球飛到
-  // 特定時機點（openReturnInput() 原本的時機觸發先保留但不再是唯一入口）。
+  // 起拍延遲模型：技術鍵在物理球開始飛（beginServeFlight）才解鎖——影片播放中
+  // ／發球前起拍沒有球可打，只會白白消耗輸入。方向鍵則從現在就開放，看影片
+  // 預判側旋、先按方向是這個練習的核心流程。
   inputWindowOpen = true;
   missResolved = false;
+  whiffedEarly = false;
+  serveFlightActive = false;
   timingHintActive = false;
   currentServePoint = null;
   currentServeVel = null;
@@ -1186,9 +1355,17 @@ function prepareServe(){
   timingSideRisingUntil = 0;
   selectedDirectionInput = null;
   resetBallColor();
+  resetHitFx();
+  // 鏡頭 boost：這球有影片就把取景壓下去讓位（回合間直接跳，不用平滑），
+  // 沒影片就整場用完整取景；長球額外記下鏡頭後拉量。
+  camBoostTargetY = currentServeVideo ? GAME5_LOOKAT_Y_BOOST : 0;
+  camBoostY = camBoostTargetY;
+  CAM_LOOK_AT.y = CAM_LOOKAT_BASE_Y + camBoostY;
+  camLookTarget.y = CAM_LOOK_AT.y;
+  camLookCurrent.y = CAM_LOOK_AT.y;
+  camLongPullbackZ = (preset?.tags?.length || preset?.length) === 'long' ? 0.55 : 0;
   document.getElementById('choiceText').textContent = '尚未選擇';
-  document.querySelectorAll('[data-return-technique]').forEach(btn=>{btn.classList.remove('active'); btn.disabled = false;});
-  document.querySelectorAll('[data-direction]').forEach(btn=>{btn.classList.remove('active'); btn.disabled = false;});
+  document.querySelectorAll('[data-return-technique]').forEach(btn=>{btn.classList.remove('active','dir-left','dir-right'); btn.disabled = true;});
   document.getElementById('actionCue')?.classList.remove('show');
   const videoFrame = document.getElementById('videoFrame');
   videoFrame.hidden = true;
@@ -1204,13 +1381,12 @@ function prepareServe(){
   returnAppearIndex = Math.min(returnHintStartIndex, (serverBounceForInput?.index ?? 0) + 2);
   servePath = serve.points.slice(0, returnMissIndex + 1);
   serveVelocities = serve.velocities.slice(0, returnMissIndex + 1);
+  serveSpins = serve.spins.slice(0, returnMissIndex + 1);
   hitPoint = serve.points[hitIndex];
   hitVel = serve.velocities[hitIndex];
   hitSpin = serve.spins[hitIndex];
   const pushHitIndex = findPushHitIndex(serve);
-  pushHitPoint = serve.points[pushHitIndex];
-  pushHitVel = serve.velocities[pushHitIndex];
-  pushHitSpin = serve.spins[pushHitIndex];
+  returnPushIndex = pushHitIndex;
   autoFireIndex = AUTO_TIMING_TECHNIQUE === 'push' ? pushHitIndex : hitIndex;
   // 觸發門檻：對方桌面第一跳之後（z < 0 的 bounce + margin）
   const serverBounce = serve.bounces.find(b => b.z < 0);
@@ -1237,14 +1413,15 @@ function playServe(){
   selectedDirectionInput = null;
   resetBallColor();
   document.getElementById('choiceText').textContent = '尚未選擇';
-  document.querySelectorAll('[data-return-technique]').forEach(btn=>{btn.classList.remove('active'); btn.disabled = false;});
-  document.querySelectorAll('[data-direction]').forEach(btn=>{btn.classList.remove('active'); btn.disabled = false;});
+  // 技術鍵維持鎖定，beginServeFlight() 開始播球才解鎖（起拍延遲模型：影片中
+  // ／發球前沒有球可打）。方向判斷改成技術鍵上的滑動手勢，於起拍後的延遲窗
+  // 內表達（見技術鍵的 pointer 事件）。
+  document.querySelectorAll('[data-return-technique]').forEach(btn=>{btn.classList.remove('active','dir-left','dir-right'); btn.disabled = true;});
   document.getElementById('actionCue')?.classList.remove('show');
-  // 不鎖時間：inputWindowOpen 維持 true（prepareServe() 已經設好），這裡不能
-  // 再重設回 false，不然按鈕會在按下「開始發球」的瞬間又變回沒反應，直到球飛到
-  // returnAppearIndex 才被 openReturnInput() 重新打開——正是這次要拿掉的鎖。
+  resetHitFx();
   inputWindowOpen = true;
   missResolved = false;
+  whiffedEarly = false;
   setPhase('serve');
   document.getElementById('resultText').textContent = '準備中';
   document.getElementById('resultText').className = 'result';
@@ -1258,10 +1435,15 @@ function playServe(){
 }
 function beginServeFlight(){
   document.getElementById('centerTip').textContent = '發球中';
+  serveFlightActive = true;
+  document.querySelectorAll('[data-return-technique]').forEach(btn=>{btn.disabled = false;});
   animatePath(servePath, ()=>{
-    if(pendingReturn && !missResolved){
-      returnBall(pendingReturn.techniqueKey);
-    }else if(!missResolved){
+    serveFlightActive = false;
+    if(pendingReturn && !pendingReturn.fired && !missResolved){
+      // 起拍了但延遲還沒到，球就已經掉過桌面高度＝出手太晚
+      pendingReturn = null;
+      missReturn('出手太晚，沒接到球');
+    }else if(!missResolved && !pendingReturn){
       missReturn();
     }
   }, 13 / GAME_SPEED, (index, point, progress, velocity)=>{
@@ -1273,6 +1455,7 @@ function beginServeFlight(){
     if(AUTO_BEST_TIMING && inputWindowOpen && !pendingReturn && !missResolved && autoFireIndex != null && index >= autoFireIndex){
       chooseReturn(AUTO_TIMING_SIDE, AUTO_TIMING_TECHNIQUE);
     }
+    maybeFireSwing(index);
     if(point?.y < MISS_Y && !pendingReturn) missReturn();
   }, serveVelocities);
 }
@@ -1305,7 +1488,7 @@ function showActionCue(techniqueKey, direction){
 // 技術按鈕（切球／平推攻球）觸發即時判定：side 自動判斷（純鏡頭用），方向修正
 // 讀目前的 selectedDirectionInput（左/右/未按），兩個維度互相獨立。
 function chooseReturnFromButton(techniqueUiKey){
-  if(!inputWindowOpen || pendingReturn || missResolved) return;
+  if(!inputWindowOpen || pendingReturn || missResolved || !serveFlightActive) return;
   const livePoint = currentServePoint || hitPoint;
   const side = sideForPoint(livePoint);
   const techniqueKey = techniqueUiKey === 'attack' ? attackKeyForSide(side) : 'push';
@@ -1315,22 +1498,24 @@ function chooseReturn(side, techniqueKey){
   if(!inputWindowOpen || pendingReturn || missResolved) return;
   selectedSide = side;
   selectedTechnique = techniqueKey;
-  const livePoint = currentServePoint || hitPoint;
-  const liveVel = currentServeVel || hitVel;
+  // 起拍：這裡只記錄「揮拍已出發」，觸擊由 maybeFireSwing() 在延遲到點那一刻
+  // 用球的當下軌跡狀態執行（見 SWING_DELAY_MS 註解）。AUTO 測試模式延遲設 0
+  // ——同一幀就在 autoFireIndex 觸擊，批次測試的接觸點跟舊模型一致。
+  const delayMs = AUTO_BEST_TIMING ? 0 : SWING_DELAY_MS / GAME_SPEED;
   pendingReturn = {
     side,
     techniqueKey,
     direction:selectedDirectionInput,
-    hitPoint:livePoint ? clone(livePoint) : null,
-    hitVel:liveVel ? clone(liveVel) : null,
-    hitSpin:hitSpin ? {...hitSpin} : null,
-    timingPhase:currentTimingPhase
+    fireAt:performance.now() + delayMs,
+    fired:false,
+    waitForIndex:null
   };
   const uiKey = techniqueUiKeyFor(techniqueKey);
   document.querySelectorAll('[data-return-technique]').forEach(btn=>{
     btn.classList.toggle('active', btn.dataset.returnTechnique === uiKey);
   });
   showActionCue(techniqueKey, selectedDirectionInput);
+  startPaddleApproach(side); // 起拍演出：球拍出現、開始追球
   if(side === 'backhand'){
     const bOffZ = CAM_CFG.backhand?.offsetZ ?? 0;
     camPosTarget.set(hitPoint ? hitPoint.x : 0, CAM_INTERCEPT_Y, CAM_HOME_POS.z + bOffZ);
@@ -1340,28 +1525,73 @@ function chooseReturn(side, techniqueKey){
     camPosTarget.set(CAM_HOME_POS.x + fOffX, CAM_INTERCEPT_Y, CAM_HOME_POS.z + fOffZ);
     camLookTarget.set(-0.35, TABLE.top + 0.05, 0.3);
   }
-  returnBall(techniqueKey);
   hideReturnInput();
 }
-function returnBall(techniqueKey){
-  if(!hitPoint || !selectedSide) return;
-  const contact = pendingReturn || {};
-  const usePushTiming = techniqueKey === 'push';
-  const contactPoint = usePushTiming ? (pushHitPoint || contact.hitPoint || hitPoint) : (contact.hitPoint || hitPoint);
-  const contactVel = usePushTiming ? (pushHitVel || contact.hitVel || hitVel) : (contact.hitVel || hitVel);
-  const contactSpin = usePushTiming ? (pushHitSpin || contact.hitSpin || hitSpin) : (contact.hitSpin || hitSpin);
-  const contactPhase = contact.timingPhase || timingPhaseFromVelocity(contactVel);
-  selectedTechnique = techniqueKey;
-  const returnBallUiKey = techniqueUiKeyFor(techniqueKey);
-  document.querySelectorAll('[data-return-technique]').forEach(btn=>{
-    btn.classList.toggle('active', btn.dataset.returnTechnique === returnBallUiKey);
-  });
-  const tech = TECHNIQUES[techniqueKey];
+// 起拍延遲到點後的觸擊判定，每幀由 beginServeFlight 的 onFrame 呼叫。
+// 可擊區＝我方桌面第一跳之後（returnHintStartIndex 起）。延遲到點時球還沒進
+// 可擊區：beginner 自動改等該技術的最佳擊球點（提早按不受罰），practice/match
+// 直接揮空——球繼續飛完，最後以「揮空（出手太早）」結案。
+function maybeFireSwing(index){
+  if(!pendingReturn || pendingReturn.fired || missResolved) return;
+  if(pendingReturn.waitForIndex != null){
+    if(index >= pendingReturn.waitForIndex) executeReturnContact(index);
+    return;
+  }
+  if(performance.now() < pendingReturn.fireAt) return;
+  if(index >= returnHintStartIndex){
+    executeReturnContact(index);
+  } else if(DIFFICULTY_MODE === 'beginner'){
+    pendingReturn.waitForIndex = pendingReturn.techniqueKey === 'push' ? returnPushIndex : returnLandIndex;
+  } else {
+    pendingReturn = null;
+    whiffedEarly = true;
+    paddleWhiffFx();
+    document.getElementById('centerTip').textContent = '揮空！出手太早';
+  }
+}
+function executeReturnContact(index){
+  const idx = Math.min(Math.max(0, index), servePath.length - 1);
+  pendingReturn.fired = true;
+  const vel = serveVelocities[idx];
+  const contact = {
+    side:pendingReturn.side,
+    techniqueKey:pendingReturn.techniqueKey,
+    direction:pendingReturn.direction,
+    point:servePath[idx] ? clone(servePath[idx]) : null,
+    vel:vel ? clone(vel) : null,
+    spin:serveSpins[idx] ? {...serveSpins[idx]} : null,
+    phase:timingPhaseFromVelocity(vel)
+  };
+  serveFlightActive = false;
+  paddleContactFx(contact.point); // 觸擊演出：拍面貼球、閃白、音效、震動
+  returnBall(contact);
+}
+// 觸擊執行：contact 由 executeReturnContact() 在延遲到點那一刻從發球軌跡的
+// 當下狀態組成——接觸點永遠是球正在被畫的位置，不會瞬移。
+function returnBall(contact){
+  const tech = TECHNIQUES[contact.techniqueKey];
   if(!tech){
-    showResult(false, '找不到回擊技術', `技術代碼：${techniqueKey}`);
+    showResult(false, '找不到回擊技術', `技術代碼：${contact.techniqueKey}`);
     setPhase('result');
     return;
   }
+  const contactPoint = contact.point || hitPoint;
+  const contactVel = contact.vel || hitVel;
+  const contactSpin = contact.spin || hitSpin;
+  if(!contactPoint || !contactVel){
+    showResult(false, '回球軌跡產生失敗', '沒有可用的接觸點資料，請按下一球再試。');
+    setPhase('result');
+    return;
+  }
+  const contactPhase = contact.phase || timingPhaseFromVelocity(contactVel);
+  selectedTechnique = contact.techniqueKey;
+  // 補償計算（makeRacketReturnVelocity）讀 selectedDirectionInput 這個全域，
+  // 鎖回按下當下捕捉到的判斷，避免延遲期間狀態被動到。
+  selectedDirectionInput = contact.direction;
+  const returnBallUiKey = techniqueUiKeyFor(contact.techniqueKey);
+  document.querySelectorAll('[data-return-technique]').forEach(btn=>{
+    btn.classList.toggle('active', btn.dataset.returnTechnique === returnBallUiKey);
+  });
   const start = {...contactPoint};
   const gravity = currentPreset().solve?.gravity ?? -4.2;
   const returnHit = makeReturnVelocity(contactVel, contactSpin, tech, contactPoint, gravity);
@@ -1375,7 +1605,7 @@ function returnBall(techniqueKey){
   timingHintActive = false;
   resetBallColor();
   setPhase('return');
-  document.getElementById('choiceText').textContent = `${selectedSide === 'forehand' ? '正手' : '反手'} / ${tech.label}`;
+  document.getElementById('choiceText').textContent = `${contact.side === 'forehand' ? '正手' : '反手'} / ${tech.label}`;
   document.getElementById('centerTip').textContent = '回球飛出';
   if(!returnPath.length){
     showResult(false, '回球軌跡產生失敗', '這組參數沒有產生可播放的球路，請按下一球再試。');
@@ -1669,6 +1899,7 @@ function makeReturnVelocity(incomingVel, incomingSpin, tech, hitPoint, gravity){
 }
 function judgeReturn(result, contactPhase){
   const firstBounce = result.bounces[0] || null;
+  showLandingMarker(firstBounce, !!(firstBounce && firstBounce.z < 0 && Math.abs(firstBounce.x) <= TABLE.width/2 && Math.abs(firstBounce.z) <= TABLE.length/2));
   const netClearance = result.netY == null ? null : result.netY - (TABLE.height + TABLE.net);
   let ok = false;
   let reason = '出界';
@@ -1809,7 +2040,7 @@ function playServeVideo(videoEntry, onHandoff){
   }, {once:true});
   videoEl.play().catch(fallback);
 }
-document.getElementById('playBtn').addEventListener('click', playServe);
+document.getElementById('playBtn').addEventListener('click', ()=>{ ensureAudio(); playServe(); });
 document.getElementById('trajectoryToggle').addEventListener('change', event=>{
   showTrajectories = event.target.checked;
   setTrajectoryVisibility();
@@ -1838,28 +2069,44 @@ document.getElementById('nextBtn').addEventListener('click', ()=>{
   prepareServe();
   playServe();
 });
+// 手勢化技術鍵（2026-07-15 概念版）：pointerdown＝起拍（低延遲，時機錨點不變），
+// 起拍後、觸擊前的延遲窗內手指往左/右滑超過 GESTURE_DIR_PX＝該方向側旋修正，
+// 滑回中間＝取消修正；executeReturnContact() 觸擊那一刻讀 pendingReturn.direction，
+// 所以延遲窗（beginner 自動等待時更長）就是方向表達窗。pointermove/up 掛在
+// window 上：按下後按鈕立刻被 hideReturnInput() 設成 disabled，disabled 元素
+// 不再派發 pointer 事件，掛按鈕上會收不到後續滑動。
+const GESTURE_DIR_PX = 24;
+let gestureTrack = null; // {pointerId, startX, techniqueKey, btn}
 document.querySelectorAll('[data-return-technique]').forEach(btn=>{
   btn.disabled = true;
   btn.addEventListener('click', event=>event.preventDefault());
   btn.addEventListener('pointerdown', event=>{
     if(btn.disabled || !inputWindowOpen) return;
     event.preventDefault();
+    ensureAudio(); // 使用者手勢裡解鎖 AudioContext（自動播放政策）
     chooseReturnFromButton(btn.dataset.returnTechnique);
+    if(pendingReturn && !pendingReturn.fired){
+      gestureTrack = {pointerId:event.pointerId, startX:event.clientX, techniqueKey:pendingReturn.techniqueKey, btn};
+    }
   });
 });
-// 方向鍵是獨立於技術鍵的狀態切換（可再按一次取消），不會立即觸發回擊——
-// 真正判定/執行是按下技術鍵那一刻，讀取當下的 selectedDirectionInput。
-document.querySelectorAll('[data-direction]').forEach(btn=>{
-  btn.disabled = true;
-  btn.addEventListener('click', ()=>{
-    if(btn.disabled || !inputWindowOpen || pendingReturn || missResolved) return;
-    const dir = btn.dataset.direction;
-    selectedDirectionInput = selectedDirectionInput === dir ? null : dir;
-    document.querySelectorAll('[data-direction]').forEach(b=>{
-      b.classList.toggle('active', b.dataset.direction === selectedDirectionInput);
-    });
-  });
+window.addEventListener('pointermove', event=>{
+  if(!gestureTrack || event.pointerId !== gestureTrack.pointerId) return;
+  if(!pendingReturn || pendingReturn.fired) return;
+  const dx = event.clientX - gestureTrack.startX;
+  const dir = dx <= -GESTURE_DIR_PX ? 'left' : dx >= GESTURE_DIR_PX ? 'right' : null;
+  if(dir !== pendingReturn.direction){
+    pendingReturn.direction = dir;
+    gestureTrack.btn.classList.toggle('dir-left', dir === 'left');
+    gestureTrack.btn.classList.toggle('dir-right', dir === 'right');
+    showActionCue(gestureTrack.techniqueKey, dir);
+  }
 });
+function endGestureTrack(event){
+  if(gestureTrack && event.pointerId === gestureTrack.pointerId) gestureTrack = null;
+}
+window.addEventListener('pointerup', endGestureTrack);
+window.addEventListener('pointercancel', endGestureTrack);
 const buildVersionEl = document.getElementById('buildVersion');
 buildVersionEl.textContent = Math.random().toString(36).slice(2, 7);
 buildVersionEl.title = BUILD_VERSION;

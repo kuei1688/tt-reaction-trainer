@@ -1,4 +1,4 @@
-# 專案現況
+﻿# 專案現況
 
 > 唯一的「現在狀態」入口。取代 `docs/PROJECT_OVERVIEW.md`、`CODEX_CONTEXT_SUMMARY.md`、舊 checkpoint 系列的即時資訊角色——那些文件已移入 `AI_CONTEXT/ARCHIVE/`,僅供追溯原始脈絡用,不再是必讀。
 >
@@ -13,10 +13,12 @@
 | 檔案 | 角色 | 現況 |
 |---|---|---|
 | `game4.html` | 正式遊戲頁 | attack / push 走球拍接觸路徑;loop 仍是舊 direct model;已改用 `shared-physics-core.js`(已 commit);2026-07-14 修復桌面接觸尺度一致性 bug（見下方「2026-07-14 尺度一致性修復」） |
+| `game5.html` | MVP 主線遊戲頁 | BUILD v9k02（未 commit）:起拍延遲模型 + 球拍 mesh/擊球演出 + 手勢化技術鍵 + 鏡頭動態收回;影片↔發球已改成 videoId 1:1 配對（commit `90b6cba`） |
 | `match-trainer.html` | 正式訓練頁 | 未在本輪改動範圍內 |
 | `shared-physics-core.js` | 共用物理核心 | **Phase 1、Phase 2 皆已完成並 commit**(見下方「已修正的過時資訊」) |
 | `videos.json` | 題庫影片/圖片資料 | 54 筆(2026-07-15 移除 2 筆已刪除檔案的殘留項目),46 筆 `reviewStatus: approved`;`contact_sidebackspin`/`contact_sidespin` 已依左右側旋拆成 `_left`/`_right` 四個分類(見下方「影片庫左右分類重整」);沒有「允許的長短/落點/速度變體」欄位 |
-| `physics-presets.json` | 發球 preset 資料 | 近期未調整 |
+| `physics-presets.json` | 發球 preset 資料 | 16 個原始 preset（2026-07-15 起可由 `serve-generator.html` 工具產生 47 個 per-video preset 覆蓋,見下方 game5 段落） |
+| `serve-generator.html` | 發球產生器工具 | 2026-07-15 新增（commit `90b6cba`）;讀 `videos.json` 依影片分類自動產生發球 preset,每支影片一個專屬發球,下載合併後的 `physics-presets.json` |
 | `return-studio.html` / `physics-studio.html` | 研究/調參工具頁 | 有 blend、substepped push 等研究機制,不等於 `game4.html` 已部署行為;`return-studio.html` 2026-07-14 同步修復尺度 bug,`physics-studio.html` 尚未修復（無 SIM_TIME_DILATION 定義,優先級低） |
 
 ## 已修正的過時資訊
@@ -114,19 +116,42 @@
 - **按鈕解耦**:原本「反手/正手區 × 3 技術(拉球/攻球/切球)」的分區按鈕,改成兩個完全獨立的維度——技術(切球/平推攻球,即時判定)+ 方向(左/右)。拉球(loop)先拿掉,對應 `OPEN_ITEMS.md` TODO-002,之後要重做。正手/反手改成依球實際落點自動判斷,純鏡頭用(已確認兩者物理完全相同,不是玩家判斷題)。
 - **側旋補償改成固定量模型**:原本 `game4.html` 的 `RETURN_SKILL_LEVEL`(初階/中階/熟練)隨機抽樣補償比例,改成玩家每球主動判斷方向。按對方向 = 固定補償、按錯 = 反向補償、不按 = 不補償。`SIDESPIN_COMPENSATION_C = 3.4`,取 6 顆 `sidebackspin_*` 代表球(`sidebackspin_half_long_backhand` 排除——命名雖是側旋,物理上更接近不夠乾淨的下旋球,已改配下旋類影片)安全交集 `[2.9, 3.8+]` 的中點,跟 `PADDLE_BLEND` 校準方法一致。**這個值只針對切球技術校準過,平推/攻球技術的接觸模型不同(非 substepped),暫時共用同一個常數,還沒有專屬驗證。**
 - **接上方向 C 的影片交接**:重用 `prototypes/video-physics-timeline/direction-c/direction-c-engine.js` 的狀態機跟「影片浮在桌面上方一塊固定區域」的版面慣例。拋球演出動畫拿掉,改成直接播發球影片,播到觸球那一刻淡出、物理發球同時進場——複刻 C3(驗證過的最佳手感)的做法。**2026-07-15 更新**:觸球時間點已不再是猜的——`auto-contact-tagger` 重跑全庫 48 支 mp4(commit `f94d50d`),粗標結果併入 `videos.json` 的 `contact_time_sec`(commit `b384bb5`,47 個 `kind=video` entry 全數補齊),`game5.html` 的 `playServeVideo` 已改成優先讀這個欄位,`VIDEO_CONTACT_FRACTION_GUESS=0.7` 只在欄位缺漏時當備援。粗標仍有約 3 frame 誤差,教練複核後可直接覆寫 `videos.json` 同欄位。
-- **發球↔影片配對簡化**(2026-07-15 二次簡化,取代最早一版用求解器算側旋方向的做法):流程反過來,先隨機選影片分類(不轉/下旋/右側下旋,直接套 preset id 前綴,不計算),再從對應分類隨機挑一顆發球+一支影片。**「右側旋」(純側旋,非側下旋)分類目前排除在外**——`physics-presets.json` 完全沒有 `sidespin_*`(純側旋)的 preset,只有 `sidebackspin_*`,等真的有對應 preset 才加回來。**側下旋的左右分類(`sidebackspin_left`/`_right` 影片)是否跟真人影片的真實鏡頭方向一致,還沒有人工肉眼驗證過**——目前的分類邏輯只保證「配到的影片分類」跟「按鍵判定的對錯」內部一致,不保證跟影片實際拍到的方向一致(方向 C 本來的立場就是「介面語意,不是真人軌跡量測」)。
+- **發球↔影片配對**(2026-07-15 三次演化,現為 videoId 1:1):最早用求解器算側旋方向 sign,第二版改成分類隨機配,第三版（commit `90b6cba`）改成**每支影片一個專屬發球 preset**——新增 `serve-generator.html` 工具讀 `videos.json` 的 47 支 approved 影片,依分類規則（旋轉強弱參考現有 preset,左/右側旋方向翻 sign 並鏡像 x 座標,位置/長度模板循環）產生 47 個 preset,每個帶 `tags.videoId` 綁到特定影片。`game5.html` 的 `pickRoundForNextServe` 改成先掃 `videoId` 做 1:1 配對,舊 preset（沒有 `videoId`）走分類隨機 fallback。`presetsForVideoCategory` 同時改成泛型（`tags.videoCategory` 直接配,舊 preset 走 id 前綴 fallback）。目前 `contact_sidebackspin_left`/`contact_sidespin_left`/`_right` 這些之前缺 preset 的分類已全部補齊。**使用者要先用 serve-generator.html 下載新的 physics-presets.json 覆蓋舊的,Game 5 才會吃到新發球**——工具預設「只保留新發球（清掉舊 preset）」,打勾下載即是。
 - **發球選單拿掉**:原本手動選 preset 的下拉選單移除(使用者要求「先把選單拿掉,之後會重新設計」),改成每次「開始發球/下一球」由系統隨機配對。側邊欄(桌面版才顯示)留了「這一球」除錯資訊顯示目前配對結果。
 - **手機優先版面**:預設/開始/下一球一開始放在頂部窄 bar,後來使用者反映伸手不順,改成浮動在畫面下方中央(`serve-controls`,`action-pad` 正上方)。側邊欄(軌跡顯示、速度、難度、自動最佳時機、範圍解模式等校準用控制)手機版整個隱藏,桌面版維持可見。確認過手機視窗高度下不需要捲動即可完整遊玩。
 - **操作按鈕常駐 + 不鎖時間**:按鈕(技術/方向)一開始就常駐畫面,不能按時用灰階呈現(不是消失再彈出);且從發球準備好那一刻就能按,不用等球飛到特定時機點——這是使用者明確要求的簡化(先不鎖時間),不是計時器 bug。過程中修過兩輪回歸:一次是 `playServe()` 自己把 `inputWindowOpen` 重設回 false 把鎖鎖回去,一次是「開始發球」重播同一球時漏了重置按鈕 disabled/highlight 狀態(跟 `prepareServe()` 的重置邏輯沒有共用到)。
 - **影片區塊放大 + 鏡頭上抬**:影片區塊放大約 33%(面積),放大後球桌遠端會被蓋到一截,用 `THREE.Vector3.project()` 實際算過投影位置(不是用眼睛看猜的),加了 `GAME5_LOOKAT_Y_BOOST` 疊加在 game5 自己讀到的 `camera-config.json` lookAt 值上面——只影響這個檔案,`camera-config.json` 本身沒有動,`game4.html` 不受影響。
 
+### 2026-07-15 起拍延遲模型 + 擊球演出 + 手勢化 + 鏡頭收回（BUILD v9k01→v9k02，未 commit）
+
+> 四個概念問題的第一版實作,程式碼在 `game5.html`（已修改但尚未 commit,工作區差異 +330/-83 行）。狀態機和手勢路徑用無頭方式驗證通過,但瀏覽器面板背景時 rAF 凍結,完整視覺動畫未親眼確認——**實機試玩是下一步必要驗證**。
+
+**起拍延遲模型(v9k01)**:
+- 按技術鍵＝**起拍**,觸擊在 `SWING_DELAY_MS=100ms` 後（慢動作隨 `GAME_SPEED` 等比放慢）發生,接觸點就是那一刻球沿發球軌跡飛到的位置——球全程照軌跡播,不再瞬移。
+- 延遲到點時球還沒過我方第一跳（可擊區外）：practice/match 直接**揮空**（球繼續飛完,結案顯示「揮空（出手太早）」）；beginner 自動改等該技術的最佳擊球點,提早按不受罰。
+- 起拍了但球已掉過桌面高度＝「出手太晚,沒接到球」；沒按＝漏球,維持原樣。
+- 技術鍵改成物理球開始飛才解鎖（影片播放中按了沒有球可打）；方向鍵在影片期間照常可按。
+- 順手修了一個潛在 bug：`animatePath` 加了世代編號（`animToken`）,修掉 onFrame 回呼裡啟動新動畫時舊 tick 繼續排入下一幀的重入問題——AUTO 模式其實一直踩在這個坑上。
+
+**擊球演出(v9k02)**:
+- 球拍 mesh：起拍時出現在球側後方、延遲期間追著球走,觸擊瞬間拍面貼上球。球閃白放大 150ms,播合成擊球聲（WebAudio 直接生成,不用音檔）＋手機短震動。揮空時拍子掃過淡出。
+- 畫面中央成敗大字卡（之前結果只在側欄,手機版看不到）+ 回球第一落點桌面標記（成功綠圓/失敗紅圓）。
+
+**手勢化技術鍵(v9k02)**:
+- 方向獨立按鍵區移除,下方只剩兩顆大技術鍵。按下＝起拍,延遲窗內手指往左/右滑超過 24px＝該方向側旋修正,滑回中間＝取消。鍵面泛黃提示帶了修正,觸擊那一刻才鎖定方向。beginner 提早按的等待時間也算滑動窗。
+
+**鏡頭收回(v9k02)**:
+- `GAME5_LOOKAT_Y_BOOST` 改成動態值——影片觸球交接、淡出的同時,鏡頭每幀平滑把取景收回全螢幕。長球（`length=long`）在鏡頭跟球時多往後拉 0.55。無影片的球整場直接用完整取景。
+
 ### 尚未做 / 需要人工確認
 
 - 平推/攻球技術的 `SIDESPIN_COMPENSATION_C` 沒有專屬校準,沿用切球的值。
 - 側旋影片左右分類的鏡頭方向跟按鍵判定方向是否一致,需要使用者實機看影片確認,不對的話是改一個 sign 的事。
-- `auto-contact-tagger` 需要針對新的 `_left`/`_right` 資料夾重新跑批次,而且目前標註覆蓋率不到影片庫的 1/4,`VIDEO_CONTACT_FRACTION_GUESS=0.7` 這個粗估值要等標註補齊才能換真值。
-- `contact_sidespin_left`/`_right`(純側旋影片,19+5 支)完全沒有對應的 preset,是已知缺口,不是這次要解決的範圍。
-
+- `auto-contact-tagger` 標註覆蓋率：全庫 47 支已標完 `contact_time_sec`（粗標約 3 frame 誤差）,教練複核後可直接覆寫 `videos.json`。
+- `SWING_DELAY_MS=100ms` 的手感需要實機確認——太慢改小、還是像瞬發就加到 120–150,改一個常數。
+- match 模式下 100ms 內完成滑動會不會太緊（可考慮觸擊後短暫寬限期或加大延遲）。
+- 球拍目前只有「追球＋貼上」,還沒有真正的揮拍弧線動畫；音色和震動強度是第一版數值。
+- `serve-generator.html` 產生的 47 個 preset 的實際發球軌跡（尤其純側旋 sidespin 類、左側旋鏡像類）尚未在 Game 5 實機驗證過——旋轉值和落點是從現有 preset 模板推導的,不是逐一校準的。
 ## 兩層規則(取代舊的 Gate 0/1/2 審理流程)
 
 見 `AI_CONTEXT/00_READ_ME_FIRST.md`。簡言之:紅線檔案改動前要先討論;`prototypes/` 資料夾內的複製測試、參數調整、影片試用一律自由,不需要審理表格。
