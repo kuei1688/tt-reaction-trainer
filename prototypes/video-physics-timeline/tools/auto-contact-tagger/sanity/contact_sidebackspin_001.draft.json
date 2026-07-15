@@ -1,0 +1,21 @@
+{
+  "annotation_status": "draft",
+  "source_video": "contact_sidebackspin_001.mp4",
+  "fps": 60,
+  "contact_time_sec": 1.4333333333333333,
+  "observation_end_sec": 1.7333333333333334,
+  "entry_position": {
+    "x": 0.5,
+    "y": 0.5
+  },
+  "spin_note": "待人工填寫",
+  "preview_profile_id": "prototype_short",
+  "allowed_variants_draft": {
+    "length": [
+      "short"
+    ],
+    "placement": [],
+    "speed": [],
+    "review_status": "pending_coach"
+  }
+}

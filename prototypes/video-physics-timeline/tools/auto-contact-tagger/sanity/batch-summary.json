@@ -1,0 +1,13 @@
+{
+  "batch_date": "2026-07-15",
+  "model": "kimi-k2.7-code:cloud",
+  "note": "兩段批次合併：首跑 001+sidespin_001（60fps 原生），重跑 002/003/sidebackspin_001（59.94fps NTSC，修 fps 取整後）",
+  "total_videos": 5,
+  "results": [
+    { "source_video": "contact_backspin_001.mp4", "status": "ok", "contact_time_sec": 4.3833, "confidence": 0.85, "via": "contact", "api_calls": 45, "elapsed_ms": 364532, "fps": 60, "truth_sec": 4.3, "error_frames": 5, "bias_sec": 0.0833 },
+    { "source_video": "contact_backspin_002.mp4", "status": "ok", "contact_time_sec": 0.6833, "confidence": 0.85, "via": "contact", "api_calls": 61, "elapsed_ms": 491157, "fps": 60 },
+    { "source_video": "contact_backspin_003.mp4", "status": "ok", "contact_time_sec": 2.0, "confidence": 0.50, "via": "boundary", "api_calls": 67, "elapsed_ms": 341100, "fps": 60 },
+    { "source_video": "contact_sidebackspin_001.mp4", "status": "ok", "contact_time_sec": 1.4333, "confidence": 0.85, "via": "contact", "api_calls": 66, "elapsed_ms": 603837, "fps": 60 },
+    { "source_video": "contact_sidespin_001.mp4", "status": "ok", "contact_time_sec": 0.5333, "confidence": 0.85, "via": "contact", "api_calls": 64, "elapsed_ms": 203557, "fps": 60 }
+  ]
+}

@@ -54,7 +54,7 @@ async function main() {
   const ffmpeg = findTool('ffmpeg', f.ffmpeg || null);
   if (!ffmpeg) bail('ffmpeg not found. 安裝 ffmpeg 或用 --ffmpeg <path> 指定。');
   const probe = probeVideo(video);
-  const fps = fpsArg || (probe && probe.fps) || 60;
+  const fps = Math.round(fpsArg || (probe && probe.fps) || 60);
   const duration = (probe && probe.duration) || (probe && probe.nbFrames ? probe.nbFrames / fps : null);
   process.stderr.write('[ffmpeg] ' + ffmpeg + '\n');
   process.stderr.write('[fps] ' + fps + (duration ? ' [duration] ' + duration.toFixed(3) + 's' : '') + '\n');
