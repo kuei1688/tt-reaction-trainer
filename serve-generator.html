@@ -122,7 +122,7 @@ const CATEGORY_RULES = {
   },
   contact_sidebackspin_left: {
     spinType: "sidebackspin", label: "左側下旋", color: "#d29922",
-    topspin: SPIN_REF.backspin, sidespin: SPIN_REF.sidespin,
+    topspin: SPIN_REF.backspin, sidespin: -SPIN_REF.sidespin,
     positions: ["forehand"], lengths: ["long", "short"]
   },
   contact_sidespin_right: {
@@ -132,7 +132,7 @@ const CATEGORY_RULES = {
   },
   contact_sidespin_left: {
     spinType: "sidespin", label: "左側旋", color: "#bc8cff",
-    topspin: 0, sidespin: SPIN_REF.sidespin,
+    topspin: 0, sidespin: -SPIN_REF.sidespin,
     positions: ["forehand"], lengths: ["long", "short"]
   }
 };
