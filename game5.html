@@ -29,8 +29,12 @@ canvas{display:block;width:100%;height:100%;touch-action:manipulation}
 .pill.ok{border-color:rgba(63,185,80,.6);color:var(--green)}
 .pill.bad{border-color:rgba(255,123,114,.65);color:var(--red)}
 .pill.warn{border-color:rgba(210,153,34,.65);color:var(--yellow)}
-.center-tip{position:absolute;left:50%;bottom:18px;transform:translateX(-50%);background:rgba(13,17,23,.88);border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-weight:800;color:var(--text);text-align:center;min-width:min(520px,calc(100% - 24px))}
-.action-pad{position:absolute;left:12px;right:12px;bottom:12px;display:grid;grid-template-columns:1fr 1fr;gap:9px;align-items:end}
+/* bottom 用固定像素跟 action-pad 的實際高度錯開（不是用百分比），確保不管
+   影片區塊多大、螢幕多高，提示欄都不會蓋到下面常駐的操作按鈕。 */
+.center-tip{position:absolute;left:50%;bottom:160px;transform:translateX(-50%);background:rgba(13,17,23,.88);border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-weight:800;color:var(--text);text-align:center;min-width:min(520px,calc(100% - 24px));z-index:3}
+/* 操作按鈕常駐＋浮在最上層（z-index 高於提示欄／影片／對話框），確保任何
+   時候都點得到，不會被其他浮動元素蓋住。 */
+.action-pad{position:absolute;left:12px;right:12px;bottom:12px;display:grid;grid-template-columns:1fr 1fr;gap:9px;align-items:end;z-index:10}
 .action-zone{display:grid;grid-template-rows:auto 1fr;gap:7px;min-height:108px;padding:8px;border:1px solid rgba(88,166,255,.34);border-radius:8px;background:rgba(13,17,23,.34);box-shadow:0 10px 26px rgba(0,0,0,.22);backdrop-filter:blur(2px)}
 .action-zone.direction-zone{border-color:rgba(210,153,34,.4)}
 .zone-label{font-size:12px;font-weight:900;color:rgba(240,246,252,.72);text-shadow:0 1px 2px rgba(0,0,0,.7)}
@@ -49,7 +53,7 @@ canvas{display:block;width:100%;height:100%;touch-action:manipulation}
 .action-cue.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
 /* 方向 C 影片配置慣例：影片浮在畫面上方一塊固定比例區域，桌面場景全程可見，
    觸球後影片淡出、物理球接手（見 prototypes/video-physics-timeline/direction-c/）。 */
-.video-frame{position:absolute;left:10%;top:4%;width:80%;height:38%;overflow:hidden;border:2px solid rgba(219,234,254,.55);border-radius:14px;background:#000;box-shadow:0 10px 26px rgba(0,0,0,.5);z-index:6;transition:opacity 240ms ease}
+.video-frame{position:absolute;left:4%;top:3%;width:92%;height:44%;overflow:hidden;border:2px solid rgba(219,234,254,.55);border-radius:14px;background:#000;box-shadow:0 10px 26px rgba(0,0,0,.5);z-index:6;transition:opacity 240ms ease}
 .video-frame video{width:100%;height:100%;object-fit:cover;display:block}
 .video-frame.exiting{opacity:0}
 .video-frame[hidden]{display:none}
@@ -87,10 +91,10 @@ button:disabled{opacity:.45;cursor:not-allowed}
   .top-bar button{padding:7px 10px;font-size:12px}
   main{grid-template-columns:1fr}
   aside{display:none}
-  .center-tip{bottom:8px;min-width:calc(100% - 16px);font-size:12px;padding:8px 10px}
+  .center-tip{bottom:120px;min-width:calc(100% - 16px);font-size:12px;padding:8px 10px}
   .hud{left:8px;top:8px;gap:5px}
   .pill{padding:5px 7px;font-size:11px}
-  .video-frame{left:6%;top:3%;width:88%;height:34%}
+  .video-frame{left:2%;top:2%;width:96%;height:39%}
   .action-pad{left:6px;right:6px;bottom:6px;gap:6px}
   .action-zone{min-height:88px;padding:6px}
   .zone-actions button{min-height:46px;font-size:13px;padding:6px}
@@ -1103,10 +1107,6 @@ function setPhase(next){
     return:'回擊中',
     result:'結果'
   }[next] || next;
-  const enableReturn = next === 'choose_side' || next === 'choose_technique';
-  document.getElementById('centerTip').style.display = enableReturn ? 'none' : '';
-  document.querySelectorAll('[data-return-technique]').forEach(btn=>btn.disabled = !enableReturn);
-  document.querySelectorAll('[data-direction]').forEach(btn=>btn.disabled = !enableReturn);
 }
 function updateScore(){
   document.getElementById('scoreText').textContent = `成功 ${score.ok} / 失分 ${score.fail}`;
@@ -1156,7 +1156,9 @@ function prepareServe(){
   selectedSide = null;
   selectedTechnique = null;
   pendingReturn = null;
-  inputWindowOpen = false;
+  // 2026-07-15：先不鎖時間，按鈕從發球準備好那一刻就可以按，不用等球飛到
+  // 特定時機點（openReturnInput() 原本的時機觸發先保留但不再是唯一入口）。
+  inputWindowOpen = true;
   missResolved = false;
   timingHintActive = false;
   currentServePoint = null;
@@ -1168,8 +1170,8 @@ function prepareServe(){
   selectedDirectionInput = null;
   resetBallColor();
   document.getElementById('choiceText').textContent = '尚未選擇';
-  document.querySelectorAll('[data-return-technique]').forEach(btn=>btn.classList.remove('active'));
-  document.querySelectorAll('[data-direction]').forEach(btn=>btn.classList.remove('active'));
+  document.querySelectorAll('[data-return-technique]').forEach(btn=>{btn.classList.remove('active'); btn.disabled = false;});
+  document.querySelectorAll('[data-direction]').forEach(btn=>{btn.classList.remove('active'); btn.disabled = false;});
   document.getElementById('actionCue')?.classList.remove('show');
   const videoFrame = document.getElementById('videoFrame');
   videoFrame.hidden = true;
@@ -1314,7 +1316,7 @@ function chooseReturn(side, techniqueKey){
   hideReturnInput();
 }
 function returnBall(techniqueKey){
-  if((phase !== 'choose_side' && phase !== 'choose_technique') || !hitPoint || !selectedSide) return;
+  if(!hitPoint || !selectedSide) return;
   const contact = pendingReturn || {};
   const usePushTiming = techniqueKey === 'push';
   const contactPoint = usePushTiming ? (pushHitPoint || contact.hitPoint || hitPoint) : (contact.hitPoint || hitPoint);
