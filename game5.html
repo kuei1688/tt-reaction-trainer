@@ -30,8 +30,7 @@ canvas{display:block;width:100%;height:100%;touch-action:manipulation}
 .pill.bad{border-color:rgba(255,123,114,.65);color:var(--red)}
 .pill.warn{border-color:rgba(210,153,34,.65);color:var(--yellow)}
 .center-tip{position:absolute;left:50%;bottom:18px;transform:translateX(-50%);background:rgba(13,17,23,.88);border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-weight:800;color:var(--text);text-align:center;min-width:min(520px,calc(100% - 24px))}
-.action-pad{position:absolute;left:12px;right:12px;bottom:12px;display:grid;grid-template-columns:1fr 1fr;gap:9px;align-items:end;pointer-events:none;opacity:0;visibility:hidden;transition:opacity 200ms ease, visibility 0s linear 200ms}
-.action-pad.active{pointer-events:auto;opacity:1;visibility:visible;transition:opacity 150ms ease}
+.action-pad{position:absolute;left:12px;right:12px;bottom:12px;display:grid;grid-template-columns:1fr 1fr;gap:9px;align-items:end}
 .action-zone{display:grid;grid-template-rows:auto 1fr;gap:7px;min-height:108px;padding:8px;border:1px solid rgba(88,166,255,.34);border-radius:8px;background:rgba(13,17,23,.34);box-shadow:0 10px 26px rgba(0,0,0,.22);backdrop-filter:blur(2px)}
 .action-zone.direction-zone{border-color:rgba(210,153,34,.4)}
 .zone-label{font-size:12px;font-weight:900;color:rgba(240,246,252,.72);text-shadow:0 1px 2px rgba(0,0,0,.7)}
@@ -1108,9 +1107,9 @@ function setPhase(next){
     result:'結果'
   }[next] || next;
   const enableReturn = next === 'choose_side' || next === 'choose_technique';
-  document.getElementById('actionPad').classList.toggle('active', enableReturn);
   document.getElementById('centerTip').style.display = enableReturn ? 'none' : '';
   document.querySelectorAll('[data-return-technique]').forEach(btn=>btn.disabled = !enableReturn);
+  document.querySelectorAll('[data-direction]').forEach(btn=>btn.disabled = !enableReturn);
 }
 function updateScore(){
   document.getElementById('scoreText').textContent = `成功 ${score.ok} / 失分 ${score.fail}`;
@@ -1131,11 +1130,11 @@ function openReturnInput(){
 }
 function hideReturnInput(){
   inputWindowOpen = false;
-  document.getElementById('actionPad').classList.remove('active');
   document.querySelectorAll('[data-return-technique]').forEach(btn=>{
     btn.disabled = true;
     btn.classList.remove('active');
   });
+  document.querySelectorAll('[data-direction]').forEach(btn=>btn.disabled = true);
 }
 function missReturn(){
   if(missResolved || pendingReturn) return;
@@ -1319,8 +1318,9 @@ function returnBall(techniqueKey){
   const contactSpin = usePushTiming ? (pushHitSpin || contact.hitSpin || hitSpin) : (contact.hitSpin || hitSpin);
   const contactPhase = contact.timingPhase || timingPhaseFromVelocity(contactVel);
   selectedTechnique = techniqueKey;
+  const returnBallUiKey = techniqueUiKeyFor(techniqueKey);
   document.querySelectorAll('[data-return-technique]').forEach(btn=>{
-    btn.classList.toggle('active', btn.dataset.returnTechnique === techniqueKey && btn.dataset.returnSide === selectedSide);
+    btn.classList.toggle('active', btn.dataset.returnTechnique === returnBallUiKey);
   });
   const tech = TECHNIQUES[techniqueKey];
   if(!tech){
@@ -1818,8 +1818,9 @@ document.querySelectorAll('[data-return-technique]').forEach(btn=>{
 // 方向鍵是獨立於技術鍵的狀態切換（可再按一次取消），不會立即觸發回擊——
 // 真正判定/執行是按下技術鍵那一刻，讀取當下的 selectedDirectionInput。
 document.querySelectorAll('[data-direction]').forEach(btn=>{
+  btn.disabled = true;
   btn.addEventListener('click', ()=>{
-    if(!inputWindowOpen || pendingReturn || missResolved) return;
+    if(btn.disabled || !inputWindowOpen || pendingReturn || missResolved) return;
     const dir = btn.dataset.direction;
     selectedDirectionInput = selectedDirectionInput === dir ? null : dir;
     document.querySelectorAll('[data-direction]').forEach(b=>{
