@@ -59,8 +59,10 @@ async function runFine(frames, classifyFn) {
   }
   const contactFrames = labels.filter(c => c.label === 'contact');
   if (contactFrames.length) {
-    const mid = contactFrames[Math.floor(contactFrames.length / 2)];
-    return { frame: mid.frame, confidence: 0.85, labels: labels, via: 'contact' };
+    // 取 contact 叢集的「首幀」＝ before→contact 的轉換點。
+    // 先前取中間幀會把觸球後仍貼著拍的幾幀也算進來，使偵測系統性偏晚。
+    const first = contactFrames[0];
+    return { frame: first.frame, confidence: 0.85, labels: labels, via: 'contact' };
   }
   let lastBefore = null, firstAfter = null;
   for (const c of labels) {
