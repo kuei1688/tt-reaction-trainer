@@ -15,6 +15,27 @@
 - **TODO-007**:重新推導 `tiltX` / `tiltY` 範圍,狀態為「待驗證」。
 - **TODO-008**:部署前確認清單,狀態為「待驗證」。
 
+## 2026-07-15 TODO-001~007 逐項覆核(使用者要求核對後決定是否結案)
+
+> 每項都實際比對過 game4.html/return-studio.html/physics-studio.html 程式碼跟 docs/ 現有文件,不是憑印象打勾。
+
+- **TODO-001：不結案**。`PADDLE_BLEND`、Stage 4a 彈簧-阻尼常數、`computeAdaptivePush*`、`applyPushContact`、`solveRacketVelXForTargetLandingX`(含側旋補償 fallback)在兩個檔案裡數值/邏輯一致。但還有兩處結構性差異：(1) `bounceOffPlane()` 的函式簽名不同——`return-studio.html` 多一個 `blend` 參數並會呼叫 `computeBlendedNormal`,`game4.html` 完全沒有這個能力(目前所有呼叫點都用 `blend=0` 所以行為一樣,但不是同一份程式碼);(2) `game4.html` 留了一個沒有呼叫點的死函式 `solveRacketVelXForTargetOutX`,`return-studio.html` 沒有。核心邏輯確實同步了,但「完全同步」這句話還不精確,先照實記錄,要不要花時間把這兩處也對齊是另一個判斷。
+- **TODO-002：維持 Pending**,使用者確認還沒做到這裡。
+- **TODO-003：不結案**。`docs/MODEL_DECISIONS.md`、`docs/PHYSICS_MODEL_SPEC.md` 現在都還寫「這仍是待驗證,不是已決策」。「負向求解」bug(EXP-042,`solveRacketVelXForTargetLandingX` 找不到有效落點時舊版靜默回傳 `-incomingVel.x`)已確認修復,但文件上這是跟「子彈感/碰撞感」完全分開的兩件事——子彈感的根源假說是法向反彈係數(epsilon)過高,EXP-042 修的是側旋瞄準的 fallback 值,兩者目前沒有文件把它們接在一起。如果使用者是透過實際試玩覺得手感已經改善,這是合理的收斂依據,但建議明確記成「試玩確認,非數據驗證」,跟原本「待驗證」的量化要求分開,避免以後有人以為是量出來的。
+- **TODO-004：不結案,但更新現況**。Stage 4a 的彈簧-阻尼模型(海綿+木板串聯)已經實作,是`PADDLE_BLEND` 的**互補**機制,不是取代：`PADDLE_BLEND` 決定接觸法向量(要不要偏向球實際接近方向),彈簧-阻尼模型決定「決定好法向量之後」壓縮/釋放的接觸動態——`applyPushContact()` 裡是先算 `computeBlendedNormal()` 再把結果餵給 `bounceOffPlaneSubstepped()`,兩層前後接續,不是二選一。TODO-004 原本問的「要不要用 tangential compliance/contact-point velocity 等機制取代 blend」這個問題仍然開放,海綿模型沒有回答到這一題。
+- **TODO-005：維持 Pending**,使用者要求先解釋,見下方說明,還沒有要建立的決定。
+- **TODO-006：可結案(game4.html + return-studio.html 範圍)**。兩個檔案都定義 `SIM_TIME_DILATION` 並在同樣三個轉換點套用(`simulatePath`/`simulateServe`/`serveBounceScore`),跟 STATUS.md「2026-07-14 尺度一致性修復」的記錄一致。`physics-studio.html` 完全沒有 `SIM_TIME_DILATION`,line 990 的桌面接觸呼叫沒有做尺度轉換——這部分維持原本標記的「優先級低,待需要時再修」,不算在這次結案範圍內。
+- **TODO-007：可結案(切球/push 範圍)**。`PUSH_TILT_Y=1.0` 有完整 sweep 校準紀錄(`tools/push-tilty-*-sweep-calibration.js`,11 顆校準發球全過網),`computeAdaptivePushTiltX()` 固定回傳 0 是 EXP-037 的既定架構決策,不是遺漏。`docs/MODEL_DECISIONS.md` 對 TODO-007 本來寫的適用範圍就是「`return-studio.html` 研究版、切球/push 聯合校準流程」,不含攻球。攻球(`forehand_attack`/`backhand_attack`)的 `racketNormalTiltY:0.1`/`racketNormalTiltX:0` 目前還是最初的固定值,沒有找到任何專屬校準紀錄——如果之後要校準攻球的拍面角度,這仍是全新的工作,不是這次結案範圍。
+
+### TODO-005 是在做什麼(說明,非結案)
+
+現在 repo 沒有 `package.json`,也沒有任何「一個指令跑全部驗證」的入口。`tools/` 底下有兩種完全不同性質的檔案，肉眼看檔名分不出來：
+
+1. **真的有 pass/fail 判定的**：`batch-validation.test.js`、`return-studio-batch-validation.test.js`、`serve-batch-validation.test.js` 這 3 支——內部真的算「幾個過、幾個沒過」，失敗時會 `process.exit(1)`。但沒有共用測試框架(不是 Jest、不是 Node 內建 `node:test`)，是自己寫的判定邏輯，而且要一支一支手動 `node tools/xxx.test.js` 執行，沒有一個指令能全部跑完再彙總結果。
+2. **沒有 pass/fail 概念的**：其餘約 20 支校準/掃描工具(像 `push-tilty-sweep-calibration.js`)——只是印一張數值表、寫一份報告給人看，本身不會因為「結果變差」就失敗，永遠 exit 0，除非腳本本身當機。
+
+TODO-005 問的是：要不要花時間補一個 `package.json` + 一個 `npm test` 指令，把上面第 1 類的 3 支串起來一次跑完、彙總結果，並且讓「這是真測試」跟「這是校準工具」的區分不用靠記檔名——目前答案還是看你要不要投資這件事，沒有預設。
+
 ## 2026-07-14 新增
 
 - **SCALE-FIX-001**：桌面接觸尺度一致性 bug 已在 `game4.html` 和 `return-studio.html` 修復。`physics-studio.html`（line 990）有同樣問題但無 `SIM_TIME_DILATION` 定義，是純研究工具，優先級低，待需要時再修。
