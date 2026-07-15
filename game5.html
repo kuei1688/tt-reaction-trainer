@@ -13,13 +13,15 @@
 }
 *{box-sizing:border-box}
 html,body{margin:0;height:100vh;height:100dvh;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;overflow:hidden}
-body{display:grid;grid-template-rows:auto auto 1fr}
+body{display:grid;grid-template-rows:auto 1fr}
 header{height:48px;display:flex;align-items:center;justify-content:space-between;padding:0 14px;border-bottom:1px solid var(--border);background:#0b1017}
 h1{font-size:20px;margin:0}
 .badge{color:var(--yellow);font-weight:800;font-size:13px}
-.top-bar{display:flex;gap:8px;align-items:center;padding:7px 10px;border-bottom:1px solid var(--border);background:#0b1017}
-.top-bar select{flex:1;min-width:0;border:1px solid var(--border);background:var(--surface2);color:var(--text);border-radius:7px;padding:8px 9px;font-weight:800;font-size:13px}
-.top-bar button{flex:0 0 auto;width:auto;padding:8px 14px;font-size:13px;white-space:nowrap}
+/* 開始發球／下一球放在畫面下方中央（提示欄與操作鈕之間），拇指就構得到，不必再
+   伸到左上角。idle/result 才可按，發球中自動停用（跟方向/技術鍵一致的灰階語彙）。 */
+.serve-controls{position:absolute;left:50%;bottom:130px;transform:translateX(-50%);display:flex;gap:10px;z-index:11}
+.serve-controls button{width:auto;flex:0 0 auto;padding:13px 26px;font-size:17px;font-weight:900;border-radius:10px;white-space:nowrap;box-shadow:0 8px 18px rgba(0,0,0,.32)}
+.serve-controls button:disabled{opacity:.4;filter:grayscale(.4);cursor:not-allowed;box-shadow:none}
 main{display:grid;grid-template-columns:minmax(0,1fr) 320px;min-height:0}
 .scene-wrap{position:relative;min-height:0;background:#05070a}
 canvas{display:block;width:100%;height:100%;touch-action:manipulation}
@@ -31,7 +33,7 @@ canvas{display:block;width:100%;height:100%;touch-action:manipulation}
 .pill.warn{border-color:rgba(210,153,34,.65);color:var(--yellow)}
 /* bottom 用固定像素跟 action-pad 的實際高度錯開（不是用百分比），確保不管
    影片區塊多大、螢幕多高，提示欄都不會蓋到下面常駐的操作按鈕。 */
-.center-tip{position:absolute;left:50%;bottom:160px;transform:translateX(-50%);background:rgba(13,17,23,.88);border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-weight:800;color:var(--text);text-align:center;min-width:min(520px,calc(100% - 24px));z-index:3}
+.center-tip{position:absolute;left:50%;bottom:184px;transform:translateX(-50%);background:rgba(13,17,23,.88);border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-weight:800;color:var(--text);text-align:center;min-width:min(520px,calc(100% - 24px));z-index:3}
 /* 操作按鈕常駐＋浮在最上層（z-index 高於提示欄／影片／對話框），確保任何
    時候都點得到，不會被其他浮動元素蓋住。 */
 .action-pad{position:absolute;left:12px;right:12px;bottom:12px;display:grid;grid-template-columns:1fr 1fr;gap:9px;align-items:end;z-index:10}
@@ -86,12 +88,11 @@ button:disabled{opacity:.45;cursor:not-allowed}
   h1{font-size:16px}
   header{height:40px;padding:0 10px}
   .badge{display:none}
-  .top-bar{padding:6px 8px;gap:6px}
-  .top-bar select{font-size:12px;padding:7px 8px}
-  .top-bar button{padding:7px 10px;font-size:12px}
+  .serve-controls{bottom:106px;gap:8px}
+  .serve-controls button{padding:11px 20px;font-size:15px}
   main{grid-template-columns:1fr}
   aside{display:none}
-  .center-tip{bottom:120px;min-width:calc(100% - 16px);font-size:12px;padding:8px 10px}
+  .center-tip{bottom:150px;min-width:calc(100% - 16px);font-size:12px;padding:8px 10px}
   .hud{left:8px;top:8px;gap:5px}
   .pill{padding:5px 7px;font-size:11px}
   .video-frame{left:2%;top:2%;width:96%;height:39%}
@@ -113,10 +114,6 @@ button:disabled{opacity:.45;cursor:not-allowed}
     <div id="buildVersion" style="font-size:11px;color:#555;font-family:monospace" title="build version">-----</div>
   </div>
 </header>
-<div class="top-bar">
-  <button id="playBtn" class="primary">開始發球</button>
-  <button id="nextBtn">下一球</button>
-</div>
 <main>
   <section class="scene-wrap">
     <canvas id="scene"></canvas>
@@ -132,6 +129,10 @@ button:disabled{opacity:.45;cursor:not-allowed}
     </div>
     <div class="video-frame" id="videoFrame" hidden>
       <video id="serveVideo" playsinline muted preload="metadata"></video>
+    </div>
+    <div class="serve-controls" id="serveControls">
+      <button id="playBtn" class="primary">開始發球</button>
+      <button id="nextBtn">下一球</button>
     </div>
     <div class="action-pad" id="actionPad">
       <div class="action-zone direction-zone">
@@ -1117,6 +1118,12 @@ function setPhase(next){
     return:'回擊中',
     result:'結果'
   }[next] || next;
+  // 開始發球／下一球只在 idle 與 result 可按；發球／回擊進行中停用，避免誤觸中斷。
+  const serveReady = next === 'idle' || next === 'result';
+  const playBtnEl = document.getElementById('playBtn');
+  const nextBtnEl = document.getElementById('nextBtn');
+  if(playBtnEl) playBtnEl.disabled = !serveReady;
+  if(nextBtnEl) nextBtnEl.disabled = !serveReady;
 }
 function updateScore(){
   document.getElementById('scoreText').textContent = `成功 ${score.ok} / 失分 ${score.fail}`;
