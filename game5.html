@@ -70,8 +70,6 @@ button:disabled{opacity:.45;cursor:not-allowed}
 .field-row{display:flex;align-items:center;gap:9px;padding:9px 10px;border:1px solid var(--border);border-radius:7px;background:rgba(13,17,23,.45)}
 .field-row label{white-space:nowrap}
 .field-row select{flex:1}
-.serve-picker-row{align-items:stretch}
-#serveSelect{min-width:0;width:100%;font-weight:900}
 .meta{font-size:12px;color:var(--muted);line-height:1.55;white-space:pre-wrap}
 .result{font-size:16px;font-weight:900;line-height:1.45}
 .result.ok{color:var(--green)}
@@ -112,7 +110,6 @@ button:disabled{opacity:.45;cursor:not-allowed}
   </div>
 </header>
 <div class="top-bar">
-  <select id="serveSelect"></select>
   <button id="playBtn" class="primary">開始發球</button>
   <button id="nextBtn">下一球</button>
 </div>
@@ -153,8 +150,8 @@ button:disabled{opacity:.45;cursor:not-allowed}
   </section>
   <aside>
     <div class="section">
-      <h2>發球 Preset</h2>
-      <div id="serveCount" class="small"></div>
+      <h2>這一球（系統隨機配對，測試用）</h2>
+      <div id="roundInfo" class="small"></div>
     </div>
     <div class="section">
       <h2>回擊技術</h2>
@@ -1146,8 +1143,16 @@ function missReturn(){
 }
 function prepareServe(){
   resetCam(false);
+  const round = pickRoundForNextServe();
+  if(round){
+    selectedServeIndex = presets.indexOf(round.preset);
+    currentServeVideo = round.video;
+  }
   const preset = currentPreset();
   document.getElementById('serveName').textContent = preset?.label || '未選擇';
+  document.getElementById('roundInfo').textContent = round
+    ? `分類：${currentServeVideo?.spinType || '（無影片）'} / preset：${preset.id} / 影片：${currentServeVideo?.id || '無'}`
+    : '目前沒有可配對的分類（影片庫或發球資料未載入）';
   selectedSide = null;
   selectedTechnique = null;
   pendingReturn = null;
@@ -1188,7 +1193,6 @@ function prepareServe(){
   pushHitVel = serve.velocities[pushHitIndex];
   pushHitSpin = serve.spins[pushHitIndex];
   autoFireIndex = AUTO_TIMING_TECHNIQUE === 'push' ? pushHitIndex : hitIndex;
-  currentServeVideo = pickVideoForPreset(preset, pushHitVel, pushHitSpin, pushHitPoint, preset.solve?.gravity ?? -4.2);
   // 觸發門檻：對方桌面第一跳之後（z < 0 的 bounce + margin）
   const serverBounce = serve.bounces.find(b => b.z < 0);
   camTriggerZ = serverBounce ? serverBounce.z + 0.12 : -TABLE.length / 2;
@@ -1666,13 +1670,6 @@ function judgeReturn(result, contactPhase){
     startCamReturn();
   }
 }
-function renderServeButtons(){
-  const select = document.getElementById('serveSelect');
-  select.innerHTML = presets.map((preset, index)=>`
-    <option value="${index}" ${index === selectedServeIndex ? 'selected' : ''}>${preset.label}</option>
-  `).join('');
-  document.getElementById('serveCount').textContent = presets.length ? `共 ${presets.length} 顆發球` : '尚未載入發球';
-}
 async function loadPresets(){
   // 同時載入 physics-presets.json 和 camera-config.json
   const [presetsRes, camRes] = await Promise.all([
@@ -1686,7 +1683,6 @@ async function loadPresets(){
   }
   const data = await presetsRes.json();
   presets = data.serves || [];
-  renderServeButtons();
 }
 async function loadVideoLibrary(){
   const res = await fetch('videos.json?v=' + Date.now());
@@ -1698,35 +1694,27 @@ async function loadVideoLibrary(){
   });
   videoLibrary = byCategory;
 }
-// 發球 preset -> 影片分類。sidebackspin_half_long_backhand 依 2026-07-15 判斷（命名雖是
-// sidebackspin，物理上更接近不夠乾淨的下旋球，見 SIDESPIN_COMPENSATION_C 校準時的討論）
-// 歸入下旋，不進側旋判斷題庫。真正的側旋球分左右時，用跟切球判定同一套求解器算出的
-// 方向正負號分類——這樣「配到的影片分類」跟「按鍵判定的對錯」內部保證一致，不是宣稱
-// 真人影片鏡頭方向跟這個 sign 對得上（方向 C 本來就是「介面語意，不是真人軌跡量測」）。
-function videoCategoryForPreset(preset, vel, spin, point, gravity){
-  const id = preset.id;
-  if(id === 'sidebackspin_half_long_backhand' || id.startsWith('backspin_')) return 'contact_backspin';
-  if(id.startsWith('no_spin_')) return 'contact_nospin';
-  if(id.startsWith('sidebackspin_')){
-    const tech = {...TECHNIQUES.push};
-    const lift = computeAdaptivePushLift(vel);
-    const drive = computeAdaptivePushDrive(vel);
-    const baseTechVel = {x:0, y:lift, z:-drive};
-    tech.swingDirection = baseTechVel;
-    const tiltY = computeAdaptivePushTiltY();
-    const tiltX = computeAdaptivePushTiltX();
-    const racketNormal = computeRacketNormal(tiltY, tiltX, baseTechVel);
-    const epsilon = dynamicPaddleEpsilon(vel, baseTechVel, racketNormal);
-    const aimedX = solveRacketVelXForTargetLandingX(vel, spin, racketNormal, baseTechVel, epsilon, PADDLE_FRICTION, point, gravity, RETURN_TARGET_X, PADDLE_BLEND, tech);
-    return signOf(aimedX) < 0 ? 'contact_sidebackspin_left' : 'contact_sidebackspin_right';
-  }
-  return null;
+// 2026-07-15 簡化：影片分類 -> 發球 preset 直接套分類名稱對應，不再用求解器算
+// 側旋方向 sign。目前只有「不轉/下旋/右側下旋」三種分類池（「右側旋」暫時排除——
+// 只有 sidebackspin_* 這批側下旋 preset，沒有純側旋 sidespin_* 的 preset，等真的
+// 有了再加回來）。流程反過來：先隨機選影片分類，再從對應分類的 preset 裡隨機挑一個
+// （不再是「選 preset 決定影片」，發球 preset 下拉選單已拿掉，之後會重新設計）。
+const VIDEO_CATEGORY_POOL = ['contact_nospin', 'contact_backspin', 'contact_sidebackspin_right'];
+function presetsForVideoCategory(category){
+  if(category === 'contact_nospin') return presets.filter(p => p.id.startsWith('no_spin_'));
+  if(category === 'contact_backspin') return presets.filter(p => p.id.startsWith('backspin_') || p.id === 'sidebackspin_half_long_backhand');
+  if(category === 'contact_sidebackspin_right') return presets.filter(p => p.id.startsWith('sidebackspin_') && p.id !== 'sidebackspin_half_long_backhand');
+  return [];
 }
-function pickVideoForPreset(preset, vel, spin, point, gravity){
-  const category = videoCategoryForPreset(preset, vel, spin, point, gravity);
-  const pool = category ? videoLibrary[category] : null;
-  if(!pool || !pool.length) return null;
-  return pool[Math.floor(Math.random() * pool.length)];
+function pickRoundForNextServe(){
+  const validCategories = VIDEO_CATEGORY_POOL.filter(cat => (videoLibrary[cat]?.length) && presetsForVideoCategory(cat).length);
+  if(!validCategories.length) return null;
+  const category = validCategories[Math.floor(Math.random() * validCategories.length)];
+  const presetPool = presetsForVideoCategory(category);
+  const preset = presetPool[Math.floor(Math.random() * presetPool.length)];
+  const videoPool = videoLibrary[category];
+  const video = videoPool[Math.floor(Math.random() * videoPool.length)];
+  return {preset, video};
 }
 // 方向 C 影片配置：影片播到「粗估觸球點」（沒有逐支標註時用比例猜，見
 // VIDEO_CONTACT_FRACTION_GUESS）就開始淡出、同時讓已經算好的物理發球進場——複刻
@@ -1771,11 +1759,6 @@ function playServeVideo(videoEntry, onHandoff){
   videoEl.play().catch(fallback);
 }
 document.getElementById('playBtn').addEventListener('click', playServe);
-document.getElementById('serveSelect').addEventListener('change', event=>{
-  selectedServeIndex = parseInt(event.target.value, 10) || 0;
-  renderServeButtons();
-  prepareServe();
-});
 document.getElementById('trajectoryToggle').addEventListener('change', event=>{
   showTrajectories = event.target.checked;
   setTrajectoryVisibility();
@@ -1801,8 +1784,6 @@ document.getElementById('rangeSolutionToggle').addEventListener('change', event=
   RANGE_SOLUTION_MODE = event.target.checked;
 });
 document.getElementById('nextBtn').addEventListener('click', ()=>{
-  selectedServeIndex = (selectedServeIndex + 1) % Math.max(1, presets.length);
-  renderServeButtons();
   prepareServe();
   playServe();
 });
