@@ -15,7 +15,7 @@
 | `game4.html` | 正式遊戲頁 | attack / push 走球拍接觸路徑;loop 仍是舊 direct model;已改用 `shared-physics-core.js`(已 commit);2026-07-14 修復桌面接觸尺度一致性 bug（見下方「2026-07-14 尺度一致性修復」） |
 | `match-trainer.html` | 正式訓練頁 | 未在本輪改動範圍內 |
 | `shared-physics-core.js` | 共用物理核心 | **Phase 1、Phase 2 皆已完成並 commit**(見下方「已修正的過時資訊」) |
-| `videos.json` | 題庫影片/圖片資料 | 56 筆,46 筆 `reviewStatus: approved`;沒有「允許的長短/落點/速度變體」欄位 |
+| `videos.json` | 題庫影片/圖片資料 | 54 筆(2026-07-15 移除 2 筆已刪除檔案的殘留項目),46 筆 `reviewStatus: approved`;`contact_sidebackspin`/`contact_sidespin` 已依左右側旋拆成 `_left`/`_right` 四個分類(見下方「影片庫左右分類重整」);沒有「允許的長短/落點/速度變體」欄位 |
 | `physics-presets.json` | 發球 preset 資料 | 近期未調整 |
 | `return-studio.html` / `physics-studio.html` | 研究/調參工具頁 | 有 blend、substepped push 等研究機制,不等於 `game4.html` 已部署行為;`return-studio.html` 2026-07-14 同步修復尺度 bug,`physics-studio.html` 尚未修復（無 SIM_TIME_DILATION 定義,優先級低） |
 
@@ -96,6 +96,34 @@
 ### 旋轉方向註記
 
 程式碼中的 topspin 是繞 X 軸角速度。出球方向與來球相反時，正號 canonical topspin = 對方接到的下旋（旋轉方向在絕對坐標上反轉）。切球把 canonical topspin 從負翻正是合格切球的定義行為，不是「產生上旋」。詳見 push_clean_reference_library.md 頂部註記。
+
+## 2026-07-15 影片庫左右側旋分類重整
+
+`images/contact_sidebackspin/`、`images/contact_sidespin/` 依球實際側旋方向拆成 `_left`/`_right` 四個資料夾(`contact_sidebackspin_left`(7)/`_right`(6)、`contact_sidespin_left`(19)/`_right`(5))。`videos.json`(重新推導 `src`/`spinType`,順便修掉幾筆既有的 spinType 跟實際檔案不符的錯誤)、`index.html`/`match-trainer.html` 的 deprecated fallback 陣列、`admin.html`/`review.html` 的分類標籤、`README.md` 分類表格都已同步更新(commit `fb30481`)。`contact_sidebackspin_013.mp4`/`_014.mp4` 已確認為使用者主動刪除,`videos.json` 對應兩筆項目移除,不再指向不存在的檔案。
+
+當天稍早跑的 `auto-contact-tagger` 50 支批次(`prototypes/video-physics-timeline/tools/auto-contact-tagger/batch-out/`)因為資料夾中途被重新分類而在 `contact_sidebackspin_014.mp4` 之後全部失敗(ffmpeg 讀不到舊路徑)。這批輸出沒有修,保留原樣當作歷史紀錄;要重新產生標註要對著新的 `_left`/`_right` 資料夾重跑,不是修這批。
+
+## 2026-07-15 新增 game5.html:技術＋方向判斷重製版(prototype)
+
+> 從 `game4.html` 分叉出來的新互動模型探索,**不是取代 `game4.html`**,紅線檔案本身沒有被動過。目的是重現使用者更早、偏文字化的訓練遊戲第一階段(判斷發球):看影片→看球飛出來→選技術。
+
+### 跟 game4.html 的主要差異
+
+- **按鈕解耦**:原本「反手/正手區 × 3 技術(拉球/攻球/切球)」的分區按鈕,改成兩個完全獨立的維度——技術(切球/平推攻球,即時判定)+ 方向(左/右)。拉球(loop)先拿掉,對應 `OPEN_ITEMS.md` TODO-002,之後要重做。正手/反手改成依球實際落點自動判斷,純鏡頭用(已確認兩者物理完全相同,不是玩家判斷題)。
+- **側旋補償改成固定量模型**:原本 `game4.html` 的 `RETURN_SKILL_LEVEL`(初階/中階/熟練)隨機抽樣補償比例,改成玩家每球主動判斷方向。按對方向 = 固定補償、按錯 = 反向補償、不按 = 不補償。`SIDESPIN_COMPENSATION_C = 3.4`,取 6 顆 `sidebackspin_*` 代表球(`sidebackspin_half_long_backhand` 排除——命名雖是側旋,物理上更接近不夠乾淨的下旋球,已改配下旋類影片)安全交集 `[2.9, 3.8+]` 的中點,跟 `PADDLE_BLEND` 校準方法一致。**這個值只針對切球技術校準過,平推/攻球技術的接觸模型不同(非 substepped),暫時共用同一個常數,還沒有專屬驗證。**
+- **接上方向 C 的影片交接**:重用 `prototypes/video-physics-timeline/direction-c/direction-c-engine.js` 的狀態機跟「影片浮在桌面上方一塊固定區域」的版面慣例。拋球演出動畫拿掉,改成直接播發球影片,播到約 70%(`VIDEO_CONTACT_FRACTION_GUESS`,沒有逐支標註觸球幀時的粗估值)淡出、物理發球同時進場——複刻 C3(驗證過的最佳手感)的做法,但**觸球時間點目前是猜的**,等 `auto-contact-tagger` 補齊全庫真實標註後要換成真值。
+- **發球↔影片配對簡化**(2026-07-15 二次簡化,取代最早一版用求解器算側旋方向的做法):流程反過來,先隨機選影片分類(不轉/下旋/右側下旋,直接套 preset id 前綴,不計算),再從對應分類隨機挑一顆發球+一支影片。**「右側旋」(純側旋,非側下旋)分類目前排除在外**——`physics-presets.json` 完全沒有 `sidespin_*`(純側旋)的 preset,只有 `sidebackspin_*`,等真的有對應 preset 才加回來。**側下旋的左右分類(`sidebackspin_left`/`_right` 影片)是否跟真人影片的真實鏡頭方向一致,還沒有人工肉眼驗證過**——目前的分類邏輯只保證「配到的影片分類」跟「按鍵判定的對錯」內部一致,不保證跟影片實際拍到的方向一致(方向 C 本來的立場就是「介面語意,不是真人軌跡量測」)。
+- **發球選單拿掉**:原本手動選 preset 的下拉選單移除(使用者要求「先把選單拿掉,之後會重新設計」),改成每次「開始發球/下一球」由系統隨機配對。側邊欄(桌面版才顯示)留了「這一球」除錯資訊顯示目前配對結果。
+- **手機優先版面**:預設/開始/下一球一開始放在頂部窄 bar,後來使用者反映伸手不順,改成浮動在畫面下方中央(`serve-controls`,`action-pad` 正上方)。側邊欄(軌跡顯示、速度、難度、自動最佳時機、範圍解模式等校準用控制)手機版整個隱藏,桌面版維持可見。確認過手機視窗高度下不需要捲動即可完整遊玩。
+- **操作按鈕常駐 + 不鎖時間**:按鈕(技術/方向)一開始就常駐畫面,不能按時用灰階呈現(不是消失再彈出);且從發球準備好那一刻就能按,不用等球飛到特定時機點——這是使用者明確要求的簡化(先不鎖時間),不是計時器 bug。過程中修過兩輪回歸:一次是 `playServe()` 自己把 `inputWindowOpen` 重設回 false 把鎖鎖回去,一次是「開始發球」重播同一球時漏了重置按鈕 disabled/highlight 狀態(跟 `prepareServe()` 的重置邏輯沒有共用到)。
+- **影片區塊放大 + 鏡頭上抬**:影片區塊放大約 33%(面積),放大後球桌遠端會被蓋到一截,用 `THREE.Vector3.project()` 實際算過投影位置(不是用眼睛看猜的),加了 `GAME5_LOOKAT_Y_BOOST` 疊加在 game5 自己讀到的 `camera-config.json` lookAt 值上面——只影響這個檔案,`camera-config.json` 本身沒有動,`game4.html` 不受影響。
+
+### 尚未做 / 需要人工確認
+
+- 平推/攻球技術的 `SIDESPIN_COMPENSATION_C` 沒有專屬校準,沿用切球的值。
+- 側旋影片左右分類的鏡頭方向跟按鍵判定方向是否一致,需要使用者實機看影片確認,不對的話是改一個 sign 的事。
+- `auto-contact-tagger` 需要針對新的 `_left`/`_right` 資料夾重新跑批次,而且目前標註覆蓋率不到影片庫的 1/4,`VIDEO_CONTACT_FRACTION_GUESS=0.7` 這個粗估值要等標註補齊才能換真值。
+- `contact_sidespin_left`/`_right`(純側旋影片,19+5 支)完全沒有對應的 preset,是已知缺口,不是這次要解決的範圍。
 
 ## 兩層規則(取代舊的 Gate 0/1/2 審理流程)
 

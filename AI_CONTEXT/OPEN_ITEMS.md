@@ -40,6 +40,13 @@
 - **MVP 主線是否開始實作**:`docs/MVP_MAINLINE_SPEC.md` 已定義窄版可玩迴圈,但每一份舊 checkpoint 都寫「決定是否進入 MVP 主線實作」,目前仍未拍板。
 - **`return-studio.html` 定位**:是否永遠只是研究工具,或哪些機制未來要走正式審查流程進 `game4.html`?
 
+## 2026-07-15 新增(game5.html,現況見 `STATUS.md`)
+
+- **平推/攻球側旋補償常數未校準**:`game5.html` 的 `SIDESPIN_COMPENSATION_C=3.4` 只針對切球技術用 fixed-C-sweep 校準過,平推/攻球技術的接觸模型不同(非 substepped),暫時共用同一個值,還沒有專屬 sweep 驗證是否合適。
+- **側旋影片左右分類的鏡頭方向未經人工驗證**:`contact_sidebackspin_left`/`_right` 影片配對用的是「跟按鍵判定內部一致」的求解器 sign,不是真人影片鏡頭方向的量測——需要使用者實機看過影片確認方向對不對,不對的話是改一個常數的事,不是重新設計。
+- **auto-contact-tagger 需要重跑 + 擴大覆蓋**:2026-07-15 影片庫重新分類後,舊的 `batch-out` 標註結果路徑全部失效;而且現有標註本來就只覆蓋一小部分影片庫。`game5.html` 的影片交接時機點(`VIDEO_CONTACT_FRACTION_GUESS=0.7`)是粗估值,等標註補齊後要換成每支影片的真實觸球時間。
+- **`contact_sidespin_left`/`_right`(純側旋影片,24 支)沒有對應 preset**:`physics-presets.json` 目前只有 `sidebackspin_*`(側下旋),沒有純側旋的 preset,這個影片分類目前排除在 `game5.html` 的隨機配對池之外。
+
 ## 手機版影片→物理支線(現況見 `STATUS.md`)
 
 - **real_backspin_001 的 handoff 落差**:已由 Direction C 重新定框解決——不假造幾何連續,改用「影片層明確退場 + 固定球路入口訓練球」的切鏡語意(見 STATUS.md「已完成的研究支線」)。早期「把 initial_ball_state 改到觸球點」的修正方向已隨幾何連續路線一起放棄。
