@@ -218,6 +218,16 @@
     "contact_time_sec": 1
   },
   {
+    "id": "contact_backspin_010",
+    "src": "images/contact_backspin/contact_backspin_009.mp4",
+    "kind": "video",
+    "spinType": "contact_backspin",
+    "weight": 1,
+    "reviewStatus": "approved",
+    "reviewNote": "",
+    "contact_time_sec": 1.0333333333333334
+  },
+  {
     "id": "contact_backspin_011",
     "src": "images/contact_backspin/contact_backspin_010.mp4",
     "kind": "video",
