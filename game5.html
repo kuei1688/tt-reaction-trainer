@@ -358,13 +358,21 @@ const light = new THREE.DirectionalLight(0xffffff, 0.9);
 light.position.set(2,5,3);
 scene.add(light);
 const camera = new THREE.PerspectiveCamera(48, 1, 0.01, 30);
+// game5 專用：畫面上方疊了影片區塊（見 .video-frame），鏡頭要比 game4 原本的
+// 取景再往上抬一點，把球桌整個往下推，桌子才不會被影片蓋到。跟 game4 共用的
+// camera-config.json 完全不動（那邊沒有這個問題，鏡頭邏輯是各自檔案自己的
+// 副本，不影響 game4），只在這個檔案裡疊加一個固定量。用實機投影算過
+// （THREE.Vector3.project()，不是用眼睛看猜的）：lookAt.y 從 0.5 抬到 0.9，
+// 球桌遠端（對手那側）從畫面 224px 推到 277px，影片區塊底部在 232px，有安全
+// 間距；球桌近端在 438px，離下方常駐按鈕（約 700px 起）還有充足空間。
+const GAME5_LOOKAT_Y_BOOST = 0.5;
 camera.position.set(0, 1.45, 3.25);
-camera.lookAt(0, 0.5, 0.3);
+camera.lookAt(0, 0.5 + GAME5_LOOKAT_Y_BOOST, 0.3);
 
 // ── Camera follow state ────────────────────────────────────────────────────
 const CAM_HOME_POS    = new THREE.Vector3(0, 1.45, 3.25);
 let   CAM_INTERCEPT_Y = 1.45; // 由 camera-config.json 覆蓋
-const CAM_LOOK_AT     = new THREE.Vector3(0, 0.5, 0.3);
+const CAM_LOOK_AT     = new THREE.Vector3(0, 0.5 + GAME5_LOOKAT_Y_BOOST, 0.3);
 let   CAM_CFG         = {}; // camera-config.json 載入後填入
 const camPosTarget    = CAM_HOME_POS.clone();
 const camLookTarget   = CAM_LOOK_AT.clone();
@@ -456,7 +464,9 @@ function applyCamConfig(){
   CAM_INTERCEPT_Y = CAM_CFG.height ?? CAM_INTERCEPT_Y;
   CAM_HOME_POS.setY(CAM_INTERCEPT_Y);
   if(CAM_CFG.lookAt){
-    CAM_LOOK_AT.set(CAM_CFG.lookAt.x ?? 0, CAM_CFG.lookAt.y ?? 0.5, CAM_CFG.lookAt.z ?? 0.3);
+    // GAME5_LOOKAT_Y_BOOST 疊加在共用設定值上面，不是取代它——camera-config.json
+    // 本身完全不改，game4 讀到的還是原始值。
+    CAM_LOOK_AT.set(CAM_CFG.lookAt.x ?? 0, (CAM_CFG.lookAt.y ?? 0.5) + GAME5_LOOKAT_Y_BOOST, CAM_CFG.lookAt.z ?? 0.3);
   }
   camera.position.y = CAM_INTERCEPT_Y;
   camera.lookAt(CAM_LOOK_AT);
@@ -1215,7 +1225,10 @@ function playServe(){
   document.activeElement?.blur?.();
   resize();
   pendingReturn = null;
-  inputWindowOpen = false;
+  // 不鎖時間：inputWindowOpen 維持 true（prepareServe() 已經設好），這裡不能
+  // 再重設回 false，不然按鈕會在按下「開始發球」的瞬間又變回沒反應，直到球飛到
+  // returnAppearIndex 才被 openReturnInput() 重新打開——正是這次要拿掉的鎖。
+  inputWindowOpen = true;
   missResolved = false;
   setPhase('serve');
   document.getElementById('resultText').textContent = '準備中';
