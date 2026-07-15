@@ -55,7 +55,7 @@
 
 | 分類 | 內容 | 副檔名 |
 |------|------|--------|
-| `contact_sidebackspin` / `contact_backspin` / `contact_sidespin` / `contact_nospin` | 觸球瞬間 | `.jpg` ＋ `.mp4` |
+| `contact_sidebackspin_left` / `contact_sidebackspin_right` / `contact_backspin` / `contact_sidespin_left` / `contact_sidespin_right` / `contact_nospin` | 觸球瞬間（側旋依左/右分開，2026-07-15） | `.jpg` ＋ `.mp4` |
 | `backswing_low` / `backswing_mid` / `backswing_high` | 引拍動作 | `.jpg` |
 | `techniques` | 技術圖示（`attack.png`、`cut.png`，已具描述性名稱，不加編號） | `.png` |
 
