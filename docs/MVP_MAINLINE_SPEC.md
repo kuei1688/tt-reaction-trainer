@@ -3,6 +3,8 @@
 > This file is a draft for the MVP mainline only.
 > It is not a full physics spec, not a roadmap, not a TODO list, and not a commitment that the work is already done.
 > The purpose is to define a narrow playable loop that can coexist with research tools without turning into a full match simulation.
+>
+> **Status (accepted 2026-07-15):** `game5.html` is the implementation of this mainline direction — a user decision, not something derived from code alone (see `AI_CONTEXT/OPEN_ITEMS.md` "產品方向決策"). Known physics/data gaps still remain open (attack-technique sidespin compensation not calibrated, left/right sidespin video camera direction not human-verified, no `sidespin_*` presets exist yet) — accepting the direction does not mean this spec is fully realized.
 
 ## 1. Mainline Goal
 

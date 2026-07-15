@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-TW" translate="no" class="notranslate">
 <head>
 <meta charset="UTF-8">
@@ -1724,20 +1724,39 @@ async function loadVideoLibrary(){
   });
   videoLibrary = byCategory;
 }
-// 2026-07-15 簡化：影片分類 -> 發球 preset 直接套分類名稱對應，不再用求解器算
-// 側旋方向 sign。目前只有「不轉/下旋/右側下旋」三種分類池（「右側旋」暫時排除——
-// 只有 sidebackspin_* 這批側下旋 preset，沒有純側旋 sidespin_* 的 preset，等真的
-// 有了再加回來）。流程反過來：先隨機選影片分類，再從對應分類的 preset 裡隨機挑一個
-// （不再是「選 preset 決定影片」，發球 preset 下拉選單已拿掉，之後會重新設計）。
-const VIDEO_CATEGORY_POOL = ['contact_nospin', 'contact_backspin', 'contact_sidebackspin_right'];
+// 2026-07-15：影片分類 → 發球 preset 自動對應。
+// 先用 tags.videoCategory 直接配對（serve-generator.html 產生的 preset 都帶這欄），
+// 沒帶 videoCategory 的舊 preset 走 legacy fallback。VIDEO_CATEGORY_POOL 改成從
+// videoLibrary 動態偵測——任何新分類只要有影片又有 preset 就自動加入練習池。
 function presetsForVideoCategory(category){
+  const direct = presets.filter(p => p.tags && p.tags.videoCategory === category);
+  if(direct.length) return direct;
+  // legacy fallback（舊 preset 沒有 videoCategory tag）
   if(category === 'contact_nospin') return presets.filter(p => p.id.startsWith('no_spin_'));
   if(category === 'contact_backspin') return presets.filter(p => p.id.startsWith('backspin_') || p.id === 'sidebackspin_half_long_backhand');
   if(category === 'contact_sidebackspin_right') return presets.filter(p => p.id.startsWith('sidebackspin_') && p.id !== 'sidebackspin_half_long_backhand');
   return [];
 }
 function pickRoundForNextServe(){
-  const validCategories = VIDEO_CATEGORY_POOL.filter(cat => (videoLibrary[cat]?.length) && presetsForVideoCategory(cat).length);
+  // 新：videoId 1:1 配對 — 每支影片有專屬發球 preset（tags.videoId）
+  const presetByVideoId = {};
+  presets.forEach(p => { if(p.tags && p.tags.videoId) presetByVideoId[p.tags.videoId] = p; });
+  if(Object.keys(presetByVideoId).length > 0){
+    const validVideos = [];
+    for(const cat of Object.keys(videoLibrary)){
+      for(const video of (videoLibrary[cat] || [])){
+        const preset = presetByVideoId[video.id];
+        if(preset) validVideos.push({preset, video});
+      }
+    }
+    if(validVideos.length){
+      const pick = validVideos[Math.floor(Math.random() * validVideos.length)];
+      return {preset: pick.preset, video: pick.video};
+    }
+  }
+  // Legacy fallback：沒有 videoId tag 的舊 preset，走分類隨機配對
+  const validCategories = Object.keys(videoLibrary).filter(cat =>
+    (videoLibrary[cat]?.length) && presetsForVideoCategory(cat).length);
   if(!validCategories.length) return null;
   const category = validCategories[Math.floor(Math.random() * validCategories.length)];
   const presetPool = presetsForVideoCategory(category);

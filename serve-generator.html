@@ -1,0 +1,476 @@
+﻿<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>發球產生器 — 影片分類 → 發球 preset</title>
+<style>
+:root{
+  --bg:#0d1117;--surface:#161b22;--surface2:#21262d;--border:#30363d;
+  --green:#3fb950;--yellow:#d29922;--red:#f85149;--blue:#58a6ff;
+  --text:#e6edf3;--muted:#8b949e;--radius:12px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","Segoe UI",sans-serif;padding:18px;min-height:100vh}
+h1{font-size:22px;font-weight:900;margin-bottom:4px}
+.subtitle{font-size:13px;color:var(--muted);margin-bottom:20px;line-height:1.6}
+.layout{display:grid;grid-template-columns:340px 1fr;gap:16px;align-items:start;max-width:1200px}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.panel h2{font-size:14px;padding:12px 14px;border-bottom:1px solid var(--border);color:var(--yellow)}
+.list{max-height:78vh;overflow:auto;padding:8px}
+.cat-group{margin-bottom:8px}
+.cat-header{display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;cursor:pointer;font-size:13px;font-weight:700}
+.cat-header:hover{border-color:var(--blue)}
+.cat-header.active{border-color:var(--blue);background:rgba(88,166,255,0.1)}
+.cat-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.cat-count{margin-left:auto;font-size:11px;color:var(--muted);font-weight:400}
+.cat-serves{padding:4px 0 4px 24px}
+.serve-item{padding:7px 10px;border:1px solid var(--border);border-radius:6px;margin-bottom:4px;cursor:pointer;font-size:12px;background:var(--surface)}
+.serve-item:hover{border-color:var(--blue)}
+.serve-item.active{border-color:var(--green);background:rgba(63,185,80,0.08)}
+.serve-item .serve-label{font-weight:700}
+.serve-item .serve-meta{color:var(--muted);font-size:11px;margin-top:2px}
+.preview-area{padding:16px}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+.btn{padding:12px 20px;border:1px solid var(--border);background:var(--surface2);color:var(--text);border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit}
+.btn:hover{border-color:var(--blue)}
+.btn.primary{background:var(--green);color:#0d1117;border-color:var(--green)}
+.btn.blue{background:var(--blue);color:#0d1117;border-color:var(--blue)}
+.btn:disabled{opacity:0.4;cursor:default}
+.preview-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.serve-card{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px}
+.serve-card h3{font-size:14px;margin-bottom:8px}
+.spin-badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700;margin-right:4px}
+.svg-wrap{display:flex;justify-content:center;margin:8px 0}
+.serve-detail{font-size:12px;color:var(--muted);line-height:1.7;font-family:monospace}
+.serve-detail b{color:var(--text)}
+.status-bar{padding:10px 14px;border-top:1px solid var(--border);font-size:12px;color:var(--muted)}
+.status-bar .ok{color:var(--green)}
+.code-block{background:#0f141c;border:1px solid var(--border);border-radius:8px;padding:14px;font-family:monospace;font-size:12px;color:var(--text);overflow:auto;max-height:300px;white-space:pre;line-height:1.5}
+.section-title{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin:20px 0 8px}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);display:none;align-items:center;justify-content:center;z-index:100}
+.modal-overlay.show{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px;max-width:600px;width:90%;max-height:80vh;overflow:auto}
+.modal h2{font-size:18px;margin-bottom:12px}
+.modal p{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:16px}
+.modal .btn{margin-top:8px}
+@media(max-width:820px){
+  .layout{grid-template-columns:1fr}
+  .preview-grid{grid-template-columns:1fr}
+  .list{max-height:40vh}
+}
+</style>
+</head>
+<body>
+<h1>發球產生器</h1>
+<div class="subtitle">
+  讀取 videos.json 的影片分類，自動產生對應的發球 preset。<br>
+  旋轉強弱參考現有 physics-presets.json 的設定，發球位置依旋轉方向決定。<br>
+  產出的 JSON 直接覆蓋 physics-presets.json 即可在 Game 5 使用。
+</div>
+<div class="layout">
+  <div class="panel">
+    <h2>影片分類 → 發球</h2>
+    <div class="list" id="catList"><div style="padding:20px;color:var(--muted);font-size:13px">載入中...</div></div>
+    <div class="status-bar" id="statusBar"></div>
+  </div>
+  <div class="preview-area">
+    <div class="toolbar">
+      <button class="btn primary" id="downloadBtn" disabled>下載 physics-presets.json</button>
+      <button class="btn" id="showJsonBtn" disabled>預覽 JSON</button>
+      <button class="btn" id="regenerateBtn" disabled>重新產生</button>
+<label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;user-select:none"><input type="checkbox" id="replaceMode" checked>只保留新發球（清掉舊 preset）</label>
+    <div id="previewContent"><div style="color:var(--muted);font-size:14px;padding:40px;text-align:center">載入影片分類後，點左邊分類查看產生的發球。</div></div>
+    <div class="section-title">Game 5 自動對應（已內建，不需手動貼）</div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:8px">game5.html 已改成自動偵測，任何帶有 tags.videoCategory 的 preset 都會自動配對到對應影片分類。</div>
+  </div>
+</div>
+<div class="modal-overlay" id="jsonModal">
+  <div class="modal">
+    <h2>physics-presets.json 預覽</h2>
+    <p>合併後的完整 JSON（現有 preset + 新產生的）。按下方下載存檔後覆蓋原本的 physics-presets.json。</p>
+    <div class="code-block" id="jsonPreview"></div>
+    <button class="btn primary" onclick="downloadJson()">下載</button>
+    <button class="btn" onclick="document.getElementById('jsonModal').classList.remove('show')">關閉</button>
+  </div>
+</div>
+<script>
+// ═══ 旋轉強弱參考值（從現有 physics-presets.json 提取）═══
+const SPIN_REF = {
+  backspin: -125.66,
+  sidespin: -125.66,
+  sidespinStrong: -150.8
+};
+
+// ═══ 影片分類 → 發球規則 ═══
+// 負 sidespin = 向右彎，正 sidespin = 向左彎
+const CATEGORY_RULES = {
+  contact_nospin: {
+    spinType: "no_spin", label: "不轉", color: "#3fb950",
+    topspin: 0, sidespin: 0,
+    positions: ["forehand", "backhand"], lengths: ["long", "short"]
+  },
+  contact_backspin: {
+    spinType: "backspin", label: "下旋", color: "#58a6ff",
+    topspin: SPIN_REF.backspin, sidespin: 0,
+    positions: ["forehand", "backhand"], lengths: ["long", "short"]
+  },
+  contact_sidebackspin_right: {
+    spinType: "sidebackspin", label: "右側下旋", color: "#d29922",
+    topspin: SPIN_REF.backspin, sidespin: SPIN_REF.sidespin,
+    positions: ["backhand"], lengths: ["long", "short"]
+  },
+  contact_sidebackspin_left: {
+    spinType: "sidebackspin", label: "左側下旋", color: "#d29922",
+    topspin: SPIN_REF.backspin, sidespin: -SPIN_REF.sidespin,
+    positions: ["forehand"], lengths: ["long", "short"]
+  },
+  contact_sidespin_right: {
+    spinType: "sidespin", label: "右側旋", color: "#bc8cff",
+    topspin: 0, sidespin: SPIN_REF.sidespin,
+    positions: ["backhand"], lengths: ["long", "short"]
+  },
+  contact_sidespin_left: {
+    spinType: "sidespin", label: "左側旋", color: "#bc8cff",
+    topspin: 0, sidespin: -SPIN_REF.sidespin,
+    positions: ["forehand"], lengths: ["long", "short"]
+  }
+};
+
+// ═══ 位置模板（從現有 preset 提取的安全落點）═══
+const POSITION_TEMPLATES = {
+  long_forehand: {
+    start:        {x:  0.32, y: 0.95, z: -1.52},
+    firstBounce:  {x:  0.36, y: 0.78, z: -0.89},
+    secondBounce: {x:  0.55, y: 0.78, z:  1.17}
+  },
+  long_backhand: {
+    start:        {x:  0.57, y: 0.91, z: -1.52},
+    firstBounce:  {x:  0.62, y: 0.78, z: -1.19},
+    secondBounce: {x: -0.65, y: 0.78, z:  1.25}
+  },
+  short_forehand: {
+    start:        {x:  0.17, y: 0.95, z: -1.52},
+    firstBounce:  {x:  0.14, y: 0.78, z: -0.45},
+    secondBounce: {x:  0.48, y: 0.78, z:  0.54}
+  },
+  short_backhand: {
+    start:        {x:  0.58, y: 0.95, z: -1.52},
+    firstBounce:  {x:  0.14, y: 0.78, z: -0.60},
+    secondBounce: {x: -0.40, y: 0.78, z:  0.54}
+  }
+};
+
+const TABLE = {length: 2.74, width: 1.525, height: 0.76, top: 0.781, net: 0.1525};
+
+// ═══ 狀態 ═══
+let videoList = [];
+let videoCategories = [];
+let existingPresets = [];
+let generatedServes = [];
+let mergedJson = null;
+let selectedCategory = null;
+let selectedServe = null;
+
+// ═══ 載入資料 ═══
+async function init(){
+  try {
+    const [videosRes, presetsRes] = await Promise.all([
+      fetch("videos.json?v=" + Date.now()),
+      fetch("physics-presets.json?v=" + Date.now())
+    ]);
+    if(!videosRes.ok) throw new Error("videos.json 載入失敗");
+    if(!presetsRes.ok) throw new Error("physics-presets.json 載入失敗");
+    const videos = await videosRes.json();
+    const presetsData = await presetsRes.json();
+    existingPresets = presetsData.serves || [];
+    videoList = videos.filter(v => v.kind === "video" && v.reviewStatus === "approved");
+    const catSet = new Set();
+    videoList.forEach(v => catSet.add(v.spinType));
+    videoCategories = [...catSet].sort();
+    generateAllServes();
+    renderCategoryList();
+    updateStatus();
+    document.getElementById("downloadBtn").disabled = false;
+    document.getElementById("showJsonBtn").disabled = false;
+    document.getElementById("regenerateBtn").disabled = false;
+  } catch(err) {
+    document.getElementById("catList").innerHTML =
+      '<div style="padding:20px;color:var(--red);font-size:13px">' + err.message + "</div>";
+    console.error(err);
+  }
+}
+
+// ═══ 產生發球 — 每支影片一個專屬發球 ═══
+function generateAllServes(){
+  generatedServes = [];
+  const catIndex = {};
+  for(const video of videoList){
+    const rule = CATEGORY_RULES[video.spinType];
+    if(!rule) continue;
+    const idx = catIndex[video.spinType] = (catIndex[video.spinType] || 0);
+    catIndex[video.spinType]++;
+    generatedServes.push(generateServe(video, rule, idx));
+  }
+}
+
+function generateServe(video, rule, indexInCategory){
+  // 該分類可用的模板（位置 x 長度），用 indexInCategory 循環給每支影片不同的變化
+  const templates = [];
+  for(const placement of rule.positions){
+    for(const length of rule.lengths){
+      templates.push({placement, length, key: length + "_" + placement});
+    }
+  }
+  const tplInfo = templates[indexInCategory % templates.length];
+  const template = POSITION_TEMPLATES[tplInfo.key];
+  const isLeftCurving = rule.sidespin > 0;
+  const start = {x: template.start.x, y: template.start.y, z: template.start.z};
+  const firstBounce = {x: template.firstBounce.x, y: template.firstBounce.y, z: template.firstBounce.z};
+  const secondBounce = {x: template.secondBounce.x, y: template.secondBounce.y, z: template.secondBounce.z};
+  if(isLeftCurving){
+    start.x = -start.x;
+    firstBounce.x = -firstBounce.x;
+    secondBounce.x = -secondBounce.x;
+  }
+  let sidespin = rule.sidespin;
+  if(tplInfo.length === "short" && rule.spinType.includes("side")){
+    sidespin = Math.sign(sidespin) * Math.abs(SPIN_REF.sidespinStrong);
+  }
+  const id = "serve_" + video.id;
+  const lengthLabel = {long: "長", short: "短", half_long: "半長"}[tplInfo.length] || tplInfo.length;
+  const placementLabel = {forehand: "正手", backhand: "反手"}[tplInfo.placement] || tplInfo.placement;
+  const label = rule.label + lengthLabel + "球" + placementLabel + " ← " + video.id;
+  return {
+    id, label, type: "serve", mode: "cheat_solve",
+    tags: {spinType: rule.spinType, length: tplInfo.length, placement: tplInfo.placement,
+           videoCategory: video.spinType, videoId: video.id},
+    tagLabels: {spinType: rule.label, length: lengthLabel, placement: placementLabel},
+    start,
+    serveLine: {height: start.y, baselineOffset: 0.15, lateralOffset: 0},
+    firstBounce, secondBounce,
+    target: {x: secondBounce.x, y: secondBounce.y, z: secondBounce.z},
+    solve: {targetMode: "serve_bounces", flightTime: 0.74, secondLegTime: 0.74,
+            netClearance: 0.03, gravity: -4.2, timeToFirst: 0.74},
+    variation: {velocity: {x:0, y:0, z:0}, spin: {topspin: rule.topspin, sidespin}, bounce: 0.88}
+  };
+}
+
+// ═══ 合併 JSON ═══
+function buildMergedJson(){
+  const replaceMode = document.getElementById("replaceMode") && document.getElementById("replaceMode").checked;
+  if(replaceMode){
+    return {version: 1, serves: generatedServes.slice()};
+  }
+  const existingIds = new Set(existingPresets.map(p => p.id));
+  const newServes = generatedServes.filter(s => !existingIds.has(s.id));
+  const tagged = existingPresets.map(p => {
+    if(p.tags && p.tags.videoCategory) return p;
+    const videoCat = guessVideoCategory(p);
+    if(videoCat) return Object.assign({}, p, {tags: Object.assign({}, p.tags, {videoCategory: videoCat})});
+    return p;
+  });
+  return {version: 1, serves: [...tagged, ...newServes]};
+}
+
+function guessVideoCategory(preset){
+  const id = preset.id || "";
+  const spin = (preset.tags && preset.tags.spinType) || preset.spinType || "";
+  if(spin === "no_spin" || id.startsWith("no_spin_")) return "contact_nospin";
+  if(spin === "backspin" || id.startsWith("backspin_")) return "contact_backspin";
+  if(spin === "sidebackspin" || id.startsWith("sidebackspin_")) return "contact_sidebackspin_right";
+  return null;
+}
+// ═══ 渲染 ═══
+function renderCategoryList(){
+  const list = document.getElementById("catList");
+  const html = videoCategories.map(cat => {
+    const rule = CATEGORY_RULES[cat];
+    if(!rule) return "";
+    const serves = generatedServes.filter(s => s.tags.videoCategory === cat);
+    const serveItems = serves.map(s =>
+      '<div class="serve-item' + (selectedServe === s.id ? " active" : "") + '" onclick="selectServe(\'' + cat + "','" + s.id + "')\">"
+      + '<div class="serve-label">' + s.label + "</div>"
+      + '<div class="serve-meta">影片: ' + (s.tags.videoId || "?") + " | topspin=" + s.variation.spin.topspin + " sidespin=" + s.variation.spin.sidespin + "</div></div>"
+    ).join("");
+    return '<div class="cat-group">'
+      + '<div class="cat-header' + (selectedCategory === cat ? " active" : "") + '" onclick="selectCategory(\'' + cat + "')\">"
+      + '<div class="cat-dot" style="background:' + rule.color + '"></div>'
+      + "<span>" + rule.label + "</span>"
+      + '<span class="cat-count">' + serves.length + " 球</span></div>"
+      + (selectedCategory === cat ? '<div class="cat-serves">' + serveItems + "</div>" : "")
+      + "</div>";
+  }).join("");
+  list.innerHTML = html || '<div style="padding:20px;color:var(--muted)">沒有可用的影片分類</div>';
+}
+function selectCategory(cat){
+  selectedCategory = cat;
+  selectedServe = null;
+  renderCategoryList();
+  renderPreview();
+}
+
+function selectServe(cat, serveId){
+  selectedCategory = cat;
+  selectedServe = serveId;
+  renderCategoryList();
+  renderPreview();
+}
+
+function renderPreview(){
+  const content = document.getElementById("previewContent");
+  const rule = selectedCategory ? CATEGORY_RULES[selectedCategory] : null;
+  if(!rule){
+    content.innerHTML = '<div style="color:var(--muted);font-size:14px;padding:40px;text-align:center">點左邊分類查看產生的發球預覽。</div>';
+    return;
+  }
+  const serves = generatedServes.filter(s => s.tags.videoCategory === selectedCategory);
+  if(selectedServe){
+    const serve = serves.find(s => s.id === selectedServe);
+    content.innerHTML = renderSingleServe(serve, rule);
+  } else {
+    content.innerHTML = '<div style="margin-bottom:12px">'
+      + '<span class="spin-badge" style="background:' + rule.color + "22;color:" + rule.color + '">' + rule.label + "</span>"
+      + '<span style="font-size:13px;color:var(--muted)">' + selectedCategory + " — " + serves.length + " 個發球</span></div>"
+      + '<div class="preview-grid">' + serves.map(s => renderServeCard(s, rule)).join("") + "</div>";
+  }
+}
+
+function renderServeCard(serve, rule){
+  return '<div class="serve-card" onclick="selectServe(\'' + serve.tags.videoCategory + "','" + serve.id + '\')" style="cursor:pointer">'
+    + "<h3>" + serve.label + "</h3>"
+    + renderTableSVG(serve)
+    + '<div class="serve-detail">'
+    + '<span class="spin-badge" style="background:' + rule.color + "22;color:" + rule.color + '">' + rule.label + "</span>"
+    + "<b>topspin</b>=" + serve.variation.spin.topspin + " <b>sidespin</b>=" + serve.variation.spin.sidespin + "<br>"
+    + "<b>起點</b> x=" + serve.start.x.toFixed(2) + " z=" + serve.start.z + "<br>"
+    + "<b>第一跳</b> x=" + serve.firstBounce.x.toFixed(2) + " z=" + serve.firstBounce.z + "<br>"
+    + "<b>第二跳</b> x=" + serve.secondBounce.x.toFixed(2) + " z=" + serve.secondBounce.z
+    + "</div></div>";
+}
+
+function renderSingleServe(serve, rule){
+  return '<div style="margin-bottom:12px">'
+    + '<span class="spin-badge" style="background:' + rule.color + "22;color:" + rule.color + '">' + rule.label + "</span>"
+    + '<span style="font-size:16px;font-weight:900">' + serve.label + "</span>"
+    + '<span style="font-size:12px;color:var(--muted);margin-left:8px">' + serve.id + "</span></div>"
+    + '<div class="serve-card" style="max-width:420px">'
+    + renderTableSVG(serve, true)
+    + '<div class="serve-detail" style="font-size:13px;margin-top:12px">'
+    + "<b>id</b>: " + serve.id + "<br>"
+    + "<b>spinType</b>: " + serve.tags.spinType + "<br>"
+    + "<b>videoCategory</b>: " + serve.tags.videoCategory + "<br>"
+    + "<b>length</b>: " + serve.tags.length + " / <b>placement</b>: " + serve.tags.placement + "<br>"
+    + "<b>topspin</b>: " + serve.variation.spin.topspin + " rad/s<br>"
+    + "<b>sidespin</b>: " + serve.variation.spin.sidespin + " rad/s<br>"
+    + "<b>起點</b>: x=" + serve.start.x.toFixed(3) + " y=" + serve.start.y + " z=" + serve.start.z + "<br>"
+    + "<b>第一跳</b>: x=" + serve.firstBounce.x.toFixed(2) + " z=" + serve.firstBounce.z + "<br>"
+    + "<b>第二跳</b>: x=" + serve.secondBounce.x.toFixed(2) + " z=" + serve.secondBounce.z + "<br>"
+    + "<b>netClearance</b>: " + serve.solve.netClearance + " / <b>flightTime</b>: " + serve.solve.flightTime + "s"
+    + "</div></div>";
+}
+
+// ═══ 桌面俯視圖 SVG ═══
+function renderTableSVG(serve, large){
+  const w = large ? 380 : 240;
+  const h = large ? 560 : 360;
+  const margin = 30;
+  const tableW = TABLE.width;
+  const tableL = TABLE.length;
+  const totalZ = tableL + 0.30;
+  const scale = Math.min((w - margin * 2) / tableW, (h - margin * 2) / totalZ);
+  const ox = w / 2;
+  const oz = margin;
+  function tx(x){ return ox + x * scale; }
+  function tz(z){ return oz + (z + tableL / 2 + 0.15) * scale; }
+  const tw = tableW * scale;
+  const tl = tableL * scale;
+  const tableX = ox - tw / 2;
+  const tableY = tz(-tableL / 2);
+  const netY = tz(0);
+  const rule = CATEGORY_RULES[serve.tags.videoCategory];
+  const spinColor = rule ? rule.color : "#58a6ff";
+  const arrowDir = serve.variation.spin.sidespin > 0 ? "left" :
+                   serve.variation.spin.sidespin < 0 ? "right" : "none";
+  const midX = tx((serve.firstBounce.x + serve.secondBounce.x) / 2);
+  const midZ = tz((serve.firstBounce.z + serve.secondBounce.z) / 2);
+  let arrowSvg = "";
+  if(arrowDir === "left"){
+    arrowSvg = '<path d="M ' + (midX+12) + " " + (midZ-2) + " Q " + (midX+2) + " " + (midZ-14) + " " + (midX-12) + " " + (midZ-2) + '" fill="none" stroke="' + spinColor + '" stroke-width="1.5" opacity="0.5"/>';
+  } else if(arrowDir === "right"){
+    arrowSvg = '<path d="M ' + (midX-12) + " " + (midZ-2) + " Q " + (midX-2) + " " + (midZ-14) + " " + (midX+12) + " " + (midZ-2) + '" fill="none" stroke="' + spinColor + '" stroke-width="1.5" opacity="0.5"/>';
+  }
+  return '<div class="svg-wrap"><svg width="' + w + '" height="' + h + '" viewBox="0 0 ' + w + " " + h + '" style="max-width:100%">'
+    + '<rect x="' + tableX + '" y="' + tableY + '" width="' + tw + '" height="' + tl + '" fill="#1a3a2a" stroke="#3fb950" stroke-width="2" rx="3"/>'
+    + '<line x1="' + ox + '" y1="' + tableY + '" x2="' + ox + '" y2="' + (tableY + tl) + '" stroke="#ffffff" stroke-width="1" opacity="0.3"/>'
+    + '<line x1="' + tableX + '" y1="' + netY + '" x2="' + (tableX + tw) + '" y2="' + netY + '" stroke="#aaaaaa" stroke-width="3" opacity="0.6"/>'
+    + '<text x="' + ox + '" y="' + (tableY - 6) + '" text-anchor="middle" font-size="9" fill="#8b949e">發球端</text>'
+    + '<text x="' + ox + '" y="' + (tableY + tl + 14) + '" text-anchor="middle" font-size="9" fill="#8b949e">接發端</text>'
+    + '<line x1="' + tx(serve.start.x) + '" y1="' + tz(serve.start.z) + '" x2="' + tx(serve.firstBounce.x) + '" y2="' + tz(serve.firstBounce.z) + '" stroke="' + spinColor + '" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.6"/>'
+    + '<line x1="' + tx(serve.firstBounce.x) + '" y1="' + tz(serve.firstBounce.z) + '" x2="' + tx(serve.secondBounce.x) + '" y2="' + tz(serve.secondBounce.z) + '" stroke="' + spinColor + '" stroke-width="2" opacity="0.8"/>'
+    + arrowSvg
+    + '<circle cx="' + tx(serve.start.x) + '" cy="' + tz(serve.start.z) + '" r="6" fill="' + spinColor + '" opacity="0.9"/>'
+    + '<text x="' + tx(serve.start.x) + '" y="' + (tz(serve.start.z) - 9) + '" text-anchor="middle" font-size="9" fill="' + spinColor + '">站</text>'
+    + '<circle cx="' + tx(serve.firstBounce.x) + '" cy="' + tz(serve.firstBounce.z) + '" r="4" fill="#ffd84d" stroke="#0d1117" stroke-width="1"/>'
+    + '<text x="' + (tx(serve.firstBounce.x) + 7) + '" y="' + (tz(serve.firstBounce.z) + 3) + '" font-size="8" fill="#ffd84d">1</text>'
+    + '<circle cx="' + tx(serve.secondBounce.x) + '" cy="' + tz(serve.secondBounce.z) + '" r="4" fill="#f85149" stroke="#0d1117" stroke-width="1"/>'
+    + '<text x="' + (tx(serve.secondBounce.x) + 7) + '" y="' + (tz(serve.secondBounce.z) + 3) + '" font-size="8" fill="#f85149">2</text>'
+    + "</svg></div>";
+}
+
+// ═══ 下載 & 預覽 ═══
+function updateStatus(){
+  const bar = document.getElementById("statusBar");
+  const replaceMode = document.getElementById("replaceMode") && document.getElementById("replaceMode").checked;
+  const cats = videoCategories.filter(c => CATEGORY_RULES[c]).length;
+  if(replaceMode){
+    bar.innerHTML = '<span class="ok">影片分類：' + cats + "</span> · "
+      + '<span class="ok">每影片一發球：' + generatedServes.length + "</span> · "
+      + '<span class="ok">舊 preset 已排除</span>';
+  } else {
+    const newCount = generatedServes.filter(s => !existingPresets.some(e => e.id === s.id)).length;
+    bar.innerHTML = '<span class="ok">影片分類：' + cats + "</span> · "
+      + "現有 preset：" + existingPresets.length + " · "
+      + '<span class="ok">新產生：' + newCount + "</span> · "
+      + "合併後共：" + (existingPresets.length + newCount);
+  }
+}
+
+function showJsonPreview(){
+  mergedJson = buildMergedJson();
+  document.getElementById("jsonPreview").textContent = JSON.stringify(mergedJson, null, 2);
+  document.getElementById("jsonModal").classList.add("show");
+}
+
+function downloadJson(){
+  if(!mergedJson) mergedJson = buildMergedJson();
+  const text = JSON.stringify(mergedJson, null, 2);
+  const blob = new Blob([text], {type: "application/json"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "physics-presets.json";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+// ═══ 事件 ═══
+document.getElementById("downloadBtn").addEventListener("click", downloadJson);
+document.getElementById("showJsonBtn").addEventListener("click", showJsonPreview);
+document.getElementById("regenerateBtn").addEventListener("click", function(){
+  generateAllServes();
+  renderCategoryList();
+  renderPreview();
+  updateStatus();
+});
+document.getElementById("replaceMode").addEventListener("change", function(){
+  mergedJson = null;
+  updateStatus();
+});
+
+init();
+</script>
+</body>
+</html>
