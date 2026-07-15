@@ -15,7 +15,8 @@
     "spinType": "contact_sidebackspin_right",
     "weight": 1,
     "reviewStatus": "approved",
-    "reviewNote": ""
+    "reviewNote": "",
+    "contact_time_sec": 1.2333333333333334
   },
   {
     "id": "contact_sidebackspin_003",
@@ -24,7 +25,8 @@
     "spinType": "contact_sidebackspin_right",
     "weight": 1,
     "reviewStatus": "approved",
-    "reviewNote": ""
+    "reviewNote": "",
+    "contact_time_sec": 1.1666666666666667
   },
   {
     "id": "contact_sidebackspin_004",
@@ -33,7 +35,8 @@
     "spinType": "contact_sidebackspin_left",
     "weight": 1,
     "reviewStatus": "approved",
-    "reviewNote": ""
+    "reviewNote": "",
+    "contact_time_sec": 0.5166666666666667
   },
   {
     "id": "contact_sidebackspin_005",
@@ -42,7 +45,8 @@
     "spinType": "contact_sidebackspin_left",
     "weight": 1,
     "reviewStatus": "approved",
-    "reviewNote": ""
+    "reviewNote": "",
+    "contact_time_sec": 1.15
   },
   {
     "id": "contact_sidebackspin_006",
@@ -51,7 +55,8 @@
     "spinType": "contact_sidebackspin_left",
     "weight": 1,
     "reviewStatus": "approved",
-    "reviewNote": ""
+    "reviewNote": "",
+    "contact_time_sec": 0.5
   },
   {
     "id": "contact_sidebackspin_007",
@@ -60,7 +65,8 @@
     "spinType": "contact_sidebackspin_right",
     "weight": 1,
     "reviewStatus": "approved",
-    "reviewNote": ""
+    "reviewNote": "",
+    "contact_time_sec": 1.5
   },
   {
     "id": "contact_sidebackspin_008",
@@ -69,7 +75,8 @@
     "spinType": "contact_sidebackspin_right",
     "weight": 1,
     "reviewStatus": "approved",
-    "reviewNote": ""
+    "reviewNote": "",
+    "contact_time_sec": 1.3666666666666667
   },
   {
     "id": "contact_sidebackspin_009",
@@ -78,7 +85,8 @@
     "spinType": "contact_sidebackspin_right",
     "weight": 1,
     "reviewStatus": "approved",
-    "reviewNote": ""
+    "reviewNote": "",
+    "contact_time_sec": 0.5666666666666667
   },
   {
     "id": "contact_sidebackspin_010",
@@ -87,7 +95,8 @@
     "spinType": "contact_sidebackspin_right",
     "weight": 1,
     "reviewStatus": "approved",
-    "reviewNote": ""
+    "reviewNote": "",
+    "contact_time_sec": 0.5
   },
   {
     "id": "contact_sidebackspin_011",
@@ -96,7 +105,8 @@
     "spinType": "contact_sidebackspin_left",
     "weight": 1,
     "reviewStatus": "approved",
-    "reviewNote": ""
+    "reviewNote": "",
+    "contact_time_sec": 0.9
   },
   {
     "id": "contact_sidebackspin_012",
@@ -105,7 +115,8 @@
     "spinType": "contact_sidebackspin_left",
     "weight": 1,
     "reviewStatus": "approved",
-    "reviewNote": ""
+    "reviewNote": "",
+    "contact_time_sec": 0.8666666666666667
   },
   {
     "id": "contact_sidebackspin_013",
@@ -114,7 +125,8 @@
     "spinType": "contact_sidebackspin_left",
     "weight": 1,
     "reviewStatus": "approved",
-    "reviewNote": ""
+    "reviewNote": "",
+    "contact_time_sec": 1.0333333333333334
   },
   {
     "id": "contact_backspin_001",
@@ -132,7 +144,8 @@
     "spinType": "contact_backspin",
     "weight": 1,
     "reviewStatus": "approved",
-    "reviewNote": ""
+    "reviewNote": "",
+    "contact_time_sec": 4.25
   },
   {
     "id": "contact_backspin_003",
@@ -141,7 +154,8 @@
     "spinType": "contact_backspin",
     "weight": 1,
     "reviewStatus": "approved",
-    "reviewNote": ""
+    "reviewNote": "",
+    "contact_time_sec": 0.55
   },
   {
     "id": "contact_backspin_004",
@@ -150,7 +164,8 @@
     "spinType": "contact_backspin",
     "weight": 1,
     "reviewStatus": "approved",
-    "reviewNote": ""
+    "reviewNote": "",
+    "contact_time_sec": 1.1333333333333333
   },
   {
     "id": "contact_backspin_005",
@@ -159,7 +174,8 @@
     "spinType": "contact_backspin",
     "weight": 1,
     "reviewStatus": "approved",
-    "reviewNote": ""
+    "reviewNote": "",
+    "contact_time_sec": 1
   },
   {
     "id": "contact_backspin_006",
@@ -168,7 +184,8 @@
     "spinType": "contact_backspin",
     "weight": 1,
     "reviewStatus": "approved",
-    "reviewNote": ""
+    "reviewNote": "",
+    "contact_time_sec": 1.05
   },
   {
     "id": "contact_backspin_007",
@@ -177,7 +194,8 @@
     "spinType": "contact_backspin",
     "weight": 1,
     "reviewStatus": "approved",
-    "reviewNote": ""
+    "reviewNote": "",
+    "contact_time_sec": 0.6333333333333333
   },
   {
     "id": "contact_backspin_008",
@@ -186,7 +204,8 @@
     "spinType": "contact_backspin",
     "weight": 1,
     "reviewStatus": "approved",
-    "reviewNote": ""
+    "reviewNote": "",
+    "contact_time_sec": 1
   },
   {
     "id": "contact_backspin_009",
@@ -195,7 +214,8 @@
     "spinType": "contact_backspin",
     "weight": 1,
     "reviewStatus": "approved",
-    "reviewNote": ""
+    "reviewNote": "",
+    "contact_time_sec": 1
   },
   {
     "id": "contact_backspin_011",
@@ -204,7 +224,8 @@
     "spinType": "contact_backspin",
     "weight": 1,
     "reviewStatus": "approved",
-    "reviewNote": ""
+    "reviewNote": "",
+    "contact_time_sec": 0.6666666666666666
   },
   {
     "id": "contact_sidespin_001",
@@ -222,7 +243,8 @@
     "spinType": "contact_sidespin_left",
     "weight": 1,
     "reviewStatus": "approved",
-    "reviewNote": ""
+    "reviewNote": "",
+    "contact_time_sec": 0.5
   },
   {
     "id": "contact_sidespin_003",
@@ -231,7 +253,8 @@
     "spinType": "contact_sidespin_left",
     "weight": 1,
     "reviewStatus": "approved",
-    "reviewNote": ""
+    "reviewNote": "",
+    "contact_time_sec": 0.5
   },
   {
     "id": "contact_sidespin_004",
@@ -240,7 +263,8 @@
     "spinType": "contact_sidespin_left",
     "weight": 1,
     "reviewStatus": "approved",
-    "reviewNote": ""
+    "reviewNote": "",
+    "contact_time_sec": 0.65
   },
   {
     "id": "contact_sidespin_005",
@@ -249,7 +273,8 @@
     "spinType": "contact_sidespin_left",
     "weight": 1,
     "reviewStatus": "approved",
-    "reviewNote": ""
+    "reviewNote": "",
+    "contact_time_sec": 0.05
   },
   {
     "id": "contact_sidespin_006",
@@ -258,7 +283,8 @@
     "spinType": "contact_sidespin_left",
     "weight": 1,
     "reviewStatus": "approved",
-    "reviewNote": ""
+    "reviewNote": "",
+    "contact_time_sec": 0.45
   },
   {
     "id": "contact_sidespin_007",
@@ -267,7 +293,8 @@
     "spinType": "contact_sidespin_left",
     "weight": 1,
     "reviewStatus": "approved",
-    "reviewNote": ""
+    "reviewNote": "",
+    "contact_time_sec": 0.6666666666666666
   },
   {
     "id": "contact_sidespin_008",
@@ -276,7 +303,8 @@
     "spinType": "contact_sidespin_left",
     "weight": 1,
     "reviewStatus": "approved",
-    "reviewNote": ""
+    "reviewNote": "",
+    "contact_time_sec": 0.8333333333333334
   },
   {
     "id": "contact_sidespin_009",
@@ -285,7 +313,8 @@
     "spinType": "contact_sidespin_left",
     "weight": 1,
     "reviewStatus": "approved",
-    "reviewNote": ""
+    "reviewNote": "",
+    "contact_time_sec": 0.9333333333333333
   },
   {
     "id": "contact_sidespin_010",
@@ -294,7 +323,8 @@
     "spinType": "contact_sidespin_left",
     "weight": 1,
     "reviewStatus": "approved",
-    "reviewNote": ""
+    "reviewNote": "",
+    "contact_time_sec": 1.0666666666666667
   },
   {
     "id": "contact_sidespin_011",
@@ -303,7 +333,8 @@
     "spinType": "contact_sidespin_left",
     "weight": 1,
     "reviewStatus": "approved",
-    "reviewNote": ""
+    "reviewNote": "",
+    "contact_time_sec": 1.0333333333333334
   },
   {
     "id": "contact_sidespin_012",
@@ -312,7 +343,8 @@
     "spinType": "contact_sidespin_right",
     "weight": 1,
     "reviewStatus": "approved",
-    "reviewNote": ""
+    "reviewNote": "",
+    "contact_time_sec": 0.9666666666666667
   },
   {
     "id": "contact_sidespin_013",
@@ -321,7 +353,8 @@
     "spinType": "contact_sidespin_left",
     "weight": 1,
     "reviewStatus": "approved",
-    "reviewNote": ""
+    "reviewNote": "",
+    "contact_time_sec": 0.7666666666666667
   },
   {
     "id": "contact_sidespin_014",
@@ -330,7 +363,8 @@
     "spinType": "contact_sidespin_left",
     "weight": 1,
     "reviewStatus": "approved",
-    "reviewNote": ""
+    "reviewNote": "",
+    "contact_time_sec": 1.1666666666666667
   },
   {
     "id": "contact_sidespin_015",
@@ -339,7 +373,8 @@
     "spinType": "contact_sidespin_left",
     "weight": 1,
     "reviewStatus": "approved",
-    "reviewNote": ""
+    "reviewNote": "",
+    "contact_time_sec": 0.9
   },
   {
     "id": "contact_sidespin_016",
@@ -348,7 +383,8 @@
     "spinType": "contact_sidespin_left",
     "weight": 1,
     "reviewStatus": "approved",
-    "reviewNote": ""
+    "reviewNote": "",
+    "contact_time_sec": 1.2
   },
   {
     "id": "contact_sidespin_017",
@@ -357,7 +393,8 @@
     "spinType": "contact_sidespin_left",
     "weight": 1,
     "reviewStatus": "approved",
-    "reviewNote": ""
+    "reviewNote": "",
+    "contact_time_sec": 0.6333333333333333
   },
   {
     "id": "contact_sidespin_018",
@@ -366,7 +403,8 @@
     "spinType": "contact_sidespin_left",
     "weight": 1,
     "reviewStatus": "approved",
-    "reviewNote": ""
+    "reviewNote": "",
+    "contact_time_sec": 0.5333333333333333
   },
   {
     "id": "contact_sidespin_019",
@@ -375,7 +413,8 @@
     "spinType": "contact_sidespin_left",
     "weight": 1,
     "reviewStatus": "approved",
-    "reviewNote": ""
+    "reviewNote": "",
+    "contact_time_sec": 1.0666666666666667
   },
   {
     "id": "contact_sidespin_020",
@@ -384,7 +423,8 @@
     "spinType": "contact_sidespin_right",
     "weight": 1,
     "reviewStatus": "approved",
-    "reviewNote": ""
+    "reviewNote": "",
+    "contact_time_sec": 0.7666666666666667
   },
   {
     "id": "contact_sidespin_021",
@@ -393,7 +433,8 @@
     "spinType": "contact_sidespin_right",
     "weight": 1,
     "reviewStatus": "approved",
-    "reviewNote": ""
+    "reviewNote": "",
+    "contact_time_sec": 0.5
   },
   {
     "id": "contact_sidespin_022",
@@ -402,7 +443,8 @@
     "spinType": "contact_sidespin_right",
     "weight": 1,
     "reviewStatus": "approved",
-    "reviewNote": ""
+    "reviewNote": "",
+    "contact_time_sec": 0.6333333333333333
   },
   {
     "id": "contact_sidespin_023",
@@ -411,7 +453,8 @@
     "spinType": "contact_sidespin_left",
     "weight": 1,
     "reviewStatus": "approved",
-    "reviewNote": ""
+    "reviewNote": "",
+    "contact_time_sec": 2
   },
   {
     "id": "contact_sidespin_024",
@@ -420,7 +463,8 @@
     "spinType": "contact_sidespin_right",
     "weight": 1,
     "reviewStatus": "pending",
-    "reviewNote": ""
+    "reviewNote": "",
+    "contact_time_sec": 1.7666666666666666
   },
   {
     "id": "contact_nospin_001",
@@ -438,7 +482,8 @@
     "spinType": "contact_nospin",
     "weight": 1,
     "reviewStatus": "approved",
-    "reviewNote": ""
+    "reviewNote": "",
+    "contact_time_sec": 1.2
   },
   {
     "id": "contact_nospin_003",
@@ -447,7 +492,8 @@
     "spinType": "contact_nospin",
     "weight": 1,
     "reviewStatus": "approved",
-    "reviewNote": ""
+    "reviewNote": "",
+    "contact_time_sec": 1.1
   },
   {
     "id": "contact_nospin_004",
@@ -456,7 +502,8 @@
     "spinType": "contact_nospin",
     "weight": 1,
     "reviewStatus": "approved",
-    "reviewNote": ""
+    "reviewNote": "",
+    "contact_time_sec": 0.8333333333333334
   },
   {
     "id": "backswing_low_001",

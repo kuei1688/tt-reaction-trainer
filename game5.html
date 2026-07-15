@@ -1749,7 +1749,7 @@ function pickRoundForNextServe(){
 // 方向 C 影片配置：影片播到「粗估觸球點」（沒有逐支標註時用比例猜，見
 // VIDEO_CONTACT_FRACTION_GUESS）就開始淡出、同時讓已經算好的物理發球進場——複刻
 // C3（影片淡出 + 訓練球同時入場）驗證過的手感，只是拿掉逐幀標註的精確度依賴。
-// 之後 auto-contact-tagger 補齊全庫的真實觸球時間後，triggerTimeSec 應該換成標註值。
+// 2026-07-15：auto-contact-tagger 已補齊全庫觸球時間並寫入 videos.json 的 contact_time_sec。
 const VIDEO_CONTACT_FRACTION_GUESS = 0.7;
 function playServeVideo(videoEntry, onHandoff){
   const frame = document.getElementById('videoFrame');
@@ -1769,7 +1769,9 @@ function playServeVideo(videoEntry, onHandoff){
   videoEl.addEventListener('loadedmetadata', ()=>{
     if(handedOff) return;
     const duration = Number.isFinite(videoEl.duration) && videoEl.duration > 0 ? videoEl.duration : 1.2;
-    const triggerTimeSec = duration * VIDEO_CONTACT_FRACTION_GUESS;
+    // 優先用 auto-contact-tagger 標註、寫入 videos.json 的 contact_time_sec；
+    // 沒有該欄位時退回 0.7×duration 的舊猜值（VIDEO_CONTACT_FRACTION_GUESS）。
+    const triggerTimeSec = Number.isFinite(videoEntry && videoEntry.contact_time_sec) ? videoEntry.contact_time_sec : duration * VIDEO_CONTACT_FRACTION_GUESS;
     videoExperiment = new DirectionCExperiment.Experiment(triggerTimeSec, duration);
     videoExperiment.start('C3', performance.now());
     const loop = now=>{
