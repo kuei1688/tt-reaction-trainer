@@ -76,9 +76,9 @@ function reviewStatus(row){
   return status;
 }
 function normalizeSpinKey(value){
-  return String(value || '')
-    .replaceAll('contact_sidetopspin', 'contact_sidebackspin')
-    .replaceAll('sidetopspin', 'sidebackspin');
+  // 左右分類後 sidebackspin/sidespin 已拆成 _left/_right；舊 sidetopspin→sidebackspin
+  // 墊片產出的未拆分 spinType 已不存在於 videos.json。review 比對靠 src，此函式僅原樣回傳。
+  return String(value || '');
 }
 function normalizeReviewRow(row){
   return {

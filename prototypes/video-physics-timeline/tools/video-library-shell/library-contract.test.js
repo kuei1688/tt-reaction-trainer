@@ -47,8 +47,8 @@ test("categoryFromPath extracts first folder", () => {
     "contact_backspin"
   );
   assert.strictEqual(
-    contract.categoryFromPath("images/contact_sidespin/contact_sidespin_023.mp4"),
-    "contact_sidespin"
+    contract.categoryFromPath("images/contact_sidespin_right/contact_sidespin_023.mp4"),
+    "contact_sidespin_right"
   );
   assert.strictEqual(
     contract.categoryFromPath("clip.mp4"),
@@ -60,20 +60,20 @@ test("categoryFromPath extracts first folder", () => {
 // ── buildIndex ─────────────────────────────────────────────────
 test("buildIndex groups and sorts videos", () => {
   const files = [
-    { name: "contact_sidespin_002.mp4", webkitRelativePath: "images/contact_sidespin/contact_sidespin_002.mp4", size: 90000 },
+    { name: "contact_sidespin_002.mp4", webkitRelativePath: "images/contact_sidespin_left/contact_sidespin_002.mp4", size: 90000 },
     { name: "contact_backspin_001.mp4", webkitRelativePath: "images/contact_backspin/contact_backspin_001.mp4", size: 250000 },
-    { name: "contact_sidespin_001.mp4", webkitRelativePath: "images/contact_sidespin/contact_sidespin_001.mp4", size: 47000 },
+    { name: "contact_sidespin_001.mp4", webkitRelativePath: "images/contact_sidespin_left/contact_sidespin_001.mp4", size: 47000 },
     { name: "thumbnail.jpg", webkitRelativePath: "images/contact_backspin/thumbnail.jpg", size: 5000 },
   ];
   const index = contract.buildIndex(files);
   assert.strictEqual(index.videos.length, 3, "jpg filtered out");
   assert.strictEqual(index.videos[0].category, "contact_backspin");
   assert.strictEqual(index.videos[0].name, "contact_backspin_001.mp4");
-  assert.strictEqual(index.videos[1].category, "contact_sidespin");
+  assert.strictEqual(index.videos[1].category, "contact_sidespin_left");
   assert.strictEqual(index.videos[1].name, "contact_sidespin_001.mp4");
   assert.strictEqual(index.videos[2].name, "contact_sidespin_002.mp4");
   assert.ok(index.categories.includes("contact_backspin"));
-  assert.ok(index.categories.includes("contact_sidespin"));
+  assert.ok(index.categories.includes("contact_sidespin_left"));
   ok("buildIndex");
 });
 
