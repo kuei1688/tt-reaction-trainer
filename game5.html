@@ -60,6 +60,29 @@ canvas{display:block;width:100%;height:100%;touch-action:manipulation}
 .result-card.bad{border-color:rgba(255,123,114,.8);color:var(--red)}
 .action-cue{position:absolute;left:50%;top:38%;transform:translate(-50%,-50%) scale(.94);background:rgba(13,17,23,.72);border:1px solid rgba(240,246,252,.28);border-radius:12px;padding:14px 22px;font-size:20px;font-weight:900;color:var(--text);text-align:center;pointer-events:none;opacity:0;transition:opacity 160ms ease, transform 160ms ease;z-index:5;white-space:nowrap}
 .action-cue.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+/* 旋轉提示：環的順／逆時針是「旋轉方向」，環速、殘影與速度條共同表達
+   旋轉速度感。它是來球的讀球提示，不把目前的 legacy sidespin proxy 包裝成
+   已驗證的 3D 物理。 */
+.spin-hud{position:absolute;left:0;top:0;width:1px;height:1px;z-index:4;pointer-events:none;--spin-duration:.72s;--spin-scale:1}
+.spin-hud[hidden]{display:none}
+.spin-visual{position:absolute;left:50%;top:50%;width:92px;height:92px;transform:translate(-50%,-50%) scale(var(--spin-scale));transition:transform 120ms ease;filter:drop-shadow(0 5px 9px rgba(0,0,0,.38))}
+.spin-ring,.spin-streak{position:absolute;inset:6px;border:2px solid rgba(255,216,77,.92);border-left-color:transparent;border-bottom-color:rgba(255,216,77,.24);border-radius:50%;animation:spin-cw var(--spin-duration) linear infinite}
+.spin-ring::after{content:"";position:absolute;right:7px;top:-6px;width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-bottom:11px solid currentColor;transform:rotate(35deg)}
+.spin-ring-main{color:#ffd84d}
+.spin-ring-inner{inset:15px;border-width:1.5px;color:#fff2a8;opacity:.8;animation-duration:calc(var(--spin-duration) * .82);animation-delay:-.11s}
+.spin-ring-inner::after{border-left-width:4px;border-right-width:4px;border-bottom-width:8px;right:2px;top:-5px}
+.spin-streak{inset:1px;border-width:1px;border-color:rgba(255,216,77,.34);border-right-color:transparent;border-top-color:transparent;opacity:.55;animation-duration:calc(var(--spin-duration) * 1.18);animation-delay:-.24s;transform:scaleX(1.28)}
+.spin-streak-two{inset:11px;opacity:.3;animation-duration:calc(var(--spin-duration) * .92);animation-delay:-.36s;transform:scaleX(.78) rotate(28deg)}
+.spin-hud.reverse .spin-ring,.spin-hud.reverse .spin-streak{animation-direction:reverse}
+.spin-hud.no-spin .spin-ring,.spin-hud.no-spin .spin-streak{animation-play-state:paused;opacity:.18}
+@keyframes spin-cw{to{transform:rotate(360deg)}}
+.spin-readout{position:absolute;left:50%;top:calc(50% + 50px);transform:translateX(-50%);display:grid;justify-items:center;gap:3px;min-width:96px;padding:4px 7px;border:1px solid rgba(255,216,77,.5);border-radius:7px;background:rgba(13,17,23,.82);color:#fff2a8;white-space:nowrap;box-shadow:0 4px 14px rgba(0,0,0,.28)}
+.spin-label{font-size:11px;font-weight:950;line-height:1.1}
+.spin-speed{display:flex;align-items:center;gap:5px;font-size:10px;font-weight:800;color:rgba(240,246,252,.78)}
+.spin-meter{display:flex;gap:2px;height:7px}
+.spin-meter span{width:9px;border-radius:2px;background:rgba(240,246,252,.22)}
+.spin-hud.level-low .spin-meter span:nth-child(-n+1),.spin-hud.level-medium .spin-meter span:nth-child(-n+2),.spin-hud.level-high .spin-meter span:nth-child(-n+3),.spin-hud.level-max .spin-meter span{background:#ffd84d;box-shadow:0 0 5px rgba(255,216,77,.6)}
+.spin-hud.level-max .spin-ring-main{border-width:3px}
 /* 方向 C 影片配置慣例：影片浮在畫面上方一塊固定比例區域，桌面場景全程可見，
    觸球後影片淡出、物理球接手（見 prototypes/video-physics-timeline/direction-c/）。 */
 .video-frame{position:absolute;left:4%;top:3%;width:92%;height:44%;overflow:hidden;border:2px solid rgba(219,234,254,.55);border-radius:14px;background:#000;box-shadow:0 10px 26px rgba(0,0,0,.5);z-index:6;transition:opacity 240ms ease}
@@ -110,6 +133,11 @@ button:disabled{opacity:.45;cursor:not-allowed}
   .technique-icon{height:40px}
   .result-card{font-size:19px;padding:12px 20px}
   .action-cue{font-size:16px;padding:10px 16px;top:40%}
+  .spin-visual{width:78px;height:78px}
+  .spin-readout{top:calc(50% + 43px);min-width:86px;padding:3px 6px}
+  .spin-label{font-size:10px}
+  .spin-speed{font-size:9px}
+  .spin-meter span{width:7px}
 }
 </style>
 </head>
@@ -124,6 +152,18 @@ button:disabled{opacity:.45;cursor:not-allowed}
 <main>
   <section class="scene-wrap">
     <canvas id="scene"></canvas>
+    <div class="spin-hud" id="spinHud" hidden aria-live="polite">
+      <div class="spin-visual" aria-hidden="true">
+        <div class="spin-streak"></div>
+        <div class="spin-streak spin-streak-two"></div>
+        <div class="spin-ring spin-ring-main"></div>
+        <div class="spin-ring spin-ring-inner"></div>
+      </div>
+      <div class="spin-readout">
+        <div class="spin-label" id="spinLabel">旋轉</div>
+        <div class="spin-speed"><span id="spinSpeedLabel">讀取中</span><span class="spin-meter" id="spinMeter" aria-hidden="true"><span></span><span></span><span></span></span></div>
+      </div>
+    </div>
     <div class="hud">
       <div class="hud-row">
         <div class="pill" id="serveName">載入中</div>
@@ -320,6 +360,8 @@ let animation = null;
 let hitPoint = null;
 let hitVel = null;
 let hitSpin = null;
+let returnVelocities = [];
+let returnSpins = [];
 let returnPushIndex = 0; // 切球的最佳擊球點 index（beginner 提早按時自動等到這裡）
 let returnAppearIndex = 0;
 let returnHintStartIndex = 0;
@@ -360,6 +402,10 @@ let timingFlashUntil = 0;
 let timingSideRisingUntil = 0;
 
 const canvas = document.getElementById('scene');
+const spinHud = document.getElementById('spinHud');
+const spinLabelEl = document.getElementById('spinLabel');
+const spinSpeedLabelEl = document.getElementById('spinSpeedLabel');
+let spinIndicatorText = '';
 const renderer = new THREE.WebGLRenderer({canvas, antialias:true});
 renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
 const scene = new THREE.Scene();
@@ -485,6 +531,7 @@ function resetHitFx(){
   paddleGroup.visible = false;
   ballFlashUntil = 0;
   ball.scale.setScalar(1);
+  hideSpinIndicator();
   clearLandingMarker();
 }
 // 每幀演出更新：起拍中球拍追球（收斂到球側後方一點點），觸擊後順勢往前送＋淡出。
@@ -1190,6 +1237,73 @@ function setBallColor(color){
 function resetBallColor(){
   setBallColor(BALL_COLORS.default);
 }
+// ── 旋轉視覺提示（只讀目前動畫中的 spin，不改物理）──────────────────────
+function readSpinForDisplay(spin){
+  const value = spin || {};
+  const omega = value.omega || null;
+  const hasCanonicalOmega = !!omega && Number.isFinite(omega.x) && Number.isFinite(omega.y);
+  const topspin = hasCanonicalOmega ? omega.x : (Number.isFinite(value.topspin) ? value.topspin : 0);
+  // canonical omega.y 是新的側旋軸；沒有 canonical 資料時才退回 legacy sidespin。
+  const sidespin = hasCanonicalOmega ? omega.y : (Number.isFinite(value.sidespin) ? value.sidespin : 0);
+  const axialSpin = Number.isFinite(value.axialSpin) ? value.axialSpin : 0;
+  const axialZ = hasCanonicalOmega && Number.isFinite(omega.z) ? omega.z : 0;
+  return {
+    topspin,
+    sidespin,
+    axialSpin,
+    total: Math.hypot(topspin, sidespin, axialZ, axialSpin)
+  };
+}
+function hideSpinIndicator(){
+  if(!spinHud) return;
+  spinHud.hidden = true;
+  spinIndicatorText = '';
+}
+function updateSpinIndicator(spin, velocity){
+  if(!spinHud || !spin || (phase !== 'serve' && phase !== 'return')){
+    hideSpinIndicator();
+    return;
+  }
+  const info = readSpinForDisplay(spin);
+  const normalized = clamp(info.total / 240, 0, 1);
+  const noSpin = info.total < 4;
+  const activeTags = phase === 'serve' ? (currentPreset()?.tags || {}) : {};
+  const sideName = activeTags.sideName === 'left' || activeTags.sideName === 'right' ? activeTags.sideName : null;
+  const sideLabel = Math.abs(info.sidespin) > 8
+    ? (sideName === 'left' ? '左側旋' : sideName === 'right' ? '右側旋' : '側旋')
+    : '';
+  const verticalLabel = Math.abs(info.topspin) > 8
+    ? (info.topspin > 0 ? '上旋' : '下旋')
+    : '';
+  const label = [sideLabel, verticalLabel].filter(Boolean).join('＋') || '近乎無旋';
+  // 方向名稱優先讀 preset contract；回擊球沒有該 metadata 時才用目前角速度的
+  // 符號控制動畫視覺，不把它反推回正式資料名稱。
+  const turn = sideName === 'left' ? -1 : sideName === 'right' ? 1 : (info.sidespin || info.topspin) >= 0 ? 1 : -1;
+  const turnMark = turn > 0 ? '↻' : '↺';
+  const level = noSpin ? 'none' : normalized < .3 ? 'low' : normalized < .58 ? 'medium' : normalized < .82 ? 'high' : 'max';
+  const speedLabel = noSpin ? '無旋' : ({low:'低速',medium:'中速',high:'高速',max:'極高速'}[level] || '中速');
+  const duration = Math.max(.22, 1.08 - normalized * .82);
+  const spinText = `${turnMark} ${label}`;
+  if(spinText !== spinIndicatorText){
+    spinLabelEl.textContent = spinText;
+    spinIndicatorText = spinText;
+  }
+  spinSpeedLabelEl.textContent = speedLabel;
+  spinHud.classList.remove('level-none','level-low','level-medium','level-high','level-max');
+  spinHud.classList.add(`level-${level}`);
+  spinHud.classList.toggle('reverse', turn < 0);
+  spinHud.classList.toggle('no-spin', noSpin);
+  spinHud.style.setProperty('--spin-duration', `${duration}s`);
+  spinHud.style.setProperty('--spin-scale', `${1 + normalized * .16}`);
+  if(velocity){
+    spinHud.title = `${spinText}・${speedLabel}・${Math.round(info.total)} rad/s`;
+  }
+  const projected = ball.position.clone().project(camera);
+  const rect = canvas.parentElement.getBoundingClientRect();
+  spinHud.style.left = `${(projected.x * .5 + .5) * rect.width}px`;
+  spinHud.style.top = `${(-projected.y * .5 + .5) * rect.height}px`;
+  spinHud.hidden = false;
+}
 function isSidespinServe(preset = currentPreset()){
   const spinType = String(preset?.tags?.spinType || preset?.spinType || '').toLowerCase();
   return spinType.includes('side');
@@ -1231,7 +1345,7 @@ function render(){ renderer.render(scene, camera); }
 // AUTO 模式），舊 tick 在回呼返回後還會繼續執行、把自己排進下一幀——用世代編號
 // 讓被取代的 tick 自行終止，避免新舊兩段動畫同時搶球的位置。
 let animToken = 0;
-function animatePath(points, onDone, speedMs, onFrame, velocities){
+function animatePath(points, onDone, speedMs, onFrame, velocities, spins){
   if(animation) cancelAnimationFrame(animation);
   const token = ++animToken;
   const safePoints = (points || []).filter(isValidPoint);
@@ -1250,7 +1364,7 @@ function animatePath(points, onDone, speedMs, onFrame, velocities){
     onFrame?.(index, safePoints[index], progress, velocities?.[index] || null);
     if(token !== animToken) return; // onFrame 裡可能已觸擊、啟動回球動畫
     setBall(safePoints[index]);
-    try{ tickCamera(); updateFx(now); }catch(e){}
+    try{ tickCamera(); updateFx(now); updateSpinIndicator(spins?.[index], velocities?.[index]); }catch(e){}
     render();
     if(progress < 1){
       animation = requestAnimationFrame(tick);
@@ -1264,6 +1378,7 @@ function animatePath(points, onDone, speedMs, onFrame, velocities){
 }
 function setPhase(next){
   phase = next;
+  if(next !== 'serve' && next !== 'return') hideSpinIndicator();
   document.getElementById('phaseText').textContent = {
     idle:'準備',
     serve:'看球',
@@ -1354,6 +1469,8 @@ function prepareServe(){
   timingFlashUntil = 0;
   timingSideRisingUntil = 0;
   selectedDirectionInput = null;
+  returnVelocities = [];
+  returnSpins = [];
   resetBallColor();
   resetHitFx();
   // 鏡頭 boost：這球有影片就把取景壓下去讓位（回合間直接跳，不用平滑），
@@ -1457,7 +1574,7 @@ function beginServeFlight(){
     }
     maybeFireSwing(index);
     if(point?.y < MISS_Y && !pendingReturn) missReturn();
-  }, serveVelocities);
+  }, serveVelocities, serveSpins);
 }
 // 正手/反手在物理上完全相同（TECHNIQUES.forehand_attack/backhand_attack 逐字
 // 相同，只有 label/鏡頭角度不同，見 2026-07-15 確認），這裡純粹依球的實際落點
@@ -1601,6 +1718,8 @@ function returnBall(contact){
     bounceBoost:tech.bounceBoost ?? 0
   });
   returnPath = result.points.filter(isValidPoint);
+  returnVelocities = result.velocities;
+  returnSpins = result.spins;
   updateLine(returnLine, returnPath);
   timingHintActive = false;
   resetBallColor();
