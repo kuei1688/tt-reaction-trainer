@@ -1,0 +1,2247 @@
+﻿<!DOCTYPE html>
+<html lang="zh-TW" translate="no" class="notranslate">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="google" content="notranslate">
+<title>Game 5 · 技術＋方向判斷</title>
+<style>
+:root{
+  --bg:#0d1117;--surface:#161b22;--surface2:#21262d;--border:#30363d;
+  --text:#f0f6fc;--muted:#8b949e;--blue:#58a6ff;--green:#3fb950;
+  --red:#ff7b72;--yellow:#d29922;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100vh;height:100dvh;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;overflow:hidden}
+body{display:grid;grid-template-rows:auto 1fr}
+header{height:48px;display:flex;align-items:center;justify-content:space-between;padding:0 14px;border-bottom:1px solid var(--border);background:#0b1017}
+h1{font-size:20px;margin:0}
+.badge{color:var(--yellow);font-weight:800;font-size:13px}
+/* 開始發球／下一球放在畫面下方中央（提示欄與操作鈕之間），拇指就構得到，不必再
+   伸到左上角。idle/result 才可按，發球中自動停用（跟方向/技術鍵一致的灰階語彙）。 */
+.serve-controls{position:absolute;left:50%;bottom:130px;transform:translateX(-50%);display:flex;gap:10px;z-index:11}
+.serve-controls button{width:auto;flex:0 0 auto;padding:13px 26px;font-size:17px;font-weight:900;border-radius:10px;white-space:nowrap;box-shadow:0 8px 18px rgba(0,0,0,.32)}
+.serve-controls button:disabled{opacity:.4;filter:grayscale(.4);cursor:not-allowed;box-shadow:none}
+main{display:grid;grid-template-columns:minmax(0,1fr) 320px;min-height:0}
+.scene-wrap{position:relative;min-height:0;background:#05070a}
+canvas{display:block;width:100%;height:100%;touch-action:manipulation}
+.hud{position:absolute;left:12px;top:12px;display:grid;gap:8px;max-width:min(480px,calc(100% - 24px));pointer-events:none}
+.hud-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.pill{background:rgba(13,17,23,.85);border:1px solid var(--border);border-radius:7px;padding:7px 9px;font-size:13px;font-weight:700;box-shadow:0 8px 24px rgba(0,0,0,.24)}
+.pill.ok{border-color:rgba(63,185,80,.6);color:var(--green)}
+.pill.bad{border-color:rgba(255,123,114,.65);color:var(--red)}
+.pill.warn{border-color:rgba(210,153,34,.65);color:var(--yellow)}
+/* bottom 用固定像素跟 action-pad 的實際高度錯開（不是用百分比），確保不管
+   影片區塊多大、螢幕多高，提示欄都不會蓋到下面常駐的操作按鈕。 */
+.center-tip{position:absolute;left:50%;bottom:184px;transform:translateX(-50%);background:rgba(13,17,23,.88);border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-weight:800;color:var(--text);text-align:center;min-width:min(520px,calc(100% - 24px));z-index:3}
+/* 操作按鈕常駐＋浮在最上層（z-index 高於提示欄／影片／對話框），確保任何
+   時候都點得到，不會被其他浮動元素蓋住。 */
+/* 2026-07-15 手勢化改版：方向獨立按鍵區移除，方向摺進技術鍵手勢（點按＝不修正，
+   按下後往左/右滑超過閾值＝該方向修正）。單一區、兩顆大技術鍵，單拇指可完成
+   「技術＋方向」兩個維度。 */
+.action-pad{position:absolute;left:12px;right:12px;bottom:12px;display:grid;grid-template-columns:1fr;gap:9px;align-items:end;z-index:10}
+.action-zone{display:grid;grid-template-rows:auto 1fr;gap:7px;min-height:108px;padding:8px;border:1px solid rgba(88,166,255,.34);border-radius:8px;background:rgba(13,17,23,.34);box-shadow:0 10px 26px rgba(0,0,0,.22);backdrop-filter:blur(2px)}
+.zone-label{font-size:12px;font-weight:900;color:rgba(240,246,252,.72);text-shadow:0 1px 2px rgba(0,0,0,.7)}
+.zone-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;align-content:end}
+.zone-actions button{min-height:58px;font-size:16px;background:rgba(33,38,45,.72);box-shadow:0 8px 18px rgba(0,0,0,.22)}
+.zone-actions .technique-button{min-height:80px;padding:6px;background:rgba(13,17,23,.28);border-color:rgba(240,246,252,.18);overflow:hidden;touch-action:none}
+.zone-actions .technique-button:hover{background:rgba(13,17,23,.42)}
+.zone-actions .technique-button.active{background:rgba(88,166,255,.18)}
+.technique-button:disabled .technique-icon{opacity:.34;filter:grayscale(.25)}
+.technique-icon{display:block;width:100%;height:44px;object-fit:contain;opacity:.78;filter:drop-shadow(0 7px 10px rgba(0,0,0,.42));transition:opacity .15s ease, transform .15s ease}
+.technique-button:hover .technique-icon,.technique-button.active .technique-icon{opacity:1;transform:scale(1.03)}
+.technique-button{display:flex;flex-direction:column;align-items:center;gap:2px}
+/* 手勢中的方向即時提示：技術鍵上滑動時鍵面泛黃，代表這一拍會帶側旋修正 */
+.technique-button.dir-left,.technique-button.dir-right{border-color:rgba(210,153,34,.75);background:rgba(210,153,34,.16)}
+/* 成敗大字卡：手機版側欄整個隱藏，結果要在畫面中央大大地講 */
+.result-card{position:absolute;left:50%;top:33%;transform:translate(-50%,-50%) scale(.92);background:rgba(13,17,23,.92);border:2px solid var(--border);border-radius:14px;padding:16px 30px;font-size:26px;font-weight:900;text-align:center;opacity:0;pointer-events:none;transition:opacity .18s ease, transform .18s ease;z-index:7;white-space:nowrap}
+.result-card.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+.result-card.ok{border-color:rgba(63,185,80,.8);color:var(--green)}
+.result-card.bad{border-color:rgba(255,123,114,.8);color:var(--red)}
+.action-cue{position:absolute;left:50%;top:38%;transform:translate(-50%,-50%) scale(.94);background:rgba(13,17,23,.72);border:1px solid rgba(240,246,252,.28);border-radius:12px;padding:14px 22px;font-size:20px;font-weight:900;color:var(--text);text-align:center;pointer-events:none;opacity:0;transition:opacity 160ms ease, transform 160ms ease;z-index:5;white-space:nowrap}
+.action-cue.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+/* 旋轉提示：環的順／逆時針是「旋轉方向」，環速、殘影與速度條共同表達
+   旋轉速度感。它是來球的讀球提示，不把目前的 legacy sidespin proxy 包裝成
+   已驗證的 3D 物理。 */
+.spin-hud{position:absolute;left:0;top:0;width:1px;height:1px;z-index:4;pointer-events:none;--spin-duration:.72s;--spin-scale:1}
+.spin-hud[hidden]{display:none}
+.spin-visual{position:absolute;left:50%;top:50%;width:92px;height:92px;transform:translate(-50%,-50%) scale(var(--spin-scale));transition:transform 120ms ease;filter:drop-shadow(0 5px 9px rgba(0,0,0,.38))}
+.spin-ring,.spin-streak{position:absolute;inset:6px;border:2px solid rgba(255,216,77,.92);border-left-color:transparent;border-bottom-color:rgba(255,216,77,.24);border-radius:50%;animation:spin-cw var(--spin-duration) linear infinite}
+.spin-ring::after{content:"";position:absolute;right:7px;top:-6px;width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-bottom:11px solid currentColor;transform:rotate(35deg)}
+.spin-ring-main{color:#ffd84d}
+.spin-ring-inner{inset:15px;border-width:1.5px;color:#fff2a8;opacity:.8;animation-duration:calc(var(--spin-duration) * .82);animation-delay:-.11s}
+.spin-ring-inner::after{border-left-width:4px;border-right-width:4px;border-bottom-width:8px;right:2px;top:-5px}
+.spin-streak{inset:1px;border-width:1px;border-color:rgba(255,216,77,.34);border-right-color:transparent;border-top-color:transparent;opacity:.55;animation-duration:calc(var(--spin-duration) * 1.18);animation-delay:-.24s;transform:scaleX(1.28)}
+.spin-streak-two{inset:11px;opacity:.3;animation-duration:calc(var(--spin-duration) * .92);animation-delay:-.36s;transform:scaleX(.78) rotate(28deg)}
+.spin-hud.reverse .spin-ring,.spin-hud.reverse .spin-streak{animation-direction:reverse}
+.spin-hud.no-spin .spin-ring,.spin-hud.no-spin .spin-streak{animation-play-state:paused;opacity:.18}
+@keyframes spin-cw{to{transform:rotate(360deg)}}
+.spin-readout{position:absolute;left:50%;top:calc(50% + 50px);transform:translateX(-50%);display:grid;justify-items:center;gap:3px;min-width:96px;padding:4px 7px;border:1px solid rgba(255,216,77,.5);border-radius:7px;background:rgba(13,17,23,.82);color:#fff2a8;white-space:nowrap;box-shadow:0 4px 14px rgba(0,0,0,.28)}
+.spin-label{font-size:11px;font-weight:950;line-height:1.1}
+.spin-speed{display:flex;align-items:center;gap:5px;font-size:10px;font-weight:800;color:rgba(240,246,252,.78)}
+.spin-meter{display:flex;gap:2px;height:7px}
+.spin-meter span{width:9px;border-radius:2px;background:rgba(240,246,252,.22)}
+.spin-hud.level-low .spin-meter span:nth-child(-n+1),.spin-hud.level-medium .spin-meter span:nth-child(-n+2),.spin-hud.level-high .spin-meter span:nth-child(-n+3),.spin-hud.level-max .spin-meter span{background:#ffd84d;box-shadow:0 0 5px rgba(255,216,77,.6)}
+.spin-hud.level-max .spin-ring-main{border-width:3px}
+/* 方向 C 影片配置慣例：影片浮在畫面上方一塊固定比例區域，桌面場景全程可見，
+   觸球後影片淡出、物理球接手（見 prototypes/video-physics-timeline/direction-c/）。 */
+.video-frame{position:absolute;left:4%;top:3%;width:92%;height:44%;overflow:hidden;border:2px solid rgba(219,234,254,.55);border-radius:14px;background:#000;box-shadow:0 10px 26px rgba(0,0,0,.5);z-index:6;transition:opacity 240ms ease}
+.video-frame video{width:100%;height:100%;object-fit:cover;display:block}
+.video-frame.exiting{opacity:0}
+.video-frame[hidden]{display:none}
+aside{border-left:1px solid var(--border);background:var(--surface);min-height:0;overflow:auto}
+.section{padding:12px;border-bottom:1px solid var(--border)}
+h2{font-size:14px;margin:0 0 8px;color:var(--yellow)}
+.list{display:grid;gap:7px}
+button{width:100%;border:1px solid var(--border);background:var(--surface2);color:var(--text);border-radius:7px;padding:11px 12px;font-weight:900;font-size:15px;cursor:pointer}
+button:hover{border-color:var(--blue)}
+button.primary{background:var(--blue);color:#06101f;border-color:var(--blue)}
+button.good{background:rgba(63,185,80,.18);border-color:rgba(63,185,80,.65)}
+button.warn{background:rgba(210,153,34,.14);border-color:rgba(210,153,34,.65);color:var(--yellow)}
+button.active{outline:2px solid var(--blue);background:rgba(88,166,255,.18)}
+button:disabled{opacity:.45;cursor:not-allowed}
+.tech-grid{display:grid;gap:8px}
+.option-row{display:flex;align-items:center;gap:9px;padding:9px 10px;border:1px solid var(--border);border-radius:7px;background:rgba(13,17,23,.45);font-size:13px;font-weight:800;color:var(--text);cursor:pointer}
+.option-row input{width:18px;height:18px;accent-color:var(--blue)}
+.field-row{display:flex;align-items:center;gap:9px;padding:9px 10px;border:1px solid var(--border);border-radius:7px;background:rgba(13,17,23,.45)}
+.field-row label{white-space:nowrap}
+.field-row select{flex:1}
+.meta{font-size:12px;color:var(--muted);line-height:1.55;white-space:pre-wrap}
+.result{font-size:16px;font-weight:900;line-height:1.45}
+.result.ok{color:var(--green)}
+.result.bad{color:var(--red)}
+.small{font-size:12px;color:var(--muted)}
+/* 手機版：正式遊玩畫面，全部塞進一個 viewport 高度，不需要捲動。側邊欄
+   （測試／校準用的細部設定）整個隱藏，只留看球、影片、按鍵這些真的要玩才需要
+   的東西。桌面版維持原本雙欄，側邊欄照舊可見（校準/研究用）。 */
+@media (max-width: 820px){
+  h1{font-size:16px}
+  header{height:40px;padding:0 10px}
+  .badge{display:none}
+  .serve-controls{bottom:106px;gap:8px}
+  .serve-controls button{padding:11px 20px;font-size:15px}
+  main{grid-template-columns:1fr}
+  aside{display:none}
+  .center-tip{bottom:150px;min-width:calc(100% - 16px);font-size:12px;padding:8px 10px}
+  .hud{left:8px;top:8px;gap:5px}
+  .pill{padding:5px 7px;font-size:11px}
+  .video-frame{left:2%;top:2%;width:96%;height:39%}
+  .action-pad{left:6px;right:6px;bottom:6px;gap:6px}
+  .action-zone{min-height:88px;padding:6px}
+  .zone-actions button{min-height:46px;font-size:13px;padding:6px}
+  .zone-actions .technique-button{min-height:66px;padding:4px}
+  .technique-icon{height:40px}
+  .result-card{font-size:19px;padding:12px 20px}
+  .action-cue{font-size:16px;padding:10px 16px;top:40%}
+  .spin-visual{width:78px;height:78px}
+  .spin-readout{top:calc(50% + 43px);min-width:86px;padding:3px 6px}
+  .spin-label{font-size:10px}
+  .spin-speed{font-size:9px}
+  .spin-meter span{width:7px}
+}
+</style>
+</head>
+<body translate="no" class="notranslate">
+<header>
+  <h1>Game 5 · 技術＋方向判斷</h1>
+  <div style="display:flex;gap:10px;align-items:center">
+    <div class="badge">Serve → Direction + Technique → Return</div>
+    <div id="buildVersion" style="font-size:11px;color:#555;font-family:monospace" title="build version">-----</div>
+  </div>
+</header>
+<main>
+  <section class="scene-wrap">
+    <canvas id="scene"></canvas>
+    <div class="spin-hud" id="spinHud" hidden aria-live="polite">
+      <div class="spin-visual" aria-hidden="true">
+        <div class="spin-streak"></div>
+        <div class="spin-streak spin-streak-two"></div>
+        <div class="spin-ring spin-ring-main"></div>
+        <div class="spin-ring spin-ring-inner"></div>
+      </div>
+      <div class="spin-readout">
+        <div class="spin-label" id="spinLabel">旋轉</div>
+        <div class="spin-speed"><span id="spinSpeedLabel">讀取中</span><span class="spin-meter" id="spinMeter" aria-hidden="true"><span></span><span></span><span></span></span></div>
+      </div>
+    </div>
+    <div class="hud">
+      <div class="hud-row">
+        <div class="pill" id="serveName">載入中</div>
+        <div class="pill" id="phaseText">準備</div>
+      </div>
+      <div class="hud-row">
+        <div class="pill" id="choiceText">尚未選擇</div>
+        <div class="pill" id="scoreText">成功 0 / 失分 0</div>
+      </div>
+    </div>
+    <div class="video-frame" id="videoFrame" hidden>
+      <video id="serveVideo" playsinline muted preload="metadata"></video>
+    </div>
+    <div class="serve-controls" id="serveControls">
+      <button id="playBtn" class="primary">開始發球</button>
+      <button id="nextBtn">下一球</button>
+    </div>
+    <div class="action-pad" id="actionPad">
+      <div class="action-zone technique-zone">
+        <div class="zone-label">回擊技術（點按＝不修正 ・ 按下後往左/右滑＝側旋修正）</div>
+        <div class="zone-actions">
+          <button class="technique-button" type="button" data-return-technique="push" title="切球（可滑動帶方向修正）" aria-label="切球"><img class="technique-icon" src="images/techniques/cut.png" alt="">切球</button>
+          <button class="technique-button" type="button" data-return-technique="attack" title="平推/攻球（可滑動帶方向修正）" aria-label="平推攻球"><img class="technique-icon" src="images/techniques/attack.png" alt="">平推/攻球</button>
+        </div>
+      </div>
+    </div>
+    <div class="result-card" id="resultCard"></div>
+    <div class="action-cue" id="actionCue"></div>
+    <div class="center-tip" id="centerTip">讀取 physics-presets.json...</div>
+  </section>
+  <aside>
+    <div class="section">
+      <h2>這一球（系統隨機配對，測試用）</h2>
+      <div id="roundInfo" class="small"></div>
+    </div>
+    <div class="section">
+      <h2>回擊技術</h2>
+      <div class="small">按技術鍵＝起拍，約 0.1 秒後在球的當下位置觸擊（起拍延遲模型）。側旋修正改用手勢：按下技術鍵後往左/右滑＝該方向修正，不滑＝不修正；修正是固定補償量，沒有側旋的球帶了修正反而會出界。按太早會揮空（beginner 自動等最佳擊球點），按太晚就是漏球。</div>
+    </div>
+    <div class="section" id="controlsSection">
+      <h2>操作（測試／校準用，正式遊玩不需要）</h2>
+      <div class="list">
+        <label class="option-row">
+          <input id="trajectoryToggle" type="checkbox">
+          <span>顯示軌跡</span>
+        </label>
+        <div class="field-row" id="speedRow">
+          <label for="speedControl" style="font-size:12px;font-weight:800;color:var(--muted)">遊戲速度</label>
+          <select id="speedControl">
+            <option value="0.25">0.25x（很慢，測試回擊用）</option>
+            <option value="0.5">0.5x（慢）</option>
+            <option value="0.75">0.75x</option>
+            <option value="1" selected>1x（正常）</option>
+            <option value="1.5">1.5x（快）</option>
+            <option value="2">2x（很快）</option>
+          </select>
+        </div>
+        <div class="field-row" id="difficultyRow">
+          <label for="difficultyControl" style="font-size:12px;font-weight:800;color:var(--muted)">難度</label>
+          <select id="difficultyControl">
+            <option value="beginner" selected>beginner（全提示＋提早按自動等最佳點）</option>
+            <option value="practice">practice（只閃最高點）</option>
+            <option value="match">match（關閉提示）</option>
+          </select>
+        </div>
+        <div class="field-row" id="autoTimingRow">
+          <label style="font-size:12px;font-weight:800;color:var(--muted)">
+            <input type="checkbox" id="autoTimingToggle" />
+            自動最佳時機回擊（測試用）
+          </label>
+          <select id="autoTimingTechnique">
+            <option value="forehand:push" selected>正手切球</option>
+            <option value="backhand:push">反手切球</option>
+            <option value="forehand:forehand_attack">正手攻球</option>
+            <option value="backhand:backhand_attack">反手攻球</option>
+          </select>
+        </div>
+        <div class="field-row" id="rangeSolutionRow">
+          <label style="font-size:12px;font-weight:800;color:var(--muted)">
+            <input type="checkbox" id="rangeSolutionToggle" />
+            範圍解模式（呈現動作多樣性，非套招）
+          </label>
+        </div>
+      </div>
+    </div>
+    <div class="section">
+      <h2>判定</h2>
+      <div id="resultText" class="result">尚未開始</div>
+      <div id="detailText" class="meta" style="margin-top:8px"></div>
+    </div>
+  </aside>
+</main>
+
+<script src="vendor/three.r128.min.js"></script>
+<script src="shared-physics-core.js"></script>
+<script src="prototypes/video-physics-timeline/direction-c/direction-c-engine.js"></script>
+<script>
+const BALL_RENDER_RADIUS = 0.022;
+const DT = 1 / 120;
+const MAX_STEPS = 520;
+const BALL_COLORS = {default:0xffd84d, rising:0x4488ff, sideRising:0x66bbff, apex:0xffffff, falling:0xef9f27};
+const TIMING_HINT = {threshold:0.05, flashMs:100, sideRisingHoldMs:220};
+const MISS_Y = TABLE.top - BALL_RADIUS;
+const BUILD_VERSION = 'v9k02';
+// ── 起拍延遲模型（2026-07-15）─────────────────────────────────────────────
+// 按下技術鍵＝「起拍」，觸擊發生在起拍後 SWING_DELAY_MS，接觸點就是那一刻球沿
+// 發球軌跡飛到的位置——取代舊的「按下瞬間立即回擊」模型（舊模型切球用預先算好
+// 的 pushHitPoint，球還沒下墜就按時會瞬移到後方被打出去）。真實揮拍從決策到觸
+// 球本來就有延遲，時機技能因此回歸：延遲到點時球還沒進可擊區（我方桌面第一跳
+// 之前），practice/match 直接揮空、beginner 自動改等該技術的最佳擊球點；按太晚
+// 球掉過桌面高度就是漏球。延遲除以 GAME_SPEED：慢動作測試時揮拍等比例變慢，
+// 時機語意不變。
+const SWING_DELAY_MS = 100;
+// ── 物理引擎 v2：真實觸桌接觸力學（docs/physics-engine-v2-plan.md Phase 1-4）──
+// 逐字對齊 tools/physics-v2-contact-mechanics.js，取代舊的 BOUNCE_PHYSICS/applyBounceSpin。      // kg，ITTF 2.7g // 薄殼球轉動慣量係數：I = ALPHA * M * R²
+// 回擊：球拍接觸力學（Phase 6，docs/physics-engine-v2-plan.md）。
+// 攻球/切球改用跟球對桌面同一套接觸力學（bounceOffPlane，見上方），球拍視為
+// 一個有自己法向量、自己揮拍速度的「移動中的平面」。球拍材質（膠皮/底板）
+// 目前先用一組共用的合理預設值，之後要做不同膠皮/底板時，只需要覆寫
+// PADDLE_RESTITUTION_LOW/HIGH / PADDLE_FRICTION 這幾個常數，不用動接觸力學本身。
+// 拍面法向反彈係數：文獻顯示會隨撞擊速度線性下降（低速~2m/s 約 0.9，高速~12m/s 約 0.75，
+// 差異可達 0.15），不是固定值，見 dynamicPaddleEpsilon()。
+const PADDLE_RESTITUTION_LOW = 0.9;   // 低速（~2m/s）反彈係數上限
+const PADDLE_RESTITUTION_HIGH = 0.75; // 高速（~12m/s）反彈係數下限
+const PADDLE_SPEED_LOW = 2.0;
+const PADDLE_SPEED_HIGH = 12.0;
+const PADDLE_FRICTION = 0.4;        // 拍面切向摩擦係數，工程估計值（無精確文獻，之後可依膠皮種類覆寫）
+// ── Stage 4a 切球接觸模型（2026-07-14 從 return-studio.html 移植）────────────
+// 逐字對齊 return-studio.html：切球改用彈簧-阻尼子步進積分（球陷入海綿壓縮→
+// 釋放的真實動態過程），取代簡單瞬時碰撞；反彈方向不是純剛體拍面法向量，是
+// 法向量跟「球實際接近方向反方向」的 Y-Z-only 混合（PADDLE_BLEND），取代原本
+// computeAdaptivePushTiltX() 的手動回歸公式（EXPERIMENT_LOG.md EXP-037「移除
+// tiltX hack，blend 改 y-z 平面」，architecture 已在 return-studio.html 驗證過，
+// 這次寫回 game4.html，對應 OPEN_ITEMS.md TODO-001/TODO-007）。攻球等其他技術
+// 維持原本的瞬時碰撞公式，不受影響。詳細物理推導見 return-studio.html 同名常數
+// /函式的註解，這裡不重複。
+const PADDLE_BLEND = 0.605;
+const PADDLE_SPRING_K = BALL_MASS * (Math.PI / 0.005) ** 2;
+const PADDLE_DAMPING_RATIO = 0.0421;
+const BLADE_NODE_MASS = BALL_MASS * 0.15;
+const BLADE_SPRING_K = BLADE_NODE_MASS * (Math.PI / 0.0008) ** 2;
+const BLADE_DAMPING_RATIO = 0.03;
+const TANGENT_KP = 1.0;
+// vel/spin/planeVel 都是模擬尺度，bounceOffPlaneSubstepped 內部轉真實 m/s 計算
+// （乘 SIM_TIME_DILATION，結尾除回去）。
+const SIM_TIME_DILATION = Math.sqrt(9.8 / 4.2);
+// 切球觸球瞬間手腕「自然減速」的速率，0=接觸期間等速（逐字對齊 return-studio.html
+// 目前的部署值）。
+const PUSH_WRIST_BRAKE_RATE = 0;
+function restitutionToDampingRatio(e){
+  const L = Math.log(e);
+  return -L / Math.sqrt(Math.PI * Math.PI + L * L);
+}
+function speedDependentSpongeDampingRatio(impactSpeedReal){
+  const t = clamp((impactSpeedReal - PADDLE_SPEED_LOW) / (PADDLE_SPEED_HIGH - PADDLE_SPEED_LOW), 0, 1);
+  const e = PADDLE_RESTITUTION_LOW + (PADDLE_RESTITUTION_HIGH - PADDLE_RESTITUTION_LOW) * t;
+  return restitutionToDampingRatio(e);
+}
+// executionVariance：範圍解模式（RANGE_SOLUTION_MODE）用的動作抖動幅度，模擬人手每次
+// 揮拍不會一模一樣。數值是校準過的安全範圍（用 13 顆有效發球批次測試，確保抖動後
+// 大部分情況仍然成功，不會做出明知不可行的動作）：push 容錯空間大用 0.12，
+// attack 容錯空間較窄用 0.08。見 docs/physics-engine-v2-plan.md Phase 6。
+// racketNormalTiltY：拍面垂直開合角度，世界座標絕對值（跟揮拍方向無關）。
+// racketNormalTiltX：拍面平面偏轉角度，繞「揮拍方向」這個軸旋轉的相對角度
+// （見上方 computeRacketNormal()）——不是世界座標的絕對左右偏移。
+const TECHNIQUES = {
+  forehand_attack: {label:'正手攻球', model:'attack', techniqueVel:{x:0, y:-0.234, z:-1}, racketNormalTiltY:0.1, racketNormalTiltX:0, executionVariance:{vel:0.08, normal:0.024}},
+  backhand_attack: {label:'反手攻球', model:'attack', techniqueVel:{x:0, y:-0.234, z:-1}, racketNormalTiltY:0.1, racketNormalTiltX:0, executionVariance:{vel:0.08, normal:0.024}},
+  // 切球：拍面角度（racketNormalTiltY/X）跟揮拍方向（swingDirection）固定不變、獨立於彼此，
+  // 只有力道大小依球況調整（adaptivePush，見 computeAdaptivePushLift()/computeAdaptivePushDrive()）。
+  // 2026-07-14 從舊的「單一 magnitude 乘固定方向」公式回寫成 return-studio.html 已驗證過的拆分版本
+  // （拖高/往前送兩個獨立分量，各自 clamp），修正舊公式把 Y/Z 分量綁死同一比例、搜尋空間裡沒有
+  // 「往前下」揮拍方向可選的問題。racketNormalTiltY/swingDirection 這兩個欄位只有在 adaptivePush
+  // 關閉時才會被讀到（目前沒有 UI 開關，adaptivePush 恆為 true），數值對齊
+  // PUSH_TILT_Y/PUSH_LIFT_BASE/PUSH_DRIVE_BASE，避免萬一之後加開關時數字對不上。
+  // 見 return-studio.html、docs/ARCHIVE/physics-engine-v2-plan.md。
+  push: {label:'切球', model:'push', techniqueVel:{x:0, y:0, z:-0.4},
+    racketNormalTiltY:1.0, racketNormalTiltX:0, swingDirection:normalize({x:0, y:0.28, z:-0.56}),
+    adaptivePush:true, executionVariance:{vel:0.12, normal:0.036}}
+  // loop（拉球）2026-07-15 拿掉：舊 direct model 未套用球拍接觸力學，之後要重做才會加回來。
+};
+let presets = [];
+let selectedServeIndex = 0;
+let phase = 'loading';
+let selectedSide = null;
+let selectedTechnique = null;
+let servePath = [];
+let serveVelocities = [];
+let serveSpins = [];
+let returnPath = [];
+let currentPath = [];
+let playStart = 0;
+let animation = null;
+let hitPoint = null;
+let hitVel = null;
+let hitSpin = null;
+let returnVelocities = [];
+let returnSpins = [];
+let returnPushIndex = 0; // 切球的最佳擊球點 index（beginner 提早按時自動等到這裡）
+let returnAppearIndex = 0;
+let returnHintStartIndex = 0;
+let returnLandIndex = 0;
+let returnMissIndex = 0;
+let pendingReturn = null;
+let inputWindowOpen = false;
+let missResolved = false;
+let whiffedEarly = false;      // 起拍太早、球還沒進可擊區就揮空（practice/match）
+let serveFlightActive = false; // 物理球正在飛（影片播放中／發球前技術鍵不收輸入）
+let score = {ok:0, fail:0};
+// 方向判斷（側旋修正）：'left' | 'right' | null（未按＝不補償）。每次新發球重設。
+let selectedDirectionInput = null;
+// 方向 C 影片庫：videos.json 依 spinType 分組，只收 kind:'video' 且已審核通過的。
+let videoLibrary = {};
+let currentServeVideo = null; // 這一球配到的影片（可能為 null，代表該分類沒有影片）
+let videoExperiment = null; // prototypes/video-physics-timeline/direction-c/direction-c-engine.js 的 Experiment 實例
+let showTrajectories = false;
+let GAME_SPEED = 1; // 動畫播放速度倍率，只影響球的播放節奏，不影響物理／落點
+let DIFFICULTY_MODE = 'beginner';
+// 自動最佳時機回擊（測試用）：勾選後不用手動反應，球到達預先算好的最佳擊球點
+// （findHitIndex/findPushHitIndex）時自動觸發回擊，方便批次測試特定技術的表現。
+let AUTO_BEST_TIMING = false;
+let AUTO_TIMING_SIDE = 'forehand';
+let AUTO_TIMING_TECHNIQUE = 'push';
+let autoFireIndex = null;
+// 範圍解模式：呈現桌球動作的多樣性（像生態箱，不是套招）。開啟後每次回擊的
+// techniqueVel/racketNormal 會加上小幅隨機抖動（見 TECHNIQUES.*.executionVariance），
+// 模擬人手每次揮拍不會一模一樣，但方向依然正確——不是隨機亂打，抖動幅度已校準過，
+// 確保仍落在「合理、可行」的範圍內。見 docs/physics-engine-v2-plan.md Phase 6。
+let RANGE_SOLUTION_MODE = false;
+let currentServePoint = null;
+let currentServeVel = null;
+let currentTimingPhase = 'unknown';
+let timingHintActive = false;
+let lastTimingPhase = 'unknown';
+let timingFlashUntil = 0;
+let timingSideRisingUntil = 0;
+
+const canvas = document.getElementById('scene');
+const spinHud = document.getElementById('spinHud');
+const spinLabelEl = document.getElementById('spinLabel');
+const spinSpeedLabelEl = document.getElementById('spinSpeedLabel');
+let spinIndicatorText = '';
+const renderer = new THREE.WebGLRenderer({canvas, antialias:true});
+renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x05070a);
+scene.fog = new THREE.Fog(0x05070a, 7, 14);
+scene.add(new THREE.AmbientLight(0xffffff, 0.55));
+const light = new THREE.DirectionalLight(0xffffff, 0.9);
+light.position.set(2,5,3);
+scene.add(light);
+const camera = new THREE.PerspectiveCamera(48, 1, 0.01, 30);
+// game5 專用：畫面上方疊了影片區塊（見 .video-frame），鏡頭要比 game4 原本的
+// 取景再往上抬一點，把球桌整個往下推，桌子才不會被影片蓋到。跟 game4 共用的
+// camera-config.json 完全不動（那邊沒有這個問題，鏡頭邏輯是各自檔案自己的
+// 副本，不影響 game4），只在這個檔案裡疊加一個固定量。用實機投影算過
+// （THREE.Vector3.project()，不是用眼睛看猜的）：lookAt.y 從 0.5 抬到 0.9，
+// 球桌遠端（對手那側）從畫面 224px 推到 277px，影片區塊底部在 232px，有安全
+// 間距；球桌近端在 438px，離下方常駐按鈕（約 700px 起）還有充足空間。
+const GAME5_LOOKAT_Y_BOOST = 0.5;
+// 2026-07-15 概念版：boost 從常數改成動態值——影片只在發球前段蓋住上半屏，
+// 觸球交接、影片淡出後上半屏就空了，鏡頭該把取景收回來（不然長球一彈高就
+// 飛出畫面）。beginServeFlight 把目標設 0，tickCamera 每幀 lerp 過去；
+// prepareServe 依「這球有沒有影片」直接跳回初始值（回合間切換，不用平滑）。
+let camBoostY = GAME5_LOOKAT_Y_BOOST;       // 當下實際疊加量
+let camBoostTargetY = GAME5_LOOKAT_Y_BOOST; // 目標疊加量
+let CAM_LOOKAT_BASE_Y = 0.5;                // camera-config.json 的原始 lookAt.y
+// 長球視野保護（概念版）：length=long 的發球，鏡頭跟球時額外往後拉，讓靠近
+// 鏡頭的攔截區留在畫面內。每球在 prepareServe 依 preset 長短設定。
+let camLongPullbackZ = 0;
+camera.position.set(0, 1.45, 3.25);
+camera.lookAt(0, 0.5 + GAME5_LOOKAT_Y_BOOST, 0.3);
+
+// ── Camera follow state ────────────────────────────────────────────────────
+const CAM_HOME_POS    = new THREE.Vector3(0, 1.45, 3.25);
+let   CAM_INTERCEPT_Y = 1.45; // 由 camera-config.json 覆蓋
+const CAM_LOOK_AT     = new THREE.Vector3(0, 0.5 + GAME5_LOOKAT_Y_BOOST, 0.3);
+let   CAM_CFG         = {}; // camera-config.json 載入後填入
+const camPosTarget    = CAM_HOME_POS.clone();
+const camLookTarget   = CAM_LOOK_AT.clone();
+const camLookCurrent  = CAM_LOOK_AT.clone();
+const hitPointVec     = new THREE.Vector3(); // 反手 lookAt 目標（預測落點）
+let camRaf = null;
+let camBounceTriggered = false; // 對方第一跳離地後是否已觸發
+let camTriggerZ = -TABLE.length; // 觸發門檻 z（對方第一跳 z + margin）
+
+const table = new THREE.Mesh(
+  new THREE.BoxGeometry(TABLE.width, 0.04, TABLE.length),
+  new THREE.MeshLambertMaterial({color:0x14723f})
+);
+table.position.set(0, TABLE.height, 0);
+scene.add(table);
+const edge = new THREE.LineSegments(
+  new THREE.EdgesGeometry(new THREE.BoxGeometry(TABLE.width, 0.041, TABLE.length)),
+  new THREE.LineBasicMaterial({color:0xffffff, transparent:true, opacity:0.55})
+);
+edge.position.copy(table.position);
+scene.add(edge);
+const centerLine = makeLine([{x:0,y:TABLE.top+0.003,z:-TABLE.length/2},{x:0,y:TABLE.top+0.003,z:TABLE.length/2}], 0xffffff, 0.3);
+scene.add(centerLine);
+const net = new THREE.Mesh(
+  new THREE.BoxGeometry(TABLE.width, TABLE.net, 0.012),
+  new THREE.MeshLambertMaterial({color:0xd9dee6, transparent:true, opacity:0.6})
+);
+net.position.set(0, TABLE.height + TABLE.net / 2, 0);
+scene.add(net);
+const floor = new THREE.Mesh(
+  new THREE.PlaneGeometry(7,7),
+  new THREE.MeshLambertMaterial({color:0x11151c})
+);
+floor.rotation.x = -Math.PI / 2;
+scene.add(floor);
+const ballMaterial = new THREE.MeshLambertMaterial({color:BALL_COLORS.default});
+const ball = new THREE.Mesh(
+  new THREE.SphereGeometry(BALL_RENDER_RADIUS, 24, 16),
+  ballMaterial
+);
+scene.add(ball);
+let pathLine = makeLine([], 0xffd84d, 0.9);
+scene.add(pathLine);
+let returnLine = makeLine([], 0x58a6ff, 0.85);
+scene.add(returnLine);
+setTrajectoryVisibility();
+
+// ── 擊球演出（2026-07-15 概念版）───────────────────────────────────────────
+// 起拍延遲模型有了「起拍→觸擊」的時間軸之後，把演出掛上去：起拍時球拍出現、
+// 追著球走；觸擊瞬間拍面貼上球、球閃白放大、短震動＋合成擊球聲；揮空則拍子
+// 掃過去淡出。擊球聲是玩家自己的回擊回饋，不是來球判斷線索（來球判斷仍然
+// 只靠視覺與桌面彈跳節奏），不違反「不用擊球聲當判斷提示」的既有原則。
+const paddleMatBlade = new THREE.MeshLambertMaterial({color:0xc0392b, transparent:true});
+const paddleMatHandle = new THREE.MeshLambertMaterial({color:0xd8b26e, transparent:true});
+const paddleGroup = new THREE.Group();
+const paddleBlade = new THREE.Mesh(new THREE.CylinderGeometry(0.085, 0.085, 0.014, 24), paddleMatBlade);
+paddleBlade.rotation.x = Math.PI / 2; // 圓面朝向 -z（面對來球）
+paddleGroup.add(paddleBlade);
+const paddleHandle = new THREE.Mesh(new THREE.BoxGeometry(0.032, 0.1, 0.02), paddleMatHandle);
+paddleHandle.position.y = -0.135;
+paddleGroup.add(paddleHandle);
+paddleGroup.visible = false;
+scene.add(paddleGroup);
+let paddleState = null;   // null | {mode:'approach', side} | {mode:'fade', fadeStart}
+let ballFlashUntil = 0;   // 觸擊閃白的結束時間戳
+let landingMarker = null; // 回球第一落點的桌面標記
+function startPaddleApproach(side){
+  paddleState = {mode:'approach', side};
+  paddleMatBlade.opacity = 1;
+  paddleMatHandle.opacity = 1;
+  const off = side === 'backhand' ? -0.3 : 0.3;
+  paddleGroup.position.set(ball.position.x + off, ball.position.y - 0.12, ball.position.z + 0.42);
+  paddleGroup.visible = true;
+}
+function paddleContactFx(point){
+  if(point) paddleGroup.position.set(point.x, point.y, point.z + BALL_RENDER_RADIUS + 0.012);
+  paddleGroup.visible = true;
+  paddleState = {mode:'fade', fadeStart:performance.now()};
+  ballFlashUntil = performance.now() + 150;
+  playHitSound();
+  try{ if(navigator.vibrate) navigator.vibrate(18); }catch(e){}
+}
+function paddleWhiffFx(){
+  if(paddleState && paddleState.mode === 'approach') paddleState = {mode:'fade', fadeStart:performance.now()};
+}
+function resetHitFx(){
+  paddleState = null;
+  paddleGroup.visible = false;
+  ballFlashUntil = 0;
+  ball.scale.setScalar(1);
+  hideSpinIndicator();
+  clearLandingMarker();
+}
+// 每幀演出更新：起拍中球拍追球（收斂到球側後方一點點），觸擊後順勢往前送＋淡出。
+function updateFx(now){
+  if(paddleState){
+    if(paddleState.mode === 'approach'){
+      const off = paddleState.side === 'backhand' ? -0.13 : 0.13;
+      paddleGroup.position.x += (ball.position.x + off - paddleGroup.position.x) * 0.3;
+      paddleGroup.position.y += (ball.position.y - 0.03 - paddleGroup.position.y) * 0.3;
+      paddleGroup.position.z += (ball.position.z + 0.17 - paddleGroup.position.z) * 0.3;
+    } else {
+      const k = (now - paddleState.fadeStart) / 350;
+      if(k >= 1){
+        paddleGroup.visible = false;
+        paddleState = null;
+      } else {
+        paddleGroup.position.z -= 0.006; // 順勢送拍
+        paddleMatBlade.opacity = 1 - k;
+        paddleMatHandle.opacity = 1 - k;
+      }
+    }
+  }
+  if(ballFlashUntil){
+    if(now < ballFlashUntil){
+      ball.scale.setScalar(1 + 0.9 * (ballFlashUntil - now) / 150);
+      setBallColor(0xffffff);
+    } else {
+      ball.scale.setScalar(1);
+      ballFlashUntil = 0;
+      resetBallColor();
+    }
+  }
+}
+function clearLandingMarker(){
+  if(!landingMarker) return;
+  scene.remove(landingMarker);
+  landingMarker.geometry.dispose();
+  landingMarker.material.dispose();
+  landingMarker = null;
+}
+function showLandingMarker(point, ok){
+  clearLandingMarker();
+  if(!point) return;
+  landingMarker = new THREE.Mesh(
+    new THREE.CircleGeometry(0.055, 24),
+    new THREE.MeshBasicMaterial({color: ok ? 0x3fb950 : 0xff7b72, transparent:true, opacity:0.85, side:THREE.DoubleSide})
+  );
+  landingMarker.rotation.x = -Math.PI / 2;
+  landingMarker.position.set(point.x, TABLE.top + 0.004, point.z);
+  scene.add(landingMarker);
+}
+// 合成擊球聲：短促的三角波下滑音，不用外部音檔。AudioContext 要在使用者手勢
+// 裡建立/恢復（瀏覽器自動播放政策），見 ensureAudio() 的呼叫點。
+let audioCtx = null;
+function ensureAudio(){
+  try{
+    if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if(audioCtx.state === 'suspended') audioCtx.resume();
+  }catch(e){}
+}
+function playHitSound(){
+  try{
+    if(!audioCtx || audioCtx.state !== 'running') return;
+    const t = audioCtx.currentTime;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(240, t);
+    osc.frequency.exponentialRampToValueAtTime(130, t + 0.07);
+    gain.gain.setValueAtTime(0.28, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.09);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start(t);
+    osc.stop(t + 0.1);
+  }catch(e){}
+}
+
+function makeLine(points, color, opacity){
+  const geometry = new THREE.BufferGeometry().setFromPoints(points.map(p=>new THREE.Vector3(p.x,p.y,p.z)));
+  const material = new THREE.LineBasicMaterial({color, transparent:true, opacity});
+  return new THREE.Line(geometry, material);
+}
+function updateLine(line, points){
+  line.geometry.dispose();
+  line.geometry = new THREE.BufferGeometry().setFromPoints(points.map(p=>new THREE.Vector3(p.x,p.y,p.z)));
+}
+function setTrajectoryVisibility(){
+  if(pathLine) pathLine.visible = showTrajectories;
+  if(returnLine) returnLine.visible = showTrajectories;
+}
+// ── Camera follow helpers ──────────────────────────────────────────────────
+function tickCamera(){
+  const f = CAM_CFG.lerpFactor ?? 0.025;
+  // 影片交接後把 lookAt boost 平滑收回（見 camBoostY 宣告處註解）
+  camBoostY += (camBoostTargetY - camBoostY) * 0.08;
+  CAM_LOOK_AT.y = CAM_LOOKAT_BASE_Y + camBoostY;
+  if(phase === 'serve'){
+    if(!camBounceTriggered && ball.position.z > camTriggerZ && hitPoint){
+      camBounceTriggered = true;
+      camPosTarget.set(hitPoint.x, CAM_INTERCEPT_Y, CAM_HOME_POS.z + camLongPullbackZ);
+    }
+    camera.position.lerp(camPosTarget, f * 2);
+    const tx = ball.position.x * 0.1;
+    camLookCurrent.x += (tx - camLookCurrent.x) * f;
+    camLookCurrent.y = CAM_LOOK_AT.y;
+    camLookCurrent.z = CAM_LOOK_AT.z;
+  } else if(phase === 'return'){
+    camera.position.lerp(camPosTarget, f);
+    if(selectedSide === 'backhand'){
+      camLookCurrent.lerp(hitPointVec, f);
+    } else {
+      camLookCurrent.lerp(camLookTarget, f);
+    }
+  } else {
+    camera.position.lerp(camPosTarget, f);
+    camLookCurrent.lerp(CAM_LOOK_AT, f);
+  }
+  camera.position.y = CAM_INTERCEPT_Y;
+  camera.lookAt(camLookCurrent);
+}
+function applyCamConfig(){
+  CAM_INTERCEPT_Y = CAM_CFG.height ?? CAM_INTERCEPT_Y;
+  CAM_HOME_POS.setY(CAM_INTERCEPT_Y);
+  if(CAM_CFG.lookAt){
+    // boost 疊加在共用設定值上面，不是取代它——camera-config.json 本身完全不改，
+    // game4 讀到的還是原始值。boost 現在是動態的（camBoostY），基準值另存。
+    CAM_LOOKAT_BASE_Y = CAM_CFG.lookAt.y ?? 0.5;
+    CAM_LOOK_AT.set(CAM_CFG.lookAt.x ?? 0, CAM_LOOKAT_BASE_Y + camBoostY, CAM_CFG.lookAt.z ?? 0.3);
+  }
+  camera.position.y = CAM_INTERCEPT_Y;
+  camera.lookAt(CAM_LOOK_AT);
+}
+function resetCam(hard){
+  camBounceTriggered = false;
+  camPosTarget.copy(CAM_HOME_POS);
+  camLookTarget.copy(CAM_LOOK_AT);
+  if(hard){
+    camera.position.copy(CAM_HOME_POS);
+    camLookCurrent.copy(CAM_LOOK_AT);
+    camera.lookAt(CAM_LOOK_AT);
+  }
+}
+function startCamReturn(){
+  if(camRaf) cancelAnimationFrame(camRaf);
+  function loop(){
+    tickCamera();
+    try{ updateFx(performance.now()); }catch(e){}
+    if(animation === null) render();
+    const posDone  = camera.position.distanceTo(camPosTarget) < 0.002;
+    const lookDone = camLookCurrent.distanceTo(CAM_LOOK_AT) < 0.002;
+    camRaf = (posDone && lookDone) ? null : requestAnimationFrame(loop);
+  }
+  camRaf = requestAnimationFrame(loop);
+}
+function resize(){
+  const rect = canvas.parentElement.getBoundingClientRect();
+  renderer.setSize(rect.width, rect.height, false);
+  camera.aspect = rect.width / Math.max(1, rect.height);
+  camera.updateProjectionMatrix();
+  renderer.render(scene, camera);
+}
+window.addEventListener('resize', resize);
+if(window.ResizeObserver){
+  new ResizeObserver(resize).observe(canvas.parentElement);
+}
+
+function solveVelocity(start, target, time, gravity){
+  return {
+    x:(target.x - start.x) / time,
+    y:(target.y - start.y - 0.5 * gravity * time * time) / time,
+    z:(target.z - start.z) / time
+  };
+}
+function clone(v){ return {x:v.x,y:v.y,z:v.z}; }
+function add(a,b){ return {x:a.x+b.x,y:a.y+b.y,z:a.z+b.z}; }
+function isValidPoint(point){
+  return point && Number.isFinite(point.x) && Number.isFinite(point.y) && Number.isFinite(point.z);
+}
+// ── 物理引擎 v2：接觸力學（逐字對齊 tools/physics-v2-contact-mechanics.js）──
+function contactSlipSpeed(vel, spin){
+  const slipZ = vel.z - (spin.topspin || 0) * BALL_RADIUS;
+  const slipX = vel.x + (spin.sidespin || 0) * BALL_RADIUS;
+  return Math.hypot(slipX, slipZ);
+}
+// 完整一次觸桌反彈：回傳新的 vel/spin（spin 現在會隨每次觸桌真的改變，不再是常數）
+// ── 物理引擎 v2：球拍接觸力學（通用版，任意拍面法向 + 拍面自身速度）──────────
+// 跟球對桌面同一套接觸力學（法向反彈 + 切向庫倫摩擦/純滾動判斷），差別是：
+// 桌面法向永遠是 +y、永遠靜止；球拍法向可以任意傾斜、且球拍本身有揮拍速度。
+// 退化成 planeNormal=(0,1,0)、planeVel=0 時，跟 bounceWithSpinPhysical() 完全一致
+// （已用 tools/racket-contact-mechanics.js 驗證過，見 docs/physics-engine-v2-plan.md）。
+// 注意：這裡用的是「真正的 2D 向量庫倫摩擦」（單一共用摩擦衝量預算，方向沿實際
+// 滑動向量），比桌面版本「x/z 各自獨立摩擦力預算」的簡化更嚴謹；兩者只有在
+// 滑動剛好落在單一軸上時才會完全一致，混合滑動時數值會有些微差異（更精確）。
+function crossVec3(a, b){
+  return {x:a.y*b.z-a.z*b.y, y:a.z*b.x-a.x*b.z, z:a.x*b.y-a.y*b.x};
+}
+function subVec3(a, b){ return {x:a.x-b.x, y:a.y-b.y, z:a.z-b.z}; }
+function scaleVec3(v, s){ return {x:v.x*s, y:v.y*s, z:v.z*s}; }
+function dotVec3(a, b){ return a.x*b.x + a.y*b.y + a.z*b.z; }
+// Rodrigues 旋轉公式：把向量 v 繞單位軸 axis 轉 angle 弳度。
+function rotateAroundAxis(v, axis, angle){
+  const cosA = Math.cos(angle), sinA = Math.sin(angle);
+  const crossTerm = crossVec3(axis, v);
+  const dotTerm = dotVec3(axis, v);
+  return addVec(addVec(scaleVec3(v, cosA), scaleVec3(crossTerm, sinA)), scaleVec3(axis, dotTerm * (1 - cosA)));
+}
+// 拍面法向量：垂直角度（tiltY）是世界座標的絕對開合角度；平面角度（tiltX）
+// 改成繞「揮拍方向」這個軸旋轉的相對角度，不是世界座標的絕對左右偏移。
+// 見 docs/physics-engine-v2-plan.md「拍面平面角度改為相對揮拍方向」。
+function computeRacketNormal(tiltY, tiltX, swingDirRef){
+  const verticalTilted = normalize({x:0, y:tiltY || 0, z:-1});
+  if(!tiltX) return verticalTilted;
+  const axis = normalize(swingDirRef);
+  return rotateAroundAxis(verticalTilted, axis, tiltX);
+}
+// blend：反彈方向不是純剛體拍面法向量，是法向量跟「球實際接近方向反方向」的混合，
+// 模擬球陷入海綿滑動時，回彈方向被滑動方向帶偏的效應。只用 Y-Z（垂直）分量算接近
+// 方向，刻意排除X分量——左右方向不該耦合進「這球到底是上旋還是下旋」的判斷。
+// blend=0 時直接回傳原始 planeNormal。用球面線性插值（slerp）而非線性插值+標準化，
+// 避免拍面角度大時等效法向量在某個角度突然180度反轉（逐字對齊 return-studio.html，
+// 完整推導見該檔案同名函式註解）。
+function computeBlendedNormal(vel, planeVel, planeNormal, blend){
+  if(!blend) return planeNormal;
+  const relVelRaw = subVec3(vel, planeVel);
+  const relYZ = {x:0, y:relVelRaw.y, z:relVelRaw.z};
+  const relSpeed = Math.hypot(relYZ.y, relYZ.z);
+  if(relSpeed <= 1e-9) return planeNormal;
+  const approachDir = scaleVec3(relYZ, -1 / relSpeed);
+  const cosTheta = clamp(dotVec3(planeNormal, approachDir), -1, 1);
+  const theta = Math.acos(cosTheta);
+  if(theta < 1e-6) return planeNormal;
+  if(theta > Math.PI - 1e-6){
+    return normalize(addVec(scaleVec3(planeNormal, 1 - blend), scaleVec3(approachDir, blend)));
+  }
+  const sinTheta = Math.sin(theta);
+  const wPlane = Math.sin((1 - blend) * theta) / sinTheta;
+  const wApproach = Math.sin(blend * theta) / sinTheta;
+  return normalize(addVec(scaleVec3(planeNormal, wPlane), scaleVec3(approachDir, wApproach)));
+}
+function bounceOffPlane(vel, spin, planeNormal, planeVel, restitution, friction){
+  const omega = {x:(spin && spin.topspin) || 0, y:0, z:(spin && spin.sidespin) || 0};
+  const relVel = subVec3(vel, planeVel);
+  const normalSpeed = dotVec3(relVel, planeNormal); // 應該 < 0（正在靠近拍面）
+  const normalImpulse = BALL_MASS * (1 + restitution) * Math.abs(normalSpeed);
+  const normalRelAfter = -restitution * normalSpeed;
+  const r = scaleVec3(planeNormal, -BALL_RADIUS);
+  const rotContact = crossVec3(omega, r);
+  const contactRelVel = add(relVel, rotContact);
+  const normalComp = scaleVec3(planeNormal, dotVec3(contactRelVel, planeNormal));
+  const tangentSlip = subVec3(contactRelVel, normalComp);
+  const slipMag = Math.hypot(tangentSlip.x, tangentSlip.y, tangentSlip.z);
+  const comTangent = subVec3(relVel, scaleVec3(planeNormal, normalSpeed));
+  let tangentRelAfter, omegaAfter;
+  if(slipMag < 1e-9){
+    tangentRelAfter = comTangent;
+    omegaAfter = omega;
+  } else {
+    const e1 = scaleVec3(tangentSlip, 1 / slipMag);
+    const e2 = crossVec3(planeNormal, e1); // 右手系：e1, e2, planeNormal
+    const v1 = dotVec3(comTangent, e1);
+    const v2 = dotVec3(comTangent, e2);
+    // slip_e1 = v1 - (ω·e2)*R，slip_e2 = v2 - (-ω·e1)*R（推導見 tools/racket-contact-mechanics.js）
+    const r1 = bounceTangentialAxis(v1, dotVec3(omega, e2), normalImpulse, friction);
+    const r2 = bounceTangentialAxis(v2, -dotVec3(omega, e1), normalImpulse, friction);
+    tangentRelAfter = add(scaleVec3(e1, r1.v2), scaleVec3(e2, r2.v2));
+    const normalSpinComp = scaleVec3(planeNormal, dotVec3(omega, planeNormal));
+    omegaAfter = add(add(normalSpinComp, scaleVec3(e2, r1.omega2)), scaleVec3(e1, -r2.omega2));
+  }
+  const velAfterRel = add(scaleVec3(planeNormal, normalRelAfter), tangentRelAfter);
+  const velAfter = add(velAfterRel, planeVel);
+  return {vel:velAfter, spin:{topspin:omegaAfter.x, sidespin:omegaAfter.z}};
+}
+// 逐步積分接觸模型（2026-07-14 從 return-studio.html 移植，逐字對齊）：法向用
+// 「兩級串聯彈簧-阻尼」取代固定反彈係數——球先壓縮海綿+膠皮（第一級，spring1），
+// 海綿再壓縮木板（第二級，spring2），木板頂著拍柄/手（固定端）。切向摩擦（旋轉）
+// 由 spring1 在球面接觸點的力驅動，沿用既有 bounceTangentialAxis() 同一套推導但
+// 改成連續黏性阻尼力 Pxy=-TANGENT_KP·vs（見 return-studio.html 同名函式完整註解，
+// 含 wristBrakeRate/SIM_TIME_DILATION 的物理意義，這裡不重複）。
+function bounceOffPlaneSubstepped(vel, spin, planeNormal, planeVel, springK, dampingRatio, friction, opts){
+  opts = opts || {};
+  const dt = opts.dt || 0.00002;
+  const maxSteps = opts.maxSteps || 3000;
+  const wristBrakeRate = opts.wristBrakeRate || 0;
+  const D = SIM_TIME_DILATION;
+  const velLab = scaleVec3(vel, D);
+  const wallVel0 = scaleVec3(planeVel, D);
+  const relVelReal0 = subVec3(velLab, wallVel0);
+  const rawNormalDot = dotVec3(relVelReal0, planeNormal);
+  const normalSpeedReal = -rawNormalDot;
+  if(normalSpeedReal <= 0) return bounceOffPlane(vel, spin, planeNormal, planeVel, 0, friction); // 沒在接近，直接不反彈
+  const effectiveDampingRatio = speedDependentSpongeDampingRatio(normalSpeedReal);
+  const dampingC = effectiveDampingRatio * 2 * Math.sqrt(springK * BALL_MASS);
+  const bladeDampingC = BLADE_DAMPING_RATIO * 2 * Math.sqrt(BLADE_SPRING_K * BLADE_NODE_MASS);
+  const omega0 = scaleVec3({x:(spin && spin.topspin) || 0, y:0, z:(spin && spin.sidespin) || 0}, D);
+  const r = scaleVec3(planeNormal, -BALL_RADIUS);
+  const contactRelVel = addVec(relVelReal0, crossVec3(omega0, r));
+  const trueSlip = subVec3(contactRelVel, scaleVec3(planeNormal, dotVec3(contactRelVel, planeNormal)));
+  const slipMag = Math.hypot(trueSlip.x, trueSlip.y, trueSlip.z);
+  let e1;
+  if(slipMag > 1e-9){
+    e1 = scaleVec3(trueSlip, 1 / slipMag);
+  } else {
+    const arbitrary = Math.abs(planeNormal.x) < 0.9 ? {x:1,y:0,z:0} : {x:0,y:1,z:0};
+    e1 = normalize(subVec3(arbitrary, scaleVec3(planeNormal, dotVec3(arbitrary, planeNormal))));
+  }
+  const e2 = crossVec3(planeNormal, e1);
+  const normalSpinComp = scaleVec3(planeNormal, dotVec3(omega0, planeNormal));
+  let om1 = dotVec3(omega0, e2), om2 = -dotVec3(omega0, e1);
+  let negBall = -dotVec3(velLab, planeNormal);
+  let ballV1 = dotVec3(velLab, e1), ballV2 = dotVec3(velLab, e2);
+  let negNode = -dotVec3(wallVel0, planeNormal);
+  let x1 = 0, x2 = 0, t = 0;
+  for(let i = 0; i < maxSteps; i++){
+    const wallVelNow = wristBrakeRate ? scaleVec3(wallVel0, Math.exp(-wristBrakeRate * t)) : wallVel0;
+    const negWallN = -dotVec3(wallVelNow, planeNormal);
+    const v1rel = negBall - negNode;
+    const F1 = -springK * x1 - dampingC * v1rel;
+    const F2 = -BLADE_SPRING_K * x2 - bladeDampingC * (negNode - negWallN);
+    negBall += (F1 / BALL_MASS) * dt;
+    negNode += ((-F1 + F2) / BLADE_NODE_MASS) * dt;
+    x1 += (negBall - negNode) * dt;
+    x2 += (negNode - negWallN) * dt;
+    const normalForceNow = Math.max(0, -F1);
+    if(normalForceNow > 0){
+      const wallV1 = dotVec3(wallVelNow, e1), wallV2 = dotVec3(wallVelNow, e2);
+      const Fcap = friction * normalForceNow;
+      {
+        const slip = (ballV1 - wallV1) - om1 * BALL_RADIUS;
+        const FtRaw = -TANGENT_KP * slip;
+        const Ft = clamp(FtRaw, -Fcap, Fcap);
+        ballV1 += (Ft / BALL_MASS) * dt;
+        om1 -= (Ft * BALL_RADIUS / BALL_INERTIA) * dt;
+      }
+      {
+        const slip = (ballV2 - wallV2) - om2 * BALL_RADIUS;
+        const FtRaw = -TANGENT_KP * slip;
+        const Ft = clamp(FtRaw, -Fcap, Fcap);
+        ballV2 += (Ft / BALL_MASS) * dt;
+        om2 -= (Ft * BALL_RADIUS / BALL_INERTIA) * dt;
+      }
+    }
+    t += dt;
+    if(x1 <= 0 && i > 5){
+      const vBallN = -negBall;
+      const velAfterLab = addVec(scaleVec3(planeNormal, vBallN), addVec(scaleVec3(e1, ballV1), scaleVec3(e2, ballV2)));
+      const velAfter = scaleVec3(velAfterLab, 1 / D);
+      const omegaFinal = scaleVec3(addVec(addVec(normalSpinComp, scaleVec3(e2, om1)), scaleVec3(e1, -om2)), 1 / D);
+      return {vel: velAfter, spin: {topspin: omegaFinal.x, sidespin: omegaFinal.z}, dwellMs: t * 1000, effectiveEpsilon: negBall / normalSpeedReal};
+    }
+  }
+  return {vel, spin, dwellMs: t * 1000, regime: 'overdamped_no_exit'};
+}
+// push 技術改用 Stage 4a 逐步積分接觸模型，blend 先算出「等效法向量」（Y-Z-only，
+// 見 computeBlendedNormal），整個接觸期間固定用這個等效法向量做壓縮/釋放積分。
+// 其他技術（攻球等）維持原本的瞬時碰撞公式，不受影響。epsilon 是為非切球技術
+// 準備的，切球這條分支不會用到它（呼叫端仍會算，跟攻球共用同一段呼叫邏輯）。
+function applyPushContact(incomingVel, spin, racketNormal, planeVel, epsilon, tech, blend){
+  if(tech.model === 'push'){
+    const effNormal = computeBlendedNormal(incomingVel, planeVel, racketNormal, blend);
+    return bounceOffPlaneSubstepped(incomingVel, spin, effNormal, planeVel, PADDLE_SPRING_K, PADDLE_DAMPING_RATIO, PADDLE_FRICTION, {wristBrakeRate: PUSH_WRIST_BRAKE_RATE});
+  }
+  return bounceOffPlane(incomingVel, spin, racketNormal, planeVel, epsilon, PADDLE_FRICTION);
+}
+function simulatePath(start, velocity, options){
+  const gravity = options.gravity ?? -4.2;
+  // spin 現在是可變狀態：物理引擎 v2 下，每次觸桌旋轉都會真的改變（不再是套用整段路徑的常數）
+  let spin = {topspin:(options.spin && options.spin.topspin) || 0, sidespin:(options.spin && options.spin.sidespin) || 0};
+  const bounceBoost = options.bounceBoost ?? 0;
+  const pos = clone(start);
+  const vel = clone(velocity);
+  const points = [clone(pos)];
+  const velocities = [clone(velocity)];
+  const spins = [{...spin}];
+  const bounces = [];
+  let firstLanding = null;
+  let groundLanding = null;
+  let netY = null;
+  let netHit = null;
+  let crossedNet = false;
+  for(let i=0;i<MAX_STEPS;i++){
+    const prev = clone(pos);
+    vel.y += gravity * DT;
+    pos.x += vel.x * DT;
+    pos.y += vel.y * DT;
+    pos.z += vel.z * DT;
+    if(!crossedNet && ((prev.z < 0 && pos.z >= 0) || (prev.z > 0 && pos.z <= 0))){
+      const ratio = (0 - prev.z) / (pos.z - prev.z || 1);
+      netY = prev.y + (pos.y - prev.y) * ratio;
+      const netTop = TABLE.height + TABLE.net;
+      if(netY < netTop){
+        const incomingZ = Math.sign(vel.z) || Math.sign(pos.z - prev.z) || 1;
+        const impact = {
+          x:prev.x + (pos.x - prev.x) * ratio,
+          y:netY,
+          z:0,
+          t:i * DT + DT * ratio,
+          index:points.length
+        };
+        netHit = impact;
+        pos.x = impact.x;
+        pos.y = impact.y;
+        pos.z = -incomingZ * NET_COLLISION.depth;
+        points.push({...impact});
+        velocities.push(clone(vel));
+        spins.push({...spin});
+        vel.x *= NET_COLLISION.xDamping;
+        vel.y *= NET_COLLISION.yDamping;
+        vel.z = -vel.z * NET_COLLISION.zRestitution;
+      }
+      crossedNet = true;
+    }
+    const crossedTableTop = prev.y >= TABLE.top && pos.y <= TABLE.top;
+    if(crossedTableTop && vel.y < 0){
+      const ratio = (TABLE.top - prev.y) / (pos.y - prev.y || 1);
+      const impact = {
+        x:prev.x + (pos.x - prev.x) * ratio,
+        y:TABLE.top,
+        z:prev.z + (pos.z - prev.z) * ratio,
+        t:i * DT + DT * ratio
+      };
+      const onTable = Math.abs(impact.x) <= TABLE.width/2 && Math.abs(impact.z) <= TABLE.length/2;
+      if(onTable){
+        pos.x = impact.x;
+        pos.y = TABLE.top;
+        pos.z = impact.z;
+        const bouncePoint = {...impact, index:points.length};
+        if(!firstLanding) firstLanding = bouncePoint;
+        bounces.push(bouncePoint);
+        points.push(clone(pos));
+        velocities.push(clone(vel));
+        spins.push({...spin});
+        if(bounces.length > MAX_TABLE_BOUNCES) break;
+        // 尺度一致性修復（2026-07-14）：bounceWithSpinPhysical 需要真實尺度的速度和旋轉，
+        // 但 simulatePath 內部用模擬尺度（gravity=-4.2）。呼叫前乘 SIM_TIME_DILATION 轉真實尺度，
+        // 呼叫後除回去。跟 bounceOffPlaneSubstepped 的做法一致。
+        const D_bounce = SIM_TIME_DILATION;
+        const bounced = bounceWithSpinPhysical(
+          {x: vel.x * D_bounce, y: vel.y * D_bounce, z: vel.z * D_bounce},
+          {topspin: (spin.topspin || 0) * D_bounce, sidespin: (spin.sidespin || 0) * D_bounce},
+          CONTACT_FRICTION_MU
+        );
+        vel.x = bounced.vel.x / D_bounce; vel.y = bounced.vel.y / D_bounce; vel.z = bounced.vel.z / D_bounce;
+        spin = {topspin: bounced.spin.topspin / D_bounce, sidespin: bounced.spin.sidespin / D_bounce};
+        if(bounceBoost){
+          const forwardZ = Math.sign(vel.z || velocity.z || -1);
+          vel.z += forwardZ * bounceBoost;
+        }
+      }
+    }
+    if(pos.y <= BALL_RADIUS && prev.y > BALL_RADIUS){
+      const ratio = (BALL_RADIUS - prev.y) / (pos.y - prev.y || 1);
+      groundLanding = {
+        x:prev.x + (pos.x - prev.x) * ratio,
+        y:BALL_RADIUS,
+        z:prev.z + (pos.z - prev.z) * ratio,
+        t:i * DT + DT * ratio
+      };
+      points.push(groundLanding);
+      velocities.push(clone(vel));
+      spins.push({...spin});
+      break;
+    }
+    points.push(clone(pos));
+    velocities.push(clone(vel));
+    spins.push({...spin});
+    if(Math.abs(pos.x) > 3 || Math.abs(pos.z) > 4) break;
+  }
+  return {points, velocities, spins, bounces, netY, netHit, firstLanding, groundLanding, baseVel:clone(velocity)};
+}
+function solveBaseVelocity(preset){
+  const targetMode = preset.solve?.targetMode || preset.solve?.target;
+  if(targetMode === 'serve_bounces'){
+    return solveServeBounceVelocity(preset);
+  }
+  const time = preset.solve?.timeToFirst ?? preset.solve?.flightTime ?? 0.3;
+  return solveVelocity(preset.start, preset.firstBounce || preset.target, time, preset.solve?.gravity ?? -4.2);
+}
+function solveServeBounceVelocity(preset){
+  const first = preset.firstBounce || preset.target;
+  const profile = getServeLengthProfile(preset);
+  const times = [0.1, 0.115, 0.13, 0.145, 0.16, 0.18, 0.2, 0.23, 0.26, 0.3, 0.35, 0.42, 0.5, 0.62, 0.76, 0.92, 1.08, 1.2];
+  const yNudges = profile.yNudges;
+  let bestTime = times[0];
+  let bestYNudge = 0;
+  let best = null;
+  let bestScore = Infinity;
+
+  function consider(time, yNudge){
+    const candidate = makeServeAimCandidate(preset, first, time, yNudge);
+    if(!Number.isFinite(candidate.x) || !Number.isFinite(candidate.y) || !Number.isFinite(candidate.z)) return;
+    if(candidate.y > profile.vyHardMax) return;
+    if(Math.hypot(candidate.x, candidate.z) > profile.speedReject) return;
+    const score = serveBounceScore(preset, candidate);
+    if(score < bestScore){
+      bestTime = time;
+      bestYNudge = yNudge;
+      best = candidate;
+      bestScore = score;
+    }
+  }
+
+  for(const time of times){
+    for(const yNudge of yNudges) consider(time, yNudge);
+  }
+  if(!best){
+    best = makeServeAimCandidate(preset, first, findServeBounceTime(preset), 0);
+    bestScore = serveBounceScore(preset, best);
+  }
+
+  let timeStep = 0.08;
+  let yStep = 0.07;
+  for(let round=0; round<28; round++){
+    let improved = false;
+    for(const dir of [-1,1]){
+      const beforeScore = bestScore;
+      consider(clamp(bestTime + timeStep * dir, 0.08, 1.05), bestYNudge);
+      improved = improved || bestScore < beforeScore;
+    }
+    for(const dir of [-1,1]){
+      const beforeScore = bestScore;
+      consider(bestTime, clamp(bestYNudge + yStep * dir, -0.24, 0.24));
+      improved = improved || bestScore < beforeScore;
+    }
+    if(!improved){
+      timeStep *= 0.58;
+      yStep *= 0.58;
+    }
+  }
+  return best;
+}
+function makeServeAimCandidate(preset, first, time, yNudge){
+  const base = solveVelocity(preset.start, first, time, preset.solve?.gravity ?? -4.2);
+  return {x:base.x, y:base.y + yNudge, z:base.z};
+}
+function getServeLengthProfile(preset){
+  const length = preset.tags?.length || preset.length || 'short';
+  if(length === 'long'){
+    return {
+      yNudges:[-0.16, -0.1, -0.05, 0, 0.05],
+      vySoftMax:0.02,
+      vyHardMax:0.08,
+      speedIdealMin:3.0,
+      speedIdealMax:5.2,
+      speedHardMax:5.7,
+      speedReject:6.4
+    };
+  }
+  if(length === 'half_long'){
+    return {
+      yNudges:[-0.16, -0.1, -0.05, 0, 0.08, 0.16, 0.26],
+      vySoftMax:0.18,
+      vyHardMax:0.35,
+      speedIdealMin:2.0,
+      speedIdealMax:3.6,
+      speedHardMax:4.1,
+      speedReject:4.8
+    };
+  }
+  return {
+    yNudges:[-0.12, -0.05, 0, 0.08, 0.16, 0.28, 0.42, 0.58],
+    vySoftMax:0.85,
+    vyHardMax:1.15,
+    speedIdealMin:1.1,
+    speedIdealMax:2.05,
+    speedHardMax:2.25,
+    speedReject:2.65
+  };
+}
+function findServeBounceTime(preset){
+  const first = preset.firstBounce || preset.target;
+  const gravity = preset.solve?.gravity ?? -4.2;
+  const times = [0.16, 0.2, 0.24, 0.28, 0.32, 0.36, 0.42, 0.5, 0.6, 0.72, 0.86];
+  let bestTime = times[3];
+  let bestScore = serveBounceScore(preset, solveVelocity(preset.start, first, bestTime, gravity));
+  for(const time of times){
+    const candidate = solveVelocity(preset.start, first, time, gravity);
+    const score = serveBounceScore(preset, candidate);
+    if(score < bestScore){
+      bestTime = time;
+      bestScore = score;
+    }
+  }
+  return bestTime;
+}
+function getServeBounces(path){
+  const first = path.bounces.find(bounce=>bounce.z < 0) || null;
+  const second = path.bounces.find(bounce=>bounce.z > 0) || null;
+  return {first, second};
+}
+function serveBounceScore(preset, baseVel){
+  const profile = getServeLengthProfile(preset);
+  const D_sbs = SIM_TIME_DILATION;
+  const simSpin_sbs = preset.variation?.spin ? {
+    topspin: preset.variation.spin.topspin / D_sbs,
+    sidespin: preset.variation.spin.sidespin / D_sbs
+  } : undefined;
+  const result = simulatePath(preset.start, baseVel, {
+    gravity:preset.solve?.gravity ?? -4.2,
+    spin: simSpin_sbs
+  });
+  const firstTarget = preset.firstBounce || preset.target;
+  const secondTarget = preset.secondBounce || preset.target;
+  const serveBounces = getServeBounces(result);
+  const first = serveBounces.first;
+  const second = serveBounces.second;
+  const firstPoint = first || result.groundLanding || result.points[result.points.length - 1] || preset.start;
+  const secondPoint = second || firstPoint;
+  const firstMiss = Math.hypot(firstPoint.x - firstTarget.x, firstPoint.z - firstTarget.z);
+  const secondMiss = Math.hypot(secondPoint.x - secondTarget.x, secondPoint.z - secondTarget.z);
+  const netClearance = result.netY == null ? null : result.netY - (TABLE.height + TABLE.net);
+  const targetNetClearance = preset.solve?.netClearance ?? 0.03;
+  const secondLegTime = first && second ? second.t - first.t : null;
+  const targetSecondLegTime = preset.solve?.secondLegTime ?? preset.solve?.flightTime ?? 0.74;
+  const horizontalSpeed = Math.hypot(baseVel.x, baseVel.z);
+  const upwardOver = Math.max(0, baseVel.y - profile.vySoftMax);
+  const upwardPenalty = upwardOver * 55 + upwardOver * upwardOver * 260;
+  const speedHigh = Math.max(0, horizontalSpeed - profile.speedIdealMax);
+  const speedHard = Math.max(0, horizontalSpeed - profile.speedHardMax);
+  const speedLow = Math.max(0, profile.speedIdealMin - horizontalSpeed);
+  const horizontalPenalty = speedHigh * 5 + speedHigh * speedHigh * 32 + speedHard * speedHard * 180 + speedLow * speedLow * 18;
+  const noFirstPenalty = first ? 0 : 300;
+  const noSecondPenalty = second ? 0 : 70;
+  const wrongSidePenalty = result.bounces.some((bounce, index)=>index > 0 && bounce.z < 0) ? 25 : 0;
+  const netHigh = netClearance == null ? 0 : Math.max(0, netClearance - targetNetClearance);
+  const netLow = netClearance == null ? 0 : Math.max(0, targetNetClearance - netClearance);
+  const timeMiss = secondLegTime == null ? 0 : secondLegTime - targetSecondLegTime;
+  const peakY = result.points.reduce((max, point)=>Math.max(max, point.y), preset.start.y);
+  const naturalPeakLimit = Math.max(preset.start.y + 0.1, TABLE.height + TABLE.net + targetNetClearance + 0.22);
+  const peakPenalty = Math.pow(Math.max(0, peakY - naturalPeakLimit), 2) * 12;
+  const netPenalty = netClearance == null
+    ? 16
+    : Math.max(0, -netClearance) * 220 + netLow * 45 + Math.pow(netLow, 2) * 260 + netHigh * 4 + Math.pow(netHigh, 2) * 24;
+  const timePenalty = secondLegTime == null ? 10 : Math.abs(timeMiss) * 0.5 + timeMiss * timeMiss * 8;
+  const firstGuardPenalty = Math.pow(Math.max(0, firstMiss - 0.025), 2) * 9000;
+  const secondGuardPenalty = Math.pow(Math.max(0, secondMiss - 0.12), 2) * 70;
+  return firstMiss * 80 + firstMiss * firstMiss * 420 + firstGuardPenalty + secondMiss * 14 + secondMiss * secondMiss * 48 + secondGuardPenalty + horizontalPenalty + upwardPenalty + peakPenalty + noFirstPenalty + noSecondPenalty + wrongSidePenalty + netPenalty + timePenalty;
+}
+function simulateServe(preset){
+  const gravity = preset.solve?.gravity ?? -4.2;
+  const velocity = solveBaseVelocity(preset);
+  const D_ss = SIM_TIME_DILATION;
+  const simSpin_ss = preset.variation?.spin ? {
+    topspin: preset.variation.spin.topspin / D_ss,
+    sidespin: preset.variation.spin.sidespin / D_ss
+  } : undefined;
+  return simulatePath(preset.start, velocity, {
+    gravity,
+    spin: simSpin_ss
+  });
+}
+function findHitIndex(path){
+  const receiverBounceIdx = path.bounces.findIndex(b=>b.z > 0);
+  if(receiverBounceIdx >= 0){
+    const receiverBounce = path.bounces[receiverBounceIdx];
+    // 若有第二個我方桌面 bounce，強制在它的 index 之前截斷
+    const nextBounce = path.bounces[receiverBounceIdx + 1];
+    const hardStop = nextBounce ? nextBounce.index : path.points.length;
+    const start = receiverBounce.index + 1;
+    for(let i = start; i < Math.min(hardStop, path.points.length - 1); i++){
+      if(path.points[i].y > TABLE.top && path.velocities[i]?.y < -TIMING_HINT.threshold) return i;
+    }
+    for(let i = start; i < Math.min(hardStop, path.points.length - 1); i++){
+      if(path.points[i].y > TABLE.top && path.points[i + 1].y < path.points[i].y) return Math.min(i + 1, hardStop - 1);
+    }
+    return Math.min(hardStop - 1, start + 15);
+  }
+  const fallback = path.points.findIndex(p=>p.z > 0.45 && p.y > TABLE.top);
+  return fallback >= 0 ? fallback : Math.min(path.points.length - 1, 90);
+}
+function findPushHitIndex(path){
+  const receiverBounceIdx = path.bounces.findIndex(b=>b.z > 0);
+  if(receiverBounceIdx >= 0){
+    const nextBounce = path.bounces[receiverBounceIdx + 1];
+    const hardStop = nextBounce ? nextBounce.index : path.points.length;
+    const start = path.bounces[receiverBounceIdx].index + 1;
+    for(let i = start; i < Math.min(hardStop, path.points.length - 1); i++){
+      if(path.points[i].y > TABLE.top && path.velocities[i]?.y < -0.15) return i;
+    }
+  }
+  return findHitIndex(path);
+}
+function findMissIndex(path, startIndex){
+  const points = path.points || [];
+  for(let i = Math.max(0, startIndex); i < points.length; i++){
+    if(points[i]?.y < MISS_Y) return i;
+  }
+  return Math.max(0, points.length - 1);
+}
+function currentPreset(){ return presets[selectedServeIndex]; }
+function timingPhaseFromVelocity(vel){
+  if(!vel) return 'unknown';
+  if(vel.y > TIMING_HINT.threshold) return 'rising';
+  if(vel.y < -TIMING_HINT.threshold) return 'falling';
+  return 'apex';
+}
+function timingLabel(phase){
+  return {rising:'上升', apex:'最高點', falling:'下降'}[phase] || '未知';
+}
+function setBallColor(color){
+  ballMaterial.color.setHex(color);
+}
+function resetBallColor(){
+  setBallColor(BALL_COLORS.default);
+}
+// ── 旋轉視覺提示（只讀目前動畫中的 spin，不改物理）──────────────────────
+function readSpinForDisplay(spin){
+  const value = spin || {};
+  const omega = value.omega || null;
+  const hasCanonicalOmega = !!omega && Number.isFinite(omega.x) && Number.isFinite(omega.y);
+  const topspin = hasCanonicalOmega ? omega.x : (Number.isFinite(value.topspin) ? value.topspin : 0);
+  // canonical omega.y 是新的側旋軸；沒有 canonical 資料時才退回 legacy sidespin。
+  const sidespin = hasCanonicalOmega ? omega.y : (Number.isFinite(value.sidespin) ? value.sidespin : 0);
+  const axialSpin = Number.isFinite(value.axialSpin) ? value.axialSpin : 0;
+  const axialZ = hasCanonicalOmega && Number.isFinite(omega.z) ? omega.z : 0;
+  return {
+    topspin,
+    sidespin,
+    axialSpin,
+    total: Math.hypot(topspin, sidespin, axialZ, axialSpin)
+  };
+}
+function hideSpinIndicator(){
+  if(!spinHud) return;
+  spinHud.hidden = true;
+  spinIndicatorText = '';
+}
+function updateSpinIndicator(spin, velocity){
+  if(!spinHud || !spin || (phase !== 'serve' && phase !== 'return')){
+    hideSpinIndicator();
+    return;
+  }
+  const info = readSpinForDisplay(spin);
+  const normalized = clamp(info.total / 240, 0, 1);
+  const noSpin = info.total < 4;
+  const activeTags = phase === 'serve' ? (currentPreset()?.tags || {}) : {};
+  const sideName = activeTags.sideName === 'left' || activeTags.sideName === 'right' ? activeTags.sideName : null;
+  const sideLabel = Math.abs(info.sidespin) > 8
+    ? (sideName === 'left' ? '左側旋' : sideName === 'right' ? '右側旋' : '側旋')
+    : '';
+  const verticalLabel = Math.abs(info.topspin) > 8
+    ? (info.topspin > 0 ? '上旋' : '下旋')
+    : '';
+  const label = [sideLabel, verticalLabel].filter(Boolean).join('＋') || '近乎無旋';
+  // 方向名稱優先讀 preset contract；回擊球沒有該 metadata 時才用目前角速度的
+  // 符號控制動畫視覺，不把它反推回正式資料名稱。
+  const turn = sideName === 'left' ? -1 : sideName === 'right' ? 1 : (info.sidespin || info.topspin) >= 0 ? 1 : -1;
+  const turnMark = turn > 0 ? '↻' : '↺';
+  const level = noSpin ? 'none' : normalized < .3 ? 'low' : normalized < .58 ? 'medium' : normalized < .82 ? 'high' : 'max';
+  const speedLabel = noSpin ? '無旋' : ({low:'低速',medium:'中速',high:'高速',max:'極高速'}[level] || '中速');
+  const duration = Math.max(.22, 1.08 - normalized * .82);
+  const spinText = `${turnMark} ${label}`;
+  if(spinText !== spinIndicatorText){
+    spinLabelEl.textContent = spinText;
+    spinIndicatorText = spinText;
+  }
+  spinSpeedLabelEl.textContent = speedLabel;
+  spinHud.classList.remove('level-none','level-low','level-medium','level-high','level-max');
+  spinHud.classList.add(`level-${level}`);
+  spinHud.classList.toggle('reverse', turn < 0);
+  spinHud.classList.toggle('no-spin', noSpin);
+  spinHud.style.setProperty('--spin-duration', `${duration}s`);
+  spinHud.style.setProperty('--spin-scale', `${1 + normalized * .16}`);
+  if(velocity){
+    spinHud.title = `${spinText}・${speedLabel}・${Math.round(info.total)} rad/s`;
+  }
+  const projected = ball.position.clone().project(camera);
+  const rect = canvas.parentElement.getBoundingClientRect();
+  spinHud.style.left = `${(projected.x * .5 + .5) * rect.width}px`;
+  spinHud.style.top = `${(-projected.y * .5 + .5) * rect.height}px`;
+  spinHud.hidden = false;
+}
+function isSidespinServe(preset = currentPreset()){
+  const spinType = String(preset?.tags?.spinType || preset?.spinType || '').toLowerCase();
+  return spinType.includes('side');
+}
+function updateTimingHint(vel, now = performance.now()){
+  currentTimingPhase = timingPhaseFromVelocity(vel);
+  if(!timingHintActive || DIFFICULTY_MODE === 'match'){
+    resetBallColor();
+    lastTimingPhase = currentTimingPhase;
+    timingSideRisingUntil = 0;
+    return;
+  }
+  if(currentTimingPhase === 'apex' && lastTimingPhase !== 'apex'){
+    timingFlashUntil = now + TIMING_HINT.flashMs;
+  }
+  if(DIFFICULTY_MODE === 'beginner' && isSidespinServe() && currentTimingPhase === 'rising'){
+    timingSideRisingUntil = now + TIMING_HINT.sideRisingHoldMs;
+  }
+  lastTimingPhase = currentTimingPhase;
+  if(now < timingFlashUntil){
+    setBallColor(BALL_COLORS.apex);
+    return;
+  }
+  if(DIFFICULTY_MODE === 'practice'){
+    resetBallColor();
+    return;
+  }
+  if(now < timingSideRisingUntil) setBallColor(BALL_COLORS.sideRising);
+  else if(currentTimingPhase === 'rising') setBallColor(BALL_COLORS.rising);
+  else if(currentTimingPhase === 'falling') setBallColor(BALL_COLORS.falling);
+  else setBallColor(BALL_COLORS.apex);
+}
+function setBall(point){
+  if(!isValidPoint(point)) return;
+  ball.position.set(point.x, point.y, point.z);
+}
+function render(){ renderer.render(scene, camera); }
+// animToken：動畫世代編號。onFrame 回呼裡可能同步啟動下一段動畫（起拍延遲觸擊、
+// AUTO 模式），舊 tick 在回呼返回後還會繼續執行、把自己排進下一幀——用世代編號
+// 讓被取代的 tick 自行終止，避免新舊兩段動畫同時搶球的位置。
+let animToken = 0;
+function animatePath(points, onDone, speedMs, onFrame, velocities, spins){
+  if(animation) cancelAnimationFrame(animation);
+  const token = ++animToken;
+  const safePoints = (points || []).filter(isValidPoint);
+  currentPath = safePoints;
+  if(!safePoints.length){
+    animation = null;
+    onDone?.();
+    return;
+  }
+  playStart = performance.now();
+  const duration = Math.max(700, safePoints.length * (speedMs || 10));
+  function tick(now){
+    if(token !== animToken) return; // 已被新動畫取代
+    const progress = Math.min(1, (now - playStart) / duration);
+    const index = Math.min(safePoints.length - 1, Math.floor(progress * (safePoints.length - 1)));
+    onFrame?.(index, safePoints[index], progress, velocities?.[index] || null);
+    if(token !== animToken) return; // onFrame 裡可能已觸擊、啟動回球動畫
+    setBall(safePoints[index]);
+    try{ tickCamera(); updateFx(now); updateSpinIndicator(spins?.[index], velocities?.[index]); }catch(e){}
+    render();
+    if(progress < 1){
+      animation = requestAnimationFrame(tick);
+    }else{
+      animation = null;
+      try{ startCamReturn(); }catch(e){}
+      onDone?.();
+    }
+  }
+  animation = requestAnimationFrame(tick);
+}
+function setPhase(next){
+  phase = next;
+  if(next !== 'serve' && next !== 'return') hideSpinIndicator();
+  document.getElementById('phaseText').textContent = {
+    idle:'準備',
+    serve:'看球',
+    choose_side:'選回擊',
+    choose_technique:'選回擊',
+    return:'回擊中',
+    result:'結果'
+  }[next] || next;
+  // 開始發球／下一球只在 idle 與 result 可按；發球／回擊進行中停用，避免誤觸中斷。
+  const serveReady = next === 'idle' || next === 'result';
+  const playBtnEl = document.getElementById('playBtn');
+  const nextBtnEl = document.getElementById('nextBtn');
+  if(playBtnEl) playBtnEl.disabled = !serveReady;
+  if(nextBtnEl) nextBtnEl.disabled = !serveReady;
+}
+function updateScore(){
+  document.getElementById('scoreText').textContent = `成功 ${score.ok} / 失分 ${score.fail}`;
+}
+function showResult(ok, reason, detail){
+  const el = document.getElementById('resultText');
+  el.textContent = reason;
+  el.className = 'result ' + (ok ? 'ok' : 'bad');
+  document.getElementById('detailText').textContent = detail || '';
+  // 中央大字卡：手機版側欄隱藏，成敗要在畫面中央講清楚（1.4 秒後自動淡出，
+  // centerTip 仍留有完整結果文字）。
+  const card = document.getElementById('resultCard');
+  if(card){
+    card.textContent = reason;
+    card.className = 'result-card show ' + (ok ? 'ok' : 'bad');
+    clearTimeout(showResult._cardTimer);
+    showResult._cardTimer = setTimeout(()=>card.classList.remove('show'), 1400);
+  }
+  if(ok) score.ok += 1;
+  else score.fail += 1;
+  updateScore();
+}
+function openReturnInput(){
+  if(inputWindowOpen || pendingReturn || missResolved) return;
+  inputWindowOpen = true;
+  setPhase('choose_technique');
+}
+function hideReturnInput(){
+  inputWindowOpen = false;
+  document.querySelectorAll('[data-return-technique]').forEach(btn=>{
+    btn.disabled = true;
+    btn.classList.remove('active');
+  });
+  document.querySelectorAll('[data-direction]').forEach(btn=>{btn.disabled = true; btn.classList.remove('active');});
+}
+function missReturn(reason){
+  if(missResolved || pendingReturn) return;
+  missResolved = true;
+  serveFlightActive = false;
+  paddleWhiffFx(); // 起拍中的球拍（若有）掃過淡出
+  hideReturnInput();
+  const label = reason || (whiffedEarly ? '揮空（出手太早）' : '漏球');
+  showResult(false, label, `發球：${currentPreset().label}`);
+  setPhase('result');
+  document.getElementById('centerTip').textContent = `${label}，請按下一球`;
+}
+function prepareServe(){
+  resetCam(false);
+  const round = pickRoundForNextServe();
+  if(round){
+    selectedServeIndex = presets.indexOf(round.preset);
+    currentServeVideo = round.video;
+  }
+  const preset = currentPreset();
+  document.getElementById('serveName').textContent = preset?.label || '未選擇';
+  document.getElementById('roundInfo').textContent = round
+    ? `分類：${currentServeVideo?.spinType || '（無影片）'} / preset：${preset.id} / 影片：${currentServeVideo?.id || '無'}`
+    : '目前沒有可配對的分類（影片庫或發球資料未載入）';
+  selectedSide = null;
+  selectedTechnique = null;
+  pendingReturn = null;
+  // 起拍延遲模型：技術鍵在物理球開始飛（beginServeFlight）才解鎖——影片播放中
+  // ／發球前起拍沒有球可打，只會白白消耗輸入。方向鍵則從現在就開放，看影片
+  // 預判側旋、先按方向是這個練習的核心流程。
+  inputWindowOpen = true;
+  missResolved = false;
+  whiffedEarly = false;
+  serveFlightActive = false;
+  timingHintActive = false;
+  currentServePoint = null;
+  currentServeVel = null;
+  currentTimingPhase = 'unknown';
+  lastTimingPhase = 'unknown';
+  timingFlashUntil = 0;
+  timingSideRisingUntil = 0;
+  selectedDirectionInput = null;
+  returnVelocities = [];
+  returnSpins = [];
+  resetBallColor();
+  resetHitFx();
+  // 鏡頭 boost：這球有影片就把取景壓下去讓位（回合間直接跳，不用平滑），
+  // 沒影片就整場用完整取景；長球額外記下鏡頭後拉量。
+  camBoostTargetY = currentServeVideo ? GAME5_LOOKAT_Y_BOOST : 0;
+  camBoostY = camBoostTargetY;
+  CAM_LOOK_AT.y = CAM_LOOKAT_BASE_Y + camBoostY;
+  camLookTarget.y = CAM_LOOK_AT.y;
+  camLookCurrent.y = CAM_LOOK_AT.y;
+  camLongPullbackZ = (preset?.tags?.length || preset?.length) === 'long' ? 0.55 : 0;
+  document.getElementById('choiceText').textContent = '尚未選擇';
+  document.querySelectorAll('[data-return-technique]').forEach(btn=>{btn.classList.remove('active','dir-left','dir-right'); btn.disabled = true;});
+  document.getElementById('actionCue')?.classList.remove('show');
+  const videoFrame = document.getElementById('videoFrame');
+  videoFrame.hidden = true;
+  videoFrame.classList.remove('exiting');
+  document.getElementById('serveVideo').pause();
+  const serve = simulateServe(preset);
+  const hitIndex = findHitIndex(serve);
+  const receiverBounce = serve.bounces.find(b => b.z > 0);
+  returnHintStartIndex = Math.min(hitIndex, receiverBounce?.index ?? hitIndex);
+  returnLandIndex = hitIndex;
+  returnMissIndex = findMissIndex(serve, returnHintStartIndex);
+  const serverBounceForInput = serve.bounces.find(b => b.z < 0);
+  returnAppearIndex = Math.min(returnHintStartIndex, (serverBounceForInput?.index ?? 0) + 2);
+  servePath = serve.points.slice(0, returnMissIndex + 1);
+  serveVelocities = serve.velocities.slice(0, returnMissIndex + 1);
+  serveSpins = serve.spins.slice(0, returnMissIndex + 1);
+  hitPoint = serve.points[hitIndex];
+  hitVel = serve.velocities[hitIndex];
+  hitSpin = serve.spins[hitIndex];
+  const pushHitIndex = findPushHitIndex(serve);
+  returnPushIndex = pushHitIndex;
+  autoFireIndex = AUTO_TIMING_TECHNIQUE === 'push' ? pushHitIndex : hitIndex;
+  // 觸發門檻：對方桌面第一跳之後（z < 0 的 bounce + margin）
+  const serverBounce = serve.bounces.find(b => b.z < 0);
+  camTriggerZ = serverBounce ? serverBounce.z + 0.12 : -TABLE.length / 2;
+  // 反手 lookAt：hitPoint.x 對齊，y/z 壓到俯視高度
+  if(hitPoint) hitPointVec.set(hitPoint.x, 0.5, 0.3);
+  updateLine(pathLine, serve.points.slice(0, Math.min(serve.points.length, hitIndex + 36)));
+  updateLine(returnLine, []);
+  setBall(preset.start);
+  render();
+  document.getElementById('centerTip').textContent = '按「開始發球」看球飛來';
+  setPhase('idle');
+}
+// 2026-07-15：拋球演出動作拿掉，改成直接對接發球影片（方向 C 的影片→物理球
+// 交接手法，見 playServeVideo()）。沒有配到影片時（分類沒有片庫或載入失敗）
+// 直接跳進 beginServeFlight()，不再退回拋球演出。
+function playServe(){
+  if(!presets.length) return;
+  document.activeElement?.blur?.();
+  resize();
+  pendingReturn = null;
+  selectedSide = null;
+  selectedTechnique = null;
+  selectedDirectionInput = null;
+  resetBallColor();
+  document.getElementById('choiceText').textContent = '尚未選擇';
+  // 技術鍵維持鎖定，beginServeFlight() 開始播球才解鎖（起拍延遲模型：影片中
+  // ／發球前沒有球可打）。方向判斷改成技術鍵上的滑動手勢，於起拍後的延遲窗
+  // 內表達（見技術鍵的 pointer 事件）。
+  document.querySelectorAll('[data-return-technique]').forEach(btn=>{btn.classList.remove('active','dir-left','dir-right'); btn.disabled = true;});
+  document.getElementById('actionCue')?.classList.remove('show');
+  resetHitFx();
+  inputWindowOpen = true;
+  missResolved = false;
+  whiffedEarly = false;
+  setPhase('serve');
+  document.getElementById('resultText').textContent = '準備中';
+  document.getElementById('resultText').className = 'result';
+  document.getElementById('detailText').textContent = '';
+  if(currentServeVideo){
+    document.getElementById('centerTip').textContent = '看發球影片';
+    playServeVideo(currentServeVideo, beginServeFlight);
+  } else {
+    beginServeFlight();
+  }
+}
+function beginServeFlight(){
+  document.getElementById('centerTip').textContent = '發球中';
+  serveFlightActive = true;
+  document.querySelectorAll('[data-return-technique]').forEach(btn=>{btn.disabled = false;});
+  animatePath(servePath, ()=>{
+    serveFlightActive = false;
+    if(pendingReturn && !pendingReturn.fired && !missResolved){
+      // 起拍了但延遲還沒到，球就已經掉過桌面高度＝出手太晚
+      pendingReturn = null;
+      missReturn('出手太晚，沒接到球');
+    }else if(!missResolved && !pendingReturn){
+      missReturn();
+    }
+  }, 13 / GAME_SPEED, (index, point, progress, velocity)=>{
+    currentServePoint = point ? clone(point) : null;
+    currentServeVel = velocity ? clone(velocity) : null;
+    timingHintActive = index >= returnHintStartIndex && index <= returnMissIndex;
+    updateTimingHint(currentServeVel);
+    if(index >= returnAppearIndex) openReturnInput();
+    if(AUTO_BEST_TIMING && inputWindowOpen && !pendingReturn && !missResolved && autoFireIndex != null && index >= autoFireIndex){
+      chooseReturn(AUTO_TIMING_SIDE, AUTO_TIMING_TECHNIQUE);
+    }
+    maybeFireSwing(index);
+    if(point?.y < MISS_Y && !pendingReturn) missReturn();
+  }, serveVelocities, serveSpins);
+}
+// 正手/反手在物理上完全相同（TECHNIQUES.forehand_attack/backhand_attack 逐字
+// 相同，只有 label/鏡頭角度不同，見 2026-07-15 確認），這裡純粹依球的實際落點
+// 位置自動判斷鏡頭要往哪邊帶，不是玩家的判斷題，不需要按鈕選。
+function sideForPoint(point){
+  const x = point ? point.x : 0;
+  return x < 0 ? 'backhand' : 'forehand';
+}
+function attackKeyForSide(side){
+  return side === 'forehand' ? 'forehand_attack' : 'backhand_attack';
+}
+function techniqueUiKeyFor(techniqueKey){
+  return techniqueKey === 'push' ? 'push' : 'attack';
+}
+const DIRECTION_LABEL = {left:'向左修正', right:'向右修正'};
+function showActionCue(techniqueKey, direction){
+  const el = document.getElementById('actionCue');
+  if(!el) return;
+  const tech = TECHNIQUES[techniqueKey];
+  const dirLabel = direction ? DIRECTION_LABEL[direction] : '未修正方向';
+  el.textContent = `${tech ? tech.label : techniqueKey} ・ ${dirLabel}`;
+  el.classList.remove('show');
+  void el.offsetWidth; // restart transition if fired twice in a row
+  el.classList.add('show');
+  clearTimeout(showActionCue._timer);
+  showActionCue._timer = setTimeout(()=>el.classList.remove('show'), 900);
+}
+// 技術按鈕（切球／平推攻球）觸發即時判定：side 自動判斷（純鏡頭用），方向修正
+// 讀目前的 selectedDirectionInput（左/右/未按），兩個維度互相獨立。
+function chooseReturnFromButton(techniqueUiKey){
+  if(!inputWindowOpen || pendingReturn || missResolved || !serveFlightActive) return;
+  const livePoint = currentServePoint || hitPoint;
+  const side = sideForPoint(livePoint);
+  const techniqueKey = techniqueUiKey === 'attack' ? attackKeyForSide(side) : 'push';
+  chooseReturn(side, techniqueKey);
+}
+function chooseReturn(side, techniqueKey){
+  if(!inputWindowOpen || pendingReturn || missResolved) return;
+  selectedSide = side;
+  selectedTechnique = techniqueKey;
+  // 起拍：這裡只記錄「揮拍已出發」，觸擊由 maybeFireSwing() 在延遲到點那一刻
+  // 用球的當下軌跡狀態執行（見 SWING_DELAY_MS 註解）。AUTO 測試模式延遲設 0
+  // ——同一幀就在 autoFireIndex 觸擊，批次測試的接觸點跟舊模型一致。
+  const delayMs = AUTO_BEST_TIMING ? 0 : SWING_DELAY_MS / GAME_SPEED;
+  pendingReturn = {
+    side,
+    techniqueKey,
+    direction:selectedDirectionInput,
+    fireAt:performance.now() + delayMs,
+    fired:false,
+    waitForIndex:null
+  };
+  const uiKey = techniqueUiKeyFor(techniqueKey);
+  document.querySelectorAll('[data-return-technique]').forEach(btn=>{
+    btn.classList.toggle('active', btn.dataset.returnTechnique === uiKey);
+  });
+  showActionCue(techniqueKey, selectedDirectionInput);
+  startPaddleApproach(side); // 起拍演出：球拍出現、開始追球
+  if(side === 'backhand'){
+    const bOffZ = CAM_CFG.backhand?.offsetZ ?? 0;
+    camPosTarget.set(hitPoint ? hitPoint.x : 0, CAM_INTERCEPT_Y, CAM_HOME_POS.z + bOffZ);
+  } else {
+    const fOffX = CAM_CFG.forehand?.offsetX ?? -0.3;
+    const fOffZ = CAM_CFG.forehand?.offsetZ ?? 0.3;
+    camPosTarget.set(CAM_HOME_POS.x + fOffX, CAM_INTERCEPT_Y, CAM_HOME_POS.z + fOffZ);
+    camLookTarget.set(-0.35, TABLE.top + 0.05, 0.3);
+  }
+  hideReturnInput();
+}
+// 起拍延遲到點後的觸擊判定，每幀由 beginServeFlight 的 onFrame 呼叫。
+// 可擊區＝我方桌面第一跳之後（returnHintStartIndex 起）。延遲到點時球還沒進
+// 可擊區：beginner 自動改等該技術的最佳擊球點（提早按不受罰），practice/match
+// 直接揮空——球繼續飛完，最後以「揮空（出手太早）」結案。
+function maybeFireSwing(index){
+  if(!pendingReturn || pendingReturn.fired || missResolved) return;
+  if(pendingReturn.waitForIndex != null){
+    if(index >= pendingReturn.waitForIndex) executeReturnContact(index);
+    return;
+  }
+  if(performance.now() < pendingReturn.fireAt) return;
+  if(index >= returnHintStartIndex){
+    executeReturnContact(index);
+  } else if(DIFFICULTY_MODE === 'beginner'){
+    pendingReturn.waitForIndex = pendingReturn.techniqueKey === 'push' ? returnPushIndex : returnLandIndex;
+  } else {
+    pendingReturn = null;
+    whiffedEarly = true;
+    paddleWhiffFx();
+    document.getElementById('centerTip').textContent = '揮空！出手太早';
+  }
+}
+function executeReturnContact(index){
+  const idx = Math.min(Math.max(0, index), servePath.length - 1);
+  pendingReturn.fired = true;
+  const vel = serveVelocities[idx];
+  const contact = {
+    side:pendingReturn.side,
+    techniqueKey:pendingReturn.techniqueKey,
+    direction:pendingReturn.direction,
+    point:servePath[idx] ? clone(servePath[idx]) : null,
+    vel:vel ? clone(vel) : null,
+    spin:serveSpins[idx] ? {...serveSpins[idx]} : null,
+    phase:timingPhaseFromVelocity(vel)
+  };
+  serveFlightActive = false;
+  paddleContactFx(contact.point); // 觸擊演出：拍面貼球、閃白、音效、震動
+  returnBall(contact);
+}
+// 觸擊執行：contact 由 executeReturnContact() 在延遲到點那一刻從發球軌跡的
+// 當下狀態組成——接觸點永遠是球正在被畫的位置，不會瞬移。
+function returnBall(contact){
+  const tech = TECHNIQUES[contact.techniqueKey];
+  if(!tech){
+    showResult(false, '找不到回擊技術', `技術代碼：${contact.techniqueKey}`);
+    setPhase('result');
+    return;
+  }
+  const contactPoint = contact.point || hitPoint;
+  const contactVel = contact.vel || hitVel;
+  const contactSpin = contact.spin || hitSpin;
+  if(!contactPoint || !contactVel){
+    showResult(false, '回球軌跡產生失敗', '沒有可用的接觸點資料，請按下一球再試。');
+    setPhase('result');
+    return;
+  }
+  const contactPhase = contact.phase || timingPhaseFromVelocity(contactVel);
+  selectedTechnique = contact.techniqueKey;
+  // 補償計算（makeRacketReturnVelocity）讀 selectedDirectionInput 這個全域，
+  // 鎖回按下當下捕捉到的判斷，避免延遲期間狀態被動到。
+  selectedDirectionInput = contact.direction;
+  const returnBallUiKey = techniqueUiKeyFor(contact.techniqueKey);
+  document.querySelectorAll('[data-return-technique]').forEach(btn=>{
+    btn.classList.toggle('active', btn.dataset.returnTechnique === returnBallUiKey);
+  });
+  const start = {...contactPoint};
+  const gravity = currentPreset().solve?.gravity ?? -4.2;
+  const returnHit = makeReturnVelocity(contactVel, contactSpin, tech, contactPoint, gravity);
+  const result = simulatePath(start, returnHit.vel, {
+    gravity,
+    spin:returnHit.spin,
+    bounceBoost:tech.bounceBoost ?? 0
+  });
+  returnPath = result.points.filter(isValidPoint);
+  returnVelocities = result.velocities;
+  returnSpins = result.spins;
+  updateLine(returnLine, returnPath);
+  timingHintActive = false;
+  resetBallColor();
+  setPhase('return');
+  document.getElementById('choiceText').textContent = `${contact.side === 'forehand' ? '正手' : '反手'} / ${tech.label}`;
+  document.getElementById('centerTip').textContent = '回球飛出';
+  if(!returnPath.length){
+    showResult(false, '回球軌跡產生失敗', '這組參數沒有產生可播放的球路，請按下一球再試。');
+    setPhase('result');
+    return;
+  }
+  animatePath(returnPath, ()=>judgeReturn(result, contactPhase), 7 / GAME_SPEED);
+}
+function dot(a, b){
+  return a.x * b.x + a.y * b.y + a.z * b.z;
+}
+function addVec(a, b){
+  return {x:a.x + b.x, y:a.y + b.y, z:a.z + b.z};
+}
+function scaleVec(v, scalar){
+  return {x:v.x * scalar, y:v.y * scalar, z:v.z * scalar};
+}
+function normalize(v){
+  const length = Math.hypot(v.x, v.y, v.z) || 1;
+  return scaleVec(v, 1 / length);
+}
+// 瞄準修正：用割線法反推球拍速度的 x 分量，讓打出去的球側向速度趨近 targetOutX。
+// 模擬真實球員會依來球側向飄移/側旋自然調整拍面角度把球打直，而不是固定死揮拍方向
+// 導致來球側向分量被接觸力學放大、球亂飛。
+function solveRacketVelXForTargetOutX(incomingVel, incomingSpin, racketNormal, techVel, restitution, friction, targetOutX){
+  function outXFor(rx){
+    const planeVel = {x:rx, y:techVel.y, z:techVel.z};
+    return bounceOffPlane(incomingVel, incomingSpin, racketNormal, planeVel, restitution, friction).vel.x;
+  }
+  let x0 = 0, x1 = -incomingVel.x;
+  let f0 = outXFor(x0) - targetOutX;
+  let f1 = outXFor(x1) - targetOutX;
+  for(let i=0;i<20;i++){
+    if(Math.abs(f1) < 1e-4) break;
+    const denom = (f1 - f0) || 1e-9;
+    const x2 = x1 - f1 * (x1 - x0) / denom;
+    x0 = x1; f0 = f1;
+    x1 = x2; f1 = outXFor(x1) - targetOutX;
+  }
+  return x1;
+}
+// 使用者指出調切球時遵守的原則：揮拍方向（球拍移動方向）要對準想打的落點，
+// 不是打直而已。用「球例校正資料庫」的資料驗證過：手動調的 techniqueVel.x
+// 跟擊球點 x 座標相關係數 -0.82，而且這批資料的實際落點 x 幾乎都收斂在 0
+// 附近——代表使用者的原則其實是「瞄準桌面中央」。把原本「瞄準出球速度=0
+// （打直）」升級成「瞄準真正的落地點 x 座標」，讓回擊技術具備真正瞄準任意
+// 位置的能力，不再只能打直。實測 16 顆發球驗證：sidebackspin 從 2/7 進步
+// 到 5/7，backspin/no_spin 維持不變。見 docs/physics-engine-v2-plan.md。
+const RETURN_TARGET_X = 0; // 預設瞄準對手桌面中央，之後可依技術等級/站位擴充成可變目標
+function estimateFlightTimeToTable(startY, vy, gravity){
+  const a = 0.5 * gravity, b = vy, c = startY - TABLE.top;
+  const disc = b*b - 4*a*c;
+  if(disc < 0 || Math.abs(a) < 1e-9) return 0.3;
+  const sq = Math.sqrt(disc);
+  const candidates = [(-b+sq)/(2*a), (-b-sq)/(2*a)].filter(t=>t>0.01);
+  return candidates.length ? Math.min(...candidates) : 0.3;
+}
+// blend/tech（2026-07-14 移植自 return-studio.html）：push 分支改「完整模擬實際
+// 落點」而不是拋物線快速估計——快速估計公式沒辦法反映真實落點時間，而且切球在
+// 強旋轉/大幅拋高時，rx→落點x 這個函數在滾動/滑動 regime 交界處會有不連續跳動，
+// 割線法容易發散或收斂到假解，所以先粗掃一輪找出「真的有落地（z<0，過網）」的
+// 區間，再在那個區間內二分逼近目標。blend 要跟最終真正套用的碰撞一致傳進瞄準
+// 求解，否則瞄準跟實際碰撞用不同物理，算出來的修正方向會對不上。非 push 技術
+// 維持原本拋物線快速估計 + 割線法，不受影響。
+function solveRacketVelXForTargetLandingX(incomingVel, incomingSpin, racketNormal, techVel, restitution, friction, hitPoint, gravity, targetLandingX, blend, tech){
+  if(tech && tech.model === 'push'){
+    function landingForPush(rx){
+      const planeVel = {x:rx, y:techVel.y, z:techVel.z};
+      const bounced = applyPushContact(incomingVel, incomingSpin, racketNormal, planeVel, restitution, tech, blend);
+      const path = simulatePath(hitPoint, bounced.vel, {gravity, spin:bounced.spin, bounceBoost:0});
+      const fb = path.bounces[0];
+      return fb ? {x:fb.x, z:fb.z} : null;
+    }
+    let bestRx = -incomingVel.x, bestDist = Infinity, found = false;
+    for(let rx=-8; rx<=8; rx+=0.1){
+      const land = landingForPush(rx);
+      if(land != null && land.z < 0){
+        found = true;
+        const dist = Math.abs(land.x - targetLandingX);
+        if(dist < bestDist){ bestDist = dist; bestRx = rx; }
+      }
+    }
+    if(!found){
+      // Fallback (2026-07-14): coarse search found zero valid landings (ball
+      // can't clear the net for any rx in [-8,8]). Old code silently returned
+      // -incomingVel.x — a physically-unvalidated placeholder. New fallback
+      // uses the sidespin compensation formula derived from Group 4B sweep:
+      //   planeVel.x = -0.062 * sidespin_real + incomingVel.x
+      // where sidespin_real = incomingSpin.sidespin * SIM_TIME_DILATION.
+      // This doesn't aim at a target landing point (impossible if the ball
+      // can't clear the net), but at least cancels sidespin-induced drift
+      // instead of producing an unvalidated value.
+      const sidespinReal = ((incomingSpin && incomingSpin.sidespin) || 0) * SIM_TIME_DILATION;
+      const fallbackRx = -0.062 * sidespinReal + incomingVel.x;
+      console.warn('[solveRacketVelXForTargetLandingX] push fallback: no valid landing found in rx[-8,8], using sidespin compensation: rx=' + fallbackRx.toFixed(3));
+      return fallbackRx;
+    }
+    let lo = bestRx - 0.1, hi = bestRx + 0.1;
+    for(let i=0;i<20;i++){
+      const mid = (lo + hi) / 2;
+      const land = landingForPush(mid);
+      if(land == null || land.z >= 0) break;
+      if(land.x > targetLandingX) lo = mid; else hi = mid;
+    }
+    return (lo + hi) / 2;
+  }
+  function landingXFor(rx){
+    const planeVel = {x:rx, y:techVel.y, z:techVel.z};
+    const bounced = bounceOffPlane(incomingVel, incomingSpin, racketNormal, planeVel, restitution, friction);
+    const t = estimateFlightTimeToTable(hitPoint.y, bounced.vel.y, gravity);
+    return hitPoint.x + bounced.vel.x * t;
+  }
+  let x0 = 0, x1 = -incomingVel.x;
+  let f0 = landingXFor(x0) - targetLandingX;
+  let f1 = landingXFor(x1) - targetLandingX;
+  for(let i=0;i<20;i++){
+    if(Math.abs(f1) < 1e-4) break;
+    const denom = (f1 - f0) || 1e-9;
+    const x2 = x1 - f1 * (x1 - x0) / denom;
+    x0 = x1; f0 = f1;
+    x1 = x2; f1 = landingXFor(x1) - targetLandingX;
+  }
+  return x1;
+}
+// 拍面法向反彈係數隨撞擊速度動態調整（文獻：低速~2m/s 約 0.9，高速~12m/s 約 0.75，線性下降）。
+function dynamicPaddleEpsilon(incomingVel, planeVel, planeNormal){
+  const relVel = subVec3(incomingVel, planeVel);
+  const normalSpeed = Math.abs(dotVec3(relVel, planeNormal));
+  const t = clamp((normalSpeed - PADDLE_SPEED_LOW) / (PADDLE_SPEED_HIGH - PADDLE_SPEED_LOW), 0, 1);
+  return PADDLE_RESTITUTION_LOW + (PADDLE_RESTITUTION_HIGH - PADDLE_RESTITUTION_LOW) * t;
+}
+// 側旋修正：2026-07-15 從「每球求解一個目標值 * 技術等級補償比例」改成固定
+// 補償量模型——玩家按方向鍵判斷側旋方向，按對/按錯都套用同一個固定 x 速度
+// 分量，不按就是 0（自然出界）。sign(該球求解出的完全修正方向) 只拿來當
+// 「哪邊才是對的」的地面真值，大小不再使用。
+// SIDESPIN_COMPENSATION_C 校準（2026-07-15，fixed-C-sweep 系列腳本，見對話
+// 紀錄非 repo 檔案）：physics-presets.json 裡 7 顆 sidebackspin_* 之中，
+// sidebackspin_half_long_backhand 依命名/球況判斷其實是「不夠乾淨的下旋球，
+// 帶一點側旋雜訊」，不是真正的側旋判斷題，排除在校準之外（之後接真人影片
+// 也該配下旋影片，不是側旋影片）。剩下 6 顆的「按對方向即可穩定落桌」安全
+// 交集是 [2.9, 3.8+]（上限未測到真正天花板，粗掃顯示約在 4 附近），中點取
+// 3.4，跟 PADDLE_BLEND 抓安全交集中點的校準慣例一致。
+// 注意：這個值只針對 push（切球）技術校準過。attack（平推/攻球）技術的接觸
+// 模型不同（非 substepped、blend=0），暫時沿用同一個常數，還沒有專屬 sweep
+// 驗證過是否合適。
+const SIDESPIN_COMPENSATION_C = 3.4;
+function signOf(v){
+  if(v > 0) return 1;
+  if(v < 0) return -1;
+  return 0;
+}
+// 攻球/切球：用球拍接觸力學（bounceOffPlane）計算回擊，來球的旋轉會真的影響結果。
+// tech.techniqueVel 現在代表「揮拍速度」（拍面本身的移動速度），tech.racketNormal 是拍面朝向。
+// 補償品質：先解出「完全修正側向」所需的球拍 x 分量 aimedX（= 現有已驗證的預設行為，
+// correction=1 時就是這個值），技術等級較低時只用一部分 aimedX，模擬補償不足/沒修好，
+// 側向誤差沒清乾淨的球在落桌瞬間可能已經飄出桌寬側邊，直接飛出界（這是真實的物理結果，
+// 不是要另外模擬的失敗分支）。
+// 依來球速度動態調整揮拍力道（目前只有切球在用，見 TECHNIQUES.push.speedScaledZ）：
+// 速度快（長球）力道偏被動，速度慢（短球）力道偏主動，線性插值。
+// 注意：用「水平速度」（vx/vz）而不是含 vy 的總速度——水平速度在同一條拋物線上
+// 全程不變（只有重力影響垂直方向），才能真正只反映「長短球」，不會被「切球時機
+// 多晚（vy 多負）」混進去（踩過這個坑：一開始用總速度，導致時機窗口又變窄）。
+function speedScaledTechniqueVel(incomingVel, tech){
+  if(!tech.speedScaledZ) return tech.techniqueVel;
+  const cfg = tech.speedScaledZ;
+  const speed = Math.hypot(incomingVel.x, incomingVel.z);
+  const t = clamp((speed - cfg.speedLow) / (cfg.speedHigh - cfg.speedLow), 0, 1);
+  const z = cfg.low + (cfg.high - cfg.low) * t;
+  return {x:tech.techniqueVel.x, y:tech.techniqueVel.y, z};
+}
+// 範圍解模式：小幅隨機抖動 techniqueVel/racketNormal，模擬人手每次揮拍的自然變異。
+// 抖動幅度用 tech.executionVariance（已用批次測試校準過安全範圍）。
+function applyExecutionVariance(techVel, racketNormal, tech){
+  if(!RANGE_SOLUTION_MODE || !tech.executionVariance) return {techVel, racketNormal};
+  const v = tech.executionVariance;
+  const jitteredVel = {
+    x: techVel.x + (Math.random() * 2 - 1) * v.vel,
+    y: techVel.y + (Math.random() * 2 - 1) * v.vel * 0.5,
+    z: techVel.z + (Math.random() * 2 - 1) * v.vel
+  };
+  const jitteredNormal = normalize({
+    x: (racketNormal.x || 0) + (Math.random() * 2 - 1) * v.normal,
+    y: racketNormal.y + (Math.random() * 2 - 1) * v.normal,
+    z: racketNormal.z
+  });
+  return {techVel: jitteredVel, racketNormal: jitteredNormal};
+}
+// 切球的力道控制律：使用者指出真實練習時是「對上一拍的來球力道做反應」——
+// 對方打快（出力）就放鬆減力，對方打慢（放鬆）就有機會加力攻擊，否則就同樣
+// 力道帶回去。這是負回饋控制律，取代舊版「擊球點離網越遠就加越多力道」的
+// 開迴路公式——舊公式在連續對打時會正回饋失控（擊球點越來越遠→力道越加越大
+// →球越彈越深→下一拍擊球點更遠），實測 10 拍左右就會飛出界。
+// 新公式只反應來球水平速度，實測 16 顆發球有 13 顆可以連續對打 200+ 拍
+// （幾乎無限），單拍準確率也比舊公式更好（backspin 7/7、sidebackspin 6/7，
+// 舊公式是 6/7、5/7）。曾經試過額外疊加「擊球點離網距離」的修正項，結果
+// 反而讓全部 16 顆都變不穩定（兩個負回饋疊加互相打架、造成過度修正），
+// 所以先只用球速這一個變數。見 docs/physics-engine-v2-plan.md。
+// 力道公式（2026-07-14 從 return-studio.html 回寫）：拖高（Y）跟往前送（Z）
+// 拆成兩個獨立分量，取代舊版單一 magnitude 乘固定方向向量的公式——舊公式把
+// Y/Z 分量綁死同一比例，搜尋空間裡沒有「往前下」這個揮拍方向可選，調任何
+// 參數都會讓一批球整批從能過網變成整批掛網。拆開後 return-studio.html 才
+// 第一次同時做到「14顆發球旋轉方向全對」+「14顆都有實測至少26公分落點
+// 安全邊界」。
+// PUSH_LIFT_K/PUSH_DRIVE_K 校準（2026-07-14）：回寫當下發現這兩個常數從
+// return-studio.html 引入起就是 0，從沒針對來球速度做過負回饋微調——實測
+// 16 顆發球（用 game4.html 自己的 findPushHitIndex+makeRacketReturnVelocity+
+// simulatePath 跑一次）顯示過網高度從 9.7cm 到 164.6cm，4 顆長球直接飛出界，
+// 純粹是因為固定力道對快速來球出力過猛。用網格搜尋（liftK 0~0.3、driveK
+// 0~0.5，只用 4 顆純下旋 preset 當目標：過網高度收斂到 5~25cm 且要落桌）
+// 找到 liftK=0.04, driveK=0.19：4 顆純下旋全部收斂到 11~24cm、全部落桌；
+// 7 顆純下旋（含之前排除的短球）全部落桌，5/7 落在 5~25cm；sidebackspin
+// 維持原本就存在的獨立弱項（tiltX/瞄準修正另一組問題，不是這次的目標）；
+// no_spin_long_* 兩顆從「落桌但過網164cm」變成飛出界——切球本來就不是打
+// 不轉球該用的技術，這兩顆本來就不代表真實使用情境，可接受。
+const PUSH_LIFT_BASE = 0.28;
+const PUSH_LIFT_K = 0.04;
+const PUSH_LIFT_FLOOR = 0;
+const PUSH_LIFT_NEUTRAL = 2;
+const PUSH_LIFT_MAX = 3.0;
+const PUSH_LIFT_VY_K = 0; // 2026-07-14: vy 適應性補正。搜描結果：vyK 越大振繚越嚴重、最低過網不斷下降。最佳值 = 0（不修正）。詳見 AI_CONTEXT/lift_vy_k_calibration_2026-07-14_raw.json。 // 2026-07-14: vy 適應性補正——來球下沖角度大（|vy| 大）時減少拖高，壓平彈道。待搜描棡減小。
+const PUSH_DRIVE_BASE = 0.56;
+const PUSH_DRIVE_K = 0.19;
+const PUSH_DRIVE_FLOOR = 0.1;
+const PUSH_DRIVE_NEUTRAL = 2;
+const PUSH_DRIVE_MAX = 3.0;
+function computeAdaptivePushLift(incomingVel){
+  const speed = Math.hypot(incomingVel.x, incomingVel.z);
+  // vy 適應性（2026-07-14）：來球下沖角度大（|vy| 大）時自動減少拖高力道。
+  // 解決連續對打中過網高度在 11cm 和 72cm 之間振繚 60cm 的問題。
+  // 球從高處下沖時 vy 更負，已有下降動量，不需要額外拖高。
+  const vyCorrection = PUSH_LIFT_VY_K * Math.max(0, -incomingVel.y);
+  return clamp(PUSH_LIFT_BASE - PUSH_LIFT_K * (speed - PUSH_LIFT_NEUTRAL) - vyCorrection, PUSH_LIFT_FLOOR, PUSH_LIFT_MAX);
+}
+function computeAdaptivePushDrive(incomingVel){
+  const speed = Math.hypot(incomingVel.x, incomingVel.z);
+  return clamp(PUSH_DRIVE_BASE - PUSH_DRIVE_K * (speed - PUSH_DRIVE_NEUTRAL), PUSH_DRIVE_FLOOR, PUSH_DRIVE_MAX);
+}
+// tiltX（2026-07-14 移除手動標註回歸公式，改回傳固定 0，同步 return-studio.html）：
+// 舊版用「球例校正資料庫」10 顆樣本回歸出 tiltX 跟來球左右速度的關係，但使用者
+// 澄清正常切球不該靠轉拍面去抵銷側旋（那是來不及選位置時的應急做法），正常做法
+// 是靠瞄準方向過量修正；拍面角度該固定。EXPERIMENT_LOG.md EXP-037 已用
+// PADDLE_BLEND 的 Y-Z-only 機制取代這個回歸公式（架構性突破，在 return-studio.html
+// 驗證過），這次隨 Stage 4a 接觸模型一起寫回 game4.html，回歸公式改為死碼移除。
+function computeAdaptivePushTiltX(){
+  return 0;
+}
+// tiltY：固定拍面角度（2026-07-14 從 return-studio.html 回寫）。舊版依接觸
+// 當下殘留旋轉量內插（0.006×|topspin|，clamp 0.4~0.55），是拖高/往前送還
+// 沒拆開之前校準的數字，物理意義已經不同。return-studio.html 2026-07-13
+// 用 tools/push-tilty-*-sweep-calibration.js 重新掃描，搭配 PUSH_LIFT/DRIVE_BASE
+// 縮小成 0.8 倍，收斂到固定值 PUSH_TILT_Y=1.0（45°），11 顆校準發球全過網。
+const PUSH_TILT_Y = 1.0;
+function computeAdaptivePushTiltY(){
+  return PUSH_TILT_Y;
+}
+function makeRacketReturnVelocity(incomingVel, incomingSpin, tech, hitPoint, gravity){
+  const spin = incomingSpin || {topspin:0, sidespin:0};
+  let baseTechVel = speedScaledTechniqueVel(incomingVel, tech);
+  if(tech.adaptivePush){
+    const lift = computeAdaptivePushLift(incomingVel);
+    const drive = computeAdaptivePushDrive(incomingVel);
+    baseTechVel = {x:0, y:lift, z:-drive};
+    tech.swingDirection = baseTechVel;
+  }
+  // 平面角度是相對揮拍方向的旋轉，所以要先知道實際的揮拍方向參考向量：
+  // 切球自適應力道公式開啟時用 swingDirection；其他情況（攻球）就用實際
+  // 要打出去的球拍速度方向本身。
+  const swingDirRef = tech.adaptivePush ? tech.swingDirection : baseTechVel;
+  const tiltX = tech.adaptivePush ? computeAdaptivePushTiltX() : tech.racketNormalTiltX;
+  const tiltY = tech.adaptivePush ? computeAdaptivePushTiltY() : tech.racketNormalTiltY;
+  const racketNormalBase = computeRacketNormal(tiltY, tiltX, swingDirRef);
+  const {techVel, racketNormal} = applyExecutionVariance(baseTechVel, racketNormalBase, tech);
+  const epsilon = dynamicPaddleEpsilon(incomingVel, techVel, racketNormal);
+  // push 技術改用 Stage 4a 接觸模型（applyPushContact/bounceOffPlaneSubstepped），
+  // blend 要跟最終真正套用的碰撞一致傳進瞄準求解，否則瞄準跟實際碰撞用不同物理
+  // （2026-07-14 從 return-studio.html 移植，見上方 PADDLE_BLEND 註解）。
+  const blend = tech.model === 'push' ? PADDLE_BLEND : 0;
+  // 只借用求解器的方向正負號當「哪邊才是對的」地面真值，大小不用——固定補償
+  // 量模型（見 SIDESPIN_COMPENSATION_C 上方註解）。
+  const aimedSign = signOf(solveRacketVelXForTargetLandingX(incomingVel, spin, racketNormal, techVel, epsilon, PADDLE_FRICTION, hitPoint, gravity, RETURN_TARGET_X, blend, tech));
+  let compensationX = 0;
+  if(selectedDirectionInput && aimedSign !== 0){
+    const pressedSign = selectedDirectionInput === 'left' ? -1 : 1;
+    compensationX = (pressedSign === aimedSign ? 1 : -1) * SIDESPIN_COMPENSATION_C;
+  }
+  const planeVel = {x:compensationX, y:techVel.y, z:techVel.z};
+  return applyPushContact(incomingVel, spin, racketNormal, planeVel, epsilon, tech, blend);
+}
+function makeReturnVelocity(incomingVel, incomingSpin, tech, hitPoint, gravity){
+  return makeRacketReturnVelocity(incomingVel, incomingSpin, tech, hitPoint, gravity);
+}
+function judgeReturn(result, contactPhase){
+  const firstBounce = result.bounces[0] || null;
+  showLandingMarker(firstBounce, !!(firstBounce && firstBounce.z < 0 && Math.abs(firstBounce.x) <= TABLE.width/2 && Math.abs(firstBounce.z) <= TABLE.length/2));
+  const netClearance = result.netY == null ? null : result.netY - (TABLE.height + TABLE.net);
+  let ok = false;
+  let reason = '出界';
+  if(netClearance != null && netClearance < 0){
+    reason = '掛網';
+  }else if(firstBounce && firstBounce.z > 0){
+    reason = '落在自己桌面';
+  }else if(firstBounce && firstBounce.z < 0 && Math.abs(firstBounce.x) <= TABLE.width/2 && Math.abs(firstBounce.z) <= TABLE.length/2){
+    ok = true;
+    reason = '成功落在對方桌面';
+  }
+  const detail = [
+    `第一落點：${firstBounce ? `${firstBounce.x.toFixed(2)}, ${firstBounce.z.toFixed(2)}` : '無'}`,
+    `過網高度：${netClearance == null ? '未測到' : netClearance.toFixed(3) + ' m'}`,
+    `擊球時機：${timingLabel(contactPhase)}`,
+    `發球：${currentPreset().label}`
+  ].join('\n');
+  showResult(ok, reason, detail);
+  setPhase('result');
+  document.getElementById('centerTip').textContent = ok ? '成功，按下一球繼續' : `${reason}，按下一球再試`;
+  // 階段三：歸位；正手先略超中軸再回
+  if(selectedSide === 'forehand'){
+    const arc = CAM_CFG.forehand?.returnArc ?? 0.1;
+    camPosTarget.set(CAM_HOME_POS.x - arc, CAM_HOME_POS.y, CAM_HOME_POS.z);
+    startCamReturn();
+    setTimeout(()=>{ resetCam(false); startCamReturn(); }, 200);
+  } else {
+    resetCam(false);
+    startCamReturn();
+  }
+}
+async function loadPresets(){
+  // 同時載入 physics-presets.json 和 camera-config.json
+  const [presetsRes, camRes] = await Promise.all([
+    fetch('physics-presets.json?v=' + Date.now()),
+    fetch('camera-config.json?v=' + Date.now()).catch(() => null)
+  ]);
+  if(!presetsRes.ok) throw new Error('physics-presets.json 載入失敗');
+  if(camRes?.ok){
+    CAM_CFG = await camRes.json();
+    applyCamConfig();
+  }
+  const data = await presetsRes.json();
+  presets = data.serves || [];
+}
+async function loadVideoLibrary(){
+  const res = await fetch('videos.json?v=' + Date.now());
+  if(!res.ok) throw new Error('videos.json 載入失敗');
+  const all = await res.json();
+  const byCategory = {};
+  // Demo 限定：排除左側旋（contact_sidespin_left）與左側下旋（contact_sidebackspin_left）。
+  all.filter(v => v.kind === 'video' && v.reviewStatus === 'approved'
+    && !/_left$/.test(v.spinType)).forEach(v => {
+    (byCategory[v.spinType] ||= []).push(v);
+  });
+  videoLibrary = byCategory;
+}
+// 2026-07-15：影片分類 → 發球 preset 自動對應。
+// 先用 tags.videoCategory 直接配對（serve-generator.html 產生的 preset 都帶這欄），
+// 沒帶 videoCategory 的舊 preset 走 legacy fallback。VIDEO_CATEGORY_POOL 改成從
+// videoLibrary 動態偵測——任何新分類只要有影片又有 preset 就自動加入練習池。
+function presetsForVideoCategory(category){
+  const direct = presets.filter(p => p.tags && p.tags.videoCategory === category);
+  if(direct.length) return direct;
+  // legacy fallback（舊 preset 沒有 videoCategory tag）
+  if(category === 'contact_nospin') return presets.filter(p => p.id.startsWith('no_spin_'));
+  if(category === 'contact_backspin') return presets.filter(p => p.id.startsWith('backspin_') || p.id === 'sidebackspin_half_long_backhand');
+  if(category === 'contact_sidebackspin_right') return presets.filter(p => p.id.startsWith('sidebackspin_') && p.id !== 'sidebackspin_half_long_backhand');
+  return [];
+}
+function pickRoundForNextServe(){
+  // 新：videoId 1:1 配對 — 每支影片有專屬發球 preset（tags.videoId）
+  const presetByVideoId = {};
+  presets.forEach(p => { if(p.tags && p.tags.videoId) presetByVideoId[p.tags.videoId] = p; });
+  if(Object.keys(presetByVideoId).length > 0){
+    const validVideos = [];
+    for(const cat of Object.keys(videoLibrary)){
+      for(const video of (videoLibrary[cat] || [])){
+        const preset = presetByVideoId[video.id];
+        if(preset) validVideos.push({preset, video});
+      }
+    }
+    if(validVideos.length){
+      const pick = validVideos[Math.floor(Math.random() * validVideos.length)];
+      return {preset: pick.preset, video: pick.video};
+    }
+  }
+  // Legacy fallback：沒有 videoId tag 的舊 preset，走分類隨機配對
+  const validCategories = Object.keys(videoLibrary).filter(cat =>
+    (videoLibrary[cat]?.length) && presetsForVideoCategory(cat).length);
+  if(!validCategories.length) return null;
+  const category = validCategories[Math.floor(Math.random() * validCategories.length)];
+  const presetPool = presetsForVideoCategory(category);
+  const preset = presetPool[Math.floor(Math.random() * presetPool.length)];
+  const videoPool = videoLibrary[category];
+  const video = videoPool[Math.floor(Math.random() * videoPool.length)];
+  return {preset, video};
+}
+// 方向 C 影片配置：影片播到「粗估觸球點」（沒有逐支標註時用比例猜，見
+// VIDEO_CONTACT_FRACTION_GUESS）就開始淡出、同時讓已經算好的物理發球進場——複刻
+// C3（影片淡出 + 訓練球同時入場）驗證過的手感，只是拿掉逐幀標註的精確度依賴。
+// 2026-07-15：auto-contact-tagger 已補齊全庫觸球時間並寫入 videos.json 的 contact_time_sec。
+const VIDEO_CONTACT_FRACTION_GUESS = 0.7;
+function playServeVideo(videoEntry, onHandoff){
+  const frame = document.getElementById('videoFrame');
+  const videoEl = document.getElementById('serveVideo');
+  let handedOff = false;
+  const fallback = ()=>{
+    if(handedOff) return;
+    handedOff = true;
+    frame.hidden = true;
+    onHandoff();
+  };
+  frame.classList.remove('exiting');
+  frame.hidden = false;
+  videoEl.src = videoEntry.src;
+  videoEl.currentTime = 0;
+  videoEl.addEventListener('error', fallback, {once:true});
+  videoEl.addEventListener('loadedmetadata', ()=>{
+    if(handedOff) return;
+    const duration = Number.isFinite(videoEl.duration) && videoEl.duration > 0 ? videoEl.duration : 1.2;
+    // 優先用 auto-contact-tagger 標註、寫入 videos.json 的 contact_time_sec；
+    // 沒有該欄位時退回 0.7×duration 的舊猜值（VIDEO_CONTACT_FRACTION_GUESS）。
+    const triggerTimeSec = Number.isFinite(videoEntry && videoEntry.contact_time_sec) ? videoEntry.contact_time_sec : duration * VIDEO_CONTACT_FRACTION_GUESS;
+    videoExperiment = new DirectionCExperiment.Experiment(triggerTimeSec, duration);
+    videoExperiment.start('C3', performance.now());
+    const loop = now=>{
+      if(handedOff) return;
+      const snap = videoExperiment.tick(videoEl.currentTime, now);
+      if(snap.state === 'OVERLAP' || snap.state === 'TRAINING'){
+        handedOff = true;
+        frame.classList.add('exiting');
+        setTimeout(()=>{ videoEl.pause(); frame.hidden = true; }, 260);
+        onHandoff();
+        return;
+      }
+      requestAnimationFrame(loop);
+    };
+    requestAnimationFrame(loop);
+  }, {once:true});
+  videoEl.play().catch(fallback);
+}
+document.getElementById('playBtn').addEventListener('click', ()=>{ ensureAudio(); playServe(); });
+document.getElementById('trajectoryToggle').addEventListener('change', event=>{
+  showTrajectories = event.target.checked;
+  setTrajectoryVisibility();
+  render();
+});
+document.getElementById('speedControl').addEventListener('change', event=>{
+  GAME_SPEED = parseFloat(event.target.value) || 1;
+});
+document.getElementById('difficultyControl').addEventListener('change', event=>{
+  DIFFICULTY_MODE = event.target.value || 'beginner';
+  updateTimingHint(currentServeVel);
+});
+document.getElementById('autoTimingToggle').addEventListener('change', event=>{
+  AUTO_BEST_TIMING = event.target.checked;
+});
+document.getElementById('autoTimingTechnique').addEventListener('change', event=>{
+  const [side, techniqueKey] = (event.target.value || 'forehand:push').split(':');
+  AUTO_TIMING_SIDE = side;
+  AUTO_TIMING_TECHNIQUE = techniqueKey;
+  if(phase === 'idle') prepareServe(); // 重新計算 autoFireIndex（依新選的技術），發球中不打斷
+});
+document.getElementById('rangeSolutionToggle').addEventListener('change', event=>{
+  RANGE_SOLUTION_MODE = event.target.checked;
+});
+document.getElementById('nextBtn').addEventListener('click', ()=>{
+  prepareServe();
+  playServe();
+});
+// 手勢化技術鍵（2026-07-15 概念版）：pointerdown＝起拍（低延遲，時機錨點不變），
+// 起拍後、觸擊前的延遲窗內手指往左/右滑超過 GESTURE_DIR_PX＝該方向側旋修正，
+// 滑回中間＝取消修正；executeReturnContact() 觸擊那一刻讀 pendingReturn.direction，
+// 所以延遲窗（beginner 自動等待時更長）就是方向表達窗。pointermove/up 掛在
+// window 上：按下後按鈕立刻被 hideReturnInput() 設成 disabled，disabled 元素
+// 不再派發 pointer 事件，掛按鈕上會收不到後續滑動。
+const GESTURE_DIR_PX = 24;
+let gestureTrack = null; // {pointerId, startX, techniqueKey, btn}
+document.querySelectorAll('[data-return-technique]').forEach(btn=>{
+  btn.disabled = true;
+  btn.addEventListener('click', event=>event.preventDefault());
+  btn.addEventListener('pointerdown', event=>{
+    if(btn.disabled || !inputWindowOpen) return;
+    event.preventDefault();
+    ensureAudio(); // 使用者手勢裡解鎖 AudioContext（自動播放政策）
+    chooseReturnFromButton(btn.dataset.returnTechnique);
+    if(pendingReturn && !pendingReturn.fired){
+      gestureTrack = {pointerId:event.pointerId, startX:event.clientX, techniqueKey:pendingReturn.techniqueKey, btn};
+    }
+  });
+});
+window.addEventListener('pointermove', event=>{
+  if(!gestureTrack || event.pointerId !== gestureTrack.pointerId) return;
+  if(!pendingReturn || pendingReturn.fired) return;
+  const dx = event.clientX - gestureTrack.startX;
+  const dir = dx <= -GESTURE_DIR_PX ? 'left' : dx >= GESTURE_DIR_PX ? 'right' : null;
+  if(dir !== pendingReturn.direction){
+    pendingReturn.direction = dir;
+    gestureTrack.btn.classList.toggle('dir-left', dir === 'left');
+    gestureTrack.btn.classList.toggle('dir-right', dir === 'right');
+    showActionCue(gestureTrack.techniqueKey, dir);
+  }
+});
+function endGestureTrack(event){
+  if(gestureTrack && event.pointerId === gestureTrack.pointerId) gestureTrack = null;
+}
+window.addEventListener('pointerup', endGestureTrack);
+window.addEventListener('pointercancel', endGestureTrack);
+const buildVersionEl = document.getElementById('buildVersion');
+buildVersionEl.textContent = Math.random().toString(36).slice(2, 7);
+buildVersionEl.title = BUILD_VERSION;
+resize();
+updateScore();
+Promise.all([
+  loadVideoLibrary().catch(error=>{ console.warn('videos.json 載入失敗，本局改用純物理模式（無方向 C 影片）', error); }),
+  loadPresets()
+]).then(()=>prepareServe()).catch(error=>{
+  document.getElementById('centerTip').textContent = error.message;
+  document.getElementById('resultText').textContent = '載入失敗';
+  document.getElementById('resultText').className = 'result bad';
+  document.getElementById('detailText').textContent = String(error);
+});
+</script>
+</body>
+</html>
