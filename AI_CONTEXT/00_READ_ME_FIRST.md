@@ -7,16 +7,44 @@
 1. `AI_CONTEXT/STATUS.md`——現在狀態(哪些檔案是紅線、目前活躍的工作支線)。
 2. `AI_CONTEXT/OPEN_ITEMS.md`——還沒決定的舊 TODO,逐項看、逐項丟棄或處理,不用一次清完。
 
-## 兩層規則
+## 兩層規則：原型自由，正式升格要審查
 
-**1. 紅線——改之前要先討論**:
+紅線的目的不是禁止碰某些檔案，而是防止「局部修補、代理模型或測試通過」被誤認成正式物理模型、資料契約或產品行為。判斷時同時看工作所在層，以及變更是否跨越模型邊界。
 
-- `shared-physics-core.js`、`game4.html`、`match-trainer.html`
-- `videos.json`、`physics-presets.json` 本尊
+### 1. 原型層：自由試驗
 
-**2. 其餘一切自由**:`prototypes/` 資料夾內的實驗、複製出來的測試素材/影片/參數、可行性測試——想試就試,不需要審理表格、不需要先寫任務包。做完覺得有價值才值得留一兩句記錄,不必是正式 checkpoint。
+`prototypes/` 內的實驗、複製測試素材／影片／參數、可行性測試可以直接做，不需要審理表格、taskpack 或 checkpoint。原型仍要清楚寫出它測量什麼、沒有證明什麼；不得自動寫回正式資料、核心物理或正式頁面。
 
-判斷準則只有一個:會不會真的改壞現在能跑的東西。會,就先講一聲;不會,就直接做。
+### 2. 正式層：紅線授權
+
+下列檔案屬正式核心、主線或正式資料；修改前至少要說明檔案、目的、風險與驗證：
+
+- `shared-physics-core.js`
+- `game4.html`、`game5.html`、`match-trainer.html`
+- `videos.json`、`physics-presets.json`
+
+`return-studio.html`、`physics-studio.html`、`serve-generator.html` 預設是研究／產生工具；它們的輸出若要寫入上述正式檔案，才進入紅線審查。
+
+正式層再分兩種審查重量：
+
+- **R0：契約內修正**。既有物理狀態、座標、符號、單位、資料 schema 與跨頁語意都不變，例如 UI、文案、視覺、除錯資訊或局部明確 bug。使用者已提出明確範圍時，可用簡短目的與 targeted validation 直接執行。
+- **R1：模型／契約升級**。只要改變狀態表示、座標或 sign convention、單位／時間尺度、旋轉組合、飛行／彈跳／球拍接觸的耦合、序列化資料語意或跨頁行為，就必須先提出完整方案，列出相容性、rollback 與驗證，等待明確授權後再改正式檔案。原型可以先自由做 R1 探索，但不能把原型結果直接升格。
+
+### 3. R1 的模型不變量審查
+
+進入 R1 前，至少回答以下問題：
+
+- 物理狀態是什麼？哪些欄位是狀態，哪些只是 label 或 authoring metadata？
+- 座標系、正負號、單位與時間／尺度轉換是否明確且只有一個入口？
+- 純旋轉、混合旋轉、符號反轉、零值與座標旋轉案例是否都測過？
+- 飛行、桌面反彈、球拍接觸、顯示與資料產生器是否使用同一個物理狀態？
+- 舊資料與舊頁面如何透過 adapter 相容？失敗時如何 rollback？
+
+目前旋轉模型的明確原則是：球的物理旋轉以角速度向量 `omega` 表示；下旋／上旋與側旋是依座標系解讀的分量或 label，不是互相獨立的動力學狀態；若需要軸向旋轉，另立清楚的欄位與契約。
+
+### 4. 例外不改變原則
+
+使用者可以對特定檔案、特定任務授權一次性的最小變更（例如 Game 5 MVP 範圍）。這種授權只適用於列明的範圍，不會取消 R1 模型審查，也不會把 prototype evidence 變成物理真值。做完要記錄實際改了什麼、哪些驗證仍未完成。
 
 ## 模型選用建議
 
@@ -37,7 +65,9 @@
 
 ## docs/ 現況參考(內容仍有效,非必讀但要查時用)
 
-`PHYSICS_MODEL_SPEC.md`、`CORE_FILE_SYNC_STATUS.md`、`DEVELOPMENT_MATRIX.md`、`MVP_MAINLINE_SPEC.md`、`MODEL_DECISIONS.md`、`EXPERIMENT_LOG.md`、`SHARED_PHYSICS_CORE_PHASE1_APPROVAL.md`、`SHARED_PHYSICS_CORE_PHASE2_TASKPACK.md`、`READ_ONLY_PHYSICS_EXTRACTOR_SPEC.md`、`BATCH_VALIDATION_SPEC.md`、`BATCH_VALIDATION_TOOLING_TASKPACK.md`、`VALIDATION_PLAN.md`。
+`PHYSICS_MODEL_SPEC.md`、`SPIN_DIRECTION_CONTRACT.md`、`CORE_FILE_SYNC_STATUS.md`、`DEVELOPMENT_MATRIX.md`、`MVP_MAINLINE_SPEC.md`、`MODEL_DECISIONS.md`、`EXPERIMENT_LOG.md`、`SHARED_PHYSICS_CORE_PHASE1_APPROVAL.md`、`SHARED_PHYSICS_CORE_PHASE2_TASKPACK.md`、`READ_ONLY_PHYSICS_EXTRACTOR_SPEC.md`、`BATCH_VALIDATION_SPEC.md`、`BATCH_VALIDATION_TOOLING_TASKPACK.md`、`VALIDATION_PLAN.md`。
+
+2026-07-16 同階段 3D／Game 5 研究證據的統一入口：`AI_CONTEXT/3D_RESEARCH_ARCHIVE_INDEX.md`。
 
 ## 核心禁止事項(保留,仍然重要)
 

@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Game 5 mainline-v2 Full-3D Reset</title>
+  <style>
+    :root { color-scheme: dark; font-family: system-ui, sans-serif; }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; background: #0d1420; color: #edf3ff; }
+    main { width: min(820px, calc(100% - 24px)); margin: 0 auto; padding: 22px 0 40px; }
+    h1 { margin: 0 0 6px; font-size: clamp(1.45rem, 5vw, 2.25rem); }
+    p { margin: 0; color: #aebbd0; line-height: 1.5; }
+    .status-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 16px; }
+    .status { color: #8be0ba; font-weight: 800; }
+    .status.error { color: #ffacac; }
+    .pill { padding: 4px 8px; border: 1px solid #33445e; border-radius: 999px; color: #b9c9e4; font-size: .78rem; }
+    .experience { display: grid; gap: 12px; margin-top: 18px; }
+    .video-panel, .table-panel, .control-card, .trace-card { border: 1px solid #2c3c55; border-radius: 16px; background: #172131; }
+    .video-panel { position: relative; min-height: 190px; padding: 12px; overflow: hidden; }
+    .video-panel h2, .table-panel h2 { margin: 0 0 8px; font-size: .94rem; color: #c6d7ff; }
+    #serveVideo { display: block; width: 100%; height: 142px; object-fit: contain; border-radius: 10px; background: #080c12; }
+    #serveVideo.exiting { opacity: .08; transition: opacity 260ms ease; }
+    .video-note { position: absolute; right: 16px; bottom: 16px; padding: 4px 7px; border-radius: 6px; background: rgba(7, 11, 18, .78); color: #d8e5ff; font-size: .74rem; }
+    .table-panel { position: relative; min-height: 382px; overflow: hidden; background: radial-gradient(circle at 50% 30%, #243b59, #101a29 66%); transition: transform 300ms ease, filter 300ms ease; }
+    .table-panel.camera-video { filter: saturate(.8); }
+    .table-panel.camera-intercept { transform: scale(1.015); }
+    .table-panel.camera-return-follow { filter: hue-rotate(8deg); }
+    .table-panel.camera-landing-focus { transform: scale(1.02); }
+    .table-surface { position: absolute; inset: 0; z-index: 1; transform: none; background: linear-gradient(135deg, rgba(47, 118, 190, .82), rgba(22, 69, 119, .9)); filter: drop-shadow(0 18px 18px rgba(0,0,0,.32)); pointer-events: none; }
+    .table-surface::before, .table-surface::after { content: none; }
+    .table-center-line, .net { position: absolute; left: 0; top: 0; z-index: 2; width: 0; height: 0; transform-origin: left center; pointer-events: none; }
+    .table-center-line { border-top: 2px solid rgba(255,255,255,.55); }
+    .net { border-top: 7px solid rgba(237, 243, 255, .78); box-shadow: 0 5px 8px rgba(0,0,0,.3); }
+    .ball { position: absolute; z-index: 4; width: 18px; height: 18px; margin: -9px 0 0 -9px; border-radius: 50%; background: #ffd84d; box-shadow: 0 0 16px rgba(255,216,77,.8); transition: left 90ms linear, top 90ms linear, transform 120ms ease; }
+    .ball.hit { animation: ball-hit 260ms ease-out; }
+    .ball.bounce { animation: ball-bounce 340ms ease-out; }
+    .ball.net-crossing { animation: ball-net-crossing 260ms ease-out; }
+    @keyframes ball-hit { 35% { transform: scale(1.9); background: #fff; } 100% { transform: scale(1); } }
+    @keyframes ball-bounce { 28% { transform: translateY(-10px) scale(1.65); background: #fff; } 62% { transform: translateY(2px) scale(.82); } 100% { transform: translateY(0) scale(1); } }
+    @keyframes ball-net-crossing { 35% { transform: scale(1.6); box-shadow: 0 0 24px rgba(255,255,255,.95); } 100% { transform: scale(1); } }
+    .racket-mesh { position: absolute; z-index: 5; width: 46px; height: 86px; margin: -43px 0 0 -23px; opacity: 0; transform: rotate(-18deg); transition: opacity 120ms ease, left 140ms ease, top 140ms ease; }
+    .racket-mesh.visible { opacity: 1; }
+    .racket-blade { width: 46px; height: 55px; border: 4px solid #e85d5d; border-radius: 50%; background: linear-gradient(135deg, #8f2735, #e85d5d); box-shadow: 0 0 12px rgba(232,93,93,.45); }
+    .racket-handle { width: 10px; height: 31px; margin: -2px auto 0; border-radius: 3px; background: #d8b26e; }
+    .racket-mesh.hit { animation: racket-hit 300ms ease-out; }
+    .racket-mesh.whiff { animation: racket-whiff 300ms ease-out; }
+    @keyframes racket-hit { 45% { transform: rotate(4deg) translateX(12px); } 100% { transform: rotate(-18deg); } }
+    @keyframes racket-whiff { 45% { transform: rotate(28deg) translateX(24px); opacity: .4; } 100% { opacity: 0; } }
+    .landing-marker { position: absolute; z-index: 3; width: 34px; height: 34px; margin: -17px 0 0 -17px; border: 3px solid #55d68a; border-radius: 50%; box-shadow: 0 0 0 5px rgba(85,214,138,.2); }
+    .landing-marker.bad { border-color: #ff7b72; box-shadow: 0 0 0 5px rgba(255,123,114,.2); }
+    .camera-badge { position: absolute; top: 12px; right: 12px; padding: 5px 8px; border-radius: 7px; background: rgba(5, 9, 15, .72); color: #d6e5ff; font-size: .72rem; }
+    .table-caption { position: absolute; left: 14px; bottom: 12px; z-index: 7; color: #9fb3d2; font-size: .75rem; }
+    .control-card { padding: 14px; }
+    .control-row { display: flex; flex-wrap: wrap; gap: 8px; }
+    button { border: 0; border-radius: 10px; padding: 10px 13px; background: #4c8dff; color: white; font: inherit; font-weight: 800; cursor: pointer; touch-action: manipulation; }
+    button.secondary { background: #2b3b54; }
+    button.technique { min-width: 92px; background: #b44d55; }
+    button.technique[data-technique="attack"] { background: #bf7b3b; }
+    button:disabled { cursor: wait; opacity: .42; }
+    .hint { margin-top: 10px; color: #aebbd0; font-size: .82rem; }
+    .result { min-height: 1.4em; margin-top: 10px; font-weight: 900; }
+    .result.ok { color: #8be0ba; }
+    .result.bad { color: #ffacac; }
+    .omega-hud { margin-top: 12px; padding: 12px; border: 1px solid #33445e; border-radius: 12px; background: #111b2a; }
+    .omega-hud-header { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px; margin-bottom: 10px; }
+    .omega-hud h2 { margin: 0; font-size: .92rem; color: #c6d7ff; }
+    .omega-semantic { color: #8be0ba; font-size: .8rem; font-weight: 800; }
+    .omega-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+    .omega-cell { min-width: 0; padding: 9px; border-radius: 9px; background: #1b2a40; }
+    .omega-axis { display: block; color: #91a5c2; font-size: .72rem; }
+    .omega-value { display: block; margin-top: 3px; color: #f2f6ff; font-size: .92rem; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+    .omega-note { margin-top: 9px; color: #91a5c2; font-size: .72rem; line-height: 1.4; }
+    .motion-hud { margin-top: 12px; padding: 12px; border: 1px solid #33445e; border-radius: 12px; background: #101a28; }
+    .motion-hud-header { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px; margin-bottom: 10px; }
+    .motion-hud h2 { margin: 0; font-size: .92rem; color: #c6d7ff; }
+    .motion-state { color: #ffd27a; font-size: .75rem; font-weight: 800; }
+    .motion-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+    .motion-cell { min-width: 0; padding: 9px; border-radius: 9px; background: #1a2a40; }
+    .motion-label { display: block; color: #91a5c2; font-size: .72rem; }
+    .motion-value { display: block; margin-top: 3px; color: #f2f6ff; font-size: .84rem; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+    .motion-note { margin-top: 9px; color: #91a5c2; font-size: .72rem; line-height: 1.4; }
+    .details { display: grid; grid-template-columns: max-content 1fr; gap: 6px 12px; margin: 0; font-size: .82rem; }
+    .details dt { color: #91a5c2; }
+    .details dd { margin: 0; overflow-wrap: anywhere; }
+    .trace-card { margin-top: 12px; padding: 12px; }
+    .trace-card h2 { margin: 0 0 8px; font-size: .92rem; }
+    pre { margin: 0; max-height: 190px; overflow: auto; color: #c9d7ee; font-size: .73rem; white-space: pre-wrap; }
+    @media (min-width: 720px) {
+      main { padding-top: 34px; }
+      .experience { grid-template-columns: 1fr 1fr; align-items: start; }
+      .video-panel, .table-panel { min-height: 382px; }
+      #serveVideo { height: 310px; }
+      .control-card, .trace-card { grid-column: 1 / -1; }
+      .omega-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .motion-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    }
+  </style>
+</head>
+<body>
+  <main id="app">
+    <h1>Game 5 mainline-v2 · Phase V7</h1>
+    <p>產品 shell：影片 → canonical ball → 技術輸入 → 球拍演出 → 回球結果。物理仍由 V2/V3 runtime 提供。</p>
+    <div class="status-row">
+      <span id="status" class="status">Loading paired round…</span>
+      <span id="phaseBadge" class="pill">idle</span>
+      <span id="cameraBadgeTop" class="pill">camera: home</span>
+    </div>
+
+    <section class="experience" aria-label="Game 5 V6 product experience">
+      <article class="video-panel" id="videoPanel" data-region="video">
+        <h2>1 · 看影片</h2>
+        <video id="serveVideo" muted playsinline preload="metadata"></video>
+        <div id="videoNote" class="video-note">等待回合</div>
+      </article>
+      <article class="table-panel camera-home" id="tablePanel" data-region="table">
+        <h2 style="position:absolute;left:14px;top:12px;z-index:7">2 · 接球桌面</h2>
+        <div id="tableSurface" class="table-surface"></div>
+        <div id="tableCenterLine" class="table-center-line"></div>
+        <div id="tableNet" class="net"></div>
+        <div id="ball" class="ball" aria-label="training ball"></div>
+        <div id="racket" class="racket-mesh" aria-label="racket mesh"><div class="racket-blade"></div><div class="racket-handle"></div></div>
+        <div id="landingMarker" class="landing-marker" hidden></div>
+        <div id="cameraBadge" class="camera-badge">camera: home</div>
+        <div class="table-caption">canonical state visualization · second-bounce marker is validation reference only</div>
+      </article>
+      <section class="control-card">
+        <div class="control-row">
+          <button id="startButton" type="button" disabled>開始發球</button>
+          <button id="pushButton" class="technique" data-technique="push" type="button" disabled>切球</button>
+          <button id="attackButton" class="technique" data-technique="attack" type="button" disabled>攻球</button>
+        </div>
+        <div id="inputHint" class="hint">先按「開始發球」，影片交接後選擇技術；按住技術鍵左右滑動可表達方向。</div>
+        <div id="resultText" class="result"></div>
+        <section id="motionHud" class="motion-hud" aria-label="ball motion diagnostics" aria-live="polite">
+          <div class="motion-hud-header">
+            <h2>Ball motion</h2>
+            <span id="motionState" class="motion-state">尚未有球</span>
+          </div>
+          <div class="motion-grid">
+            <div class="motion-cell">
+              <span class="motion-label">Physics phase</span>
+              <strong id="motionPhase" class="motion-value">—</strong>
+            </div>
+            <div class="motion-cell">
+              <span class="motion-label">Position · x/y/z</span>
+              <strong id="motionPosition" class="motion-value">—</strong>
+            </div>
+            <div class="motion-cell">
+              <span class="motion-label">Velocity · x/y/z</span>
+              <strong id="motionVelocity" class="motion-value">—</strong>
+            </div>
+            <div class="motion-cell">
+              <span class="motion-label">Speed</span>
+              <strong id="motionSpeed" class="motion-value">—</strong>
+            </div>
+            <div class="motion-cell">
+              <span class="motion-label">Last contact</span>
+              <strong id="motionContact" class="motion-value">—</strong>
+            </div>
+            <div class="motion-cell">
+              <span class="motion-label">Contact count</span>
+              <strong id="motionContactCount" class="motion-value">—</strong>
+            </div>
+          </div>
+          <p class="motion-note">position／velocity 是 runtime 的 real-scale 狀態；這個區塊用來判斷球是否真的移動與接觸。</p>
+        </section>
+        <section id="omegaHud" class="omega-hud" aria-label="canonical omega HUD" aria-live="polite">
+          <div class="omega-hud-header">
+            <h2>Canonical rotation</h2>
+            <span id="omegaSemantic" class="omega-semantic">尚未有球</span>
+          </div>
+          <div class="omega-grid">
+            <div class="omega-cell">
+              <span class="omega-axis">上／下旋分量 · omega.x</span>
+              <strong id="omegaX" class="omega-value">—</strong>
+            </div>
+            <div class="omega-cell">
+              <span class="omega-axis">側旋分量 · omega.y</span>
+              <strong id="omegaY" class="omega-value">—</strong>
+            </div>
+            <div class="omega-cell">
+              <span class="omega-axis">軸向分量 · omega.z</span>
+              <strong id="omegaZ" class="omega-value">—</strong>
+            </div>
+            <div class="omega-cell">
+              <span class="omega-axis">總旋轉量 · ‖omega‖</span>
+              <strong id="omegaMagnitude" class="omega-value">—</strong>
+            </div>
+          </div>
+          <p class="omega-note">label 只描述分量語意；raw canonical omega 是 runtime 唯一的旋轉數值。</p>
+        </section>
+        <dl id="details" class="details"></dl>
+      </section>
+    </section>
+
+    <section class="trace-card">
+      <h2>Round trace</h2>
+      <pre id="trace">Waiting for paired round…</pre>
+    </section>
+  </main>
+  <script src="../shared-physics-core.js"></script>
+  <script src="legacy-adapter.js"></script>
+  <script src="serve-data.js"></script>
+  <script src="physics-adapter.js"></script>
+  <script src="contact-policy.js"></script>
+  <script src="trainer-state.js"></script>
+  <script src="trajectory-diagnostics.js"></script>
+  <script src="runtime.js"></script>
+  <script src="product-data.js"></script>
+  <script src="game5-product.js"></script>
+  <script src="table-geometry.js"></script>
+  <script src="motion-hud.js"></script>
+  <script src="omega-hud.js"></script>
+  <script src="view.js"></script>
+</body>
+</html>

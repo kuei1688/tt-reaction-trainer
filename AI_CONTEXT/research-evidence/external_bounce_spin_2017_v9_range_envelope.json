@@ -1,0 +1,127 @@
+{
+  "status": "pass",
+  "benchmark": "V9 fixed-parameter uncertainty envelope",
+  "calibrationStatus": "not-calibrated",
+  "source": {
+    "sourceId": "JSME-2017-G0500606",
+    "pdf": "C:\\Users\\Kevin\\Downloads\\2017_G0500606.pdf",
+    "digitizationCsv": "AI_CONTEXT/external_bounce_spin_2017_figure_digitization.csv",
+    "rowsRead": 24,
+    "dataQuality": "figure_digitized_approx",
+    "inputPairingCaveat": "independent grid inside each before range; hidden per-ball pairing is not recovered"
+  },
+  "method": {
+    "grid": "full-factorial inclusive endpoints",
+    "pointsPerAxis": 9,
+    "samplesPerSign": 1620,
+    "totalSamples": 3240,
+    "fixedParameter": true,
+    "workingSign": 1,
+    "jointHitDefinition": "one sampled input inside all three external after ranges",
+    "parameterFitting": false,
+    "formalFilesModified": false
+  },
+  "coordinateContract": {
+    "schema": 2,
+    "tableNormal": {"x": 0, "y": 1, "z": 0},
+    "velocity": "{x:0, y:-speed*sin(angle), z:speed*cos(angle)}",
+    "omega": "{x:sign*2π*rps, y:0, z:0} rad/s",
+    "rpsToRadPerSecond": 6.283185307179586,
+    "scale": "real-scale"
+  },
+  "tablePolicy": {
+    "friction": 0.13,
+    "restitution": 0.76,
+    "normalModel": "compliant",
+    "tangentModel": "coulomb",
+    "dwellTime": 0.003,
+    "dt": 0.00025,
+    "steps": 12,
+    "spring": 6000,
+    "damping": 4,
+    "contactModel": "mainline-v2-r1-compliant-3d-table"
+  },
+  "summary": {
+    "workingSignEnvelopeIntersectionLevels": {"angleDeg": 1, "rotationRps": 2, "speedMps": 1},
+    "workingSignSampleHitLevels": {"angleDeg": 1, "rotationRps": 1, "speedMps": 0},
+    "workingSignJointMatchLevels": [],
+    "allRunsEnergyIncreaseSamples": 0,
+    "allRunsFrictionRegimes": {"sliding": 3240},
+    "interpretation": "input uncertainty feasibility screen only; no parameter was fitted or changed"
+  },
+  "workingSignRuns": [
+    {
+      "lowerDiskLevel": 0,
+      "regime": "high-spin / low-speed",
+      "sampleCount": 81,
+      "modelEnvelope": {
+        "angleDeg": [17.176786831470995, 18.38723850155221],
+        "rotationRps": [92.40830564539372, 111.53636293219125],
+        "speedMps": [8.963203168343043, 8.986193593524304]
+      },
+      "externalAfter": {
+        "angleDeg": [14.2, 14.6],
+        "rotationRps": [81.9, 95.7],
+        "speedMps": [10.5, 16.0]
+      },
+      "envelopeIntersects": {"angleDeg": false, "rotationRps": true, "speedMps": false},
+      "sampleHits": {"angleDeg": 0, "rotationRps": 18, "speedMps": 0, "jointAllThree": 0},
+      "frictionRegimes": {"sliding": 81}
+    },
+    {
+      "lowerDiskLevel": 2,
+      "regime": "transitional",
+      "sampleCount": 81,
+      "modelEnvelope": {
+        "angleDeg": [15.408190638676027, 22.22562387627297],
+        "rotationRps": [52.3028248260915, 56.025628859164776],
+        "speedMps": [8.475185242696845, 9.416562322973654]
+      },
+      "externalAfter": {
+        "angleDeg": [18.2, 19.9],
+        "rotationRps": [65.1, 65.1],
+        "speedMps": [9.0, 9.0]
+      },
+      "envelopeIntersects": {"angleDeg": true, "rotationRps": false, "speedMps": true},
+      "sampleHits": {"angleDeg": 18, "rotationRps": 0, "speedMps": 0, "jointAllThree": 0},
+      "frictionRegimes": {"sliding": 81}
+    },
+    {
+      "lowerDiskLevel": 4,
+      "regime": "transitional bridge",
+      "sampleCount": 729,
+      "modelEnvelope": {
+        "angleDeg": [15.104672113932287, 15.611068139541265],
+        "rotationRps": [36.69093090832907, 54.39195641952482],
+        "speedMps": [9.591119707889874, 9.893722246825115]
+      },
+      "externalAfter": {
+        "angleDeg": [17.8, 19.1],
+        "rotationRps": [49.8, 49.8],
+        "speedMps": [8.2, 9.3]
+      },
+      "envelopeIntersects": {"angleDeg": false, "rotationRps": true, "speedMps": false},
+      "sampleHits": {"angleDeg": 0, "rotationRps": 0, "speedMps": 0, "jointAllThree": 0},
+      "frictionRegimes": {"sliding": 729}
+    },
+    {
+      "lowerDiskLevel": 6,
+      "regime": "low-spin / high-speed",
+      "sampleCount": 729,
+      "modelEnvelope": {
+        "angleDeg": [13.204355838554449, 13.900091608685674],
+        "rotationRps": [36.685877017859866, 38.08363011628363],
+        "speedMps": [9.49078083899042, 10.08573631178808]
+      },
+      "externalAfter": {
+        "angleDeg": [17.7, 19.4],
+        "rotationRps": [46.3, 52.5],
+        "speedMps": [8.8, 9.2]
+      },
+      "envelopeIntersects": {"angleDeg": false, "rotationRps": false, "speedMps": false},
+      "sampleHits": {"angleDeg": 0, "rotationRps": 0, "speedMps": 0, "jointAllThree": 0},
+      "frictionRegimes": {"sliding": 729}
+    }
+  ],
+  "decision": "Input uncertainty is insufficient to explain V8 mismatch. Review coordinate/measurement semantics and contact-regime coverage before proposing any R1 parameter change."
+}

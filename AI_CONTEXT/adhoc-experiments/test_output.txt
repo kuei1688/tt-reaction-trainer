@@ -1,0 +1,163 @@
+# Serve Batch Validation (VAL-003)
+
+Updated: 2026-07-17T06:10:37.022Z
+
+## game4.html
+
+Fail | serve_contact_sidebackspin_002 | net_clearance_too_low
+Fail | serve_contact_sidebackspin_003 | first_bounce_off_target
+Fail | serve_contact_sidebackspin_004 | net_clearance_too_low
+Fail | serve_contact_sidebackspin_005 | first_bounce_off_target
+Fail | serve_contact_sidebackspin_006 | net_clearance_too_low
+Fail | serve_contact_sidebackspin_007 | net_clearance_too_low
+Fail | serve_contact_sidebackspin_008 | first_bounce_off_target
+Fail | serve_contact_sidebackspin_009 | net_clearance_too_low
+Fail | serve_contact_sidebackspin_010 | first_bounce_off_target
+Fail | serve_contact_sidebackspin_011 | first_bounce_off_target
+Fail | serve_contact_sidebackspin_012 | net_clearance_too_low
+Fail | serve_contact_sidebackspin_013 | first_bounce_off_target
+Fail | serve_contact_backspin_002 | net_clearance_too_low
+Fail | serve_contact_backspin_003 | second_bounce_off_target
+Fail | serve_contact_backspin_004 | net_clearance_too_low
+Pass | serve_contact_backspin_005
+Fail | serve_contact_backspin_006 | net_clearance_too_low
+Fail | serve_contact_backspin_007 | second_bounce_off_target
+Fail | serve_contact_backspin_008 | net_clearance_too_low
+Pass | serve_contact_backspin_009
+Fail | serve_contact_backspin_010 | net_clearance_too_low
+Fail | serve_contact_backspin_011 | second_bounce_off_target
+Pass | serve_contact_sidespin_002
+Pass | serve_contact_sidespin_003
+Pass | serve_contact_sidespin_004
+Pass | serve_contact_sidespin_005
+Pass | serve_contact_sidespin_006
+Pass | serve_contact_sidespin_007
+Pass | serve_contact_sidespin_008
+Pass | serve_contact_sidespin_009
+Pass | serve_contact_sidespin_010
+Pass | serve_contact_sidespin_011
+Fail | serve_contact_sidespin_012 | second_bounce_off_target
+Pass | serve_contact_sidespin_013
+Pass | serve_contact_sidespin_014
+Pass | serve_contact_sidespin_015
+Pass | serve_contact_sidespin_016
+Pass | serve_contact_sidespin_017
+Pass | serve_contact_sidespin_018
+Pass | serve_contact_sidespin_019
+Fail | serve_contact_sidespin_020 | first_bounce_off_target
+Fail | serve_contact_sidespin_021 | second_bounce_off_target
+Fail | serve_contact_sidespin_022 | first_bounce_off_target
+Pass | serve_contact_sidespin_023
+Pass | serve_contact_nospin_002
+Fail | serve_contact_nospin_003 | second_bounce_off_target
+Pass | serve_contact_nospin_004
+
+## physics-studio.html
+
+Fail | serve_contact_sidebackspin_002 | net_clearance_too_low
+Fail | serve_contact_sidebackspin_003 | first_bounce_off_target
+Fail | serve_contact_sidebackspin_004 | net_clearance_too_low
+Fail | serve_contact_sidebackspin_005 | first_bounce_off_target
+Fail | serve_contact_sidebackspin_006 | net_clearance_too_low
+Fail | serve_contact_sidebackspin_007 | net_clearance_too_low
+Fail | serve_contact_sidebackspin_008 | first_bounce_off_target
+Fail | serve_contact_sidebackspin_009 | net_clearance_too_low
+Fail | serve_contact_sidebackspin_010 | first_bounce_off_target
+Fail | serve_contact_sidebackspin_011 | first_bounce_off_target
+Fail | serve_contact_sidebackspin_012 | net_clearance_too_low
+Fail | serve_contact_sidebackspin_013 | first_bounce_off_target
+Fail | serve_contact_backspin_002 | net_clearance_too_low
+Fail | serve_contact_backspin_003 | second_bounce_off_target
+Fail | serve_contact_backspin_004 | net_clearance_too_low
+Pass | serve_contact_backspin_005
+Fail | serve_contact_backspin_006 | net_clearance_too_low
+Fail | serve_contact_backspin_007 | second_bounce_off_target
+Fail | serve_contact_backspin_008 | net_clearance_too_low
+Pass | serve_contact_backspin_009
+Fail | serve_contact_backspin_010 | net_clearance_too_low
+Fail | serve_contact_backspin_011 | second_bounce_off_target
+Pass | serve_contact_sidespin_002
+Pass | serve_contact_sidespin_003
+Pass | serve_contact_sidespin_004
+Pass | serve_contact_sidespin_005
+Pass | serve_contact_sidespin_006
+Pass | serve_contact_sidespin_007
+Pass | serve_contact_sidespin_008
+Pass | serve_contact_sidespin_009
+Pass | serve_contact_sidespin_010
+Pass | serve_contact_sidespin_011
+Fail | serve_contact_sidespin_012 | second_bounce_off_target
+Pass | serve_contact_sidespin_013
+Pass | serve_contact_sidespin_014
+Pass | serve_contact_sidespin_015
+Pass | serve_contact_sidespin_016
+Pass | serve_contact_sidespin_017
+Pass | serve_contact_sidespin_018
+Pass | serve_contact_sidespin_019
+Fail | serve_contact_sidespin_020 | first_bounce_off_target
+Fail | serve_contact_sidespin_021 | second_bounce_off_target
+Fail | serve_contact_sidespin_022 | first_bounce_off_target
+Pass | serve_contact_sidespin_023
+Pass | serve_contact_nospin_002
+Fail | serve_contact_nospin_003 | second_bounce_off_target
+Pass | serve_contact_nospin_004
+
+## cross-check
+
+Pass | serve_contact_sidebackspin_002
+Pass | serve_contact_sidebackspin_003
+Pass | serve_contact_sidebackspin_004
+Pass | serve_contact_sidebackspin_005
+Pass | serve_contact_sidebackspin_006
+Pass | serve_contact_sidebackspin_007
+Pass | serve_contact_sidebackspin_008
+Pass | serve_contact_sidebackspin_009
+Pass | serve_contact_sidebackspin_010
+Pass | serve_contact_sidebackspin_011
+Pass | serve_contact_sidebackspin_012
+Pass | serve_contact_sidebackspin_013
+Pass | serve_contact_backspin_002
+Pass | serve_contact_backspin_003
+Pass | serve_contact_backspin_004
+Pass | serve_contact_backspin_005
+Pass | serve_contact_backspin_006
+Pass | serve_contact_backspin_007
+Pass | serve_contact_backspin_008
+Pass | serve_contact_backspin_009
+Pass | serve_contact_backspin_010
+Pass | serve_contact_backspin_011
+Pass | serve_contact_sidespin_002
+Pass | serve_contact_sidespin_003
+Pass | serve_contact_sidespin_004
+Pass | serve_contact_sidespin_005
+Pass | serve_contact_sidespin_006
+Pass | serve_contact_sidespin_007
+Pass | serve_contact_sidespin_008
+Pass | serve_contact_sidespin_009
+Pass | serve_contact_sidespin_010
+Pass | serve_contact_sidespin_011
+Pass | serve_contact_sidespin_012
+Pass | serve_contact_sidespin_013
+Pass | serve_contact_sidespin_014
+Pass | serve_contact_sidespin_015
+Pass | serve_contact_sidespin_016
+Pass | serve_contact_sidespin_017
+Pass | serve_contact_sidespin_018
+Pass | serve_contact_sidespin_019
+Pass | serve_contact_sidespin_020
+Pass | serve_contact_sidespin_021
+Pass | serve_contact_sidespin_022
+Pass | serve_contact_sidespin_023
+Pass | serve_contact_nospin_002
+Pass | serve_contact_nospin_003
+Pass | serve_contact_nospin_004
+
+## Common legal-serve gate
+
+Definition: no net collision; first bounce on server half; second bounce on receiver half; both bounces inside table bounds.
+game4.html: 47 / 47 passed
+physics-studio.html: 47 / 47 passed
+
+Cross-check: 47 / 47 passed
+Total: 91 passed / 50 failed
+Exit code: 0 (cross-check + common legal-serve gate; individual target-precision diagnostics may still fail)

@@ -1,0 +1,13 @@
+{
+  "rows": [],
+  "summary": {
+    "groupId": "G5",
+    "rows": 0,
+    "finite": 0,
+    "nonfinite": 0,
+    "legal": 0,
+    "legalRate": null,
+    "netClearanceP10": null,
+    "medianLandingError": null
+  }
+}

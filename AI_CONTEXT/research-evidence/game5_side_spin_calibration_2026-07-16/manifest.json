@@ -1,0 +1,1450 @@
+{
+  "schema": 1,
+  "generatedAt": "2026-07-15T23:42:49.646Z",
+  "source": {
+    "plan": "docs/3D_SIDE_SPIN_CALIBRATION_EXECUTION_PLAN.md",
+    "game5Sha256": "7d688917a4f157346bf4f61e019c39b3af17a4f0391f3ae5d7e3eda8cd57c73a",
+    "sharedPhysicsCoreSha256": "3d3927028a3cf92d808cbc9c19ba9d8adddf9b8ef924035ace07e9cb9f2d253d",
+    "presetsSha256": "d172a5b7315ef2182a676a5e43538e5882725dd67a3483c3cc74718c4b8ebc9c",
+    "gitCommit": "f1d0ce4a9781e6cb9c56cc3e6a2d935e3fb2f6b8"
+  },
+  "fixedRules": {
+    "seed": 17072026,
+    "dt": 0.008333333333333333,
+    "gravity": -4.2,
+    "simTimeDilation": 1.5275252316519468,
+    "coefficientValues": [
+      0,
+      0.0014,
+      0.0021,
+      0.0028,
+      0.0035,
+      0.0042
+    ],
+    "omegaMagnitudeValues": [
+      -157.075,
+      -125.66,
+      -62.83,
+      0,
+      62.83,
+      125.66,
+      157.075
+    ],
+    "calibrationIds": [
+      "serve_contact_sidebackspin_004",
+      "serve_contact_sidebackspin_003",
+      "serve_contact_sidespin_002",
+      "serve_contact_sidespin_020",
+      "serve_contact_backspin_005",
+      "serve_contact_nospin_004"
+    ],
+    "holdoutIds": [
+      "serve_contact_sidebackspin_002",
+      "serve_contact_sidebackspin_005",
+      "serve_contact_sidebackspin_006",
+      "serve_contact_sidebackspin_007",
+      "serve_contact_sidebackspin_008",
+      "serve_contact_sidebackspin_009",
+      "serve_contact_sidebackspin_010",
+      "serve_contact_sidebackspin_011",
+      "serve_contact_sidebackspin_012",
+      "serve_contact_sidebackspin_013",
+      "serve_contact_backspin_002",
+      "serve_contact_backspin_003",
+      "serve_contact_backspin_004",
+      "serve_contact_backspin_006",
+      "serve_contact_backspin_007",
+      "serve_contact_backspin_008",
+      "serve_contact_backspin_009",
+      "serve_contact_backspin_010",
+      "serve_contact_backspin_011",
+      "serve_contact_sidespin_003",
+      "serve_contact_sidespin_004",
+      "serve_contact_sidespin_005",
+      "serve_contact_sidespin_006",
+      "serve_contact_sidespin_007",
+      "serve_contact_sidespin_008",
+      "serve_contact_sidespin_009",
+      "serve_contact_sidespin_010",
+      "serve_contact_sidespin_011",
+      "serve_contact_sidespin_012",
+      "serve_contact_sidespin_013",
+      "serve_contact_sidespin_014",
+      "serve_contact_sidespin_015",
+      "serve_contact_sidespin_016",
+      "serve_contact_sidespin_017",
+      "serve_contact_sidespin_018",
+      "serve_contact_sidespin_019",
+      "serve_contact_sidespin_021",
+      "serve_contact_sidespin_022",
+      "serve_contact_sidespin_023",
+      "serve_contact_nospin_002",
+      "serve_contact_nospin_003"
+    ]
+  },
+  "presets": [
+    {
+      "presetId": "serve_contact_sidebackspin_002",
+      "videoId": "contact_sidebackspin_002",
+      "videoCategory": "contact_sidebackspin_right",
+      "spinType": "sidebackspin",
+      "sideName": "right",
+      "curveDirection": "left",
+      "length": "long",
+      "placement": "backhand",
+      "start": {
+        "x": 0.32,
+        "y": 0.95,
+        "z": -1.52
+      },
+      "originalVariationSpin": {
+        "topspin": -125.66,
+        "sidespin": 125.66
+      },
+      "originalVariationSpin3d": {
+        "schema": 1,
+        "omega": {
+          "x": -125.66,
+          "y": -125.66,
+          "z": 0
+        },
+        "axialSpin": 0
+      },
+      "split": "Holdout-41"
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_003",
+      "videoId": "contact_sidebackspin_003",
+      "videoCategory": "contact_sidebackspin_right",
+      "spinType": "sidebackspin",
+      "sideName": "right",
+      "curveDirection": "left",
+      "length": "short",
+      "placement": "backhand",
+      "start": {
+        "x": 0.58,
+        "y": 0.95,
+        "z": -1.52
+      },
+      "originalVariationSpin": {
+        "topspin": -125.66,
+        "sidespin": 150.8
+      },
+      "originalVariationSpin3d": {
+        "schema": 1,
+        "omega": {
+          "x": -125.66,
+          "y": -150.8,
+          "z": 0
+        },
+        "axialSpin": 0
+      },
+      "split": "Calibration-6"
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_004",
+      "videoId": "contact_sidebackspin_004",
+      "videoCategory": "contact_sidebackspin_left",
+      "spinType": "sidebackspin",
+      "sideName": "left",
+      "curveDirection": "right",
+      "length": "long",
+      "placement": "forehand",
+      "start": {
+        "x": 0.32,
+        "y": 0.95,
+        "z": -1.52
+      },
+      "originalVariationSpin": {
+        "topspin": -125.66,
+        "sidespin": -125.66
+      },
+      "originalVariationSpin3d": {
+        "schema": 1,
+        "omega": {
+          "x": -125.66,
+          "y": 125.66,
+          "z": 0
+        },
+        "axialSpin": 0
+      },
+      "split": "Calibration-6"
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_005",
+      "videoId": "contact_sidebackspin_005",
+      "videoCategory": "contact_sidebackspin_left",
+      "spinType": "sidebackspin",
+      "sideName": "left",
+      "curveDirection": "right",
+      "length": "short",
+      "placement": "forehand",
+      "start": {
+        "x": 0.17,
+        "y": 0.95,
+        "z": -1.52
+      },
+      "originalVariationSpin": {
+        "topspin": -125.66,
+        "sidespin": -150.8
+      },
+      "originalVariationSpin3d": {
+        "schema": 1,
+        "omega": {
+          "x": -125.66,
+          "y": 150.8,
+          "z": 0
+        },
+        "axialSpin": 0
+      },
+      "split": "Holdout-41"
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_006",
+      "videoId": "contact_sidebackspin_006",
+      "videoCategory": "contact_sidebackspin_left",
+      "spinType": "sidebackspin",
+      "sideName": "left",
+      "curveDirection": "right",
+      "length": "long",
+      "placement": "forehand",
+      "start": {
+        "x": 0.32,
+        "y": 0.95,
+        "z": -1.52
+      },
+      "originalVariationSpin": {
+        "topspin": -125.66,
+        "sidespin": -125.66
+      },
+      "originalVariationSpin3d": {
+        "schema": 1,
+        "omega": {
+          "x": -125.66,
+          "y": 125.66,
+          "z": 0
+        },
+        "axialSpin": 0
+      },
+      "split": "Holdout-41"
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_007",
+      "videoId": "contact_sidebackspin_007",
+      "videoCategory": "contact_sidebackspin_right",
+      "spinType": "sidebackspin",
+      "sideName": "right",
+      "curveDirection": "left",
+      "length": "long",
+      "placement": "backhand",
+      "start": {
+        "x": 0.32,
+        "y": 0.95,
+        "z": -1.52
+      },
+      "originalVariationSpin": {
+        "topspin": -125.66,
+        "sidespin": 125.66
+      },
+      "originalVariationSpin3d": {
+        "schema": 1,
+        "omega": {
+          "x": -125.66,
+          "y": -125.66,
+          "z": 0
+        },
+        "axialSpin": 0
+      },
+      "split": "Holdout-41"
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_008",
+      "videoId": "contact_sidebackspin_008",
+      "videoCategory": "contact_sidebackspin_right",
+      "spinType": "sidebackspin",
+      "sideName": "right",
+      "curveDirection": "left",
+      "length": "short",
+      "placement": "backhand",
+      "start": {
+        "x": 0.58,
+        "y": 0.95,
+        "z": -1.52
+      },
+      "originalVariationSpin": {
+        "topspin": -125.66,
+        "sidespin": 150.8
+      },
+      "originalVariationSpin3d": {
+        "schema": 1,
+        "omega": {
+          "x": -125.66,
+          "y": -150.8,
+          "z": 0
+        },
+        "axialSpin": 0
+      },
+      "split": "Holdout-41"
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_009",
+      "videoId": "contact_sidebackspin_009",
+      "videoCategory": "contact_sidebackspin_right",
+      "spinType": "sidebackspin",
+      "sideName": "right",
+      "curveDirection": "left",
+      "length": "long",
+      "placement": "backhand",
+      "start": {
+        "x": 0.32,
+        "y": 0.95,
+        "z": -1.52
+      },
+      "originalVariationSpin": {
+        "topspin": -125.66,
+        "sidespin": 125.66
+      },
+      "originalVariationSpin3d": {
+        "schema": 1,
+        "omega": {
+          "x": -125.66,
+          "y": -125.66,
+          "z": 0
+        },
+        "axialSpin": 0
+      },
+      "split": "Holdout-41"
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_010",
+      "videoId": "contact_sidebackspin_010",
+      "videoCategory": "contact_sidebackspin_right",
+      "spinType": "sidebackspin",
+      "sideName": "right",
+      "curveDirection": "left",
+      "length": "short",
+      "placement": "backhand",
+      "start": {
+        "x": 0.58,
+        "y": 0.95,
+        "z": -1.52
+      },
+      "originalVariationSpin": {
+        "topspin": -125.66,
+        "sidespin": 150.8
+      },
+      "originalVariationSpin3d": {
+        "schema": 1,
+        "omega": {
+          "x": -125.66,
+          "y": -150.8,
+          "z": 0
+        },
+        "axialSpin": 0
+      },
+      "split": "Holdout-41"
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_011",
+      "videoId": "contact_sidebackspin_011",
+      "videoCategory": "contact_sidebackspin_left",
+      "spinType": "sidebackspin",
+      "sideName": "left",
+      "curveDirection": "right",
+      "length": "short",
+      "placement": "forehand",
+      "start": {
+        "x": 0.17,
+        "y": 0.95,
+        "z": -1.52
+      },
+      "originalVariationSpin": {
+        "topspin": -125.66,
+        "sidespin": -150.8
+      },
+      "originalVariationSpin3d": {
+        "schema": 1,
+        "omega": {
+          "x": -125.66,
+          "y": 150.8,
+          "z": 0
+        },
+        "axialSpin": 0
+      },
+      "split": "Holdout-41"
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_012",
+      "videoId": "contact_sidebackspin_012",
+      "videoCategory": "contact_sidebackspin_left",
+      "spinType": "sidebackspin",
+      "sideName": "left",
+      "curveDirection": "right",
+      "length": "long",
+      "placement": "forehand",
+      "start": {
+        "x": 0.32,
+        "y": 0.95,
+        "z": -1.52
+      },
+      "originalVariationSpin": {
+        "topspin": -125.66,
+        "sidespin": -125.66
+      },
+      "originalVariationSpin3d": {
+        "schema": 1,
+        "omega": {
+          "x": -125.66,
+          "y": 125.66,
+          "z": 0
+        },
+        "axialSpin": 0
+      },
+      "split": "Holdout-41"
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_013",
+      "videoId": "contact_sidebackspin_013",
+      "videoCategory": "contact_sidebackspin_left",
+      "spinType": "sidebackspin",
+      "sideName": "left",
+      "curveDirection": "right",
+      "length": "short",
+      "placement": "forehand",
+      "start": {
+        "x": 0.17,
+        "y": 0.95,
+        "z": -1.52
+      },
+      "originalVariationSpin": {
+        "topspin": -125.66,
+        "sidespin": -150.8
+      },
+      "originalVariationSpin3d": {
+        "schema": 1,
+        "omega": {
+          "x": -125.66,
+          "y": 150.8,
+          "z": 0
+        },
+        "axialSpin": 0
+      },
+      "split": "Holdout-41"
+    },
+    {
+      "presetId": "serve_contact_backspin_002",
+      "videoId": "contact_backspin_002",
+      "videoCategory": "contact_backspin",
+      "spinType": "backspin",
+      "sideName": null,
+      "curveDirection": "none",
+      "length": "long",
+      "placement": "forehand",
+      "start": {
+        "x": 0.32,
+        "y": 0.95,
+        "z": -1.52
+      },
+      "originalVariationSpin": {
+        "topspin": -125.66,
+        "sidespin": 0
+      },
+      "originalVariationSpin3d": {
+        "schema": 1,
+        "omega": {
+          "x": -125.66,
+          "y": 0,
+          "z": 0
+        },
+        "axialSpin": 0
+      },
+      "split": "Holdout-41"
+    },
+    {
+      "presetId": "serve_contact_backspin_003",
+      "videoId": "contact_backspin_003",
+      "videoCategory": "contact_backspin",
+      "spinType": "backspin",
+      "sideName": null,
+      "curveDirection": "none",
+      "length": "short",
+      "placement": "forehand",
+      "start": {
+        "x": 0.17,
+        "y": 0.95,
+        "z": -1.52
+      },
+      "originalVariationSpin": {
+        "topspin": -125.66,
+        "sidespin": 0
+      },
+      "originalVariationSpin3d": {
+        "schema": 1,
+        "omega": {
+          "x": -125.66,
+          "y": 0,
+          "z": 0
+        },
+        "axialSpin": 0
+      },
+      "split": "Holdout-41"
+    },
+    {
+      "presetId": "serve_contact_backspin_004",
+      "videoId": "contact_backspin_004",
+      "videoCategory": "contact_backspin",
+      "spinType": "backspin",
+      "sideName": null,
+      "curveDirection": "none",
+      "length": "long",
+      "placement": "backhand",
+      "start": {
+        "x": 0.32,
+        "y": 0.95,
+        "z": -1.52
+      },
+      "originalVariationSpin": {
+        "topspin": -125.66,
+        "sidespin": 0
+      },
+      "originalVariationSpin3d": {
+        "schema": 1,
+        "omega": {
+          "x": -125.66,
+          "y": 0,
+          "z": 0
+        },
+        "axialSpin": 0
+      },
+      "split": "Holdout-41"
+    },
+    {
+      "presetId": "serve_contact_backspin_005",
+      "videoId": "contact_backspin_005",
+      "videoCategory": "contact_backspin",
+      "spinType": "backspin",
+      "sideName": null,
+      "curveDirection": "none",
+      "length": "short",
+      "placement": "backhand",
+      "start": {
+        "x": 0.58,
+        "y": 0.95,
+        "z": -1.52
+      },
+      "originalVariationSpin": {
+        "topspin": -125.66,
+        "sidespin": 0
+      },
+      "originalVariationSpin3d": {
+        "schema": 1,
+        "omega": {
+          "x": -125.66,
+          "y": 0,
+          "z": 0
+        },
+        "axialSpin": 0
+      },
+      "split": "Calibration-6"
+    },
+    {
+      "presetId": "serve_contact_backspin_006",
+      "videoId": "contact_backspin_006",
+      "videoCategory": "contact_backspin",
+      "spinType": "backspin",
+      "sideName": null,
+      "curveDirection": "none",
+      "length": "long",
+      "placement": "forehand",
+      "start": {
+        "x": 0.32,
+        "y": 0.95,
+        "z": -1.52
+      },
+      "originalVariationSpin": {
+        "topspin": -125.66,
+        "sidespin": 0
+      },
+      "originalVariationSpin3d": {
+        "schema": 1,
+        "omega": {
+          "x": -125.66,
+          "y": 0,
+          "z": 0
+        },
+        "axialSpin": 0
+      },
+      "split": "Holdout-41"
+    },
+    {
+      "presetId": "serve_contact_backspin_007",
+      "videoId": "contact_backspin_007",
+      "videoCategory": "contact_backspin",
+      "spinType": "backspin",
+      "sideName": null,
+      "curveDirection": "none",
+      "length": "short",
+      "placement": "forehand",
+      "start": {
+        "x": 0.17,
+        "y": 0.95,
+        "z": -1.52
+      },
+      "originalVariationSpin": {
+        "topspin": -125.66,
+        "sidespin": 0
+      },
+      "originalVariationSpin3d": {
+        "schema": 1,
+        "omega": {
+          "x": -125.66,
+          "y": 0,
+          "z": 0
+        },
+        "axialSpin": 0
+      },
+      "split": "Holdout-41"
+    },
+    {
+      "presetId": "serve_contact_backspin_008",
+      "videoId": "contact_backspin_008",
+      "videoCategory": "contact_backspin",
+      "spinType": "backspin",
+      "sideName": null,
+      "curveDirection": "none",
+      "length": "long",
+      "placement": "backhand",
+      "start": {
+        "x": 0.32,
+        "y": 0.95,
+        "z": -1.52
+      },
+      "originalVariationSpin": {
+        "topspin": -125.66,
+        "sidespin": 0
+      },
+      "originalVariationSpin3d": {
+        "schema": 1,
+        "omega": {
+          "x": -125.66,
+          "y": 0,
+          "z": 0
+        },
+        "axialSpin": 0
+      },
+      "split": "Holdout-41"
+    },
+    {
+      "presetId": "serve_contact_backspin_009",
+      "videoId": "contact_backspin_009",
+      "videoCategory": "contact_backspin",
+      "spinType": "backspin",
+      "sideName": null,
+      "curveDirection": "none",
+      "length": "short",
+      "placement": "backhand",
+      "start": {
+        "x": 0.58,
+        "y": 0.95,
+        "z": -1.52
+      },
+      "originalVariationSpin": {
+        "topspin": -125.66,
+        "sidespin": 0
+      },
+      "originalVariationSpin3d": {
+        "schema": 1,
+        "omega": {
+          "x": -125.66,
+          "y": 0,
+          "z": 0
+        },
+        "axialSpin": 0
+      },
+      "split": "Holdout-41"
+    },
+    {
+      "presetId": "serve_contact_backspin_010",
+      "videoId": "contact_backspin_010",
+      "videoCategory": "contact_backspin",
+      "spinType": "backspin",
+      "sideName": null,
+      "curveDirection": "none",
+      "length": "long",
+      "placement": "forehand",
+      "start": {
+        "x": 0.32,
+        "y": 0.95,
+        "z": -1.52
+      },
+      "originalVariationSpin": {
+        "topspin": -125.66,
+        "sidespin": 0
+      },
+      "originalVariationSpin3d": {
+        "schema": 1,
+        "omega": {
+          "x": -125.66,
+          "y": 0,
+          "z": 0
+        },
+        "axialSpin": 0
+      },
+      "split": "Holdout-41"
+    },
+    {
+      "presetId": "serve_contact_backspin_011",
+      "videoId": "contact_backspin_011",
+      "videoCategory": "contact_backspin",
+      "spinType": "backspin",
+      "sideName": null,
+      "curveDirection": "none",
+      "length": "short",
+      "placement": "forehand",
+      "start": {
+        "x": 0.17,
+        "y": 0.95,
+        "z": -1.52
+      },
+      "originalVariationSpin": {
+        "topspin": -125.66,
+        "sidespin": 0
+      },
+      "originalVariationSpin3d": {
+        "schema": 1,
+        "omega": {
+          "x": -125.66,
+          "y": 0,
+          "z": 0
+        },
+        "axialSpin": 0
+      },
+      "split": "Holdout-41"
+    },
+    {
+      "presetId": "serve_contact_sidespin_002",
+      "videoId": "contact_sidespin_002",
+      "videoCategory": "contact_sidespin_left",
+      "spinType": "sidespin",
+      "sideName": "left",
+      "curveDirection": "right",
+      "length": "long",
+      "placement": "forehand",
+      "start": {
+        "x": 0.32,
+        "y": 0.95,
+        "z": -1.52
+      },
+      "originalVariationSpin": {
+        "topspin": 0,
+        "sidespin": -125.66
+      },
+      "originalVariationSpin3d": {
+        "schema": 1,
+        "omega": {
+          "x": 0,
+          "y": 125.66,
+          "z": 0
+        },
+        "axialSpin": 0
+      },
+      "split": "Calibration-6"
+    },
+    {
+      "presetId": "serve_contact_sidespin_003",
+      "videoId": "contact_sidespin_003",
+      "videoCategory": "contact_sidespin_left",
+      "spinType": "sidespin",
+      "sideName": "left",
+      "curveDirection": "right",
+      "length": "short",
+      "placement": "forehand",
+      "start": {
+        "x": 0.17,
+        "y": 0.95,
+        "z": -1.52
+      },
+      "originalVariationSpin": {
+        "topspin": 0,
+        "sidespin": -150.8
+      },
+      "originalVariationSpin3d": {
+        "schema": 1,
+        "omega": {
+          "x": 0,
+          "y": 150.8,
+          "z": 0
+        },
+        "axialSpin": 0
+      },
+      "split": "Holdout-41"
+    },
+    {
+      "presetId": "serve_contact_sidespin_004",
+      "videoId": "contact_sidespin_004",
+      "videoCategory": "contact_sidespin_left",
+      "spinType": "sidespin",
+      "sideName": "left",
+      "curveDirection": "right",
+      "length": "long",
+      "placement": "forehand",
+      "start": {
+        "x": 0.32,
+        "y": 0.95,
+        "z": -1.52
+      },
+      "originalVariationSpin": {
+        "topspin": 0,
+        "sidespin": -125.66
+      },
+      "originalVariationSpin3d": {
+        "schema": 1,
+        "omega": {
+          "x": 0,
+          "y": 125.66,
+          "z": 0
+        },
+        "axialSpin": 0
+      },
+      "split": "Holdout-41"
+    },
+    {
+      "presetId": "serve_contact_sidespin_005",
+      "videoId": "contact_sidespin_005",
+      "videoCategory": "contact_sidespin_left",
+      "spinType": "sidespin",
+      "sideName": "left",
+      "curveDirection": "right",
+      "length": "short",
+      "placement": "forehand",
+      "start": {
+        "x": 0.17,
+        "y": 0.95,
+        "z": -1.52
+      },
+      "originalVariationSpin": {
+        "topspin": 0,
+        "sidespin": -150.8
+      },
+      "originalVariationSpin3d": {
+        "schema": 1,
+        "omega": {
+          "x": 0,
+          "y": 150.8,
+          "z": 0
+        },
+        "axialSpin": 0
+      },
+      "split": "Holdout-41"
+    },
+    {
+      "presetId": "serve_contact_sidespin_006",
+      "videoId": "contact_sidespin_006",
+      "videoCategory": "contact_sidespin_left",
+      "spinType": "sidespin",
+      "sideName": "left",
+      "curveDirection": "right",
+      "length": "long",
+      "placement": "forehand",
+      "start": {
+        "x": 0.32,
+        "y": 0.95,
+        "z": -1.52
+      },
+      "originalVariationSpin": {
+        "topspin": 0,
+        "sidespin": -125.66
+      },
+      "originalVariationSpin3d": {
+        "schema": 1,
+        "omega": {
+          "x": 0,
+          "y": 125.66,
+          "z": 0
+        },
+        "axialSpin": 0
+      },
+      "split": "Holdout-41"
+    },
+    {
+      "presetId": "serve_contact_sidespin_007",
+      "videoId": "contact_sidespin_007",
+      "videoCategory": "contact_sidespin_left",
+      "spinType": "sidespin",
+      "sideName": "left",
+      "curveDirection": "right",
+      "length": "short",
+      "placement": "forehand",
+      "start": {
+        "x": 0.17,
+        "y": 0.95,
+        "z": -1.52
+      },
+      "originalVariationSpin": {
+        "topspin": 0,
+        "sidespin": -150.8
+      },
+      "originalVariationSpin3d": {
+        "schema": 1,
+        "omega": {
+          "x": 0,
+          "y": 150.8,
+          "z": 0
+        },
+        "axialSpin": 0
+      },
+      "split": "Holdout-41"
+    },
+    {
+      "presetId": "serve_contact_sidespin_008",
+      "videoId": "contact_sidespin_008",
+      "videoCategory": "contact_sidespin_left",
+      "spinType": "sidespin",
+      "sideName": "left",
+      "curveDirection": "right",
+      "length": "long",
+      "placement": "forehand",
+      "start": {
+        "x": 0.32,
+        "y": 0.95,
+        "z": -1.52
+      },
+      "originalVariationSpin": {
+        "topspin": 0,
+        "sidespin": -125.66
+      },
+      "originalVariationSpin3d": {
+        "schema": 1,
+        "omega": {
+          "x": 0,
+          "y": 125.66,
+          "z": 0
+        },
+        "axialSpin": 0
+      },
+      "split": "Holdout-41"
+    },
+    {
+      "presetId": "serve_contact_sidespin_009",
+      "videoId": "contact_sidespin_009",
+      "videoCategory": "contact_sidespin_left",
+      "spinType": "sidespin",
+      "sideName": "left",
+      "curveDirection": "right",
+      "length": "short",
+      "placement": "forehand",
+      "start": {
+        "x": 0.17,
+        "y": 0.95,
+        "z": -1.52
+      },
+      "originalVariationSpin": {
+        "topspin": 0,
+        "sidespin": -150.8
+      },
+      "originalVariationSpin3d": {
+        "schema": 1,
+        "omega": {
+          "x": 0,
+          "y": 150.8,
+          "z": 0
+        },
+        "axialSpin": 0
+      },
+      "split": "Holdout-41"
+    },
+    {
+      "presetId": "serve_contact_sidespin_010",
+      "videoId": "contact_sidespin_010",
+      "videoCategory": "contact_sidespin_left",
+      "spinType": "sidespin",
+      "sideName": "left",
+      "curveDirection": "right",
+      "length": "long",
+      "placement": "forehand",
+      "start": {
+        "x": 0.32,
+        "y": 0.95,
+        "z": -1.52
+      },
+      "originalVariationSpin": {
+        "topspin": 0,
+        "sidespin": -125.66
+      },
+      "originalVariationSpin3d": {
+        "schema": 1,
+        "omega": {
+          "x": 0,
+          "y": 125.66,
+          "z": 0
+        },
+        "axialSpin": 0
+      },
+      "split": "Holdout-41"
+    },
+    {
+      "presetId": "serve_contact_sidespin_011",
+      "videoId": "contact_sidespin_011",
+      "videoCategory": "contact_sidespin_left",
+      "spinType": "sidespin",
+      "sideName": "left",
+      "curveDirection": "right",
+      "length": "short",
+      "placement": "forehand",
+      "start": {
+        "x": 0.17,
+        "y": 0.95,
+        "z": -1.52
+      },
+      "originalVariationSpin": {
+        "topspin": 0,
+        "sidespin": -150.8
+      },
+      "originalVariationSpin3d": {
+        "schema": 1,
+        "omega": {
+          "x": 0,
+          "y": 150.8,
+          "z": 0
+        },
+        "axialSpin": 0
+      },
+      "split": "Holdout-41"
+    },
+    {
+      "presetId": "serve_contact_sidespin_012",
+      "videoId": "contact_sidespin_012",
+      "videoCategory": "contact_sidespin_right",
+      "spinType": "sidespin",
+      "sideName": "right",
+      "curveDirection": "left",
+      "length": "long",
+      "placement": "backhand",
+      "start": {
+        "x": 0.32,
+        "y": 0.95,
+        "z": -1.52
+      },
+      "originalVariationSpin": {
+        "topspin": 0,
+        "sidespin": 125.66
+      },
+      "originalVariationSpin3d": {
+        "schema": 1,
+        "omega": {
+          "x": 0,
+          "y": -125.66,
+          "z": 0
+        },
+        "axialSpin": 0
+      },
+      "split": "Holdout-41"
+    },
+    {
+      "presetId": "serve_contact_sidespin_013",
+      "videoId": "contact_sidespin_013",
+      "videoCategory": "contact_sidespin_left",
+      "spinType": "sidespin",
+      "sideName": "left",
+      "curveDirection": "right",
+      "length": "long",
+      "placement": "forehand",
+      "start": {
+        "x": 0.32,
+        "y": 0.95,
+        "z": -1.52
+      },
+      "originalVariationSpin": {
+        "topspin": 0,
+        "sidespin": -125.66
+      },
+      "originalVariationSpin3d": {
+        "schema": 1,
+        "omega": {
+          "x": 0,
+          "y": 125.66,
+          "z": 0
+        },
+        "axialSpin": 0
+      },
+      "split": "Holdout-41"
+    },
+    {
+      "presetId": "serve_contact_sidespin_014",
+      "videoId": "contact_sidespin_014",
+      "videoCategory": "contact_sidespin_left",
+      "spinType": "sidespin",
+      "sideName": "left",
+      "curveDirection": "right",
+      "length": "short",
+      "placement": "forehand",
+      "start": {
+        "x": 0.17,
+        "y": 0.95,
+        "z": -1.52
+      },
+      "originalVariationSpin": {
+        "topspin": 0,
+        "sidespin": -150.8
+      },
+      "originalVariationSpin3d": {
+        "schema": 1,
+        "omega": {
+          "x": 0,
+          "y": 150.8,
+          "z": 0
+        },
+        "axialSpin": 0
+      },
+      "split": "Holdout-41"
+    },
+    {
+      "presetId": "serve_contact_sidespin_015",
+      "videoId": "contact_sidespin_015",
+      "videoCategory": "contact_sidespin_left",
+      "spinType": "sidespin",
+      "sideName": "left",
+      "curveDirection": "right",
+      "length": "long",
+      "placement": "forehand",
+      "start": {
+        "x": 0.32,
+        "y": 0.95,
+        "z": -1.52
+      },
+      "originalVariationSpin": {
+        "topspin": 0,
+        "sidespin": -125.66
+      },
+      "originalVariationSpin3d": {
+        "schema": 1,
+        "omega": {
+          "x": 0,
+          "y": 125.66,
+          "z": 0
+        },
+        "axialSpin": 0
+      },
+      "split": "Holdout-41"
+    },
+    {
+      "presetId": "serve_contact_sidespin_016",
+      "videoId": "contact_sidespin_016",
+      "videoCategory": "contact_sidespin_left",
+      "spinType": "sidespin",
+      "sideName": "left",
+      "curveDirection": "right",
+      "length": "short",
+      "placement": "forehand",
+      "start": {
+        "x": 0.17,
+        "y": 0.95,
+        "z": -1.52
+      },
+      "originalVariationSpin": {
+        "topspin": 0,
+        "sidespin": -150.8
+      },
+      "originalVariationSpin3d": {
+        "schema": 1,
+        "omega": {
+          "x": 0,
+          "y": 150.8,
+          "z": 0
+        },
+        "axialSpin": 0
+      },
+      "split": "Holdout-41"
+    },
+    {
+      "presetId": "serve_contact_sidespin_017",
+      "videoId": "contact_sidespin_017",
+      "videoCategory": "contact_sidespin_left",
+      "spinType": "sidespin",
+      "sideName": "left",
+      "curveDirection": "right",
+      "length": "long",
+      "placement": "forehand",
+      "start": {
+        "x": 0.32,
+        "y": 0.95,
+        "z": -1.52
+      },
+      "originalVariationSpin": {
+        "topspin": 0,
+        "sidespin": -125.66
+      },
+      "originalVariationSpin3d": {
+        "schema": 1,
+        "omega": {
+          "x": 0,
+          "y": 125.66,
+          "z": 0
+        },
+        "axialSpin": 0
+      },
+      "split": "Holdout-41"
+    },
+    {
+      "presetId": "serve_contact_sidespin_018",
+      "videoId": "contact_sidespin_018",
+      "videoCategory": "contact_sidespin_left",
+      "spinType": "sidespin",
+      "sideName": "left",
+      "curveDirection": "right",
+      "length": "short",
+      "placement": "forehand",
+      "start": {
+        "x": 0.17,
+        "y": 0.95,
+        "z": -1.52
+      },
+      "originalVariationSpin": {
+        "topspin": 0,
+        "sidespin": -150.8
+      },
+      "originalVariationSpin3d": {
+        "schema": 1,
+        "omega": {
+          "x": 0,
+          "y": 150.8,
+          "z": 0
+        },
+        "axialSpin": 0
+      },
+      "split": "Holdout-41"
+    },
+    {
+      "presetId": "serve_contact_sidespin_019",
+      "videoId": "contact_sidespin_019",
+      "videoCategory": "contact_sidespin_left",
+      "spinType": "sidespin",
+      "sideName": "left",
+      "curveDirection": "right",
+      "length": "long",
+      "placement": "forehand",
+      "start": {
+        "x": 0.32,
+        "y": 0.95,
+        "z": -1.52
+      },
+      "originalVariationSpin": {
+        "topspin": 0,
+        "sidespin": -125.66
+      },
+      "originalVariationSpin3d": {
+        "schema": 1,
+        "omega": {
+          "x": 0,
+          "y": 125.66,
+          "z": 0
+        },
+        "axialSpin": 0
+      },
+      "split": "Holdout-41"
+    },
+    {
+      "presetId": "serve_contact_sidespin_020",
+      "videoId": "contact_sidespin_020",
+      "videoCategory": "contact_sidespin_right",
+      "spinType": "sidespin",
+      "sideName": "right",
+      "curveDirection": "left",
+      "length": "short",
+      "placement": "backhand",
+      "start": {
+        "x": 0.58,
+        "y": 0.95,
+        "z": -1.52
+      },
+      "originalVariationSpin": {
+        "topspin": 0,
+        "sidespin": 150.8
+      },
+      "originalVariationSpin3d": {
+        "schema": 1,
+        "omega": {
+          "x": 0,
+          "y": -150.8,
+          "z": 0
+        },
+        "axialSpin": 0
+      },
+      "split": "Calibration-6"
+    },
+    {
+      "presetId": "serve_contact_sidespin_021",
+      "videoId": "contact_sidespin_021",
+      "videoCategory": "contact_sidespin_right",
+      "spinType": "sidespin",
+      "sideName": "right",
+      "curveDirection": "left",
+      "length": "long",
+      "placement": "backhand",
+      "start": {
+        "x": 0.32,
+        "y": 0.95,
+        "z": -1.52
+      },
+      "originalVariationSpin": {
+        "topspin": 0,
+        "sidespin": 125.66
+      },
+      "originalVariationSpin3d": {
+        "schema": 1,
+        "omega": {
+          "x": 0,
+          "y": -125.66,
+          "z": 0
+        },
+        "axialSpin": 0
+      },
+      "split": "Holdout-41"
+    },
+    {
+      "presetId": "serve_contact_sidespin_022",
+      "videoId": "contact_sidespin_022",
+      "videoCategory": "contact_sidespin_right",
+      "spinType": "sidespin",
+      "sideName": "right",
+      "curveDirection": "left",
+      "length": "short",
+      "placement": "backhand",
+      "start": {
+        "x": 0.58,
+        "y": 0.95,
+        "z": -1.52
+      },
+      "originalVariationSpin": {
+        "topspin": 0,
+        "sidespin": 150.8
+      },
+      "originalVariationSpin3d": {
+        "schema": 1,
+        "omega": {
+          "x": 0,
+          "y": -150.8,
+          "z": 0
+        },
+        "axialSpin": 0
+      },
+      "split": "Holdout-41"
+    },
+    {
+      "presetId": "serve_contact_sidespin_023",
+      "videoId": "contact_sidespin_023",
+      "videoCategory": "contact_sidespin_left",
+      "spinType": "sidespin",
+      "sideName": "left",
+      "curveDirection": "right",
+      "length": "short",
+      "placement": "forehand",
+      "start": {
+        "x": 0.17,
+        "y": 0.95,
+        "z": -1.52
+      },
+      "originalVariationSpin": {
+        "topspin": 0,
+        "sidespin": -150.8
+      },
+      "originalVariationSpin3d": {
+        "schema": 1,
+        "omega": {
+          "x": 0,
+          "y": 150.8,
+          "z": 0
+        },
+        "axialSpin": 0
+      },
+      "split": "Holdout-41"
+    },
+    {
+      "presetId": "serve_contact_nospin_002",
+      "videoId": "contact_nospin_002",
+      "videoCategory": "contact_nospin",
+      "spinType": "no_spin",
+      "sideName": null,
+      "curveDirection": "none",
+      "length": "long",
+      "placement": "forehand",
+      "start": {
+        "x": 0.32,
+        "y": 0.95,
+        "z": -1.52
+      },
+      "originalVariationSpin": {
+        "topspin": 0,
+        "sidespin": 0
+      },
+      "originalVariationSpin3d": {
+        "schema": 1,
+        "omega": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "axialSpin": 0
+      },
+      "split": "Holdout-41"
+    },
+    {
+      "presetId": "serve_contact_nospin_003",
+      "videoId": "contact_nospin_003",
+      "videoCategory": "contact_nospin",
+      "spinType": "no_spin",
+      "sideName": null,
+      "curveDirection": "none",
+      "length": "short",
+      "placement": "forehand",
+      "start": {
+        "x": 0.17,
+        "y": 0.95,
+        "z": -1.52
+      },
+      "originalVariationSpin": {
+        "topspin": 0,
+        "sidespin": 0
+      },
+      "originalVariationSpin3d": {
+        "schema": 1,
+        "omega": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "axialSpin": 0
+      },
+      "split": "Holdout-41"
+    },
+    {
+      "presetId": "serve_contact_nospin_004",
+      "videoId": "contact_nospin_004",
+      "videoCategory": "contact_nospin",
+      "spinType": "no_spin",
+      "sideName": null,
+      "curveDirection": "none",
+      "length": "long",
+      "placement": "backhand",
+      "start": {
+        "x": 0.32,
+        "y": 0.95,
+        "z": -1.52
+      },
+      "originalVariationSpin": {
+        "topspin": 0,
+        "sidespin": 0
+      },
+      "originalVariationSpin3d": {
+        "schema": 1,
+        "omega": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "axialSpin": 0
+      },
+      "split": "Calibration-6"
+    }
+  ]
+}

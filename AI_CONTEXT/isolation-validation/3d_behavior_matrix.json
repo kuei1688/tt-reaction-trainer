@@ -1,0 +1,476 @@
+{
+  "status": "pass",
+  "date": "2026-07-16T12:35:06.428Z",
+  "scope": "simple 3D behavior matrix: explicit omega vectors through flight and table contact",
+  "acceptance": "qualitative desired-effect screen only; no calibration or parameter fitting",
+  "scenarioCount": 7,
+  "passCount": 6,
+  "failCount": 0,
+  "scenarios": [
+    {
+      "id": "zero",
+      "label": "zero spin",
+      "omega": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "tableNormal": {
+        "x": 0,
+        "y": 1,
+        "z": 0
+      },
+      "flight": {
+        "endPosition": {
+          "x": 0,
+          "y": 0.6794479999999978,
+          "z": 0.6159999999999991
+        },
+        "endVelocity": {
+          "x": 0,
+          "y": 1.0531999999999924,
+          "z": 2.2
+        },
+        "lateralDisplacementX": 0
+      },
+      "bounce": {
+        "beforeNormal": -2,
+        "afterNormal": 1.5200000000000005,
+        "speedBefore": 2.979932885150268,
+        "speedAfter": 2.3190633625267862,
+        "velocityAfter": {
+          "x": 0.15857084261094354,
+          "y": 1.5200000000000005,
+          "z": 1.7442792687203788
+        },
+        "omegaAfter": {
+          "x": 34.17905484597161,
+          "y": 0,
+          "z": -3.1071868041792365
+        },
+        "deltaOmega": {
+          "x": 34.17905484597161,
+          "y": 0,
+          "z": -3.1071868041792365
+        },
+        "tangentImpulse": {
+          "x": -0.0001118587249504525,
+          "y": 0,
+          "z": -0.0012304459744549778
+        },
+        "frictionLimited": true,
+        "energyBefore": 0.011988000000000002,
+        "energyAfter": 0.007684404551208962,
+        "energyDelta": -0.00430359544879104
+      }
+    },
+    {
+      "id": "omega-x-positive",
+      "label": "omega.x + (topspin-like)",
+      "omega": {
+        "x": 70,
+        "y": 0,
+        "z": 0
+      },
+      "tableNormal": {
+        "x": 0,
+        "y": 1,
+        "z": 0
+      },
+      "flight": {
+        "endPosition": {
+          "x": 0,
+          "y": 0.6621576677027785,
+          "z": 0.6379605220948894
+        },
+        "endVelocity": {
+          "x": 0,
+          "y": 0.9284946907667372,
+          "z": 2.3306575451628766
+        },
+        "lateralDisplacementX": 0
+      },
+      "bounce": {
+        "beforeNormal": -2,
+        "afterNormal": 1.5200000000000005,
+        "speedBefore": 2.979932885150268,
+        "speedAfter": 2.4205784432651636,
+        "velocityAfter": {
+          "x": 0.12000000000000001,
+          "y": 1.5200000000000005,
+          "z": 1.8800000000000001
+        },
+        "omegaAfter": {
+          "x": 94,
+          "y": 0,
+          "z": -6.000000000000001
+        },
+        "deltaOmega": {
+          "x": 24,
+          "y": 0,
+          "z": -6.000000000000001
+        },
+        "tangentImpulse": {
+          "x": -0.00021600000000000002,
+          "y": 0,
+          "z": -0.0008640000000000001
+        },
+        "frictionLimited": false,
+        "energyBefore": 0.013752000000000002,
+        "energyAfter": 0.011103840000000002,
+        "energyDelta": -0.00264816
+      }
+    },
+    {
+      "id": "omega-x-negative",
+      "label": "omega.x - (backspin-like)",
+      "omega": {
+        "x": -70,
+        "y": 0,
+        "z": 0
+      },
+      "tableNormal": {
+        "x": 0,
+        "y": 1,
+        "z": 0
+      },
+      "flight": {
+        "endPosition": {
+          "x": 0,
+          "y": 0.6958796330856155,
+          "z": 0.5934375923783479
+        },
+        "endVelocity": {
+          "x": 0,
+          "y": 1.169307477447238,
+          "z": 2.0628457207116693
+        },
+        "lateralDisplacementX": 0
+      },
+      "bounce": {
+        "beforeNormal": -2,
+        "afterNormal": 1.5200000000000005,
+        "speedBefore": 2.979932885150268,
+        "speedAfter": 2.3193327734610203,
+        "velocityAfter": {
+          "x": 0.1746169190207335,
+          "y": 1.5200000000000005,
+          "z": 1.7431045423732034
+        },
+        "omegaAfter": {
+          "x": -35.73284067799023,
+          "y": 0,
+          "z": -1.903731073444987
+        },
+        "deltaOmega": {
+          "x": 34.26715932200977,
+          "y": 0,
+          "z": -1.903731073444987
+        },
+        "tangentImpulse": {
+          "x": -0.00006853431864401953,
+          "y": 0,
+          "z": -0.0012336177355923516
+        },
+        "frictionLimited": true,
+        "energyBefore": 0.013752000000000002,
+        "energyAfter": 0.007723026728138733,
+        "energyDelta": -0.006028973271861269
+      }
+    },
+    {
+      "id": "omega-y-positive",
+      "label": "omega.y + (axial sidespin)",
+      "omega": {
+        "x": 0,
+        "y": 70,
+        "z": 0
+      },
+      "tableNormal": {
+        "x": 0,
+        "y": 1,
+        "z": 0
+      },
+      "flight": {
+        "endPosition": {
+          "x": 0.016860982691418447,
+          "y": 0.6794479999999978,
+          "z": 0.6156990572366186
+        },
+        "endVelocity": {
+          "x": 0.12040639334025051,
+          "y": 1.0531999999999924,
+          "z": 2.1967516329372736
+        },
+        "lateralDisplacementX": 0.016860982691418447
+      },
+      "bounce": {
+        "beforeNormal": -2,
+        "afterNormal": 1.5200000000000005,
+        "speedBefore": 2.979932885150268,
+        "speedAfter": 2.3190633625267862,
+        "velocityAfter": {
+          "x": 0.15857084261094354,
+          "y": 1.5200000000000005,
+          "z": 1.7442792687203788
+        },
+        "omegaAfter": {
+          "x": 34.17905484597161,
+          "y": 70,
+          "z": -3.1071868041792365
+        },
+        "deltaOmega": {
+          "x": 34.17905484597161,
+          "y": 0,
+          "z": -3.1071868041792365
+        },
+        "tangentImpulse": {
+          "x": -0.0001118587249504525,
+          "y": 0,
+          "z": -0.0012304459744549778
+        },
+        "frictionLimited": true,
+        "energyBefore": 0.013752000000000002,
+        "energyAfter": 0.009448404551208961,
+        "energyDelta": -0.004303595448791041
+      }
+    },
+    {
+      "id": "omega-y-negative",
+      "label": "omega.y - (axial sidespin)",
+      "omega": {
+        "x": 0,
+        "y": -70,
+        "z": 0
+      },
+      "tableNormal": {
+        "x": 0,
+        "y": 1,
+        "z": 0
+      },
+      "flight": {
+        "endPosition": {
+          "x": -0.016860982691418447,
+          "y": 0.6794479999999978,
+          "z": 0.6156990572366186
+        },
+        "endVelocity": {
+          "x": -0.12040639334025051,
+          "y": 1.0531999999999924,
+          "z": 2.1967516329372736
+        },
+        "lateralDisplacementX": -0.016860982691418447
+      },
+      "bounce": {
+        "beforeNormal": -2,
+        "afterNormal": 1.5200000000000005,
+        "speedBefore": 2.979932885150268,
+        "speedAfter": 2.3190633625267862,
+        "velocityAfter": {
+          "x": 0.15857084261094354,
+          "y": 1.5200000000000005,
+          "z": 1.7442792687203788
+        },
+        "omegaAfter": {
+          "x": 34.17905484597161,
+          "y": -70,
+          "z": -3.1071868041792365
+        },
+        "deltaOmega": {
+          "x": 34.17905484597161,
+          "y": 0,
+          "z": -3.1071868041792365
+        },
+        "tangentImpulse": {
+          "x": -0.0001118587249504525,
+          "y": 0,
+          "z": -0.0012304459744549778
+        },
+        "frictionLimited": true,
+        "energyBefore": 0.013752000000000002,
+        "energyAfter": 0.009448404551208961,
+        "energyDelta": -0.004303595448791041
+      }
+    },
+    {
+      "id": "mixed",
+      "label": "mixed omega",
+      "omega": {
+        "x": 70,
+        "y": 70,
+        "z": -35
+      },
+      "tableNormal": {
+        "x": 0,
+        "y": 1,
+        "z": 0
+      },
+      "flight": {
+        "endPosition": {
+          "x": 0.028261887094598113,
+          "y": 0.6619049414011257,
+          "z": 0.6374376569914472
+        },
+        "endVelocity": {
+          "x": 0.18990988189015026,
+          "y": 0.9258698997304444,
+          "z": 2.3251595632411837
+        },
+        "lateralDisplacementX": 0.028261887094598113
+      },
+      "bounce": {
+        "beforeNormal": -2,
+        "afterNormal": 1.5200000000000005,
+        "speedBefore": 2.979932885150268,
+        "speedAfter": 2.450469342799457,
+        "velocityAfter": {
+          "x": 0.4,
+          "y": 1.5200000000000005,
+          "z": 1.8800000000000001
+        },
+        "omegaAfter": {
+          "x": 94,
+          "y": 70,
+          "z": -20
+        },
+        "deltaOmega": {
+          "x": 24,
+          "y": 0,
+          "z": 15
+        },
+        "tangentImpulse": {
+          "x": 0.00054,
+          "y": 0,
+          "z": -0.0008640000000000001
+        },
+        "frictionLimited": false,
+        "energyBefore": 0.015957000000000002,
+        "energyAfter": 0.013195440000000003,
+        "energyDelta": -0.0027615599999999997
+      }
+    },
+    {
+      "id": "tilted-table",
+      "label": "mixed omega on tilted table",
+      "omega": {
+        "x": 70,
+        "y": 70,
+        "z": -35
+      },
+      "tableNormal": {
+        "x": 0.2503256351262562,
+        "y": 0.9512374134797735,
+        "z": -0.18023445729090448
+      },
+      "flight": {
+        "endPosition": {
+          "x": 0.028261887094598113,
+          "y": 0.6619049414011257,
+          "z": 0.6374376569914472
+        },
+        "endVelocity": {
+          "x": 0.18990988189015026,
+          "y": 0.9258698997304444,
+          "z": 2.3251595632411837
+        },
+        "lateralDisplacementX": 0.028261887094598113
+      },
+      "bounce": {
+        "beforeNormal": -2.248925505974286,
+        "afterNormal": 1.7091833845404572,
+        "speedBefore": 2.979932885150268,
+        "speedAfter": 2.341289666309866,
+        "velocityAfter": {
+          "x": 1.0510458193545542,
+          "y": 1.7402365489674267,
+          "z": 1.1612565353205204
+        },
+        "omegaAfter": {
+          "x": 93.5479106550983,
+          "y": 62.00227478889419,
+          "z": -44.50478492653302
+        },
+        "deltaOmega": {
+          "x": 23.547910655098306,
+          "y": -7.997725211105809,
+          "z": -9.50478492653302
+        },
+        "tangentImpulse": {
+          "x": -0.0003773798169185615,
+          "y": -0.00006713472865620587,
+          "z": -0.0008784608136279775
+        },
+        "frictionLimited": false,
+        "energyBefore": 0.015957000000000002,
+        "energyAfter": 0.012647631394502595,
+        "energyDelta": -0.0033093686054974075
+      }
+    }
+  ],
+  "checks": [
+    {
+      "id": "BEHAVIOR-001",
+      "status": "pass",
+      "description": "all scenarios remain finite and separate from the table",
+      "details": {
+        "scenarioCount": 7
+      }
+    },
+    {
+      "id": "BEHAVIOR-002",
+      "status": "pass",
+      "description": "zero spin has no Magnus lateral displacement",
+      "details": {
+        "lateralDisplacementX": 0
+      }
+    },
+    {
+      "id": "BEHAVIOR-003",
+      "status": "pass",
+      "description": "axial sidespin bends flight with sign-consistent lateral direction",
+      "details": {
+        "positive": 0.016860982691418447,
+        "negative": -0.016860982691418447,
+        "mirrorResidual": 0
+      }
+    },
+    {
+      "id": "BEHAVIOR-004",
+      "status": "pass",
+      "description": "omega.x sign reverses the table tangent response",
+      "details": {
+        "positiveDelta": 0.13572073127962136,
+        "negativeDelta": -0.0011747263471753033
+      }
+    },
+    {
+      "id": "BEHAVIOR-005",
+      "status": "pass",
+      "description": "axial omega.y survives table contact without being consumed as tangent slip",
+      "details": {
+        "positiveOmegaY": 70,
+        "negativeOmegaY": -70,
+        "tangentImpulseMatchesZeroSpin": true
+      }
+    },
+    {
+      "id": "BEHAVIOR-006",
+      "status": "pass",
+      "description": "tilted table preserves normal separation and mixed-spin finiteness",
+      "details": {
+        "normal": {
+          "x": 0.2503256351262562,
+          "y": 0.9512374134797735,
+          "z": -0.18023445729090448
+        },
+        "beforeNormal": -2.248925505974286,
+        "afterNormal": 1.7091833845404572,
+        "omegaAfter": {
+          "x": 93.5479106550983,
+          "y": 62.00227478889419,
+          "z": -44.50478492653302
+        }
+      }
+    }
+  ]
+}

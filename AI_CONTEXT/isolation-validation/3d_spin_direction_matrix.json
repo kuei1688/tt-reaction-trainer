@@ -1,0 +1,661 @@
+{
+  "status": "pass",
+  "date": "2026-07-17T06:26:02.188Z",
+  "scope": "3D physics scope reset acceptance #1: zero/topspin/backspin/sidespin produce reasonable, distinguishable contact results",
+  "acceptance": "qualitative representability only; no 2017 benchmark fitting, material identification, or parameter tuning",
+  "passCount": 10,
+  "failCount": 0,
+  "scenarios": [
+    {
+      "key": "zero",
+      "scenario": "zero spin",
+      "firstBounce": {
+        "step": 215,
+        "position": {
+          "x": 0,
+          "y": 0.781,
+          "z": -0.32116655561223045
+        },
+        "preBounceVelocity": {
+          "x": 0,
+          "y": -3.25024523933544,
+          "z": 1.5
+        },
+        "postBounceVelocity": {
+          "x": 0,
+          "y": 2.4701863818949343,
+          "z": 0.9
+        },
+        "preBounceOmega": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "postBounceOmega": {
+          "x": 45.00000000000001,
+          "y": 0,
+          "z": 0
+        },
+        "tangentImpulse": {}
+      },
+      "secondBounce": {
+        "step": 398,
+        "position": {
+          "x": 0,
+          "y": 0.781,
+          "z": 0.139791820319258
+        },
+        "preBounceVelocity": {
+          "x": 0,
+          "y": -2.4822966297143023,
+          "z": 0.9004693584914697
+        },
+        "postBounceVelocity": {
+          "x": 0,
+          "y": 1.88654543858287,
+          "z": 0.9002816150948819
+        },
+        "preBounceOmega": {
+          "x": 45.00000000000001,
+          "y": 0,
+          "z": 0
+        },
+        "postBounceOmega": {
+          "x": 45.01408075474409,
+          "y": 0,
+          "z": 0
+        },
+        "tangentImpulse": {}
+      },
+      "finalPosition": {
+        "x": 0,
+        "y": 0.7861064719866205,
+        "z": 0.14224716949433575
+      },
+      "finalVelocity": {
+        "x": 0,
+        "y": 1.8594914493413226,
+        "z": 0.9009284192840072
+      },
+      "finalOmega": {
+        "x": 45.01408075474409,
+        "y": 0,
+        "z": 0
+      },
+      "initialOmega": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "steps": 399
+    },
+    {
+      "key": "topspin",
+      "scenario": "pure topspin (omega.x +)",
+      "firstBounce": {
+        "step": 212,
+        "position": {
+          "x": 0,
+          "y": 0.781,
+          "z": -0.32338379368718123
+        },
+        "preBounceVelocity": {
+          "x": 0,
+          "y": -3.2681275048266016,
+          "z": 1.476064669410773
+        },
+        "postBounceVelocity": {
+          "x": 0,
+          "y": 2.4837769036682174,
+          "z": 1.2056388016464639
+        },
+        "preBounceOmega": {
+          "x": 40,
+          "y": 0,
+          "z": 0
+        },
+        "postBounceOmega": {
+          "x": 60.28194008232319,
+          "y": 0,
+          "z": 0
+        },
+        "tangentImpulse": {}
+      },
+      "secondBounce": {
+        "step": 394,
+        "position": {
+          "x": 0,
+          "y": 0.781,
+          "z": 0.291814793007149
+        },
+        "preBounceVelocity": {
+          "x": 0,
+          "y": -2.487553752595568,
+          "z": 1.2066235023954266
+        },
+        "postBounceVelocity": {
+          "x": 0,
+          "y": 1.8905408519726317,
+          "z": 1.2062296220958415
+        },
+        "preBounceOmega": {
+          "x": 60.28194008232319,
+          "y": 0,
+          "z": 0
+        },
+        "postBounceOmega": {
+          "x": 60.31148110479207,
+          "y": 0,
+          "z": 0
+        },
+        "tangentImpulse": {}
+      },
+      "finalPosition": {
+        "x": 0,
+        "y": 0.7861170302436024,
+        "z": 0.2951045604647002
+      },
+      "finalVelocity": {
+        "x": 0,
+        "y": 1.8632414265519297,
+        "z": 1.2070980689143942
+      },
+      "finalOmega": {
+        "x": 60.31148110479207,
+        "y": 0,
+        "z": 0
+      },
+      "initialOmega": {
+        "x": 40,
+        "y": 0,
+        "z": 0
+      },
+      "steps": 395
+    },
+    {
+      "key": "backspin",
+      "scenario": "pure backspin (omega.x -)",
+      "firstBounce": {
+        "step": 219,
+        "position": {
+          "x": 0,
+          "y": 0.781,
+          "z": -0.319747848673984
+        },
+        "preBounceVelocity": {
+          "x": 0,
+          "y": -3.258470266639231,
+          "z": 1.524434421447419
+        },
+        "postBounceVelocity": {
+          "x": 0,
+          "y": 2.4764374026458156,
+          "z": 0.778896424440363
+        },
+        "preBounceOmega": {
+          "x": -40,
+          "y": 0,
+          "z": 0
+        },
+        "postBounceOmega": {
+          "x": 15.915349775529222,
+          "y": 0,
+          "z": 0
+        },
+        "tangentImpulse": {}
+      },
+      "secondBounce": {
+        "step": 404,
+        "position": {
+          "x": 0,
+          "y": 0.781,
+          "z": 0.07681878832602768
+        },
+        "preBounceVelocity": {
+          "x": 0,
+          "y": -2.4891251644839794,
+          "z": 0.7790551401442448
+        },
+        "postBounceVelocity": {
+          "x": 0,
+          "y": 1.8917351250078247,
+          "z": 0.5947558822907807
+        },
+        "preBounceOmega": {
+          "x": 15.915349775529222,
+          "y": 0,
+          "z": 0
+        },
+        "postBounceOmega": {
+          "x": 29.737794114539035,
+          "y": 0,
+          "z": 0
+        },
+        "tangentImpulse": {}
+      },
+      "finalPosition": {
+        "x": 0,
+        "y": 0.7861208579242044,
+        "z": 0.07844087499650006
+      },
+      "finalVelocity": {
+        "x": 0,
+        "y": 1.864855086815485,
+        "z": 0.5951843580396317
+      },
+      "finalOmega": {
+        "x": 29.737794114539035,
+        "y": 0,
+        "z": 0
+      },
+      "initialOmega": {
+        "x": -40,
+        "y": 0,
+        "z": 0
+      },
+      "steps": 405
+    },
+    {
+      "key": "sideLeft",
+      "scenario": "left sidespin (omega.y +, curves right)",
+      "firstBounce": {
+        "step": 215,
+        "position": {
+          "x": 0.03594207009638709,
+          "y": 0.781,
+          "z": -0.322140437686738
+        },
+        "preBounceVelocity": {
+          "x": 0.12268127603817292,
+          "y": -3.25024523933544,
+          "z": 1.4949981482581258
+        },
+        "postBounceVelocity": {
+          "x": 0.07360876562290375,
+          "y": 2.4701863818949343,
+          "z": 0.8969988889548756
+        },
+        "preBounceOmega": {
+          "x": 0,
+          "y": 50,
+          "z": 0
+        },
+        "postBounceOmega": {
+          "x": 44.84994444774378,
+          "y": 50,
+          "z": -3.680438281145188
+        },
+        "tangentImpulse": {}
+      },
+      "secondBounce": {
+        "step": 398,
+        "position": {
+          "x": 0.08957155648552048,
+          "y": 0.781,
+          "z": 0.13560743539710735
+        },
+        "preBounceVelocity": {
+          "x": 0.1377406006823237,
+          "y": -2.482252352625566,
+          "z": 0.8899648813553062
+        },
+        "postBounceVelocity": {
+          "x": 0.11208786665855572,
+          "y": 1.8865117879954303,
+          "z": 0.892778484395134
+        },
+        "preBounceOmega": {
+          "x": 44.84994444774378,
+          "y": 50,
+          "z": -3.680438281145188
+        },
+        "postBounceOmega": {
+          "x": 44.638924219756696,
+          "y": 50,
+          "z": -5.604393332927787
+        },
+        "tangentImpulse": {}
+      },
+      "finalPosition": {
+        "x": 0.08987771857559158,
+        "y": 0.786106380705874,
+        "z": 0.13804226298733593
+      },
+      "finalVelocity": {
+        "x": 0.11250838807373574,
+        "y": 1.8594581376416555,
+        "z": 0.8933772005140971
+      },
+      "finalOmega": {
+        "x": 44.638924219756696,
+        "y": 50,
+        "z": -5.604393332927787
+      },
+      "initialOmega": {
+        "x": 0,
+        "y": 50,
+        "z": 0
+      },
+      "steps": 399
+    },
+    {
+      "key": "sideRight",
+      "scenario": "right sidespin (omega.y -, curves left)",
+      "firstBounce": {
+        "step": 215,
+        "position": {
+          "x": -0.03594207009638709,
+          "y": 0.781,
+          "z": -0.322140437686738
+        },
+        "preBounceVelocity": {
+          "x": -0.12268127603817292,
+          "y": -3.25024523933544,
+          "z": 1.4949981482581258
+        },
+        "postBounceVelocity": {
+          "x": -0.07360876562290375,
+          "y": 2.4701863818949343,
+          "z": 0.8969988889548756
+        },
+        "preBounceOmega": {
+          "x": 0,
+          "y": -50,
+          "z": 0
+        },
+        "postBounceOmega": {
+          "x": 44.84994444774378,
+          "y": -50,
+          "z": 3.680438281145188
+        },
+        "tangentImpulse": {}
+      },
+      "secondBounce": {
+        "step": 398,
+        "position": {
+          "x": -0.08957155648552048,
+          "y": 0.781,
+          "z": 0.13560743539710735
+        },
+        "preBounceVelocity": {
+          "x": -0.1377406006823237,
+          "y": -2.482252352625566,
+          "z": 0.8899648813553062
+        },
+        "postBounceVelocity": {
+          "x": -0.11208786665855572,
+          "y": 1.8865117879954303,
+          "z": 0.892778484395134
+        },
+        "preBounceOmega": {
+          "x": 44.84994444774378,
+          "y": -50,
+          "z": 3.680438281145188
+        },
+        "postBounceOmega": {
+          "x": 44.638924219756696,
+          "y": -50,
+          "z": 5.604393332927787
+        },
+        "tangentImpulse": {}
+      },
+      "finalPosition": {
+        "x": -0.08987771857559158,
+        "y": 0.786106380705874,
+        "z": 0.13804226298733593
+      },
+      "finalVelocity": {
+        "x": -0.11250838807373574,
+        "y": 1.8594581376416555,
+        "z": 0.8933772005140971
+      },
+      "finalOmega": {
+        "x": 44.638924219756696,
+        "y": -50,
+        "z": 5.604393332927787
+      },
+      "initialOmega": {
+        "x": 0,
+        "y": -50,
+        "z": 0
+      },
+      "steps": 399
+    }
+  ],
+  "checks": [
+    {
+      "id": "DIR-001",
+      "status": "pass",
+      "description": "each scenario has a finite first bounce inside the table",
+      "details": {
+        "scenarios": 5
+      }
+    },
+    {
+      "id": "DIR-002",
+      "status": "pass",
+      "description": "scenarios are pairwise distinguishable by first-bounce post-velocity",
+      "details": {
+        "collisions": []
+      }
+    },
+    {
+      "id": "DIR-003",
+      "status": "pass",
+      "description": "topspin (omega.x+) drives more forward z than zero spin",
+      "details": {
+        "topspinVz": 1.2056388016464639,
+        "zeroVz": 0.9,
+        "delta": 0.30563880164646384
+      }
+    },
+    {
+      "id": "DIR-004",
+      "status": "pass",
+      "description": "backspin (omega.x-) drives less forward z than zero spin",
+      "details": {
+        "backspinVz": 0.778896424440363,
+        "zeroVz": 0.9,
+        "delta": -0.12110357555963702
+      }
+    },
+    {
+      "id": "DIR-005",
+      "status": "pass",
+      "description": "topspin > zero > backspin in post-bounce forward z velocity",
+      "details": {
+        "top": 1.2056388016464639,
+        "zero": 0.9,
+        "back": 0.778896424440363
+      }
+    },
+    {
+      "id": "DIR-006",
+      "status": "pass",
+      "description": "left vs right sidespin produce opposite-sign x deflection at first bounce",
+      "details": {
+        "leftX": 0.03594207009638709,
+        "rightX": -0.03594207009638709,
+        "zeroX": 0,
+        "leftDelta": 0.03594207009638709,
+        "rightDelta": -0.03594207009638709
+      }
+    },
+    {
+      "id": "DIR-007",
+      "status": "pass",
+      "description": "topspin/backspin do not produce lateral x deflection (symmetry)",
+      "details": {
+        "topDelta": 0,
+        "backDelta": 0
+      }
+    },
+    {
+      "id": "DIR-008",
+      "status": "pass",
+      "description": "free-flight preserves omega (no spurious spin decay before contact)",
+      "details": {
+        "preserved": [
+          {
+            "key": "zero",
+            "before": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "atBounce": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            }
+          },
+          {
+            "key": "topspin",
+            "before": {
+              "x": 40,
+              "y": 0,
+              "z": 0
+            },
+            "atBounce": {
+              "x": 40,
+              "y": 0,
+              "z": 0
+            }
+          },
+          {
+            "key": "backspin",
+            "before": {
+              "x": -40,
+              "y": 0,
+              "z": 0
+            },
+            "atBounce": {
+              "x": -40,
+              "y": 0,
+              "z": 0
+            }
+          },
+          {
+            "key": "sideLeft",
+            "before": {
+              "x": 0,
+              "y": 50,
+              "z": 0
+            },
+            "atBounce": {
+              "x": 0,
+              "y": 50,
+              "z": 0
+            }
+          },
+          {
+            "key": "sideRight",
+            "before": {
+              "x": 0,
+              "y": -50,
+              "z": 0
+            },
+            "atBounce": {
+              "x": 0,
+              "y": -50,
+              "z": 0
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "DIR-009",
+      "status": "pass",
+      "description": "axial omega.y preserved across table contact (no torque about normal)",
+      "details": {
+        "cases": [
+          {
+            "key": "sideLeft",
+            "preBounceOmegaY": 50,
+            "postBounceOmegaY": 50
+          },
+          {
+            "key": "sideRight",
+            "preBounceOmegaY": -50,
+            "postBounceOmegaY": -50
+          }
+        ]
+      }
+    },
+    {
+      "id": "DIR-010",
+      "status": "pass",
+      "description": "scenarios that produced a second bounce: position finite and inside table bounds",
+      "details": {
+        "secondBounces": [
+          {
+            "key": "zero",
+            "position": {
+              "x": 0,
+              "y": 0.781,
+              "z": 0.139791820319258
+            },
+            "postVelocity": {
+              "x": 0,
+              "y": 1.88654543858287,
+              "z": 0.9002816150948819
+            }
+          },
+          {
+            "key": "topspin",
+            "position": {
+              "x": 0,
+              "y": 0.781,
+              "z": 0.291814793007149
+            },
+            "postVelocity": {
+              "x": 0,
+              "y": 1.8905408519726317,
+              "z": 1.2062296220958415
+            }
+          },
+          {
+            "key": "backspin",
+            "position": {
+              "x": 0,
+              "y": 0.781,
+              "z": 0.07681878832602768
+            },
+            "postVelocity": {
+              "x": 0,
+              "y": 1.8917351250078247,
+              "z": 0.5947558822907807
+            }
+          },
+          {
+            "key": "sideLeft",
+            "position": {
+              "x": 0.08957155648552048,
+              "y": 0.781,
+              "z": 0.13560743539710735
+            },
+            "postVelocity": {
+              "x": 0.11208786665855572,
+              "y": 1.8865117879954303,
+              "z": 0.892778484395134
+            }
+          },
+          {
+            "key": "sideRight",
+            "position": {
+              "x": -0.08957155648552048,
+              "y": 0.781,
+              "z": 0.13560743539710735
+            },
+            "postVelocity": {
+              "x": -0.11208786665855572,
+              "y": 1.8865117879954303,
+              "z": 0.892778484395134
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

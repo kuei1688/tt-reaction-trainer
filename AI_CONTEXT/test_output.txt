@@ -1,264 +1,163 @@
-# Test Output
+# Serve Batch Validation (VAL-003)
 
-Updated: 2026-07-14T01:57:06.261Z
-Source file: C:\Users\Kevin\Documents\Codex\2026-06-16\files-mentioned-by-the-user-tt\outputs\tt-reaction-trainer-pages\game4.html
-Scope: VAL-004 only
+Updated: 2026-07-17T06:25:59.843Z
 
-Group notes:
-- `attack`: validates the `bounceOffPlane()` proxy and extracted `makeRacketReturnVelocity()` path.
-- `push`: validates only the current `game4.html` adaptive push formula family; it does not cover `return-studio.html` research formulas.
-- `loop`: validates the legacy `model:'direct'` path and does not treat it as racket-contact mechanics.
+## game4.html
 
-## Loader Summary
+Fail | serve_contact_sidebackspin_002 | net_clearance_too_low
+Fail | serve_contact_sidebackspin_003 | first_bounce_off_target
+Fail | serve_contact_sidebackspin_004 | net_clearance_too_low
+Fail | serve_contact_sidebackspin_005 | first_bounce_off_target
+Fail | serve_contact_sidebackspin_006 | net_clearance_too_low
+Fail | serve_contact_sidebackspin_007 | net_clearance_too_low
+Fail | serve_contact_sidebackspin_008 | first_bounce_off_target
+Fail | serve_contact_sidebackspin_009 | net_clearance_too_low
+Fail | serve_contact_sidebackspin_010 | first_bounce_off_target
+Fail | serve_contact_sidebackspin_011 | first_bounce_off_target
+Fail | serve_contact_sidebackspin_012 | net_clearance_too_low
+Fail | serve_contact_sidebackspin_013 | first_bounce_off_target
+Fail | serve_contact_backspin_002 | net_clearance_too_low
+Fail | serve_contact_backspin_003 | second_bounce_off_target
+Fail | serve_contact_backspin_004 | net_clearance_too_low
+Pass | serve_contact_backspin_005
+Fail | serve_contact_backspin_006 | net_clearance_too_low
+Fail | serve_contact_backspin_007 | second_bounce_off_target
+Fail | serve_contact_backspin_008 | net_clearance_too_low
+Pass | serve_contact_backspin_009
+Fail | serve_contact_backspin_010 | net_clearance_too_low
+Fail | serve_contact_backspin_011 | second_bounce_off_target
+Pass | serve_contact_sidespin_002
+Pass | serve_contact_sidespin_003
+Pass | serve_contact_sidespin_004
+Pass | serve_contact_sidespin_005
+Pass | serve_contact_sidespin_006
+Pass | serve_contact_sidespin_007
+Pass | serve_contact_sidespin_008
+Pass | serve_contact_sidespin_009
+Pass | serve_contact_sidespin_010
+Pass | serve_contact_sidespin_011
+Fail | serve_contact_sidespin_012 | second_bounce_off_target
+Pass | serve_contact_sidespin_013
+Pass | serve_contact_sidespin_014
+Pass | serve_contact_sidespin_015
+Pass | serve_contact_sidespin_016
+Pass | serve_contact_sidespin_017
+Pass | serve_contact_sidespin_018
+Pass | serve_contact_sidespin_019
+Fail | serve_contact_sidespin_020 | first_bounce_off_target
+Fail | serve_contact_sidespin_021 | second_bounce_off_target
+Fail | serve_contact_sidespin_022 | first_bounce_off_target
+Pass | serve_contact_sidespin_023
+Pass | serve_contact_nospin_002
+Fail | serve_contact_nospin_003 | second_bounce_off_target
+Pass | serve_contact_nospin_004
 
-```json
-{
-  "metadata": {
-    "generatedAt": "2026-07-14T01:57:05.966Z",
-    "scope": "VAL-004 only",
-    "sourceFile": "C:\\Users\\Kevin\\Documents\\Codex\\2026-06-16\\files-mentioned-by-the-user-tt\\outputs\\tt-reaction-trainer-pages\\game4.html",
-    "wholeScriptExecution": false
-  },
-  "sharedCore": {
-    "path": "C:\\Users\\Kevin\\Documents\\Codex\\2026-06-16\\files-mentioned-by-the-user-tt\\outputs\\tt-reaction-trainer-pages\\shared-physics-core.js",
-    "loadMode": "require-returned-empty-object",
-    "exportKeys": [],
-    "warnings": [
-      "shared-physics-core.js currently exposes no CommonJS exports; loader fell back to per-symbol extraction."
-    ],
-    "constants": {
-      "TABLE": {
-        "found": true,
-        "source": "shared-physics-core.js",
-        "loadMode": "per-symbol-extraction",
-        "rawSource": "{length:2.74, width:1.525, height:0.76, top:0.781, net:0.1525}",
-        "actualValue": {
-          "length": 2.74,
-          "width": 1.525,
-          "height": 0.76,
-          "top": 0.781,
-          "net": 0.1525
-        },
-        "expected": {
-          "length": 2.74,
-          "width": 1.525,
-          "height": 0.76,
-          "top": 0.781,
-          "net": 0.1525
-        },
-        "matchesExpected": false
-      },
-      "BALL_RADIUS": {
-        "found": true,
-        "source": "shared-physics-core.js",
-        "loadMode": "per-symbol-extraction",
-        "rawSource": "0.02",
-        "actualValue": 0.02,
-        "expected": 0.02,
-        "matchesExpected": true
-      },
-      "BALL_MASS": {
-        "found": true,
-        "source": "shared-physics-core.js",
-        "loadMode": "per-symbol-extraction",
-        "rawSource": "0.0027",
-        "actualValue": 0.0027,
-        "expected": 0.0027,
-        "matchesExpected": true
-      },
-      "BALL_INERTIA_ALPHA": {
-        "found": true,
-        "source": "shared-physics-core.js",
-        "loadMode": "per-symbol-extraction",
-        "rawSource": "2 / 3",
-        "actualValue": 0.6666666666666666,
-        "expected": 0.6666666666666666,
-        "matchesExpected": true
-      },
-      "BALL_INERTIA": {
-        "found": true,
-        "source": "shared-physics-core.js",
-        "loadMode": "per-symbol-extraction",
-        "rawSource": "BALL_INERTIA_ALPHA * BALL_MASS * BALL_RADIUS * BALL_RADIUS",
-        "actualValue": 7.2e-7,
-        "expected": 7.2e-7,
-        "matchesExpected": true
-      },
-      "MAX_TABLE_BOUNCES": {
-        "found": true,
-        "source": "shared-physics-core.js",
-        "loadMode": "per-symbol-extraction",
-        "rawSource": "8",
-        "actualValue": 8,
-        "expected": 8,
-        "matchesExpected": true
-      },
-      "NET_COLLISION": {
-        "found": true,
-        "source": "shared-physics-core.js",
-        "loadMode": "per-symbol-extraction",
-        "rawSource": "{depth:0.012, zRestitution:0.16, xDamping:0.55, yDamping:0.35}",
-        "actualValue": {
-          "depth": 0.012,
-          "zRestitution": 0.16,
-          "xDamping": 0.55,
-          "yDamping": 0.35
-        },
-        "expected": {
-          "depth": 0.012,
-          "zRestitution": 0.16,
-          "xDamping": 0.55,
-          "yDamping": 0.35
-        },
-        "matchesExpected": false
-      },
-      "OBLIQUE_ANGLE_DEG": {
-        "found": true,
-        "source": "shared-physics-core.js",
-        "loadMode": "per-symbol-extraction",
-        "rawSource": "83",
-        "actualValue": 83,
-        "expected": 83,
-        "matchesExpected": true
-      },
-      "EPSILON_VERTICAL": {
-        "found": true,
-        "source": "shared-physics-core.js",
-        "loadMode": "per-symbol-extraction",
-        "rawSource": "0.876",
-        "actualValue": 0.876,
-        "expected": 0.876,
-        "matchesExpected": true
-      },
-      "EPSILON_OBLIQUE": {
-        "found": true,
-        "source": "shared-physics-core.js",
-        "loadMode": "per-symbol-extraction",
-        "rawSource": "0.57",
-        "actualValue": 0.57,
-        "expected": 0.57,
-        "matchesExpected": true
-      },
-      "EPSILON_MIN": {
-        "found": true,
-        "source": "shared-physics-core.js",
-        "loadMode": "per-symbol-extraction",
-        "rawSource": "0.45",
-        "actualValue": 0.45,
-        "expected": 0.45,
-        "matchesExpected": true
-      },
-      "SPIN_EPSILON_REFERENCE": {
-        "found": true,
-        "source": "shared-physics-core.js",
-        "loadMode": "per-symbol-extraction",
-        "rawSource": "6.0",
-        "actualValue": 6,
-        "expected": 6,
-        "matchesExpected": true
-      },
-      "CONTACT_FRICTION_MU": {
-        "found": true,
-        "source": "shared-physics-core.js",
-        "loadMode": "per-symbol-extraction",
-        "rawSource": "0.13",
-        "actualValue": 0.13,
-        "expected": 0.13,
-        "matchesExpected": true
-      }
-    },
-    "functions": {
-      "clamp": {
-        "found": true,
-        "source": "shared-physics-core.js",
-        "loadMode": "per-symbol-extraction",
-        "fingerprint": "576a43e850",
-        "matchesExpected": false
-      },
-      "horizontalImpactSpeed": {
-        "found": true,
-        "source": "shared-physics-core.js",
-        "loadMode": "per-symbol-extraction",
-        "fingerprint": "8fc1c17635",
-        "matchesExpected": false
-      },
-      "spinSurfaceSpeed": {
-        "found": true,
-        "source": "shared-physics-core.js",
-        "loadMode": "per-symbol-extraction",
-        "fingerprint": "9716a5531a",
-        "matchesExpected": false
-      },
-      "bounceWithSpinPhysical": {
-        "found": true,
-        "source": "shared-physics-core.js",
-        "loadMode": "per-symbol-extraction",
-        "fingerprint": "ca2ce08ede",
-        "matchesExpected": false
-      },
-      "dynamicEpsilon": {
-        "found": true,
-        "source": "shared-physics-core.js",
-        "loadMode": "per-symbol-extraction",
-        "fingerprint": "2ea0c04710",
-        "expectedFingerprint": "2ea0c04710",
-        "matchesExpected": true
-      },
-      "bounceTangentialAxis": {
-        "found": true,
-        "source": "shared-physics-core.js",
-        "loadMode": "per-symbol-extraction",
-        "fingerprint": "c2d211d423",
-        "expectedFingerprint": "c2d211d423",
-        "matchesExpected": true
-      }
-    }
-  },
-  "proxyAlignment": {
-    "bounceWithSpinPhysical": {
-      "proxyKind": "literal-proxy",
-      "game4Fingerprint": null,
-      "proxyFingerprint": "cec12b05f0",
-      "normalizedMatch": false
-    },
-    "bounceOffPlane": {
-      "proxyKind": "behavioral-proxy",
-      "game4Fingerprint": "40eaac5a72",
-      "proxyFingerprint": "a38cd0d3ea",
-      "normalizedMatch": false
-    }
-  },
-  "readiness": {
-    "ok": true,
-    "missingSymbols": [],
-    "unresolvedDependencies": []
-  }
-}
-```
+## physics-studio.html
 
-## Results
+Fail | serve_contact_sidebackspin_002 | net_clearance_too_low
+Fail | serve_contact_sidebackspin_003 | first_bounce_off_target
+Fail | serve_contact_sidebackspin_004 | net_clearance_too_low
+Fail | serve_contact_sidebackspin_005 | first_bounce_off_target
+Fail | serve_contact_sidebackspin_006 | net_clearance_too_low
+Fail | serve_contact_sidebackspin_007 | net_clearance_too_low
+Fail | serve_contact_sidebackspin_008 | first_bounce_off_target
+Fail | serve_contact_sidebackspin_009 | net_clearance_too_low
+Fail | serve_contact_sidebackspin_010 | first_bounce_off_target
+Fail | serve_contact_sidebackspin_011 | first_bounce_off_target
+Fail | serve_contact_sidebackspin_012 | net_clearance_too_low
+Fail | serve_contact_sidebackspin_013 | first_bounce_off_target
+Fail | serve_contact_backspin_002 | net_clearance_too_low
+Fail | serve_contact_backspin_003 | second_bounce_off_target
+Fail | serve_contact_backspin_004 | net_clearance_too_low
+Pass | serve_contact_backspin_005
+Fail | serve_contact_backspin_006 | net_clearance_too_low
+Fail | serve_contact_backspin_007 | second_bounce_off_target
+Fail | serve_contact_backspin_008 | net_clearance_too_low
+Pass | serve_contact_backspin_009
+Fail | serve_contact_backspin_010 | net_clearance_too_low
+Fail | serve_contact_backspin_011 | second_bounce_off_target
+Pass | serve_contact_sidespin_002
+Pass | serve_contact_sidespin_003
+Pass | serve_contact_sidespin_004
+Pass | serve_contact_sidespin_005
+Pass | serve_contact_sidespin_006
+Pass | serve_contact_sidespin_007
+Pass | serve_contact_sidespin_008
+Pass | serve_contact_sidespin_009
+Pass | serve_contact_sidespin_010
+Pass | serve_contact_sidespin_011
+Fail | serve_contact_sidespin_012 | second_bounce_off_target
+Pass | serve_contact_sidespin_013
+Pass | serve_contact_sidespin_014
+Pass | serve_contact_sidespin_015
+Pass | serve_contact_sidespin_016
+Pass | serve_contact_sidespin_017
+Pass | serve_contact_sidespin_018
+Pass | serve_contact_sidespin_019
+Fail | serve_contact_sidespin_020 | first_bounce_off_target
+Fail | serve_contact_sidespin_021 | second_bounce_off_target
+Fail | serve_contact_sidespin_022 | first_bounce_off_target
+Pass | serve_contact_sidespin_023
+Pass | serve_contact_nospin_002
+Fail | serve_contact_nospin_003 | second_bounce_off_target
+Pass | serve_contact_nospin_004
 
-Pass | integration | shared-core-approved-values | expected={"TABLE":{"length":2.74,"width":1.525,"height":0.76,"top":0.781,"net":0.1525},"BALL_RADIUS":0.02,"BALL_MASS":0.0027,"BALL_INERTIA_ALPHA":0.666667,"BALL_INERTIA":0.000001,"MAX_TABLE_BOUNCES":8,"NET_COLLISION":{"depth":0.012,"zRestitution":0.16,"xDamping":0.55,"yDamping":0.35},"OBLIQUE_ANGLE_DEG":83,"EPSILON_VERTICAL":0.876,"EPSILON_OBLIQUE":0.57,"EPSILON_MIN":0.45,"SPIN_EPSILON_REFERENCE":6,"CONTACT_FRICTION_MU":0.13} | actual={"TABLE":{"length":2.74,"width":1.525,"height":0.76,"top":0.781,"net":0.1525},"BALL_RADIUS":0.02,"BALL_MASS":0.0027,"BALL_INERTIA_ALPHA":0.666667,"BALL_INERTIA":0.000001,"MAX_TABLE_BOUNCES":8,"NET_COLLISION":{"depth":0.012,"zRestitution":0.16,"xDamping":0.55,"yDamping":0.35},"OBLIQUE_ANGLE_DEG":83,"EPSILON_VERTICAL":0.876,"EPSILON_OBLIQUE":0.57,"EPSILON_MIN":0.45,"SPIN_EPSILON_REFERENCE":6,"CONTACT_FRICTION_MU":0.13}
-Pass | integration | shared-core-approved-fingerprints | expected={"dynamicEpsilon":"2ea0c04710","bounceTangentialAxis":"c2d211d423","clamp":"576a43e850","horizontalImpactSpeed":"8fc1c17635","spinSurfaceSpeed":"9716a5531a","bounceWithSpinPhysical":"ca2ce08ede"} | actual={"clamp":"576a43e850","horizontalImpactSpeed":"8fc1c17635","spinSurfaceSpeed":"9716a5531a","bounceWithSpinPhysical":"ca2ce08ede","dynamicEpsilon":"2ea0c04710","bounceTangentialAxis":"c2d211d423"}
-Pass | integration | loader-readiness | expected={"ok":true,"missingSymbols":[],"unresolvedDependencies":[]} | actual={"ok":true,"missingSymbols":[],"unresolvedDependencies":[]}
-Pass | integration | proxy-behavioral-alignment | expected={"tableProxyMatchesGame4":true,"racketProxyMatchesGame4":true} | actual={"tableProxyMatchesGame4":true,"racketProxyMatchesGame4":true}
-Pass | attack | bounceOffPlane-single-axis-no-spin | expected={"vel":{"x":0,"y":2.628,"z":3.26836},"spin":{"topspin":54.873,"sidespin":0}} | actual={"vel":{"x":0,"y":2.628,"z":3.26836},"spin":{"topspin":54.873,"sidespin":0}}
-Pass | attack | bounceOffPlane-single-axis-backspin | expected={"vel":{"x":0,"y":2.628,"z":3.26836},"spin":{"topspin":-70.787,"sidespin":0}} | actual={"vel":{"x":0,"y":2.628,"z":3.26836},"spin":{"topspin":-70.787,"sidespin":0}}
-Pass | attack | makeRacketReturnVelocity-snapshot | expected={"vel":{"x":-2.582397,"y":-1.847809,"z":-5.333825},"spin":{"topspin":-101.851561,"sidespin":1.369893}} | actual={"vel":{"x":-2.582397,"y":-1.847809,"z":-5.333825},"spin":{"topspin":-101.851561,"sidespin":1.369893}}
-Pass | attack | makeRacketReturnVelocity-aims-for-center | expected={"targetLandingX":0,"tolerance":0.0001} | actual={"landingX":0,"targetLandingX":0,"delta":0}
-Pass | push | computeAdaptivePushLiftDrive-negative-feedback-on-speed | expected={"liftSlow":0.32,"liftFast":0.2,"driveSlow":0.75,"driveFast":0.18} | actual={"liftSlow":0.32,"liftFast":0.2,"driveSlow":0.75,"driveFast":0.18}
-Pass | push | computeAdaptivePushTiltX-fixed-constant | expected={"backhand":0,"neutral":0,"forehandClamp":0} | actual={"backhand":0,"neutral":0,"forehandClamp":0}
-Pass | push | computeAdaptivePushTiltY-fixed-constant | expected={"tiltY":1} | actual={"tiltY":1}
-Pass | push | makeRacketReturnVelocity-stage4a-snapshot | expected={"vel":{"x":0.015471,"y":2.349485,"z":-3.479795},"spin":{"topspin":-23.775389,"sidespin":-4.11216},"dwellMs":5.44,"effectiveEpsilon":-0.960051} | actual={"vel":{"x":0.015471,"y":2.349485,"z":-3.479795},"spin":{"topspin":-23.775389,"sidespin":-4.11216},"dwellMs":5.44,"effectiveEpsilon":-0.960051}
-Pass | loop | loop-remains-direct-model | expected={"model":"direct","paddleRestitution":-0.9} | actual={"model":"direct","paddleRestitution":-0.9}
-Pass | loop | makeDirectReturnVelocity-snapshot | expected={"x":-0.78,"y":2.35,"z":-3.27} | actual={"x":-0.78,"y":2.35,"z":-3.27}
+## cross-check
 
-## Boundary Review
+Pass | serve_contact_sidebackspin_002
+Pass | serve_contact_sidebackspin_003
+Pass | serve_contact_sidebackspin_004
+Pass | serve_contact_sidebackspin_005
+Pass | serve_contact_sidebackspin_006
+Pass | serve_contact_sidebackspin_007
+Pass | serve_contact_sidebackspin_008
+Pass | serve_contact_sidebackspin_009
+Pass | serve_contact_sidebackspin_010
+Pass | serve_contact_sidebackspin_011
+Pass | serve_contact_sidebackspin_012
+Pass | serve_contact_sidebackspin_013
+Pass | serve_contact_backspin_002
+Pass | serve_contact_backspin_003
+Pass | serve_contact_backspin_004
+Pass | serve_contact_backspin_005
+Pass | serve_contact_backspin_006
+Pass | serve_contact_backspin_007
+Pass | serve_contact_backspin_008
+Pass | serve_contact_backspin_009
+Pass | serve_contact_backspin_010
+Pass | serve_contact_backspin_011
+Pass | serve_contact_sidespin_002
+Pass | serve_contact_sidespin_003
+Pass | serve_contact_sidespin_004
+Pass | serve_contact_sidespin_005
+Pass | serve_contact_sidespin_006
+Pass | serve_contact_sidespin_007
+Pass | serve_contact_sidespin_008
+Pass | serve_contact_sidespin_009
+Pass | serve_contact_sidespin_010
+Pass | serve_contact_sidespin_011
+Pass | serve_contact_sidespin_012
+Pass | serve_contact_sidespin_013
+Pass | serve_contact_sidespin_014
+Pass | serve_contact_sidespin_015
+Pass | serve_contact_sidespin_016
+Pass | serve_contact_sidespin_017
+Pass | serve_contact_sidespin_018
+Pass | serve_contact_sidespin_019
+Pass | serve_contact_sidespin_020
+Pass | serve_contact_sidespin_021
+Pass | serve_contact_sidespin_022
+Pass | serve_contact_sidespin_023
+Pass | serve_contact_nospin_002
+Pass | serve_contact_nospin_003
+Pass | serve_contact_nospin_004
 
-- `docs/BATCH_VALIDATION_SPEC.md` non-goals kept: this report checks regression baselines only, does not claim final physical correctness, does not merge `return-studio.html` research into `game4.html`, and does not treat any single success metric as complete validation.
-- `docs/READ_ONLY_PHYSICS_EXTRACTOR_SPEC.md` acceptance 5 kept: this report does not describe `return-studio.html` as 已證明、最終解、正式部署.
-- No mechanism was added to execute the full inline `game4.html` script. The loader uses direct Node proxies plus per-symbol extraction only.
+## Common legal-serve gate
 
-Summary: 14 passed / 0 failed
-Exit code: 0
+Definition: no net collision; first bounce on server half; second bounce on receiver half; both bounces inside table bounds.
+game4.html: 47 / 47 passed
+physics-studio.html: 47 / 47 passed
 
+Cross-check: 47 / 47 passed
+Total: 91 passed / 50 failed
+Exit code: 0 (cross-check + common legal-serve gate; individual target-precision diagnostics may still fail)

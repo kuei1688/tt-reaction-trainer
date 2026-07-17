@@ -1,0 +1,34 @@
+{
+  "units": {
+    "position": "m",
+    "velocity": "m/s",
+    "omega": "rad/s",
+    "gravity": "m/s^2"
+  },
+  "currentModel": {
+    "spinSchema": 1,
+    "canonicalField": "variation.spin3d",
+    "legacySpinFieldRetained": true,
+    "axialSpinResolvedAtEvaluation": true,
+    "table3dContactUsesLegacyXKickAdapter": true,
+    "magnusModel": "C * (omega x velocity)",
+    "pageGravity": -4.2,
+    "simTimeDilation": "sqrt(9.8 / 4.2)",
+    "realScaleCore": false
+  },
+  "parameters": {
+    "MAGNUS_LIFT_SLOPE": 0.49,
+    "MAGNUS_COEFFICIENT_EXPRESSION": "0.5 * AIR_DENSITY * PI * BALL_RADIUS^3 * MAGNUS_LIFT_SLOPE / BALL_MASS",
+    "CONTACT_FRICTION_MU": 0.13,
+    "PADDLE_FRICTION": 0.4,
+    "PADDLE_BLEND": 0.605,
+    "SIDESPIN_COMPENSATION_C": 2.9,
+    "pageGravity": -4.2
+  },
+  "dataCounts": {
+    "presetServes": 47,
+    "videoEntries": 55,
+    "videoEntriesKindVideo": 48,
+    "approvedVideoEntries": 47
+  }
+}

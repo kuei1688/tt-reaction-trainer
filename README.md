@@ -25,10 +25,18 @@
 
 | 旋轉類型 | 引拍 | 拍面特徵 |
 |---------|------|---------|
-| 側旋 | 高引拍 | 拍面立起，往左側切 |
+| 側旋 | 高引拍 | 拍面立起，橫向刷球 |
 | 下旋 | 低引拍 | 拍面幾乎水平，往下切 |
-| 側下旋 | 中引拍 | 拍面約45度斜，往左下切 |
+| 側下旋 | 中引拍 | 拍面約45度斜，向下＋橫向刷球 |
 | 不轉 | 低引拍 | 動作像下旋，但輕碰無摩擦 |
+
+## 左右側旋的命名規則
+
+專案中的「左側旋／右側旋」指球的旋轉名稱，不是球路往左／往右彎的名稱。依接發球者觀察的約定：左側旋通常往右彎，右側旋通常往左彎；換觀察視角時，畫面左右不能直接當成旋轉名稱。
+
+影片分類的 `_left` / `_right` 目前依旋轉名稱使用，發球 preset 另用 `tags.curveDirection` 記錄球路方向。完整契約與 legacy 引擎正負號請看 [`docs/SPIN_DIRECTION_CONTRACT.md`](docs/SPIN_DIRECTION_CONTRACT.md)。
+
+目前引擎的 `sidespin` 正負是相容既有 x-kick 行為的工程符號，不是完整 3D 側旋物理；真正垂直軸側旋與 Magnus 飛行力仍是後續核心工作。
 
 ---
 
@@ -126,3 +134,67 @@ Table tennis coaching illustration, anime/manga style, front-facing view from re
 純靜態 HTML 單檔，無需伺服器，直接在瀏覽器開啟即可運作。
 
 圖片與影片採用圖庫系統，路徑為 `images/{分類}/{分類}_{編號}.{jpg|mp4}`（命名規則詳見上方「媒體檔命名規則」）。同一分類可有多張媒體，遊戲會隨機選取；檔名前綴分類名確保跨分類不撞名。
+
+---
+
+## Root 檔案地圖
+
+Root 目錄 25 個檔的角色分類。紅線檔案（修改前依 `AI_CONTEXT/00_READ_ME_FIRST.md` 的 R0/R1 流程）以 ⚠ 標記。
+
+### 產品頁
+
+| 檔案 | 角色 |
+|---|---|
+| `index.html` | 入口頁 |
+| `game4.html` ⚠ | 舊版正式遊戲頁（attack/push 用球拍接觸力學、loop 仍是 direct model） |
+| `game5.html` ⚠ | 目前 MVP 主線遊戲頁（`docs/specs/MVP_MAINLINE_SPEC.md` 實作） |
+| `game5-demo.html` | Demo 版（從 HEAD 4f5b877 複製，排除左側旋/左側下旋） |
+| `match-trainer.html` ⚠ | 正式訓練頁 |
+| `match-about.html` | 關於頁 |
+
+### 工具頁（研究 / 產生器，非正式遊戲行為）
+
+| 檔案 | 角色 |
+|---|---|
+| `admin.html` | 影片庫管理 |
+| `review.html` | 影片審核 |
+| `physics-studio.html` | 發球 preset / 發球物理工具頁 |
+| `physics-v2-calibration.html` | 桌面反彈校準頁 |
+| `return-studio.html` | 回擊研究 / 調參頁 |
+| `serve-generator.html` | Per-video preset 產生器 |
+| `serve-settings.html` | 發球設定頁 |
+
+### Shared lib 與正式資料（紅線）
+
+| 檔案 | 角色 |
+|---|---|
+| `shared-physics-core.js` ⚠ | 共用物理核心（Phase 1+2、schema-2 3D） |
+| `camera-config.json` ⚠ | 攝影機設定（game4/game5 讀取） |
+| `videos.json` ⚠ | 題庫影片/圖片資料（47 approved video） |
+| `physics-presets.json` ⚠ | 發球 preset 資料（47 per-video generated） |
+
+### 子應用
+
+| 目錄 | 角色 |
+|---|---|
+| `mainline-v2/` | R1 重建邊界（canonical-only、schema-2、獨立狀態路徑；見 `docs/plans/MAINLINE_V2_REARCHITECTURE_PLAN.md`） |
+
+### Config 與 README
+
+| 檔案 | 角色 |
+|---|---|
+| `README.md` | 本檔 |
+| `CLAUDE.md` | Claude Code 工作規則（未 tracked） |
+| `.gitignore` | 忽略 `.codex/`、`.claude/`、`prototypes/.claude/` |
+| `.nojekyll` | GitHub Pages 關閉 Jekyll 處理 |
+
+### 其他目錄
+
+| 目錄 | 角色 |
+|---|---|
+| `AI_CONTEXT/` | 狀態、待決項、研究證據、隔離驗證報告（見 `AI_CONTEXT/00_READ_ME_FIRST.md`） |
+| `docs/` | 規格、計畫、狀態、日誌（分子目錄 specs/plans/status/logs/ARCHIVE） |
+| `tools/` | 測試、benchmark、校準 sweep、build、migrate、共用 loader（分子目錄 tests/benchmarks/sweeps/build/migrate） |
+| `images/` | 媒體檔（`{分類}/{分類}_{編號}.{jpg|mp4}`） |
+| `prototypes/` | 原型實驗（可自由試，不可自動寫回正式檔案） |
+| `vendor/` | 第三方資源 |

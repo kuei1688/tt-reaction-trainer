@@ -1,0 +1,3463 @@
+{
+  "metadata": {
+    "generatedAt": "2026-07-15T15:01:41.163Z",
+    "tool": "prototypes/3d-physics-test-plan/run-3d-physics-diagnostic.js",
+    "plan": "docs/3D_PHYSICS_DIAGNOSTIC_PLAN.md",
+    "commit": "f1d0ce4a9781e6cb9c56cc3e6a2d935e3fb2f6b8",
+    "gitStatus": "M AI_CONTEXT/00_READ_ME_FIRST.md\n M AI_CONTEXT/OPEN_ITEMS.md\n M AI_CONTEXT/STATUS.md\n M AI_CONTEXT/test_output.txt\n M AI_CONTEXT/val005_return_studio_test_output.txt\n M README.md\n M docs/BATCH_VALIDATION_SPEC.md\n M docs/CORE_FILE_SYNC_STATUS.md\n M docs/DEVELOPMENT_MATRIX.md\n M docs/MODEL_DECISIONS.md\n M docs/MVP_MAINLINE_SPEC.md\n M docs/PHYSICS_MODEL_SPEC.md\n M docs/VALIDATION_PLAN.md\n M game4.html\n M game5.html\n M physics-presets.json\n M physics-studio.html\n M return-studio.html\n M serve-generator.html\n M shared-physics-core.js\n M tools/load-game4-physics.js\n M tools/serve-batch-validation.test.js\n?? AI_CONTEXT/3d_baseline_2026-07-15/\n?? AI_CONTEXT/3d_diagnostic_2026-07-15/\n?? docs/3D_PHYSICS_DIAGNOSTIC_PLAN.md\n?? docs/3D_PHYSICS_MIGRATION_PLAN.md\n?? docs/3D_PHYSICS_TEST_PLAN.md\n?? docs/SPIN_DIRECTION_CONTRACT.md\n?? prototypes/3d-physics-test-plan/\n?? prototypes/video-physics-timeline/tools/auto-contact-tagger/batch-out/run.err.log\n?? prototypes/video-physics-timeline/tools/auto-contact-tagger/batch-out/run.log\n?? tools/migrate-physics-presets-to-3d.js\n?? tools/physics-3d-spin.test.js\n?? tools/serve-generator-contract.test.js\n?? tools/serve-success-gate.js",
+    "sourceFiles": [
+      "shared-physics-core.js",
+      "game4.html",
+      "tools/batch-validation.test.js"
+    ],
+    "units": {
+      "position": "m",
+      "velocity": "m/s",
+      "acceleration": "m/s²",
+      "omega": "rad/s"
+    },
+    "parameters": {
+      "gravityFlight": -9.8,
+      "gravityGame4": -4.2,
+      "dt": 0.004166666666666667,
+      "simTimeDilation": 1.5275252316519468,
+      "magnusCoefficient": 0.002793690356025591,
+      "contactFrictionMu": 0.13
+    }
+  },
+  "experiments": [
+    {
+      "id": "E-03",
+      "description": "axial/corkscrew separation from true omega.y sidespin with staged observations",
+      "inputs": {
+        "start": {
+          "x": 0,
+          "y": 0.95,
+          "z": -1.52
+        },
+        "velocity": {
+          "x": 0,
+          "y": -0.8,
+          "z": 5
+        },
+        "gravity": -9.8,
+        "dt": 0.004166666666666667,
+        "table": {
+          "width": 1.525,
+          "length": 2.74,
+          "height": 0.76,
+          "top": 0.781,
+          "net": 0.1525
+        }
+      },
+      "flightTable": [
+        {
+          "case": "Z0",
+          "inputSpin": {
+            "schema": 1,
+            "omega": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "axialSpin": 0
+          },
+          "trace": {
+            "units": {
+              "position": "m",
+              "velocity": "m/s",
+              "acceleration": "m/s²",
+              "omega": "rad/s"
+            },
+            "start": {
+              "x": 0,
+              "y": 0.95,
+              "z": -1.52
+            },
+            "observations": [
+              {
+                "stage": "initial-input",
+                "position": {
+                  "x": 0,
+                  "y": 0.95,
+                  "z": -1.52
+                },
+                "velocity": {
+                  "x": 0,
+                  "y": -0.8,
+                  "z": 5
+                },
+                "acceleration": {
+                  "x": 0,
+                  "y": 0,
+                  "z": 0
+                },
+                "spin": {
+                  "schema": 1,
+                  "omega": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0
+                  },
+                  "axialSpin": 0,
+                  "resolvedOmegaAtVelocity": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0
+                  },
+                  "legacyProjectionAtVelocity": {
+                    "topspin": 0,
+                    "sidespin": 0
+                  }
+                }
+              },
+              {
+                "stage": "table-bounce-1-before",
+                "position": {
+                  "x": 0,
+                  "y": 0.781,
+                  "z": -0.920059
+                },
+                "velocity": {
+                  "x": 0,
+                  "y": -1.984167,
+                  "z": 5
+                },
+                "acceleration": {
+                  "x": 0,
+                  "y": 0,
+                  "z": 0
+                },
+                "spin": {
+                  "schema": 1,
+                  "omega": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0
+                  },
+                  "axialSpin": 0,
+                  "resolvedOmegaAtVelocity": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0
+                  },
+                  "legacyProjectionAtVelocity": {
+                    "topspin": 0,
+                    "sidespin": 0
+                  }
+                },
+                "contact": {
+                  "type": "table",
+                  "phase": "before",
+                  "resolvedOmega": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0
+                  },
+                  "epsilon": 0.78132,
+                  "regime": {
+                    "topspin": "sliding",
+                    "sidespin": "rolling"
+                  }
+                }
+              },
+              {
+                "stage": "table-bounce-1-after",
+                "position": {
+                  "x": 0,
+                  "y": 0.781,
+                  "z": -0.920059
+                },
+                "velocity": {
+                  "x": 0,
+                  "y": 1.55027,
+                  "z": 4.540523
+                },
+                "acceleration": {
+                  "x": 0,
+                  "y": -0.437128325,
+                  "z": 0.149248604
+                },
+                "spin": {
+                  "schema": 1,
+                  "omega": {
+                    "x": 34.460754,
+                    "y": 0,
+                    "z": 0
+                  },
+                  "axialSpin": 0,
+                  "resolvedOmegaAtVelocity": {
+                    "x": 34.460754,
+                    "y": 0,
+                    "z": 0
+                  },
+                  "legacyProjectionAtVelocity": {
+                    "topspin": 34.460754,
+                    "sidespin": 0
+                  }
+                },
+                "contact": {
+                  "type": "table",
+                  "phase": "after",
+                  "epsilon": 0.78132,
+                  "regime": {
+                    "topspin": "sliding",
+                    "sidespin": "rolling"
+                  }
+                }
+              },
+              {
+                "stage": "net-crossing",
+                "position": {
+                  "x": 0,
+                  "y": 0.88082,
+                  "z": 0
+                },
+                "velocity": {
+                  "x": 0,
+                  "y": -0.539978,
+                  "z": 4.550872
+                },
+                "acceleration": {
+                  "x": 0,
+                  "y": -0.438124609,
+                  "z": -0.051985092
+                },
+                "spin": {
+                  "schema": 1,
+                  "omega": {
+                    "x": 34.460754,
+                    "y": 0,
+                    "z": 0
+                  },
+                  "axialSpin": 0,
+                  "resolvedOmegaAtVelocity": {
+                    "x": 34.460754,
+                    "y": 0,
+                    "z": 0
+                  },
+                  "legacyProjectionAtVelocity": {
+                    "topspin": 34.460754,
+                    "sidespin": 0
+                  }
+                },
+                "crossingStep": 77,
+                "clearance": -0.03168
+              },
+              {
+                "stage": "table-bounce-2-before",
+                "position": {
+                  "x": 0,
+                  "y": 0.781,
+                  "z": 0.438437
+                },
+                "velocity": {
+                  "x": 0,
+                  "y": -1.521097,
+                  "z": 4.541561
+                },
+                "acceleration": {
+                  "x": 0,
+                  "y": -0.437228199,
+                  "z": -0.146440089
+                },
+                "spin": {
+                  "schema": 1,
+                  "omega": {
+                    "x": 34.460754,
+                    "y": 0,
+                    "z": 0
+                  },
+                  "axialSpin": 0,
+                  "resolvedOmegaAtVelocity": {
+                    "x": 34.460754,
+                    "y": 0,
+                    "z": 0
+                  },
+                  "legacyProjectionAtVelocity": {
+                    "topspin": 34.460754,
+                    "sidespin": 0
+                  }
+                },
+                "contact": {
+                  "type": "table",
+                  "phase": "before",
+                  "resolvedOmega": {
+                    "x": 34.460754,
+                    "y": 0,
+                    "z": 0
+                  },
+                  "epsilon": 0.750036,
+                  "regime": {
+                    "topspin": "sliding",
+                    "sidespin": "rolling"
+                  }
+                }
+              },
+              {
+                "stage": "table-bounce-2-after",
+                "position": {
+                  "x": 0,
+                  "y": 0.781,
+                  "z": 0.438437
+                },
+                "velocity": {
+                  "x": 0,
+                  "y": 1.140878,
+                  "z": 4.195504
+                },
+                "acceleration": {
+                  "x": 0,
+                  "y": -0.708120647,
+                  "z": 0.19255833
+                },
+                "spin": {
+                  "schema": 1,
+                  "omega": {
+                    "x": 60.415011,
+                    "y": 0,
+                    "z": 0
+                  },
+                  "axialSpin": 0,
+                  "resolvedOmegaAtVelocity": {
+                    "x": 60.415011,
+                    "y": 0,
+                    "z": 0
+                  },
+                  "legacyProjectionAtVelocity": {
+                    "topspin": 60.415011,
+                    "sidespin": 0
+                  }
+                },
+                "contact": {
+                  "type": "table",
+                  "phase": "after",
+                  "epsilon": 0.750036,
+                  "regime": {
+                    "topspin": "sliding",
+                    "sidespin": "rolling"
+                  }
+                }
+              },
+              {
+                "stage": "final-position",
+                "position": {
+                  "x": 0,
+                  "y": 0.781,
+                  "z": 0.438437
+                },
+                "velocity": {
+                  "x": 0,
+                  "y": 1.140878,
+                  "z": 4.195504
+                },
+                "acceleration": {
+                  "x": 0,
+                  "y": -0.708120647,
+                  "z": 0.19255833
+                },
+                "spin": {
+                  "schema": 1,
+                  "omega": {
+                    "x": 60.415011,
+                    "y": 0,
+                    "z": 0
+                  },
+                  "axialSpin": 0,
+                  "resolvedOmegaAtVelocity": {
+                    "x": 60.415011,
+                    "y": 0,
+                    "z": 0
+                  },
+                  "legacyProjectionAtVelocity": {
+                    "topspin": 60.415011,
+                    "sidespin": 0
+                  }
+                },
+                "outcome": {
+                  "crossedNet": true,
+                  "bounces": 2,
+                  "netHit": true
+                }
+              }
+            ],
+            "net": {
+              "position": {
+                "x": 0,
+                "y": 0.88082,
+                "z": 0
+              },
+              "clearance": -0.03168
+            },
+            "bounces": [
+              {
+                "number": 1,
+                "position": {
+                  "x": 0,
+                  "y": 0.781,
+                  "z": -0.920059
+                },
+                "before": {
+                  "velocity": {
+                    "x": 0,
+                    "y": -1.984167,
+                    "z": 5
+                  },
+                  "spin": {
+                    "schema": 1,
+                    "omega": {
+                      "x": 0,
+                      "y": 0,
+                      "z": 0
+                    },
+                    "axialSpin": 0,
+                    "resolvedOmegaAtVelocity": {
+                      "x": 0,
+                      "y": 0,
+                      "z": 0
+                    },
+                    "legacyProjectionAtVelocity": {
+                      "topspin": 0,
+                      "sidespin": 0
+                    }
+                  }
+                },
+                "after": {
+                  "velocity": {
+                    "x": 0,
+                    "y": 1.55027,
+                    "z": 4.540523
+                  },
+                  "spin": {
+                    "schema": 1,
+                    "omega": {
+                      "x": 34.460754,
+                      "y": 0,
+                      "z": 0
+                    },
+                    "axialSpin": 0,
+                    "resolvedOmegaAtVelocity": {
+                      "x": 34.460754,
+                      "y": 0,
+                      "z": 0
+                    },
+                    "legacyProjectionAtVelocity": {
+                      "topspin": 34.460754,
+                      "sidespin": 0
+                    }
+                  }
+                },
+                "epsilon": 0.78132,
+                "regime": {
+                  "topspin": "sliding",
+                  "sidespin": "rolling"
+                }
+              },
+              {
+                "number": 2,
+                "position": {
+                  "x": 0,
+                  "y": 0.781,
+                  "z": 0.438437
+                },
+                "before": {
+                  "velocity": {
+                    "x": 0,
+                    "y": -1.521097,
+                    "z": 4.541561
+                  },
+                  "spin": {
+                    "schema": 1,
+                    "omega": {
+                      "x": 34.460754,
+                      "y": 0,
+                      "z": 0
+                    },
+                    "axialSpin": 0,
+                    "resolvedOmegaAtVelocity": {
+                      "x": 34.460754,
+                      "y": 0,
+                      "z": 0
+                    },
+                    "legacyProjectionAtVelocity": {
+                      "topspin": 34.460754,
+                      "sidespin": 0
+                    }
+                  }
+                },
+                "after": {
+                  "velocity": {
+                    "x": 0,
+                    "y": 1.140878,
+                    "z": 4.195504
+                  },
+                  "spin": {
+                    "schema": 1,
+                    "omega": {
+                      "x": 60.415011,
+                      "y": 0,
+                      "z": 0
+                    },
+                    "axialSpin": 0,
+                    "resolvedOmegaAtVelocity": {
+                      "x": 60.415011,
+                      "y": 0,
+                      "z": 0
+                    },
+                    "legacyProjectionAtVelocity": {
+                      "topspin": 60.415011,
+                      "sidespin": 0
+                    }
+                  }
+                },
+                "epsilon": 0.750036,
+                "regime": {
+                  "topspin": "sliding",
+                  "sidespin": "rolling"
+                }
+              }
+            ],
+            "final": {
+              "stage": "final-position",
+              "position": {
+                "x": 0,
+                "y": 0.781,
+                "z": 0.438437
+              },
+              "velocity": {
+                "x": 0,
+                "y": 1.140878,
+                "z": 4.195504
+              },
+              "acceleration": {
+                "x": 0,
+                "y": -0.708120647,
+                "z": 0.19255833
+              },
+              "spin": {
+                "schema": 1,
+                "omega": {
+                  "x": 60.415011,
+                  "y": 0,
+                  "z": 0
+                },
+                "axialSpin": 0,
+                "resolvedOmegaAtVelocity": {
+                  "x": 60.415011,
+                  "y": 0,
+                  "z": 0
+                },
+                "legacyProjectionAtVelocity": {
+                  "topspin": 60.415011,
+                  "sidespin": 0
+                }
+              },
+              "outcome": {
+                "crossedNet": true,
+                "bounces": 2,
+                "netHit": true
+              }
+            },
+            "finite": true,
+            "outcome": {
+              "crossedNet": true,
+              "bounces": 2,
+              "netHit": true
+            }
+          },
+          "metrics": {
+            "preFirstTableX": 0,
+            "postFirstTableNetX": 0,
+            "firstBounceX": 0,
+            "secondBounceX": 0
+          }
+        },
+        {
+          "case": "AX+",
+          "inputSpin": {
+            "schema": 1,
+            "omega": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "axialSpin": 125.66
+          },
+          "trace": {
+            "units": {
+              "position": "m",
+              "velocity": "m/s",
+              "acceleration": "m/s²",
+              "omega": "rad/s"
+            },
+            "start": {
+              "x": 0,
+              "y": 0.95,
+              "z": -1.52
+            },
+            "observations": [
+              {
+                "stage": "initial-input",
+                "position": {
+                  "x": 0,
+                  "y": 0.95,
+                  "z": -1.52
+                },
+                "velocity": {
+                  "x": 0,
+                  "y": -0.8,
+                  "z": 5
+                },
+                "acceleration": {
+                  "x": 0,
+                  "y": 0,
+                  "z": 0
+                },
+                "spin": {
+                  "schema": 1,
+                  "omega": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0
+                  },
+                  "axialSpin": 125.66,
+                  "resolvedOmegaAtVelocity": {
+                    "x": 0,
+                    "y": -19.853086,
+                    "z": 124.08179
+                  },
+                  "legacyProjectionAtVelocity": {
+                    "topspin": 0,
+                    "sidespin": -124.08179
+                  }
+                }
+              },
+              {
+                "stage": "table-bounce-1-before",
+                "position": {
+                  "x": 0,
+                  "y": 0.781,
+                  "z": -0.920059
+                },
+                "velocity": {
+                  "x": 0,
+                  "y": -1.984167,
+                  "z": 5
+                },
+                "acceleration": {
+                  "x": 0,
+                  "y": 0,
+                  "z": 0
+                },
+                "spin": {
+                  "schema": 1,
+                  "omega": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0
+                  },
+                  "axialSpin": 125.66,
+                  "resolvedOmegaAtVelocity": {
+                    "x": 0,
+                    "y": -46.349929,
+                    "z": 116.799485
+                  },
+                  "legacyProjectionAtVelocity": {
+                    "topspin": 0,
+                    "sidespin": -116.799485
+                  }
+                },
+                "contact": {
+                  "type": "table",
+                  "phase": "before",
+                  "resolvedOmega": {
+                    "x": 0,
+                    "y": -46.349929,
+                    "z": 116.799485
+                  },
+                  "epsilon": 0.7346,
+                  "regime": {
+                    "topspin": "sliding",
+                    "sidespin": "sliding"
+                  }
+                }
+              },
+              {
+                "stage": "table-bounce-1-after",
+                "position": {
+                  "x": 0,
+                  "y": 0.781,
+                  "z": -0.920059
+                },
+                "velocity": {
+                  "x": 0.447426,
+                  "y": 1.45757,
+                  "z": 4.552574
+                },
+                "acceleration": {
+                  "x": -0.928464341,
+                  "y": -0.32274263,
+                  "z": 0.194579745
+                },
+                "spin": {
+                  "schema": 1,
+                  "omega": {
+                    "x": 33.55693,
+                    "y": -46.349929,
+                    "z": 83.242555
+                  },
+                  "axialSpin": 125.66,
+                  "resolvedOmegaAtVelocity": {
+                    "x": 45.267462,
+                    "y": -8.200768,
+                    "z": 202.397666
+                  },
+                  "legacyProjectionAtVelocity": {
+                    "topspin": 45.267462,
+                    "sidespin": -202.397666
+                  }
+                },
+                "contact": {
+                  "type": "table",
+                  "phase": "after",
+                  "epsilon": 0.7346,
+                  "regime": {
+                    "topspin": "sliding",
+                    "sidespin": "sliding"
+                  }
+                }
+              },
+              {
+                "stage": "net-crossing",
+                "position": {
+                  "x": 0.074111,
+                  "y": 0.864634,
+                  "z": 0
+                },
+                "velocity": {
+                  "x": 0.305658,
+                  "y": -0.613081,
+                  "z": 4.570849
+                },
+                "acceleration": {
+                  "x": -0.449292741,
+                  "y": -0.35742461,
+                  "z": -0.017896137
+                },
+                "spin": {
+                  "schema": 1,
+                  "omega": {
+                    "x": 33.55693,
+                    "y": -46.349929,
+                    "z": 83.242555
+                  },
+                  "axialSpin": 125.66,
+                  "resolvedOmegaAtVelocity": {
+                    "x": 41.867135,
+                    "y": -63.018351,
+                    "z": 207.514594
+                  },
+                  "legacyProjectionAtVelocity": {
+                    "topspin": 41.867135,
+                    "sidespin": -207.514594
+                  }
+                },
+                "crossingStep": 77,
+                "clearance": -0.047866
+              },
+              {
+                "stage": "table-bounce-2-before",
+                "position": {
+                  "x": 0.097823,
+                  "y": 0.781,
+                  "z": 0.373678
+                },
+                "velocity": {
+                  "x": 0.277119,
+                  "y": -1.417471,
+                  "z": 4.566454
+                },
+                "acceleration": {
+                  "x": -0.261659646,
+                  "y": -0.363649363,
+                  "z": -0.0970012
+                },
+                "spin": {
+                  "schema": 1,
+                  "omega": {
+                    "x": 33.55693,
+                    "y": -46.349929,
+                    "z": 83.242555
+                  },
+                  "axialSpin": 125.66,
+                  "resolvedOmegaAtVelocity": {
+                    "x": 40.827698,
+                    "y": -83.540123,
+                    "z": 203.052659
+                  },
+                  "legacyProjectionAtVelocity": {
+                    "topspin": 40.827698,
+                    "sidespin": -203.052659
+                  }
+                },
+                "contact": {
+                  "type": "table",
+                  "phase": "before",
+                  "resolvedOmega": {
+                    "x": 40.827698,
+                    "y": -83.540123,
+                    "z": 203.052659
+                  },
+                  "epsilon": 0.67189,
+                  "regime": {
+                    "topspin": "sliding",
+                    "sidespin": "sliding"
+                  }
+                }
+              },
+              {
+                "stage": "table-bounce-2-after",
+                "position": {
+                  "x": 0.097823,
+                  "y": 0.781,
+                  "z": 0.373678
+                },
+                "velocity": {
+                  "x": 0.5852,
+                  "y": 0.952385,
+                  "z": 4.258373
+                },
+                "acceleration": {
+                  "x": -1.472619401,
+                  "y": -0.466404283,
+                  "z": 0.306683623
+                },
+                "spin": {
+                  "schema": 1,
+                  "omega": {
+                    "x": 63.933788,
+                    "y": -83.540123,
+                    "z": 179.946569
+                  },
+                  "axialSpin": 125.66,
+                  "resolvedOmegaAtVelocity": {
+                    "x": 80.636547,
+                    "y": -56.357184,
+                    "z": 301.488912
+                  },
+                  "legacyProjectionAtVelocity": {
+                    "topspin": 80.636547,
+                    "sidespin": -301.488912
+                  }
+                },
+                "contact": {
+                  "type": "table",
+                  "phase": "after",
+                  "epsilon": 0.67189,
+                  "regime": {
+                    "topspin": "sliding",
+                    "sidespin": "sliding"
+                  }
+                }
+              },
+              {
+                "stage": "final-position",
+                "position": {
+                  "x": 0.097823,
+                  "y": 0.781,
+                  "z": 0.373678
+                },
+                "velocity": {
+                  "x": 0.5852,
+                  "y": 0.952385,
+                  "z": 4.258373
+                },
+                "acceleration": {
+                  "x": -1.472619401,
+                  "y": -0.466404283,
+                  "z": 0.306683623
+                },
+                "spin": {
+                  "schema": 1,
+                  "omega": {
+                    "x": 63.933788,
+                    "y": -83.540123,
+                    "z": 179.946569
+                  },
+                  "axialSpin": 125.66,
+                  "resolvedOmegaAtVelocity": {
+                    "x": 80.636547,
+                    "y": -56.357184,
+                    "z": 301.488912
+                  },
+                  "legacyProjectionAtVelocity": {
+                    "topspin": 80.636547,
+                    "sidespin": -301.488912
+                  }
+                },
+                "outcome": {
+                  "crossedNet": true,
+                  "bounces": 2,
+                  "netHit": true
+                }
+              }
+            ],
+            "net": {
+              "position": {
+                "x": 0.074111,
+                "y": 0.864634,
+                "z": 0
+              },
+              "clearance": -0.047866
+            },
+            "bounces": [
+              {
+                "number": 1,
+                "position": {
+                  "x": 0,
+                  "y": 0.781,
+                  "z": -0.920059
+                },
+                "before": {
+                  "velocity": {
+                    "x": 0,
+                    "y": -1.984167,
+                    "z": 5
+                  },
+                  "spin": {
+                    "schema": 1,
+                    "omega": {
+                      "x": 0,
+                      "y": 0,
+                      "z": 0
+                    },
+                    "axialSpin": 125.66,
+                    "resolvedOmegaAtVelocity": {
+                      "x": 0,
+                      "y": -46.349929,
+                      "z": 116.799485
+                    },
+                    "legacyProjectionAtVelocity": {
+                      "topspin": 0,
+                      "sidespin": -116.799485
+                    }
+                  }
+                },
+                "after": {
+                  "velocity": {
+                    "x": 0.447426,
+                    "y": 1.45757,
+                    "z": 4.552574
+                  },
+                  "spin": {
+                    "schema": 1,
+                    "omega": {
+                      "x": 33.55693,
+                      "y": -46.349929,
+                      "z": 83.242555
+                    },
+                    "axialSpin": 125.66,
+                    "resolvedOmegaAtVelocity": {
+                      "x": 45.267462,
+                      "y": -8.200768,
+                      "z": 202.397666
+                    },
+                    "legacyProjectionAtVelocity": {
+                      "topspin": 45.267462,
+                      "sidespin": -202.397666
+                    }
+                  }
+                },
+                "epsilon": 0.7346,
+                "regime": {
+                  "topspin": "sliding",
+                  "sidespin": "sliding"
+                }
+              },
+              {
+                "number": 2,
+                "position": {
+                  "x": 0.097823,
+                  "y": 0.781,
+                  "z": 0.373678
+                },
+                "before": {
+                  "velocity": {
+                    "x": 0.277119,
+                    "y": -1.417471,
+                    "z": 4.566454
+                  },
+                  "spin": {
+                    "schema": 1,
+                    "omega": {
+                      "x": 33.55693,
+                      "y": -46.349929,
+                      "z": 83.242555
+                    },
+                    "axialSpin": 125.66,
+                    "resolvedOmegaAtVelocity": {
+                      "x": 40.827698,
+                      "y": -83.540123,
+                      "z": 203.052659
+                    },
+                    "legacyProjectionAtVelocity": {
+                      "topspin": 40.827698,
+                      "sidespin": -203.052659
+                    }
+                  }
+                },
+                "after": {
+                  "velocity": {
+                    "x": 0.5852,
+                    "y": 0.952385,
+                    "z": 4.258373
+                  },
+                  "spin": {
+                    "schema": 1,
+                    "omega": {
+                      "x": 63.933788,
+                      "y": -83.540123,
+                      "z": 179.946569
+                    },
+                    "axialSpin": 125.66,
+                    "resolvedOmegaAtVelocity": {
+                      "x": 80.636547,
+                      "y": -56.357184,
+                      "z": 301.488912
+                    },
+                    "legacyProjectionAtVelocity": {
+                      "topspin": 80.636547,
+                      "sidespin": -301.488912
+                    }
+                  }
+                },
+                "epsilon": 0.67189,
+                "regime": {
+                  "topspin": "sliding",
+                  "sidespin": "sliding"
+                }
+              }
+            ],
+            "final": {
+              "stage": "final-position",
+              "position": {
+                "x": 0.097823,
+                "y": 0.781,
+                "z": 0.373678
+              },
+              "velocity": {
+                "x": 0.5852,
+                "y": 0.952385,
+                "z": 4.258373
+              },
+              "acceleration": {
+                "x": -1.472619401,
+                "y": -0.466404283,
+                "z": 0.306683623
+              },
+              "spin": {
+                "schema": 1,
+                "omega": {
+                  "x": 63.933788,
+                  "y": -83.540123,
+                  "z": 179.946569
+                },
+                "axialSpin": 125.66,
+                "resolvedOmegaAtVelocity": {
+                  "x": 80.636547,
+                  "y": -56.357184,
+                  "z": 301.488912
+                },
+                "legacyProjectionAtVelocity": {
+                  "topspin": 80.636547,
+                  "sidespin": -301.488912
+                }
+              },
+              "outcome": {
+                "crossedNet": true,
+                "bounces": 2,
+                "netHit": true
+              }
+            },
+            "finite": true,
+            "outcome": {
+              "crossedNet": true,
+              "bounces": 2,
+              "netHit": true
+            }
+          },
+          "metrics": {
+            "preFirstTableX": 0,
+            "postFirstTableNetX": 0.074111,
+            "firstBounceX": 0,
+            "secondBounceX": 0.097823
+          }
+        },
+        {
+          "case": "Y+",
+          "inputSpin": {
+            "schema": 1,
+            "omega": {
+              "x": 0,
+              "y": 125.66,
+              "z": 0
+            },
+            "axialSpin": 0
+          },
+          "trace": {
+            "units": {
+              "position": "m",
+              "velocity": "m/s",
+              "acceleration": "m/s²",
+              "omega": "rad/s"
+            },
+            "start": {
+              "x": 0,
+              "y": 0.95,
+              "z": -1.52
+            },
+            "observations": [
+              {
+                "stage": "initial-input",
+                "position": {
+                  "x": 0,
+                  "y": 0.95,
+                  "z": -1.52
+                },
+                "velocity": {
+                  "x": 0,
+                  "y": -0.8,
+                  "z": 5
+                },
+                "acceleration": {
+                  "x": 1.755275651,
+                  "y": 0,
+                  "z": 0
+                },
+                "spin": {
+                  "schema": 1,
+                  "omega": {
+                    "x": 0,
+                    "y": 125.66,
+                    "z": 0
+                  },
+                  "axialSpin": 0,
+                  "resolvedOmegaAtVelocity": {
+                    "x": 0,
+                    "y": 125.66,
+                    "z": 0
+                  },
+                  "legacyProjectionAtVelocity": {
+                    "topspin": 0,
+                    "sidespin": 0
+                  }
+                }
+              },
+              {
+                "stage": "table-bounce-1-before",
+                "position": {
+                  "x": 0.013075,
+                  "y": 0.781,
+                  "z": -0.920237
+                },
+                "velocity": {
+                  "x": 0.212039,
+                  "y": -1.984167,
+                  "z": 4.995657
+                },
+                "acceleration": {
+                  "x": 1.753751088,
+                  "y": 0,
+                  "z": -0.07443725
+                },
+                "spin": {
+                  "schema": 1,
+                  "omega": {
+                    "x": 0,
+                    "y": 125.66,
+                    "z": 0
+                  },
+                  "axialSpin": 0,
+                  "resolvedOmegaAtVelocity": {
+                    "x": 0,
+                    "y": 125.66,
+                    "z": 0
+                  },
+                  "legacyProjectionAtVelocity": {
+                    "topspin": 0,
+                    "sidespin": 0
+                  }
+                },
+                "contact": {
+                  "type": "table",
+                  "phase": "before",
+                  "resolvedOmega": {
+                    "x": 0,
+                    "y": 125.66,
+                    "z": 0
+                  },
+                  "epsilon": 0.781317,
+                  "regime": {
+                    "topspin": "sliding",
+                    "sidespin": "rolling"
+                  }
+                }
+              },
+              {
+                "stage": "table-bounce-1-after",
+                "position": {
+                  "x": 0.013075,
+                  "y": 0.781,
+                  "z": -0.920237
+                },
+                "velocity": {
+                  "x": 0.127223,
+                  "y": 1.550264,
+                  "z": 4.536181
+                },
+                "acceleration": {
+                  "x": 1.564899789,
+                  "y": -0.434448688,
+                  "z": 0.104585447
+                },
+                "spin": {
+                  "schema": 1,
+                  "omega": {
+                    "x": 34.460697,
+                    "y": 125.66,
+                    "z": 6.361159
+                  },
+                  "axialSpin": 0,
+                  "resolvedOmegaAtVelocity": {
+                    "x": 34.460697,
+                    "y": 125.66,
+                    "z": 6.361159
+                  },
+                  "legacyProjectionAtVelocity": {
+                    "topspin": 34.460697,
+                    "sidespin": -6.361159
+                  }
+                },
+                "contact": {
+                  "type": "table",
+                  "phase": "after",
+                  "epsilon": 0.781317,
+                  "regime": {
+                    "topspin": "sliding",
+                    "sidespin": "rolling"
+                  }
+                }
+              },
+              {
+                "stage": "net-crossing",
+                "position": {
+                  "x": 0.072012,
+                  "y": 0.880596,
+                  "z": 0
+                },
+                "velocity": {
+                  "x": 0.450466,
+                  "y": -0.538705,
+                  "z": 4.526114
+                },
+                "acceleration": {
+                  "x": 1.598489092,
+                  "y": -0.427735144,
+                  "z": -0.21000105
+                },
+                "spin": {
+                  "schema": 1,
+                  "omega": {
+                    "x": 34.460697,
+                    "y": 125.66,
+                    "z": 6.361159
+                  },
+                  "axialSpin": 0,
+                  "resolvedOmegaAtVelocity": {
+                    "x": 34.460697,
+                    "y": 125.66,
+                    "z": 6.361159
+                  },
+                  "legacyProjectionAtVelocity": {
+                    "topspin": 34.460697,
+                    "sidespin": -6.361159
+                  }
+                },
+                "crossingStep": 77,
+                "clearance": -0.031904
+              },
+              {
+                "stage": "table-bounce-2-before",
+                "position": {
+                  "x": 0.122755,
+                  "y": 0.781,
+                  "z": 0.433315
+                },
+                "velocity": {
+                  "x": 0.60406,
+                  "y": -1.51863,
+                  "z": 4.499196
+                },
+                "acceleration": {
+                  "x": 1.606453549,
+                  "y": -0.422414101,
+                  "z": -0.358260657
+                },
+                "spin": {
+                  "schema": 1,
+                  "omega": {
+                    "x": 34.460697,
+                    "y": 125.66,
+                    "z": 6.361159
+                  },
+                  "axialSpin": 0,
+                  "resolvedOmegaAtVelocity": {
+                    "x": 34.460697,
+                    "y": 125.66,
+                    "z": 6.361159
+                  },
+                  "legacyProjectionAtVelocity": {
+                    "topspin": 34.460697,
+                    "sidespin": -6.361159
+                  }
+                },
+                "contact": {
+                  "type": "table",
+                  "phase": "before",
+                  "resolvedOmega": {
+                    "x": 34.460697,
+                    "y": 125.66,
+                    "z": 6.361159
+                  },
+                  "epsilon": 0.749671,
+                  "regime": {
+                    "topspin": "sliding",
+                    "sidespin": "rolling"
+                  }
+                }
+              },
+              {
+                "stage": "table-bounce-2-after",
+                "position": {
+                  "x": 0.122755,
+                  "y": 0.781,
+                  "z": 0.433315
+                },
+                "velocity": {
+                  "x": 0.413325,
+                  "y": 1.138473,
+                  "z": 4.153773
+                },
+                "acceleration": {
+                  "x": 1.392473301,
+                  "y": -0.676661907,
+                  "z": 0.046901165
+                },
+                "spin": {
+                  "schema": 1,
+                  "omega": {
+                    "x": 60.367451,
+                    "y": 125.66,
+                    "z": 20.666257
+                  },
+                  "axialSpin": 0,
+                  "resolvedOmegaAtVelocity": {
+                    "x": 60.367451,
+                    "y": 125.66,
+                    "z": 20.666257
+                  },
+                  "legacyProjectionAtVelocity": {
+                    "topspin": 60.367451,
+                    "sidespin": -20.666257
+                  }
+                },
+                "contact": {
+                  "type": "table",
+                  "phase": "after",
+                  "epsilon": 0.749671,
+                  "regime": {
+                    "topspin": "sliding",
+                    "sidespin": "rolling"
+                  }
+                }
+              },
+              {
+                "stage": "final-position",
+                "position": {
+                  "x": 0.122755,
+                  "y": 0.781,
+                  "z": 0.433315
+                },
+                "velocity": {
+                  "x": 0.413325,
+                  "y": 1.138473,
+                  "z": 4.153773
+                },
+                "acceleration": {
+                  "x": 1.392473301,
+                  "y": -0.676661907,
+                  "z": 0.046901165
+                },
+                "spin": {
+                  "schema": 1,
+                  "omega": {
+                    "x": 60.367451,
+                    "y": 125.66,
+                    "z": 20.666257
+                  },
+                  "axialSpin": 0,
+                  "resolvedOmegaAtVelocity": {
+                    "x": 60.367451,
+                    "y": 125.66,
+                    "z": 20.666257
+                  },
+                  "legacyProjectionAtVelocity": {
+                    "topspin": 60.367451,
+                    "sidespin": -20.666257
+                  }
+                },
+                "outcome": {
+                  "crossedNet": true,
+                  "bounces": 2,
+                  "netHit": true
+                }
+              }
+            ],
+            "net": {
+              "position": {
+                "x": 0.072012,
+                "y": 0.880596,
+                "z": 0
+              },
+              "clearance": -0.031904
+            },
+            "bounces": [
+              {
+                "number": 1,
+                "position": {
+                  "x": 0.013075,
+                  "y": 0.781,
+                  "z": -0.920237
+                },
+                "before": {
+                  "velocity": {
+                    "x": 0.212039,
+                    "y": -1.984167,
+                    "z": 4.995657
+                  },
+                  "spin": {
+                    "schema": 1,
+                    "omega": {
+                      "x": 0,
+                      "y": 125.66,
+                      "z": 0
+                    },
+                    "axialSpin": 0,
+                    "resolvedOmegaAtVelocity": {
+                      "x": 0,
+                      "y": 125.66,
+                      "z": 0
+                    },
+                    "legacyProjectionAtVelocity": {
+                      "topspin": 0,
+                      "sidespin": 0
+                    }
+                  }
+                },
+                "after": {
+                  "velocity": {
+                    "x": 0.127223,
+                    "y": 1.550264,
+                    "z": 4.536181
+                  },
+                  "spin": {
+                    "schema": 1,
+                    "omega": {
+                      "x": 34.460697,
+                      "y": 125.66,
+                      "z": 6.361159
+                    },
+                    "axialSpin": 0,
+                    "resolvedOmegaAtVelocity": {
+                      "x": 34.460697,
+                      "y": 125.66,
+                      "z": 6.361159
+                    },
+                    "legacyProjectionAtVelocity": {
+                      "topspin": 34.460697,
+                      "sidespin": -6.361159
+                    }
+                  }
+                },
+                "epsilon": 0.781317,
+                "regime": {
+                  "topspin": "sliding",
+                  "sidespin": "rolling"
+                }
+              },
+              {
+                "number": 2,
+                "position": {
+                  "x": 0.122755,
+                  "y": 0.781,
+                  "z": 0.433315
+                },
+                "before": {
+                  "velocity": {
+                    "x": 0.60406,
+                    "y": -1.51863,
+                    "z": 4.499196
+                  },
+                  "spin": {
+                    "schema": 1,
+                    "omega": {
+                      "x": 34.460697,
+                      "y": 125.66,
+                      "z": 6.361159
+                    },
+                    "axialSpin": 0,
+                    "resolvedOmegaAtVelocity": {
+                      "x": 34.460697,
+                      "y": 125.66,
+                      "z": 6.361159
+                    },
+                    "legacyProjectionAtVelocity": {
+                      "topspin": 34.460697,
+                      "sidespin": -6.361159
+                    }
+                  }
+                },
+                "after": {
+                  "velocity": {
+                    "x": 0.413325,
+                    "y": 1.138473,
+                    "z": 4.153773
+                  },
+                  "spin": {
+                    "schema": 1,
+                    "omega": {
+                      "x": 60.367451,
+                      "y": 125.66,
+                      "z": 20.666257
+                    },
+                    "axialSpin": 0,
+                    "resolvedOmegaAtVelocity": {
+                      "x": 60.367451,
+                      "y": 125.66,
+                      "z": 20.666257
+                    },
+                    "legacyProjectionAtVelocity": {
+                      "topspin": 60.367451,
+                      "sidespin": -20.666257
+                    }
+                  }
+                },
+                "epsilon": 0.749671,
+                "regime": {
+                  "topspin": "sliding",
+                  "sidespin": "rolling"
+                }
+              }
+            ],
+            "final": {
+              "stage": "final-position",
+              "position": {
+                "x": 0.122755,
+                "y": 0.781,
+                "z": 0.433315
+              },
+              "velocity": {
+                "x": 0.413325,
+                "y": 1.138473,
+                "z": 4.153773
+              },
+              "acceleration": {
+                "x": 1.392473301,
+                "y": -0.676661907,
+                "z": 0.046901165
+              },
+              "spin": {
+                "schema": 1,
+                "omega": {
+                  "x": 60.367451,
+                  "y": 125.66,
+                  "z": 20.666257
+                },
+                "axialSpin": 0,
+                "resolvedOmegaAtVelocity": {
+                  "x": 60.367451,
+                  "y": 125.66,
+                  "z": 20.666257
+                },
+                "legacyProjectionAtVelocity": {
+                  "topspin": 60.367451,
+                  "sidespin": -20.666257
+                }
+              },
+              "outcome": {
+                "crossedNet": true,
+                "bounces": 2,
+                "netHit": true
+              }
+            },
+            "finite": true,
+            "outcome": {
+              "crossedNet": true,
+              "bounces": 2,
+              "netHit": true
+            }
+          },
+          "metrics": {
+            "preFirstTableX": 0.013075,
+            "postFirstTableNetX": 0.072012,
+            "firstBounceX": 0.013075,
+            "secondBounceX": 0.122755
+          }
+        },
+        {
+          "case": "Y-",
+          "inputSpin": {
+            "schema": 1,
+            "omega": {
+              "x": 0,
+              "y": -125.66,
+              "z": 0
+            },
+            "axialSpin": 0
+          },
+          "trace": {
+            "units": {
+              "position": "m",
+              "velocity": "m/s",
+              "acceleration": "m/s²",
+              "omega": "rad/s"
+            },
+            "start": {
+              "x": 0,
+              "y": 0.95,
+              "z": -1.52
+            },
+            "observations": [
+              {
+                "stage": "initial-input",
+                "position": {
+                  "x": 0,
+                  "y": 0.95,
+                  "z": -1.52
+                },
+                "velocity": {
+                  "x": 0,
+                  "y": -0.8,
+                  "z": 5
+                },
+                "acceleration": {
+                  "x": -1.755275651,
+                  "y": 0,
+                  "z": 0
+                },
+                "spin": {
+                  "schema": 1,
+                  "omega": {
+                    "x": 0,
+                    "y": -125.66,
+                    "z": 0
+                  },
+                  "axialSpin": 0,
+                  "resolvedOmegaAtVelocity": {
+                    "x": 0,
+                    "y": -125.66,
+                    "z": 0
+                  },
+                  "legacyProjectionAtVelocity": {
+                    "topspin": 0,
+                    "sidespin": 0
+                  }
+                }
+              },
+              {
+                "stage": "table-bounce-1-before",
+                "position": {
+                  "x": -0.013075,
+                  "y": 0.781,
+                  "z": -0.920237
+                },
+                "velocity": {
+                  "x": -0.212039,
+                  "y": -1.984167,
+                  "z": 4.995657
+                },
+                "acceleration": {
+                  "x": -1.753751088,
+                  "y": 0,
+                  "z": -0.07443725
+                },
+                "spin": {
+                  "schema": 1,
+                  "omega": {
+                    "x": 0,
+                    "y": -125.66,
+                    "z": 0
+                  },
+                  "axialSpin": 0,
+                  "resolvedOmegaAtVelocity": {
+                    "x": 0,
+                    "y": -125.66,
+                    "z": 0
+                  },
+                  "legacyProjectionAtVelocity": {
+                    "topspin": 0,
+                    "sidespin": 0
+                  }
+                },
+                "contact": {
+                  "type": "table",
+                  "phase": "before",
+                  "resolvedOmega": {
+                    "x": 0,
+                    "y": -125.66,
+                    "z": 0
+                  },
+                  "epsilon": 0.781317,
+                  "regime": {
+                    "topspin": "sliding",
+                    "sidespin": "rolling"
+                  }
+                }
+              },
+              {
+                "stage": "table-bounce-1-after",
+                "position": {
+                  "x": -0.013075,
+                  "y": 0.781,
+                  "z": -0.920237
+                },
+                "velocity": {
+                  "x": -0.127223,
+                  "y": 1.550264,
+                  "z": 4.536181
+                },
+                "acceleration": {
+                  "x": -1.564899789,
+                  "y": -0.434448688,
+                  "z": 0.104585447
+                },
+                "spin": {
+                  "schema": 1,
+                  "omega": {
+                    "x": 34.460697,
+                    "y": -125.66,
+                    "z": -6.361159
+                  },
+                  "axialSpin": 0,
+                  "resolvedOmegaAtVelocity": {
+                    "x": 34.460697,
+                    "y": -125.66,
+                    "z": -6.361159
+                  },
+                  "legacyProjectionAtVelocity": {
+                    "topspin": 34.460697,
+                    "sidespin": 6.361159
+                  }
+                },
+                "contact": {
+                  "type": "table",
+                  "phase": "after",
+                  "epsilon": 0.781317,
+                  "regime": {
+                    "topspin": "sliding",
+                    "sidespin": "rolling"
+                  }
+                }
+              },
+              {
+                "stage": "net-crossing",
+                "position": {
+                  "x": -0.072012,
+                  "y": 0.880596,
+                  "z": 0
+                },
+                "velocity": {
+                  "x": -0.450466,
+                  "y": -0.538705,
+                  "z": 4.526114
+                },
+                "acceleration": {
+                  "x": -1.598489092,
+                  "y": -0.427735144,
+                  "z": -0.21000105
+                },
+                "spin": {
+                  "schema": 1,
+                  "omega": {
+                    "x": 34.460697,
+                    "y": -125.66,
+                    "z": -6.361159
+                  },
+                  "axialSpin": 0,
+                  "resolvedOmegaAtVelocity": {
+                    "x": 34.460697,
+                    "y": -125.66,
+                    "z": -6.361159
+                  },
+                  "legacyProjectionAtVelocity": {
+                    "topspin": 34.460697,
+                    "sidespin": 6.361159
+                  }
+                },
+                "crossingStep": 77,
+                "clearance": -0.031904
+              },
+              {
+                "stage": "table-bounce-2-before",
+                "position": {
+                  "x": -0.122755,
+                  "y": 0.781,
+                  "z": 0.433315
+                },
+                "velocity": {
+                  "x": -0.60406,
+                  "y": -1.51863,
+                  "z": 4.499196
+                },
+                "acceleration": {
+                  "x": -1.606453549,
+                  "y": -0.422414101,
+                  "z": -0.358260657
+                },
+                "spin": {
+                  "schema": 1,
+                  "omega": {
+                    "x": 34.460697,
+                    "y": -125.66,
+                    "z": -6.361159
+                  },
+                  "axialSpin": 0,
+                  "resolvedOmegaAtVelocity": {
+                    "x": 34.460697,
+                    "y": -125.66,
+                    "z": -6.361159
+                  },
+                  "legacyProjectionAtVelocity": {
+                    "topspin": 34.460697,
+                    "sidespin": 6.361159
+                  }
+                },
+                "contact": {
+                  "type": "table",
+                  "phase": "before",
+                  "resolvedOmega": {
+                    "x": 34.460697,
+                    "y": -125.66,
+                    "z": -6.361159
+                  },
+                  "epsilon": 0.749671,
+                  "regime": {
+                    "topspin": "sliding",
+                    "sidespin": "rolling"
+                  }
+                }
+              },
+              {
+                "stage": "table-bounce-2-after",
+                "position": {
+                  "x": -0.122755,
+                  "y": 0.781,
+                  "z": 0.433315
+                },
+                "velocity": {
+                  "x": -0.413325,
+                  "y": 1.138473,
+                  "z": 4.153773
+                },
+                "acceleration": {
+                  "x": -1.392473301,
+                  "y": -0.676661907,
+                  "z": 0.046901165
+                },
+                "spin": {
+                  "schema": 1,
+                  "omega": {
+                    "x": 60.367451,
+                    "y": -125.66,
+                    "z": -20.666257
+                  },
+                  "axialSpin": 0,
+                  "resolvedOmegaAtVelocity": {
+                    "x": 60.367451,
+                    "y": -125.66,
+                    "z": -20.666257
+                  },
+                  "legacyProjectionAtVelocity": {
+                    "topspin": 60.367451,
+                    "sidespin": 20.666257
+                  }
+                },
+                "contact": {
+                  "type": "table",
+                  "phase": "after",
+                  "epsilon": 0.749671,
+                  "regime": {
+                    "topspin": "sliding",
+                    "sidespin": "rolling"
+                  }
+                }
+              },
+              {
+                "stage": "final-position",
+                "position": {
+                  "x": -0.122755,
+                  "y": 0.781,
+                  "z": 0.433315
+                },
+                "velocity": {
+                  "x": -0.413325,
+                  "y": 1.138473,
+                  "z": 4.153773
+                },
+                "acceleration": {
+                  "x": -1.392473301,
+                  "y": -0.676661907,
+                  "z": 0.046901165
+                },
+                "spin": {
+                  "schema": 1,
+                  "omega": {
+                    "x": 60.367451,
+                    "y": -125.66,
+                    "z": -20.666257
+                  },
+                  "axialSpin": 0,
+                  "resolvedOmegaAtVelocity": {
+                    "x": 60.367451,
+                    "y": -125.66,
+                    "z": -20.666257
+                  },
+                  "legacyProjectionAtVelocity": {
+                    "topspin": 60.367451,
+                    "sidespin": 20.666257
+                  }
+                },
+                "outcome": {
+                  "crossedNet": true,
+                  "bounces": 2,
+                  "netHit": true
+                }
+              }
+            ],
+            "net": {
+              "position": {
+                "x": -0.072012,
+                "y": 0.880596,
+                "z": 0
+              },
+              "clearance": -0.031904
+            },
+            "bounces": [
+              {
+                "number": 1,
+                "position": {
+                  "x": -0.013075,
+                  "y": 0.781,
+                  "z": -0.920237
+                },
+                "before": {
+                  "velocity": {
+                    "x": -0.212039,
+                    "y": -1.984167,
+                    "z": 4.995657
+                  },
+                  "spin": {
+                    "schema": 1,
+                    "omega": {
+                      "x": 0,
+                      "y": -125.66,
+                      "z": 0
+                    },
+                    "axialSpin": 0,
+                    "resolvedOmegaAtVelocity": {
+                      "x": 0,
+                      "y": -125.66,
+                      "z": 0
+                    },
+                    "legacyProjectionAtVelocity": {
+                      "topspin": 0,
+                      "sidespin": 0
+                    }
+                  }
+                },
+                "after": {
+                  "velocity": {
+                    "x": -0.127223,
+                    "y": 1.550264,
+                    "z": 4.536181
+                  },
+                  "spin": {
+                    "schema": 1,
+                    "omega": {
+                      "x": 34.460697,
+                      "y": -125.66,
+                      "z": -6.361159
+                    },
+                    "axialSpin": 0,
+                    "resolvedOmegaAtVelocity": {
+                      "x": 34.460697,
+                      "y": -125.66,
+                      "z": -6.361159
+                    },
+                    "legacyProjectionAtVelocity": {
+                      "topspin": 34.460697,
+                      "sidespin": 6.361159
+                    }
+                  }
+                },
+                "epsilon": 0.781317,
+                "regime": {
+                  "topspin": "sliding",
+                  "sidespin": "rolling"
+                }
+              },
+              {
+                "number": 2,
+                "position": {
+                  "x": -0.122755,
+                  "y": 0.781,
+                  "z": 0.433315
+                },
+                "before": {
+                  "velocity": {
+                    "x": -0.60406,
+                    "y": -1.51863,
+                    "z": 4.499196
+                  },
+                  "spin": {
+                    "schema": 1,
+                    "omega": {
+                      "x": 34.460697,
+                      "y": -125.66,
+                      "z": -6.361159
+                    },
+                    "axialSpin": 0,
+                    "resolvedOmegaAtVelocity": {
+                      "x": 34.460697,
+                      "y": -125.66,
+                      "z": -6.361159
+                    },
+                    "legacyProjectionAtVelocity": {
+                      "topspin": 34.460697,
+                      "sidespin": 6.361159
+                    }
+                  }
+                },
+                "after": {
+                  "velocity": {
+                    "x": -0.413325,
+                    "y": 1.138473,
+                    "z": 4.153773
+                  },
+                  "spin": {
+                    "schema": 1,
+                    "omega": {
+                      "x": 60.367451,
+                      "y": -125.66,
+                      "z": -20.666257
+                    },
+                    "axialSpin": 0,
+                    "resolvedOmegaAtVelocity": {
+                      "x": 60.367451,
+                      "y": -125.66,
+                      "z": -20.666257
+                    },
+                    "legacyProjectionAtVelocity": {
+                      "topspin": 60.367451,
+                      "sidespin": 20.666257
+                    }
+                  }
+                },
+                "epsilon": 0.749671,
+                "regime": {
+                  "topspin": "sliding",
+                  "sidespin": "rolling"
+                }
+              }
+            ],
+            "final": {
+              "stage": "final-position",
+              "position": {
+                "x": -0.122755,
+                "y": 0.781,
+                "z": 0.433315
+              },
+              "velocity": {
+                "x": -0.413325,
+                "y": 1.138473,
+                "z": 4.153773
+              },
+              "acceleration": {
+                "x": -1.392473301,
+                "y": -0.676661907,
+                "z": 0.046901165
+              },
+              "spin": {
+                "schema": 1,
+                "omega": {
+                  "x": 60.367451,
+                  "y": -125.66,
+                  "z": -20.666257
+                },
+                "axialSpin": 0,
+                "resolvedOmegaAtVelocity": {
+                  "x": 60.367451,
+                  "y": -125.66,
+                  "z": -20.666257
+                },
+                "legacyProjectionAtVelocity": {
+                  "topspin": 60.367451,
+                  "sidespin": 20.666257
+                }
+              },
+              "outcome": {
+                "crossedNet": true,
+                "bounces": 2,
+                "netHit": true
+              }
+            },
+            "finite": true,
+            "outcome": {
+              "crossedNet": true,
+              "bounces": 2,
+              "netHit": true
+            }
+          },
+          "metrics": {
+            "preFirstTableX": -0.013075,
+            "postFirstTableNetX": -0.072012,
+            "firstBounceX": -0.013075,
+            "secondBounceX": -0.122755
+          }
+        }
+      ],
+      "stage4aReturn": {
+        "fixedInput": {
+          "position": {
+            "x": 0.1,
+            "y": 0.9,
+            "z": 0.6
+          },
+          "velocity": {
+            "x": 0.2,
+            "y": -2.5,
+            "z": 3
+          },
+          "gravity": -4.2
+        },
+        "contactParameters": {
+          "lift": 0.239734,
+          "drive": 0.368735,
+          "blend": 0.605
+        },
+        "rows": [
+          {
+            "case": "Z0",
+            "inputSpin": {
+              "schema": 1,
+              "omega": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "axialSpin": 0
+            },
+            "contactParameters": {
+              "lift": 0.239734,
+              "drive": 0.368735,
+              "techVelocity": {
+                "x": 0,
+                "y": 0.239734,
+                "z": -0.368735
+              },
+              "racketNormal": {
+                "x": 0,
+                "y": 0.707107,
+                "z": -0.707107
+              },
+              "epsilon": 0.86521,
+              "blend": 0.605,
+              "aimedX": 0.2,
+              "planeVelocity": {
+                "x": 0.2,
+                "y": 0.239734,
+                "z": -0.368735
+              }
+            },
+            "observations": [
+              {
+                "stage": "stage4a-contact-before",
+                "position": {
+                  "x": 0.1,
+                  "y": 0.9,
+                  "z": 0.6
+                },
+                "velocity": {
+                  "x": 0.305505,
+                  "y": -3.818813,
+                  "z": 4.582576
+                },
+                "acceleration": {
+                  "x": 0,
+                  "y": 0,
+                  "z": 0
+                },
+                "spin": {
+                  "schema": 1,
+                  "omega": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0
+                  },
+                  "axialSpin": 0,
+                  "resolvedOmegaAtVelocity": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0
+                  },
+                  "legacyProjectionAtVelocity": {
+                    "topspin": 0,
+                    "sidespin": 0
+                  }
+                },
+                "units": {
+                  "position": "m",
+                  "velocity": "m/s(real)",
+                  "omega": "rad/s(real)"
+                },
+                "contact": {
+                  "type": "racket",
+                  "phase": "before"
+                }
+              },
+              {
+                "stage": "stage4a-contact-after",
+                "position": {
+                  "x": 0.1,
+                  "y": 0.9,
+                  "z": 0.6
+                },
+                "velocity": {
+                  "x": 0.305505,
+                  "y": 4.258875,
+                  "z": -4.727108
+                },
+                "acceleration": {
+                  "x": 0,
+                  "y": 0.105697833,
+                  "z": 0.09522819
+                },
+                "spin": {
+                  "schema": 1,
+                  "omega": {
+                    "x": 8.003728,
+                    "y": 0,
+                    "z": 0
+                  },
+                  "axialSpin": 0,
+                  "resolvedOmegaAtVelocity": {
+                    "x": 8.003728,
+                    "y": 0,
+                    "z": 0
+                  },
+                  "legacyProjectionAtVelocity": {
+                    "topspin": 8.003728,
+                    "sidespin": 0
+                  }
+                },
+                "units": {
+                  "position": "m",
+                  "velocity": "m/s(real)",
+                  "omega": "rad/s(real)"
+                },
+                "contact": {
+                  "type": "racket",
+                  "phase": "after",
+                  "planeVelocitySimulation": {
+                    "x": 0.2,
+                    "y": 0.239734,
+                    "z": -0.368735
+                  },
+                  "effectiveNormal": null,
+                  "dwellMs": 5.44,
+                  "effectiveEpsilon": -0.960016
+                }
+              }
+            ],
+            "postContactFlight": {
+              "units": {
+                "position": "m",
+                "velocity": "m/s",
+                "acceleration": "m/s²",
+                "omega": "rad/s"
+              },
+              "start": {
+                "x": 0.1,
+                "y": 0.9,
+                "z": 0.6
+              },
+              "observations": [
+                {
+                  "stage": "initial-input",
+                  "position": {
+                    "x": 0.1,
+                    "y": 0.9,
+                    "z": 0.6
+                  },
+                  "velocity": {
+                    "x": 0.305505,
+                    "y": 4.258875,
+                    "z": -4.727108
+                  },
+                  "acceleration": {
+                    "x": 0,
+                    "y": 0.105697833,
+                    "z": 0.09522819
+                  },
+                  "spin": {
+                    "schema": 1,
+                    "omega": {
+                      "x": 8.003728,
+                      "y": 0,
+                      "z": 0
+                    },
+                    "axialSpin": 0,
+                    "resolvedOmegaAtVelocity": {
+                      "x": 8.003728,
+                      "y": 0,
+                      "z": 0
+                    },
+                    "legacyProjectionAtVelocity": {
+                      "topspin": 8.003728,
+                      "sidespin": 0
+                    }
+                  }
+                },
+                {
+                  "stage": "final-position",
+                  "position": {
+                    "x": 0.42078,
+                    "y": 0.006462,
+                    "z": -4.352583
+                  },
+                  "velocity": {
+                    "x": 0.305505,
+                    "y": -5.920387,
+                    "z": -4.746139
+                  },
+                  "acceleration": {
+                    "x": 0,
+                    "y": 0.106123367,
+                    "z": -0.13237948
+                  },
+                  "spin": {
+                    "schema": 1,
+                    "omega": {
+                      "x": 8.003728,
+                      "y": 0,
+                      "z": 0
+                    },
+                    "axialSpin": 0,
+                    "resolvedOmegaAtVelocity": {
+                      "x": 8.003728,
+                      "y": 0,
+                      "z": 0
+                    },
+                    "legacyProjectionAtVelocity": {
+                      "topspin": 8.003728,
+                      "sidespin": 0
+                    }
+                  },
+                  "outcome": {
+                    "crossedNet": false,
+                    "bounces": 0,
+                    "netHit": false
+                  }
+                }
+              ],
+              "net": null,
+              "bounces": [],
+              "final": {
+                "stage": "final-position",
+                "position": {
+                  "x": 0.42078,
+                  "y": 0.006462,
+                  "z": -4.352583
+                },
+                "velocity": {
+                  "x": 0.305505,
+                  "y": -5.920387,
+                  "z": -4.746139
+                },
+                "acceleration": {
+                  "x": 0,
+                  "y": 0.106123367,
+                  "z": -0.13237948
+                },
+                "spin": {
+                  "schema": 1,
+                  "omega": {
+                    "x": 8.003728,
+                    "y": 0,
+                    "z": 0
+                  },
+                  "axialSpin": 0,
+                  "resolvedOmegaAtVelocity": {
+                    "x": 8.003728,
+                    "y": 0,
+                    "z": 0
+                  },
+                  "legacyProjectionAtVelocity": {
+                    "topspin": 8.003728,
+                    "sidespin": 0
+                  }
+                },
+                "outcome": {
+                  "crossedNet": false,
+                  "bounces": 0,
+                  "netHit": false
+                }
+              },
+              "finite": true,
+              "outcome": {
+                "crossedNet": false,
+                "bounces": 0,
+                "netHit": false
+              }
+            },
+            "metrics": {
+              "postContactNetX": null,
+              "postContactFirstBounceX": null,
+              "postContactSecondBounceX": null
+            },
+            "finite": true
+          },
+          {
+            "case": "AX+",
+            "inputSpin": {
+              "schema": 1,
+              "omega": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "axialSpin": 125.66
+            },
+            "contactParameters": {
+              "lift": 0.239734,
+              "drive": 0.368735,
+              "techVelocity": {
+                "x": 0,
+                "y": 0.239734,
+                "z": -0.368735
+              },
+              "racketNormal": {
+                "x": 0,
+                "y": 0.707107,
+                "z": -0.707107
+              },
+              "epsilon": 0.86521,
+              "blend": 0.605,
+              "aimedX": -7.408752,
+              "planeVelocity": {
+                "x": -7.408752,
+                "y": 0.239734,
+                "z": -0.368735
+              }
+            },
+            "observations": [
+              {
+                "stage": "stage4a-contact-before",
+                "position": {
+                  "x": 0.1,
+                  "y": 0.9,
+                  "z": 0.6
+                },
+                "velocity": {
+                  "x": 0.305505,
+                  "y": -3.818813,
+                  "z": 4.582576
+                },
+                "acceleration": {
+                  "x": 0,
+                  "y": 0,
+                  "z": 0
+                },
+                "spin": {
+                  "schema": 1,
+                  "omega": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0
+                  },
+                  "axialSpin": 191.948821,
+                  "resolvedOmegaAtVelocity": {
+                    "x": 9.817744,
+                    "y": -122.721799,
+                    "z": 147.266159
+                  },
+                  "legacyProjectionAtVelocity": {
+                    "topspin": 9.817744,
+                    "sidespin": -147.266159
+                  }
+                },
+                "units": {
+                  "position": "m",
+                  "velocity": "m/s(real)",
+                  "omega": "rad/s(real)"
+                },
+                "contact": {
+                  "type": "racket",
+                  "phase": "before"
+                }
+              },
+              {
+                "stage": "stage4a-contact-after",
+                "position": {
+                  "x": 0.1,
+                  "y": 0.9,
+                  "z": 0.6
+                },
+                "velocity": {
+                  "x": -4.144565,
+                  "y": 5.212906,
+                  "z": -3.88474
+                },
+                "acceleration": {
+                  "x": 5.508867764,
+                  "y": 2.563370669,
+                  "z": -2.43755062
+                },
+                "spin": {
+                  "schema": 1,
+                  "omega": {
+                    "x": 79.263247,
+                    "y": -310.216358,
+                    "z": -147.093875
+                  },
+                  "axialSpin": 191.948821,
+                  "resolvedOmegaAtVelocity": {
+                    "x": -23.921142,
+                    "y": -180.434209,
+                    "z": -243.80957
+                  },
+                  "legacyProjectionAtVelocity": {
+                    "topspin": -23.921142,
+                    "sidespin": 243.80957
+                  }
+                },
+                "units": {
+                  "position": "m",
+                  "velocity": "m/s(real)",
+                  "omega": "rad/s(real)"
+                },
+                "contact": {
+                  "type": "racket",
+                  "phase": "after",
+                  "planeVelocitySimulation": {
+                    "x": -7.408752,
+                    "y": 0.239734,
+                    "z": -0.368735
+                  },
+                  "effectiveNormal": null,
+                  "dwellMs": 5.44,
+                  "effectiveEpsilon": -0.960016
+                }
+              }
+            ],
+            "postContactFlight": {
+              "units": {
+                "position": "m",
+                "velocity": "m/s",
+                "acceleration": "m/s²",
+                "omega": "rad/s"
+              },
+              "start": {
+                "x": 0.1,
+                "y": 0.9,
+                "z": 0.6
+              },
+              "observations": [
+                {
+                  "stage": "initial-input",
+                  "position": {
+                    "x": 0.1,
+                    "y": 0.9,
+                    "z": 0.6
+                  },
+                  "velocity": {
+                    "x": -4.144565,
+                    "y": 5.212906,
+                    "z": -3.88474
+                  },
+                  "acceleration": {
+                    "x": 5.508867764,
+                    "y": 2.563370669,
+                    "z": -2.43755062
+                  },
+                  "spin": {
+                    "schema": 1,
+                    "omega": {
+                      "x": 79.263247,
+                      "y": -310.216358,
+                      "z": -147.093875
+                    },
+                    "axialSpin": 191.948821,
+                    "resolvedOmegaAtVelocity": {
+                      "x": -23.921142,
+                      "y": -180.434209,
+                      "z": -243.80957
+                    },
+                    "legacyProjectionAtVelocity": {
+                      "topspin": -23.921142,
+                      "sidespin": 243.80957
+                    }
+                  }
+                },
+                {
+                  "stage": "final-position",
+                  "position": {
+                    "x": -1.0962,
+                    "y": 0.006586,
+                    "z": -6.317447
+                  },
+                  "velocity": {
+                    "x": 1.499586,
+                    "y": -6.924405,
+                    "z": -5.128442
+                  },
+                  "acceleration": {
+                    "x": 1.599077933,
+                    "y": 0.519394656,
+                    "z": -0.233705239
+                  },
+                  "spin": {
+                    "schema": 1,
+                    "omega": {
+                      "x": 79.263247,
+                      "y": -310.216358,
+                      "z": -147.093875
+                    },
+                    "axialSpin": 191.948821,
+                    "resolvedOmegaAtVelocity": {
+                      "x": 112.173748,
+                      "y": -462.182042,
+                      "z": -259.644662
+                    },
+                    "legacyProjectionAtVelocity": {
+                      "topspin": 112.173748,
+                      "sidespin": 259.644662
+                    }
+                  },
+                  "outcome": {
+                    "crossedNet": false,
+                    "bounces": 0,
+                    "netHit": false
+                  }
+                }
+              ],
+              "net": null,
+              "bounces": [],
+              "final": {
+                "stage": "final-position",
+                "position": {
+                  "x": -1.0962,
+                  "y": 0.006586,
+                  "z": -6.317447
+                },
+                "velocity": {
+                  "x": 1.499586,
+                  "y": -6.924405,
+                  "z": -5.128442
+                },
+                "acceleration": {
+                  "x": 1.599077933,
+                  "y": 0.519394656,
+                  "z": -0.233705239
+                },
+                "spin": {
+                  "schema": 1,
+                  "omega": {
+                    "x": 79.263247,
+                    "y": -310.216358,
+                    "z": -147.093875
+                  },
+                  "axialSpin": 191.948821,
+                  "resolvedOmegaAtVelocity": {
+                    "x": 112.173748,
+                    "y": -462.182042,
+                    "z": -259.644662
+                  },
+                  "legacyProjectionAtVelocity": {
+                    "topspin": 112.173748,
+                    "sidespin": 259.644662
+                  }
+                },
+                "outcome": {
+                  "crossedNet": false,
+                  "bounces": 0,
+                  "netHit": false
+                }
+              },
+              "finite": true,
+              "outcome": {
+                "crossedNet": false,
+                "bounces": 0,
+                "netHit": false
+              }
+            },
+            "metrics": {
+              "postContactNetX": null,
+              "postContactFirstBounceX": null,
+              "postContactSecondBounceX": null
+            },
+            "finite": true
+          },
+          {
+            "case": "Y+",
+            "inputSpin": {
+              "schema": 1,
+              "omega": {
+                "x": 0,
+                "y": 125.66,
+                "z": 0
+              },
+              "axialSpin": 0
+            },
+            "contactParameters": {
+              "lift": 0.239734,
+              "drive": 0.368735,
+              "techVelocity": {
+                "x": 0,
+                "y": 0.239734,
+                "z": -0.368735
+              },
+              "racketNormal": {
+                "x": 0,
+                "y": 0.707107,
+                "z": -0.707107
+              },
+              "epsilon": 0.86521,
+              "blend": 0.605,
+              "aimedX": 12.100827,
+              "planeVelocity": {
+                "x": 12.100827,
+                "y": 0.239734,
+                "z": -0.368735
+              }
+            },
+            "observations": [
+              {
+                "stage": "stage4a-contact-before",
+                "position": {
+                  "x": 0.1,
+                  "y": 0.9,
+                  "z": 0.6
+                },
+                "velocity": {
+                  "x": 0.305505,
+                  "y": -3.818813,
+                  "z": 4.582576
+                },
+                "acceleration": {
+                  "x": 2.457385911,
+                  "y": 0,
+                  "z": -0.163825727
+                },
+                "spin": {
+                  "schema": 1,
+                  "omega": {
+                    "x": 0,
+                    "y": 191.948821,
+                    "z": 0
+                  },
+                  "axialSpin": 0,
+                  "resolvedOmegaAtVelocity": {
+                    "x": 0,
+                    "y": 191.948821,
+                    "z": 0
+                  },
+                  "legacyProjectionAtVelocity": {
+                    "topspin": 0,
+                    "sidespin": 0
+                  }
+                },
+                "units": {
+                  "position": "m",
+                  "velocity": "m/s(real)",
+                  "omega": "rad/s(real)"
+                },
+                "contact": {
+                  "type": "racket",
+                  "phase": "before"
+                }
+              },
+              {
+                "stage": "stage4a-contact-after",
+                "position": {
+                  "x": 0.1,
+                  "y": 0.9,
+                  "z": 0.6
+                },
+                "velocity": {
+                  "x": 5.247218,
+                  "y": 4.273805,
+                  "z": -4.713926
+                },
+                "acceleration": {
+                  "x": -9.115533722,
+                  "y": 3.681758372,
+                  "z": -6.808777662
+                },
+                "spin": {
+                  "schema": 1,
+                  "omega": {
+                    "x": 6.510021,
+                    "y": 469.776775,
+                    "z": 245.310148
+                  },
+                  "axialSpin": 0,
+                  "resolvedOmegaAtVelocity": {
+                    "x": 6.510021,
+                    "y": 469.776775,
+                    "z": 245.310148
+                  },
+                  "legacyProjectionAtVelocity": {
+                    "topspin": 6.510021,
+                    "sidespin": -245.310148
+                  }
+                },
+                "units": {
+                  "position": "m",
+                  "velocity": "m/s(real)",
+                  "omega": "rad/s(real)"
+                },
+                "contact": {
+                  "type": "racket",
+                  "phase": "after",
+                  "planeVelocitySimulation": {
+                    "x": 12.100827,
+                    "y": 0.239734,
+                    "z": -0.368735
+                  },
+                  "effectiveNormal": null,
+                  "dwellMs": 5.44,
+                  "effectiveEpsilon": -0.960016
+                }
+              }
+            ],
+            "postContactFlight": {
+              "units": {
+                "position": "m",
+                "velocity": "m/s",
+                "acceleration": "m/s²",
+                "omega": "rad/s"
+              },
+              "start": {
+                "x": 0.1,
+                "y": 0.9,
+                "z": 0.6
+              },
+              "observations": [
+                {
+                  "stage": "initial-input",
+                  "position": {
+                    "x": 0.1,
+                    "y": 0.9,
+                    "z": 0.6
+                  },
+                  "velocity": {
+                    "x": 5.247218,
+                    "y": 4.273805,
+                    "z": -4.713926
+                  },
+                  "acceleration": {
+                    "x": -9.115533722,
+                    "y": 3.681758372,
+                    "z": -6.808777662
+                  },
+                  "spin": {
+                    "schema": 1,
+                    "omega": {
+                      "x": 6.510021,
+                      "y": 469.776775,
+                      "z": 245.310148
+                    },
+                    "axialSpin": 0,
+                    "resolvedOmegaAtVelocity": {
+                      "x": 6.510021,
+                      "y": 469.776775,
+                      "z": 245.310148
+                    },
+                    "legacyProjectionAtVelocity": {
+                      "topspin": 6.510021,
+                      "sidespin": -245.310148
+                    }
+                  }
+                },
+                {
+                  "stage": "final-position",
+                  "position": {
+                    "x": 0.258089,
+                    "y": 0.009563,
+                    "z": -6.458721
+                  },
+                  "velocity": {
+                    "x": -3.437146,
+                    "y": -6.979699,
+                    "z": -4.984235
+                  },
+                  "acceleration": {
+                    "x": -1.758032183,
+                    "y": -2.264898584,
+                    "z": 4.384007708
+                  },
+                  "spin": {
+                    "schema": 1,
+                    "omega": {
+                      "x": 6.510021,
+                      "y": 469.776775,
+                      "z": 245.310148
+                    },
+                    "axialSpin": 0,
+                    "resolvedOmegaAtVelocity": {
+                      "x": 6.510021,
+                      "y": 469.776775,
+                      "z": 245.310148
+                    },
+                    "legacyProjectionAtVelocity": {
+                      "topspin": 6.510021,
+                      "sidespin": -245.310148
+                    }
+                  },
+                  "outcome": {
+                    "crossedNet": false,
+                    "bounces": 0,
+                    "netHit": false
+                  }
+                }
+              ],
+              "net": null,
+              "bounces": [],
+              "final": {
+                "stage": "final-position",
+                "position": {
+                  "x": 0.258089,
+                  "y": 0.009563,
+                  "z": -6.458721
+                },
+                "velocity": {
+                  "x": -3.437146,
+                  "y": -6.979699,
+                  "z": -4.984235
+                },
+                "acceleration": {
+                  "x": -1.758032183,
+                  "y": -2.264898584,
+                  "z": 4.384007708
+                },
+                "spin": {
+                  "schema": 1,
+                  "omega": {
+                    "x": 6.510021,
+                    "y": 469.776775,
+                    "z": 245.310148
+                  },
+                  "axialSpin": 0,
+                  "resolvedOmegaAtVelocity": {
+                    "x": 6.510021,
+                    "y": 469.776775,
+                    "z": 245.310148
+                  },
+                  "legacyProjectionAtVelocity": {
+                    "topspin": 6.510021,
+                    "sidespin": -245.310148
+                  }
+                },
+                "outcome": {
+                  "crossedNet": false,
+                  "bounces": 0,
+                  "netHit": false
+                }
+              },
+              "finite": true,
+              "outcome": {
+                "crossedNet": false,
+                "bounces": 0,
+                "netHit": false
+              }
+            },
+            "metrics": {
+              "postContactNetX": null,
+              "postContactFirstBounceX": null,
+              "postContactSecondBounceX": null
+            },
+            "finite": true
+          },
+          {
+            "case": "Y-",
+            "inputSpin": {
+              "schema": 1,
+              "omega": {
+                "x": 0,
+                "y": -125.66,
+                "z": 0
+              },
+              "axialSpin": 0
+            },
+            "contactParameters": {
+              "lift": 0.239734,
+              "drive": 0.368735,
+              "techVelocity": {
+                "x": 0,
+                "y": 0.239734,
+                "z": -0.368735
+              },
+              "racketNormal": {
+                "x": 0,
+                "y": 0.707107,
+                "z": -0.707107
+              },
+              "epsilon": 0.86521,
+              "blend": 0.605,
+              "aimedX": -11.700827,
+              "planeVelocity": {
+                "x": -11.700827,
+                "y": 0.239734,
+                "z": -0.368735
+              }
+            },
+            "observations": [
+              {
+                "stage": "stage4a-contact-before",
+                "position": {
+                  "x": 0.1,
+                  "y": 0.9,
+                  "z": 0.6
+                },
+                "velocity": {
+                  "x": 0.305505,
+                  "y": -3.818813,
+                  "z": 4.582576
+                },
+                "acceleration": {
+                  "x": -2.457385911,
+                  "y": 0,
+                  "z": 0.163825727
+                },
+                "spin": {
+                  "schema": 1,
+                  "omega": {
+                    "x": 0,
+                    "y": -191.948821,
+                    "z": 0
+                  },
+                  "axialSpin": 0,
+                  "resolvedOmegaAtVelocity": {
+                    "x": 0,
+                    "y": -191.948821,
+                    "z": 0
+                  },
+                  "legacyProjectionAtVelocity": {
+                    "topspin": 0,
+                    "sidespin": 0
+                  }
+                },
+                "units": {
+                  "position": "m",
+                  "velocity": "m/s(real)",
+                  "omega": "rad/s(real)"
+                },
+                "contact": {
+                  "type": "racket",
+                  "phase": "before"
+                }
+              },
+              {
+                "stage": "stage4a-contact-after",
+                "position": {
+                  "x": 0.1,
+                  "y": 0.9,
+                  "z": 0.6
+                },
+                "velocity": {
+                  "x": -4.636207,
+                  "y": 4.273805,
+                  "z": -4.713926
+                },
+                "acceleration": {
+                  "x": 9.115533722,
+                  "y": 3.263020572,
+                  "z": -6.006881389
+                },
+                "spin": {
+                  "schema": 1,
+                  "omega": {
+                    "x": 6.510021,
+                    "y": -469.776775,
+                    "z": -245.310148
+                  },
+                  "axialSpin": 0,
+                  "resolvedOmegaAtVelocity": {
+                    "x": 6.510021,
+                    "y": -469.776775,
+                    "z": -245.310148
+                  },
+                  "legacyProjectionAtVelocity": {
+                    "topspin": 6.510021,
+                    "sidespin": 245.310148
+                  }
+                },
+                "units": {
+                  "position": "m",
+                  "velocity": "m/s(real)",
+                  "omega": "rad/s(real)"
+                },
+                "contact": {
+                  "type": "racket",
+                  "phase": "after",
+                  "planeVelocitySimulation": {
+                    "x": -11.700827,
+                    "y": 0.239734,
+                    "z": -0.368735
+                  },
+                  "effectiveNormal": null,
+                  "dwellMs": 5.44,
+                  "effectiveEpsilon": -0.960016
+                }
+              }
+            ],
+            "postContactFlight": {
+              "units": {
+                "position": "m",
+                "velocity": "m/s",
+                "acceleration": "m/s²",
+                "omega": "rad/s"
+              },
+              "start": {
+                "x": 0.1,
+                "y": 0.9,
+                "z": 0.6
+              },
+              "observations": [
+                {
+                  "stage": "initial-input",
+                  "position": {
+                    "x": 0.1,
+                    "y": 0.9,
+                    "z": 0.6
+                  },
+                  "velocity": {
+                    "x": -4.636207,
+                    "y": 4.273805,
+                    "z": -4.713926
+                  },
+                  "acceleration": {
+                    "x": 9.115533722,
+                    "y": 3.263020572,
+                    "z": -6.006881389
+                  },
+                  "spin": {
+                    "schema": 1,
+                    "omega": {
+                      "x": 6.510021,
+                      "y": -469.776775,
+                      "z": -245.310148
+                    },
+                    "axialSpin": 0,
+                    "resolvedOmegaAtVelocity": {
+                      "x": 6.510021,
+                      "y": -469.776775,
+                      "z": -245.310148
+                    },
+                    "legacyProjectionAtVelocity": {
+                      "topspin": 6.510021,
+                      "sidespin": 245.310148
+                    }
+                  }
+                },
+                {
+                  "stage": "final-position",
+                  "position": {
+                    "x": 0.237319,
+                    "y": 0.01814,
+                    "z": -5.880213
+                  },
+                  "velocity": {
+                    "x": 3.296618,
+                    "y": -6.868119,
+                    "z": -4.592281
+                  },
+                  "acceleration": {
+                    "x": 1.320096084,
+                    "y": -2.175720809,
+                    "z": 4.201607505
+                  },
+                  "spin": {
+                    "schema": 1,
+                    "omega": {
+                      "x": 6.510021,
+                      "y": -469.776775,
+                      "z": -245.310148
+                    },
+                    "axialSpin": 0,
+                    "resolvedOmegaAtVelocity": {
+                      "x": 6.510021,
+                      "y": -469.776775,
+                      "z": -245.310148
+                    },
+                    "legacyProjectionAtVelocity": {
+                      "topspin": 6.510021,
+                      "sidespin": 245.310148
+                    }
+                  },
+                  "outcome": {
+                    "crossedNet": false,
+                    "bounces": 0,
+                    "netHit": false
+                  }
+                }
+              ],
+              "net": null,
+              "bounces": [],
+              "final": {
+                "stage": "final-position",
+                "position": {
+                  "x": 0.237319,
+                  "y": 0.01814,
+                  "z": -5.880213
+                },
+                "velocity": {
+                  "x": 3.296618,
+                  "y": -6.868119,
+                  "z": -4.592281
+                },
+                "acceleration": {
+                  "x": 1.320096084,
+                  "y": -2.175720809,
+                  "z": 4.201607505
+                },
+                "spin": {
+                  "schema": 1,
+                  "omega": {
+                    "x": 6.510021,
+                    "y": -469.776775,
+                    "z": -245.310148
+                  },
+                  "axialSpin": 0,
+                  "resolvedOmegaAtVelocity": {
+                    "x": 6.510021,
+                    "y": -469.776775,
+                    "z": -245.310148
+                  },
+                  "legacyProjectionAtVelocity": {
+                    "topspin": 6.510021,
+                    "sidespin": 245.310148
+                  }
+                },
+                "outcome": {
+                  "crossedNet": false,
+                  "bounces": 0,
+                  "netHit": false
+                }
+              },
+              "finite": true,
+              "outcome": {
+                "crossedNet": false,
+                "bounces": 0,
+                "netHit": false
+              }
+            },
+            "metrics": {
+              "postContactNetX": null,
+              "postContactFirstBounceX": null,
+              "postContactSecondBounceX": null
+            },
+            "finite": true
+          }
+        ]
+      },
+      "checks": {
+        "axialFreeFlightAccelerationNearZero": true,
+        "positiveAndNegativeOmegaYOppose": true,
+        "axialPreFirstTableXMatchesZ0": true,
+        "axialTableContactChangesHorizontalResult": true,
+        "axialContactResolvedOmegaIsExplicit": true,
+        "stage4aAxialIsFinite": true,
+        "stage4aYMirrorIsFinite": true
+      },
+      "semanticDecision": {
+        "decision": "contact-coupling",
+        "explanation": "axialSpin is parallel to flight velocity in free flight, but physics3dResolveOmega() resolves it into world omega at contact; the table contact adapter then feeds omega.x/z into the existing tangential slip equations while carrying omega.y through.",
+        "firstTableContact": {
+          "velocity": {
+            "x": 0,
+            "y": -1.984167,
+            "z": 5
+          },
+          "spin": {
+            "schema": 1,
+            "omega": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "axialSpin": 125.66,
+            "resolvedOmegaAtVelocity": {
+              "x": 0,
+              "y": -46.349929,
+              "z": 116.799485
+            },
+            "legacyProjectionAtVelocity": {
+              "topspin": 0,
+              "sidespin": -116.799485
+            }
+          }
+        },
+        "comparison": {
+          "z0SecondBounceX": 0,
+          "axialSecondBounceX": 0.097823,
+          "deltaX": 0.097823,
+          "z0PreFirstTableX": 0,
+          "axialPreFirstTableX": 0,
+          "postFirstTableNetDeltaX": 0.074111
+        }
+      },
+      "pass": true
+    },
+    {
+      "id": "G-04",
+      "description": "Stage4a push snapshot mismatch classification",
+      "input": {
+        "techKey": "push",
+        "incomingVel": {
+          "x": 0.2,
+          "y": -2.5,
+          "z": 3
+        },
+        "incomingSpin": {
+          "topspin": -70,
+          "sidespin": 5
+        },
+        "hitPoint": {
+          "x": 0.1,
+          "y": 0.9,
+          "z": 0.6
+        },
+        "gravity": -4.2
+      },
+      "sourcePath": {
+        "currentBlend": 0.605,
+        "snapshotBlend": 0.65,
+        "currentFallbackFormula": "-0.062 * sidespin_real + incomingVel.x",
+        "snapshotFallbackFormula": "-incomingVel.x",
+        "currentFallbackRx": -0.273533,
+        "snapshotFallbackRx": -0.2,
+        "fallbackDeltaRx": -0.073533,
+        "baseTechVelocity": {
+          "x": 0,
+          "y": 0.239734,
+          "z": -0.368735
+        },
+        "racketNormal": {
+          "x": 0,
+          "y": 0.707107,
+          "z": -0.707107
+        },
+        "epsilon": 0.86521,
+        "currentSolverAimedX": -0.273533
+      },
+      "expected": {
+        "vel": {
+          "x": 0.015471,
+          "y": 2.349485,
+          "z": -3.479795
+        },
+        "spin": {
+          "topspin": -23.775389,
+          "sidespin": -4.11216
+        },
+        "dwellMs": 5.44,
+        "effectiveEpsilon": -0.960051
+      },
+      "actual": {
+        "vel": {
+          "x": -0.013771,
+          "y": 2.372553,
+          "z": -3.461518
+        },
+        "spin": {
+          "topspin": -23.185353,
+          "sidespin": -5.611733
+        },
+        "dwellMs": 5.44,
+        "effectiveEpsilon": -0.960016
+      },
+      "actualFromManualCurrentPath": {
+        "vel": {
+          "x": -0.013771,
+          "y": 2.372553,
+          "z": -3.461518
+        },
+        "spin": {
+          "topspin": -23.185353,
+          "sidespin": -5.611733
+        },
+        "dwellMs": 5.44,
+        "effectiveEpsilon": -0.960016
+      },
+      "actualDelta": {
+        "vel": {
+          "x": -0.029242,
+          "y": 0.023068,
+          "z": 0.018277
+        },
+        "spin": {
+          "topspin": 0.590036,
+          "sidespin": -1.499573
+        },
+        "dwellMs": 0,
+        "effectiveEpsilon": 0.000035
+      },
+      "historicalReplay": {
+        "vel": {
+          "x": 0.015471,
+          "y": 2.349485,
+          "z": -3.479795
+        },
+        "spin": {
+          "topspin": -23.775389,
+          "sidespin": -4.11216
+        },
+        "dwellMs": 5.44,
+        "effectiveEpsilon": -0.960051
+      },
+      "historicalReplayDelta": {
+        "vel": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "spin": {
+          "topspin": 0,
+          "sidespin": 0
+        },
+        "dwellMs": 0,
+        "effectiveEpsilon": 0
+      },
+      "checks": {
+        "currentManualMatchesMakeRacketReturnVelocity": true,
+        "historicalReplayMatchesSnapshot": true,
+        "dwellAndEpsilonStable": true,
+        "mismatchIsExplainedByKnownSourceChanges": true
+      },
+      "classification": "expected-model-change",
+      "classificationNote": "The historical Stage4a contact replay matches the snapshot when both the snapshot-era blend (0.65) and snapshot-era fallback (-incomingVel.x) are restored. The current 0.605 blend and sidespin-compensation fallback are intentional post-snapshot model changes; this does not authorize updating the formal snapshot here."
+    }
+  ]
+}

@@ -713,8 +713,11 @@ function isValidPoint(point){
 }
 // ── 物理引擎 v2：接觸力學（逐字對齊 tools/physics-v2-contact-mechanics.js）──
 function contactSlipSpeed(vel, spin){
-  const slipZ = vel.z - (spin.topspin || 0) * BALL_RADIUS;
-  const slipX = vel.x + (spin.sidespin || 0) * BALL_RADIUS;
+  const omega = physics3dHasCanonicalSpin(spin)
+    ? physics3dResolveOmega(spin, vel)
+    : {x:(spin && spin.topspin) || 0, y:0, z:-((spin && spin.sidespin) || 0)};
+  const slipZ = vel.z - omega.x * BALL_RADIUS;
+  const slipX = vel.x - omega.z * BALL_RADIUS;
   return Math.hypot(slipX, slipZ);
 }
 // 完整一次觸桌反彈：回傳新的 vel/spin（spin 現在會隨每次觸桌真的改變，不再是常數）
@@ -773,37 +776,29 @@ function computeBlendedNormal(vel, planeVel, planeNormal, blend){
   return normalize(addVec(scaleVec3(planeNormal, wPlane), scaleVec3(approachDir, wApproach)));
 }
 function bounceOffPlane(vel, spin, planeNormal, planeVel, restitution, friction){
-  const omega = {x:(spin && spin.topspin) || 0, y:0, z:(spin && spin.sidespin) || 0};
   const relVel = subVec3(vel, planeVel);
-  const normalSpeed = dotVec3(relVel, planeNormal); // 應該 < 0（正在靠近拍面）
-  const normalImpulse = BALL_MASS * (1 + restitution) * Math.abs(normalSpeed);
-  const normalRelAfter = -restitution * normalSpeed;
-  const r = scaleVec3(planeNormal, -BALL_RADIUS);
-  const rotContact = crossVec3(omega, r);
-  const contactRelVel = add(relVel, rotContact);
-  const normalComp = scaleVec3(planeNormal, dotVec3(contactRelVel, planeNormal));
-  const tangentSlip = subVec3(contactRelVel, normalComp);
-  const slipMag = Math.hypot(tangentSlip.x, tangentSlip.y, tangentSlip.z);
-  const comTangent = subVec3(relVel, scaleVec3(planeNormal, normalSpeed));
-  let tangentRelAfter, omegaAfter;
-  if(slipMag < 1e-9){
-    tangentRelAfter = comTangent;
-    omegaAfter = omega;
-  } else {
-    const e1 = scaleVec3(tangentSlip, 1 / slipMag);
-    const e2 = crossVec3(planeNormal, e1); // 右手系：e1, e2, planeNormal
-    const v1 = dotVec3(comTangent, e1);
-    const v2 = dotVec3(comTangent, e2);
-    // slip_e1 = v1 - (ω·e2)*R，slip_e2 = v2 - (-ω·e1)*R（推導見 tools/racket-contact-mechanics.js）
-    const r1 = bounceTangentialAxis(v1, dotVec3(omega, e2), normalImpulse, friction);
-    const r2 = bounceTangentialAxis(v2, -dotVec3(omega, e1), normalImpulse, friction);
-    tangentRelAfter = add(scaleVec3(e1, r1.v2), scaleVec3(e2, r2.v2));
-    const normalSpinComp = scaleVec3(planeNormal, dotVec3(omega, planeNormal));
-    omegaAfter = add(add(normalSpinComp, scaleVec3(e2, r1.omega2)), scaleVec3(e1, -r2.omega2));
-  }
-  const velAfterRel = add(scaleVec3(planeNormal, normalRelAfter), tangentRelAfter);
-  const velAfter = add(velAfterRel, planeVel);
-  return {vel:velAfter, spin:{topspin:omegaAfter.x, sidespin:omegaAfter.z}};
+  const physicalSpin = physics3dPhysicalSpinFromInput(spin, relVel);
+  const response = physics3dSolvePlaneContact({
+    position:{x:0,y:0,z:0},
+    velocity:vel,
+    omega:physicalSpin.omega,
+    mass:BALL_MASS,
+    inertia:BALL_INERTIA
+  }, {
+    normal:planeNormal,
+    surfaceVelocity:planeVel,
+    restitution,
+    friction,
+    radius:BALL_RADIUS
+  });
+  const spin3d = physics3dCopySpin({omega:response.state.omega});
+  return {
+    vel:response.state.velocity,
+    spin:physics3dExposeSpin(spin3d, spin),
+    spin3d,
+    normalImpulse:response.normalImpulse,
+    tangentImpulse:response.tangentImpulse
+  };
 }
 // 逐步積分接觸模型（2026-07-14 從 return-studio.html 移植，逐字對齊）：法向用
 // 「兩級串聯彈簧-阻尼」取代固定反彈係數——球先壓縮海綿+膠皮（第一級，spring1），
@@ -826,7 +821,10 @@ function bounceOffPlaneSubstepped(vel, spin, planeNormal, planeVel, springK, dam
   const effectiveDampingRatio = speedDependentSpongeDampingRatio(normalSpeedReal);
   const dampingC = effectiveDampingRatio * 2 * Math.sqrt(springK * BALL_MASS);
   const bladeDampingC = BLADE_DAMPING_RATIO * 2 * Math.sqrt(BLADE_SPRING_K * BLADE_NODE_MASS);
-  const omega0 = scaleVec3({x:(spin && spin.topspin) || 0, y:0, z:(spin && spin.sidespin) || 0}, D);
+  const omega0 = scaleVec3(
+    physics3dPhysicalSpinFromInput(spin, relVelReal0).omega,
+    D
+  );
   const r = scaleVec3(planeNormal, -BALL_RADIUS);
   const contactRelVel = addVec(relVelReal0, crossVec3(omega0, r));
   const trueSlip = subVec3(contactRelVel, scaleVec3(planeNormal, dotVec3(contactRelVel, planeNormal)));
@@ -845,6 +843,22 @@ function bounceOffPlaneSubstepped(vel, spin, planeNormal, planeVel, springK, dam
   let ballV1 = dotVec3(velLab, e1), ballV2 = dotVec3(velLab, e2);
   let negNode = -dotVec3(wallVel0, planeNormal);
   let x1 = 0, x2 = 0, t = 0;
+  const contactState = {
+    position:{x:0,y:0,z:0},
+    velocity:{x:0,y:0,z:0},
+    omega:{x:0,y:0,z:0},
+    mass:BALL_MASS,
+    inertia:BALL_INERTIA
+  };
+  const contactConfig = {normal:planeNormal, surfaceVelocity:wallVel0, contactOffset:r, friction};
+  const contactOptions = {
+    applyNormal:false,
+    tangentModel:'viscous',
+    tangentDamping:TANGENT_KP,
+    dt,
+    basis:{n:planeNormal,t1:e1,t2:e2},
+    offset:r
+  };
   for(let i = 0; i < maxSteps; i++){
     const wallVelNow = wristBrakeRate ? scaleVec3(wallVel0, Math.exp(-wristBrakeRate * t)) : wallVel0;
     const negWallN = -dotVec3(wallVelNow, planeNormal);
@@ -857,22 +871,14 @@ function bounceOffPlaneSubstepped(vel, spin, planeNormal, planeVel, springK, dam
     x2 += (negNode - negWallN) * dt;
     const normalForceNow = Math.max(0, -F1);
     if(normalForceNow > 0){
-      const wallV1 = dotVec3(wallVelNow, e1), wallV2 = dotVec3(wallVelNow, e2);
-      const Fcap = friction * normalForceNow;
-      {
-        const slip = (ballV1 - wallV1) - om1 * BALL_RADIUS;
-        const FtRaw = -TANGENT_KP * slip;
-        const Ft = clamp(FtRaw, -Fcap, Fcap);
-        ballV1 += (Ft / BALL_MASS) * dt;
-        om1 -= (Ft * BALL_RADIUS / BALL_INERTIA) * dt;
-      }
-      {
-        const slip = (ballV2 - wallV2) - om2 * BALL_RADIUS;
-        const FtRaw = -TANGENT_KP * slip;
-        const Ft = clamp(FtRaw, -Fcap, Fcap);
-        ballV2 += (Ft / BALL_MASS) * dt;
-        om2 -= (Ft * BALL_RADIUS / BALL_INERTIA) * dt;
-      }
+      contactState.velocity = addVec(scaleVec3(planeNormal, -negBall), addVec(scaleVec3(e1, ballV1), scaleVec3(e2, ballV2)));
+      contactState.omega = addVec(normalSpinComp, addVec(scaleVec3(e2, om1), scaleVec3(e1, -om2)));
+      contactConfig.surfaceVelocity = wallVelNow;
+      physics3dApplyCompliantContactImpulse(contactState, contactConfig, normalForceNow * dt, contactOptions);
+      ballV1 = dotVec3(contactState.velocity, e1);
+      ballV2 = dotVec3(contactState.velocity, e2);
+      om1 = dotVec3(contactState.omega, e2);
+      om2 = -dotVec3(contactState.omega, e1);
     }
     t += dt;
     if(x1 <= 0 && i > 5){
@@ -880,6 +886,10 @@ function bounceOffPlaneSubstepped(vel, spin, planeNormal, planeVel, springK, dam
       const velAfterLab = addVec(scaleVec3(planeNormal, vBallN), addVec(scaleVec3(e1, ballV1), scaleVec3(e2, ballV2)));
       const velAfter = scaleVec3(velAfterLab, 1 / D);
       const omegaFinal = scaleVec3(addVec(addVec(normalSpinComp, scaleVec3(e2, om1)), scaleVec3(e1, -om2)), 1 / D);
+      if(physics3dHasCanonicalSpin(spin)){
+        const spin3d = physics3dCopySpin({omega:omegaFinal});
+        return {vel: velAfter, spin: physics3dExposeSpin(spin3d, spin), spin3d, dwellMs: t * 1000, effectiveEpsilon: negBall / normalSpeedReal};
+      }
       return {vel: velAfter, spin: {topspin: omegaFinal.x, sidespin: omegaFinal.z}, dwellMs: t * 1000, effectiveEpsilon: negBall / normalSpeedReal};
     }
   }
@@ -900,12 +910,16 @@ function simulatePath(start, velocity, options){
   const gravity = options.gravity ?? -4.2;
   // spin 現在是可變狀態：物理引擎 v2 下，每次觸桌旋轉都會真的改變（不再是套用整段路徑的常數）
   let spin = {topspin:(options.spin && options.spin.topspin) || 0, sidespin:(options.spin && options.spin.sidespin) || 0};
+  const spinInput = options.spin3d || options.spin;
+  const initialSpin3D = spinInput ? physics3dPhysicalSpinFromInput(spinInput, velocity) : null;
+  let spin3d = initialSpin3D ? physics3dCopySpin(initialSpin3D) : null;
+  const exposedSpin = () => spin3d ? physics3dExposeSpin(spin3d, spin) : {...spin};
   const bounceBoost = options.bounceBoost ?? 0;
   const pos = clone(start);
   const vel = clone(velocity);
   const points = [clone(pos)];
   const velocities = [clone(velocity)];
-  const spins = [{...spin}];
+  const spins = [exposedSpin()];
   const bounces = [];
   let firstLanding = null;
   let groundLanding = null;
@@ -914,7 +928,12 @@ function simulatePath(start, velocity, options){
   let crossedNet = false;
   for(let i=0;i<MAX_STEPS;i++){
     const prev = clone(pos);
-    vel.y += gravity * DT;
+    if(spin3d){
+      const airVelocity = physics3dAdvanceSimulationVelocity(vel, spin3d, gravity, DT, SIM_TIME_DILATION);
+      vel.x = airVelocity.x; vel.y = airVelocity.y; vel.z = airVelocity.z;
+    } else {
+      vel.y += gravity * DT;
+    }
     pos.x += vel.x * DT;
     pos.y += vel.y * DT;
     pos.z += vel.z * DT;
@@ -937,7 +956,7 @@ function simulatePath(start, velocity, options){
         pos.z = -incomingZ * NET_COLLISION.depth;
         points.push({...impact});
         velocities.push(clone(vel));
-        spins.push({...spin});
+        spins.push(exposedSpin());
         vel.x *= NET_COLLISION.xDamping;
         vel.y *= NET_COLLISION.yDamping;
         vel.z = -vel.z * NET_COLLISION.zRestitution;
@@ -969,13 +988,24 @@ function simulatePath(start, velocity, options){
         // 但 simulatePath 內部用模擬尺度（gravity=-4.2）。呼叫前乘 SIM_TIME_DILATION 轉真實尺度，
         // 呼叫後除回去。跟 bounceOffPlaneSubstepped 的做法一致。
         const D_bounce = SIM_TIME_DILATION;
-        const bounced = bounceWithSpinPhysical(
-          {x: vel.x * D_bounce, y: vel.y * D_bounce, z: vel.z * D_bounce},
-          {topspin: (spin.topspin || 0) * D_bounce, sidespin: (spin.sidespin || 0) * D_bounce},
-          CONTACT_FRICTION_MU
-        );
+        const bounced = spin3d
+          ? bounceWithSpinPhysical3D(
+              {x: vel.x * D_bounce, y: vel.y * D_bounce, z: vel.z * D_bounce},
+              physics3dScaleSpin(spin3d, D_bounce),
+              CONTACT_FRICTION_MU
+            )
+          : bounceWithSpinPhysical(
+              {x: vel.x * D_bounce, y: vel.y * D_bounce, z: vel.z * D_bounce},
+              {topspin: (spin.topspin || 0) * D_bounce, sidespin: (spin.sidespin || 0) * D_bounce},
+              CONTACT_FRICTION_MU
+            );
         vel.x = bounced.vel.x / D_bounce; vel.y = bounced.vel.y / D_bounce; vel.z = bounced.vel.z / D_bounce;
-        spin = {topspin: bounced.spin.topspin / D_bounce, sidespin: bounced.spin.sidespin / D_bounce};
+        if(spin3d){
+          spin3d = physics3dScaleSpin(bounced.spin3d, 1 / D_bounce);
+          spin = physics3dExposeSpin(spin3d, spin);
+        } else {
+          spin = {topspin: bounced.spin.topspin / D_bounce, sidespin: bounced.spin.sidespin / D_bounce};
+        }
         if(bounceBoost){
           const forwardZ = Math.sign(vel.z || velocity.z || -1);
           vel.z += forwardZ * bounceBoost;
@@ -992,12 +1022,12 @@ function simulatePath(start, velocity, options){
       };
       points.push(groundLanding);
       velocities.push(clone(vel));
-      spins.push({...spin});
+      spins.push(exposedSpin());
       break;
     }
     points.push(clone(pos));
     velocities.push(clone(vel));
-    spins.push({...spin});
+    spins.push(exposedSpin());
     if(Math.abs(pos.x) > 3 || Math.abs(pos.z) > 4) break;
   }
   return {points, velocities, spins, bounces, netY, netHit, firstLanding, groundLanding, baseVel:clone(velocity)};
@@ -1125,13 +1155,15 @@ function getServeBounces(path){
 function serveBounceScore(preset, baseVel){
   const profile = getServeLengthProfile(preset);
   const D_sbs = SIM_TIME_DILATION;
-  const simSpin_sbs = preset.variation?.spin ? {
+  const simSpin3d_sbs = preset.variation?.spin3d ? physics3dScaleSpin(preset.variation.spin3d, 1 / D_sbs) : undefined;
+  const simSpin_sbs = !simSpin3d_sbs && preset.variation?.spin ? {
     topspin: preset.variation.spin.topspin / D_sbs,
     sidespin: preset.variation.spin.sidespin / D_sbs
   } : undefined;
   const result = simulatePath(preset.start, baseVel, {
     gravity:preset.solve?.gravity ?? -4.2,
-    spin: simSpin_sbs
+    spin: simSpin_sbs,
+    spin3d: simSpin3d_sbs
   });
   const firstTarget = preset.firstBounce || preset.target;
   const secondTarget = preset.secondBounce || preset.target;
@@ -1174,13 +1206,15 @@ function simulateServe(preset){
   const gravity = preset.solve?.gravity ?? -4.2;
   const velocity = solveBaseVelocity(preset);
   const D_ss = SIM_TIME_DILATION;
-  const simSpin_ss = preset.variation?.spin ? {
+  const simSpin3d_ss = preset.variation?.spin3d ? physics3dScaleSpin(preset.variation.spin3d, 1 / D_ss) : undefined;
+  const simSpin_ss = !simSpin3d_ss && preset.variation?.spin ? {
     topspin: preset.variation.spin.topspin / D_ss,
     sidespin: preset.variation.spin.sidespin / D_ss
   } : undefined;
   return simulatePath(preset.start, velocity, {
     gravity,
-    spin: simSpin_ss
+    spin: simSpin_ss,
+    spin3d: simSpin3d_ss
   });
 }
 function findHitIndex(path){
@@ -1241,17 +1275,16 @@ function resetBallColor(){
 function readSpinForDisplay(spin){
   const value = spin || {};
   const omega = value.omega || null;
-  const hasCanonicalOmega = !!omega && Number.isFinite(omega.x) && Number.isFinite(omega.y);
+  const hasCanonicalOmega = !!omega && Number.isFinite(omega.x) && Number.isFinite(omega.y) && Number.isFinite(omega.z);
   const topspin = hasCanonicalOmega ? omega.x : (Number.isFinite(value.topspin) ? value.topspin : 0);
   // canonical omega.y 是新的側旋軸；沒有 canonical 資料時才退回 legacy sidespin。
   const sidespin = hasCanonicalOmega ? omega.y : (Number.isFinite(value.sidespin) ? value.sidespin : 0);
-  const axialSpin = Number.isFinite(value.axialSpin) ? value.axialSpin : 0;
   const axialZ = hasCanonicalOmega && Number.isFinite(omega.z) ? omega.z : 0;
   return {
     topspin,
     sidespin,
-    axialSpin,
-    total: Math.hypot(topspin, sidespin, axialZ, axialSpin)
+    axialSpin: 0,
+    total: hasCanonicalOmega ? Math.hypot(omega.x, omega.y, omega.z) : Math.hypot(topspin, sidespin, axialZ)
   };
 }
 function hideSpinIndicator(){
@@ -1440,6 +1473,15 @@ function missReturn(reason){
   document.getElementById('centerTip').textContent = `${label}，請按下一球`;
 }
 function prepareServe(){
+  if(!presets.length){
+    currentServeVideo = null;
+    selectedServeIndex = 0;
+    document.getElementById('serveName').textContent = '沒有可用發球';
+    document.getElementById('roundInfo').textContent = '目前沒有可用的發球 preset，請重新載入資料後再試。';
+    document.getElementById('centerTip').textContent = '沒有可用發球';
+    setPhase('idle');
+    return;
+  }
   resetCam(false);
   const round = pickRoundForNextServe();
   if(round){
@@ -1715,6 +1757,7 @@ function returnBall(contact){
   const result = simulatePath(start, returnHit.vel, {
     gravity,
     spin:returnHit.spin,
+    spin3d:returnHit.spin3d,
     bounceBoost:tech.bounceBoost ?? 0
   });
   returnPath = result.points.filter(isValidPoint);
@@ -1731,7 +1774,7 @@ function returnBall(contact){
     setPhase('result');
     return;
   }
-  animatePath(returnPath, ()=>judgeReturn(result, contactPhase), 7 / GAME_SPEED);
+  animatePath(returnPath, ()=>judgeReturn(result, contactPhase), 7 / GAME_SPEED, null, returnVelocities, returnSpins);
 }
 function dot(a, b){
   return a.x * b.x + a.y * b.y + a.z * b.z;
@@ -1745,26 +1788,6 @@ function scaleVec(v, scalar){
 function normalize(v){
   const length = Math.hypot(v.x, v.y, v.z) || 1;
   return scaleVec(v, 1 / length);
-}
-// 瞄準修正：用割線法反推球拍速度的 x 分量，讓打出去的球側向速度趨近 targetOutX。
-// 模擬真實球員會依來球側向飄移/側旋自然調整拍面角度把球打直，而不是固定死揮拍方向
-// 導致來球側向分量被接觸力學放大、球亂飛。
-function solveRacketVelXForTargetOutX(incomingVel, incomingSpin, racketNormal, techVel, restitution, friction, targetOutX){
-  function outXFor(rx){
-    const planeVel = {x:rx, y:techVel.y, z:techVel.z};
-    return bounceOffPlane(incomingVel, incomingSpin, racketNormal, planeVel, restitution, friction).vel.x;
-  }
-  let x0 = 0, x1 = -incomingVel.x;
-  let f0 = outXFor(x0) - targetOutX;
-  let f1 = outXFor(x1) - targetOutX;
-  for(let i=0;i<20;i++){
-    if(Math.abs(f1) < 1e-4) break;
-    const denom = (f1 - f0) || 1e-9;
-    const x2 = x1 - f1 * (x1 - x0) / denom;
-    x0 = x1; f0 = f1;
-    x1 = x2; f1 = outXFor(x1) - targetOutX;
-  }
-  return x1;
 }
 // 使用者指出調切球時遵守的原則：揮拍方向（球拍移動方向）要對準想打的落點，
 // 不是打直而已。用「球例校正資料庫」的資料驗證過：手動調的 techniqueVel.x
@@ -1794,7 +1817,7 @@ function solveRacketVelXForTargetLandingX(incomingVel, incomingSpin, racketNorma
     function landingForPush(rx){
       const planeVel = {x:rx, y:techVel.y, z:techVel.z};
       const bounced = applyPushContact(incomingVel, incomingSpin, racketNormal, planeVel, restitution, tech, blend);
-      const path = simulatePath(hitPoint, bounced.vel, {gravity, spin:bounced.spin, bounceBoost:0});
+      const path = simulatePath(hitPoint, bounced.vel, {gravity, spin:bounced.spin, spin3d:bounced.spin3d, bounceBoost:0});
       const fb = path.bounces[0];
       return fb ? {x:fb.x, z:fb.z} : null;
     }
@@ -1813,11 +1836,15 @@ function solveRacketVelXForTargetLandingX(incomingVel, incomingSpin, racketNorma
       // -incomingVel.x — a physically-unvalidated placeholder. New fallback
       // uses the sidespin compensation formula derived from Group 4B sweep:
       //   planeVel.x = -0.062 * sidespin_real + incomingVel.x
-      // where sidespin_real = incomingSpin.sidespin * SIM_TIME_DILATION.
+      // where legacy sidespin_real = incomingSpin.sidespin * SIM_TIME_DILATION.
+      // Canonical omega.y uses the opposite sign because left sidespin is +Y
+      // in the new world-space contract.
       // This doesn't aim at a target landing point (impossible if the ball
       // can't clear the net), but at least cancels sidespin-induced drift
       // instead of producing an unvalidated value.
-      const sidespinReal = ((incomingSpin && incomingSpin.sidespin) || 0) * SIM_TIME_DILATION;
+      const sidespinReal = (physics3dHasCanonicalSpin(incomingSpin)
+        ? -physics3dResolveOmega(incomingSpin, incomingVel).y
+        : ((incomingSpin && incomingSpin.sidespin) || 0)) * SIM_TIME_DILATION;
       const fallbackRx = -0.062 * sidespinReal + incomingVel.x;
       console.warn('[solveRacketVelXForTargetLandingX] push fallback: no valid landing found in rx[-8,8], using sidespin compensation: rx=' + fallbackRx.toFixed(3));
       return fallbackRx;
@@ -1865,12 +1892,14 @@ function dynamicPaddleEpsilon(incomingVel, planeVel, planeNormal){
 // sidebackspin_half_long_backhand 依命名/球況判斷其實是「不夠乾淨的下旋球，
 // 帶一點側旋雜訊」，不是真正的側旋判斷題，排除在校準之外（之後接真人影片
 // 也該配下旋影片，不是側旋影片）。剩下 6 顆的「按對方向即可穩定落桌」安全
-// 交集是 [2.9, 3.8+]（上限未測到真正天花板，粗掃顯示約在 4 附近），中點取
-// 3.4，跟 PADDLE_BLEND 抓安全交集中點的校準慣例一致。
+// 交集是 [2.9, 3.8+]（上限未測到真正天花板，粗掃顯示約在 4 附近）。
+// 2026-07-16 Game 5 mainline 整合選用下界候選 2.9：47-serve holdout 為
+// 64/101（baseline 55/101），並通過固定發球左右手勢的原型檢查與 readiness
+// validator；這是 Game 5 的候選整合，不宣稱已完成 3D 側旋或全域物理校準。
 // 注意：這個值只針對 push（切球）技術校準過。attack（平推/攻球）技術的接觸
 // 模型不同（非 substepped、blend=0），暫時沿用同一個常數，還沒有專屬 sweep
 // 驗證過是否合適。
-const SIDESPIN_COMPENSATION_C = 3.4;
+const SIDESPIN_COMPENSATION_C = 2.9;
 function signOf(v){
   if(v > 0) return 1;
   if(v < 0) return -1;
@@ -2006,7 +2035,9 @@ function makeRacketReturnVelocity(incomingVel, incomingSpin, tech, hitPoint, gra
   // 量模型（見 SIDESPIN_COMPENSATION_C 上方註解）。
   const aimedSign = signOf(solveRacketVelXForTargetLandingX(incomingVel, spin, racketNormal, techVel, epsilon, PADDLE_FRICTION, hitPoint, gravity, RETURN_TARGET_X, blend, tech));
   let compensationX = 0;
-  if(selectedDirectionInput && aimedSign !== 0){
+  // SIDESPIN_COMPENSATION_C 已只對 push/chop 校準；attack 保留為明確的
+  // controlled approximation，不沿用尚未專屬 sweep 驗證的固定補償量。
+  if(tech.model === 'push' && selectedDirectionInput && aimedSign !== 0){
     const pressedSign = selectedDirectionInput === 'left' ? -1 : 1;
     compensationX = (pressedSign === aimedSign ? 1 : -1) * SIDESPIN_COMPENSATION_C;
   }
@@ -2030,11 +2061,28 @@ function judgeReturn(result, contactPhase){
     ok = true;
     reason = '成功落在對方桌面';
   }
+  const judgedTechnique = TECHNIQUES[selectedTechnique];
+  const spinType = String(currentServeVideo?.spinType || currentPreset()?.tags?.spinType || '').toLowerCase();
+  const directionFeedback = spinType.includes('side')
+    ? (selectedDirectionInput ? `${DIRECTION_LABEL[selectedDirectionInput]}（需依影片視角核對）` : '未修正（側旋題）')
+    : '不需側旋修正（非側旋題）';
+  const techniqueFeedback = judgedTechnique?.model === 'attack'
+    ? '平推/攻球（側旋補償尚未專屬校準，controlled approximation）'
+    : '切球（使用已校準的固定側旋補償）';
+  const learningFeedback = judgedTechnique?.model === 'attack'
+    ? '學習說明：先觀察攻球的技術與落點；側旋補償仍待專屬校準。'
+    : ok
+      ? '學習說明：技術、方向與第一落點可分開檢查。'
+      : '學習說明：先看第一落點與過網高度，再調整技術或方向。';
   const detail = [
+    `技術判斷：${techniqueFeedback}`,
+    `方向判斷：${directionFeedback}`,
+    `物理結果：${reason}`,
     `第一落點：${firstBounce ? `${firstBounce.x.toFixed(2)}, ${firstBounce.z.toFixed(2)}` : '無'}`,
     `過網高度：${netClearance == null ? '未測到' : netClearance.toFixed(3) + ' m'}`,
     `擊球時機：${timingLabel(contactPhase)}`,
-    `發球：${currentPreset().label}`
+    `發球：${currentPreset()?.label || '未選擇'}`,
+    learningFeedback
   ].join('\n');
   showResult(ok, reason, detail);
   setPhase('result');

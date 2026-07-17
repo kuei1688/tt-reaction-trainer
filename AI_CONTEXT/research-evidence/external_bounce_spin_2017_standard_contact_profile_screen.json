@@ -1,0 +1,115 @@
+{
+  "status": "pass",
+  "benchmark": "Official-spec-constrained material/contact profile screen",
+  "calibrationStatus": "not-calibrated",
+  "scope": "official rebound and tabletop-CoF performance bounds used as acceptance gates for isolated effective profiles",
+  "officialSources": {
+    "councilDecisions2024": "https://db.ittf.com/sites/default/files/public/2024-03/2024_ITTF_Council_Decisions_Taken.pdf",
+    "handbook2020": "https://db.ittf.com/sites/default/files/public/2021-04/2020ITTFHandbook.pdf",
+    "evidence": {
+      "tableRebound": "300 mm drop height; 230-260 mm rebound height",
+      "tabletopCof": "0.150-0.350 reference CoF; group I 0.150-0.210, II 0.211-0.270, III 0.271-0.350",
+      "ball": "40 mm diameter and 2.7 g mass",
+      "materialInterpretation": "performance bounds, not one tabletop Young's modulus"
+    }
+  },
+  "source": {
+    "sourceId": "JSME-2017-G0500606",
+    "csv": "AI_CONTEXT/external_bounce_spin_2017_figure_digitization.csv",
+    "pdf": "C:\\Users\\Kevin\\Downloads\\2017_G0500606.pdf",
+    "rowsRead": 24,
+    "dataQuality": "figure_digitized_approx",
+    "pairingCaveat": "2017 data are level ranges without per-ball before/after pairing"
+  },
+  "officialProfileGate": {
+    "dropHeightM": 0.3,
+    "reboundHeightM": [0.23, 0.26],
+    "equivalentRestitutionRange": [0.875595, 0.930949],
+    "tabletopCofRange": [0.15, 0.35],
+    "frictionGroupRepresentatives": {"I": 0.18, "II": 0.24, "III": 0.31},
+    "ballDiameterM": 0.04,
+    "ballMassKg": 0.0027,
+    "equivalentRestitutionFormula": "sqrt(reboundHeight/dropHeight)",
+    "note": "The restitution conversion is a performance gate, not a material modulus."
+  },
+  "physicalStateContract": {
+    "schema": 2,
+    "tableNormal": {"x": 0, "y": 1, "z": 0},
+    "inputScale": "real-scale",
+    "angle": "table-plane angle",
+    "velocity": "{x:0, y:-speed*sin(angle), z:speed*cos(angle)}",
+    "omega": "{x:sign*2π*rps, y:0, z:0}"
+  },
+  "proxySearch": {
+    "springNPerM": [3000, 6000, 12000],
+    "dampingNsPerM": [2, 4, 8],
+    "contactDurationS": [0.002, 0.003, 0.0045],
+    "frictionGroups": {"I": 0.18, "II": 0.24, "III": 0.31},
+    "candidateCount": 81,
+    "acceptedNormalProfileCount": 3,
+    "acceptedNormalProfiles": [
+      {"group": "I", "friction": 0.18, "spring": 6000, "damping": 2, "contactDuration": 0.002, "effectiveRestitution": 0.906688, "predictedReboundHeightM": 0.246625, "energyRatio": 0.822084},
+      {"group": "II", "friction": 0.24, "spring": 6000, "damping": 2, "contactDuration": 0.002, "effectiveRestitution": 0.906688, "predictedReboundHeightM": 0.246625, "energyRatio": 0.822084},
+      {"group": "III", "friction": 0.31, "spring": 6000, "damping": 2, "contactDuration": 0.002, "effectiveRestitution": 0.906688, "predictedReboundHeightM": 0.246625, "energyRatio": 0.822084}
+    ],
+    "currentPolicy": {
+      "friction": 0.13,
+      "spring": 6000,
+      "damping": 4,
+      "contactDuration": 0.003,
+      "effectiveRestitution": 0.863639,
+      "predictedReboundHeightM": 0.223761,
+      "heightPass": false,
+      "frictionPass": false,
+      "energyPass": true
+    }
+  },
+  "obliqueScreen": {
+    "inputGrid": "full-factorial 9-point grid inside each 2017 before range",
+    "omegaSigns": [-1, 1],
+    "acceptedProfileCount": 3,
+    "samplesPerAcceptedProfile": 3240,
+    "totalSamples": 9720,
+    "levels": [
+      {
+        "lowerDiskLevel": 0,
+        "profileResults": [
+          {"group": "I", "friction": 0.18, "envelope": {"angleDeg": [17.391, 24.251], "rotationRps": [88.454, 107.844], "speedMps": [7.245, 9.345]}, "intersects": {"angleDeg": false, "rotationRps": true, "speedMps": false}, "hits": {"angleDeg": 0, "rotationRps": 60, "speedMps": 0, "jointAllThree": 0}},
+          {"group": "II", "friction": 0.24, "envelope": {"angleDeg": [16.767, 25.531], "rotationRps": [83.972, 103.658], "speedMps": [6.905, 9.702]}, "intersects": {"angleDeg": false, "rotationRps": true, "speedMps": false}, "hits": {"angleDeg": 0, "rotationRps": 94, "speedMps": 0, "jointAllThree": 0}},
+          {"group": "III", "friction": 0.31, "envelope": {"angleDeg": [16.093, 27.193], "rotationRps": [78.743, 98.775], "speedMps": [6.512, 10.120]}, "intersects": {"angleDeg": false, "rotationRps": true, "speedMps": false}, "hits": {"angleDeg": 0, "rotationRps": 108, "speedMps": 0, "jointAllThree": 0}}
+        ]
+      },
+      {
+        "lowerDiskLevel": 2,
+        "profileResults": [
+          {"group": "I", "friction": 0.18, "envelope": {"angleDeg": [16.645, 24.251], "rotationRps": [28.173, 60.827], "speedMps": [8.194, 9.170]}, "intersects": {"angleDeg": true, "rotationRps": false, "speedMps": true}, "hits": {"angleDeg": 36, "rotationRps": 0, "speedMps": 0, "jointAllThree": 0}},
+          {"group": "II", "friction": 0.24, "envelope": {"angleDeg": [17.259, 25.531], "rotationRps": [22.730, 63.399], "speedMps": [7.809, 8.853]}, "intersects": {"angleDeg": true, "rotationRps": false, "speedMps": false}, "hits": {"angleDeg": 36, "rotationRps": 0, "speedMps": 0, "jointAllThree": 0}},
+          {"group": "III", "friction": 0.31, "envelope": {"angleDeg": [17.621, 27.193], "rotationRps": [16.381, 64.496], "speedMps": [7.365, 8.660]}, "intersects": {"angleDeg": true, "rotationRps": false, "speedMps": false}, "hits": {"angleDeg": 27, "rotationRps": 0, "speedMps": 0, "jointAllThree": 0}}
+        ]
+      },
+      {
+        "lowerDiskLevel": 4,
+        "profileResults": [
+          {"group": "I", "friction": 0.18, "envelope": {"angleDeg": [16.309, 16.870], "rotationRps": [15.704, 58.096], "speedMps": [9.337, 9.638]}, "intersects": {"angleDeg": false, "rotationRps": true, "speedMps": false}, "hits": {"angleDeg": 0, "rotationRps": 0, "speedMps": 0, "jointAllThree": 0}},
+          {"group": "II", "friction": 0.24, "envelope": {"angleDeg": [16.899, 17.500], "rotationRps": [11.505, 62.295], "speedMps": [9.011, 9.311]}, "intersects": {"angleDeg": false, "rotationRps": true, "speedMps": true}, "hits": {"angleDeg": 0, "rotationRps": 0, "speedMps": 1404, "jointAllThree": 0}},
+          {"group": "III", "friction": 0.31, "envelope": {"angleDeg": [17.628, 18.297], "rotationRps": [6.606, 67.134], "speedMps": [8.631, 8.931]}, "intersects": {"angleDeg": true, "rotationRps": true, "speedMps": true}, "hits": {"angleDeg": 1131, "rotationRps": 0, "speedMps": 1458, "jointAllThree": 0}}
+        ]
+      },
+      {
+        "lowerDiskLevel": 6,
+        "profileResults": [
+          {"group": "I", "friction": 0.18, "envelope": {"angleDeg": [14.212, 14.979], "rotationRps": [17.949, 41.451], "speedMps": [9.261, 9.851]}, "intersects": {"angleDeg": false, "rotationRps": false, "speedMps": false}, "hits": {"angleDeg": 0, "rotationRps": 0, "speedMps": 0, "jointAllThree": 0}},
+          {"group": "II", "friction": 0.24, "envelope": {"angleDeg": [14.662, 15.477], "rotationRps": [14.132, 45.268], "speedMps": [8.970, 9.556]}, "intersects": {"angleDeg": false, "rotationRps": false, "speedMps": true}, "hits": {"angleDeg": 0, "rotationRps": 0, "speedMps": 576, "jointAllThree": 0}},
+          {"group": "III", "friction": 0.31, "envelope": {"angleDeg": [15.222, 16.102], "rotationRps": [9.678, 49.722], "speedMps": [8.631, 9.212]}, "intersects": {"angleDeg": false, "rotationRps": true, "speedMps": true}, "hits": {"angleDeg": 0, "rotationRps": 729, "speedMps": 1008, "jointAllThree": 0}}
+        ]
+      }
+    ]
+  },
+  "decision": {
+    "parameterTuningAuthorized": false,
+    "formalPromotionAuthorized": false,
+    "materialSpecsDirectlyApplied": false,
+    "conclusion": "After constraining profiles by official rebound and tabletop-CoF performance bounds, no accepted profile produces a joint angle/rotation/speed match at any level. Group III reaches scalar envelope overlap at level 4 and improves level-6 rotation/speed, but angle remains outside the external range.",
+    "nextGate": "Obtain a measured ball-table contact trace or BBoT-like restitution/friction observation for the actual ball/table pair before any R1 proposal."
+  }
+}

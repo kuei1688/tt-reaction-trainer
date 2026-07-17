@@ -1,0 +1,259 @@
+{
+  "status": "pass",
+  "date": "2026-07-17T06:26:02.325Z",
+  "scope": "3D physics scope reset acceptance #2: pure-axis, mixed, and sign-reversed omega must process without depending on a label",
+  "acceptance": "qualitative representability only; no 2017 benchmark fitting, material identification, or parameter tuning",
+  "passCount": 10,
+  "failCount": 0,
+  "checks": [
+    {
+      "id": "SIGN-001",
+      "status": "pass",
+      "description": "pure y-axis omega: +omega and -omega give identical contact response (axial spin does not invent tangent velocity)",
+      "details": {
+        "normalImpulse": 0.009979200000000002,
+        "omegaA": {
+          "x": 15.000000000000002,
+          "y": 40,
+          "z": -9.000000000000002
+        },
+        "omegaB": {
+          "x": 15.000000000000002,
+          "y": -40,
+          "z": -9.000000000000002
+        },
+        "tangentImpulseA": {
+          "x": -0.000324,
+          "y": 0,
+          "z": -0.00054
+        },
+        "tangentImpulseB": {
+          "x": -0.000324,
+          "y": 0,
+          "z": -0.00054
+        }
+      }
+    },
+    {
+      "id": "SIGN-002",
+      "status": "pass",
+      "description": "pure x-axis omega: sign flip on x flips tangent response on z, preserves y normal impulse, preserves energy",
+      "details": {
+        "tangentImpulseA": {
+          "x": 0,
+          "y": 0,
+          "z": 0.000648
+        },
+        "tangentImpulseB": {
+          "x": 0,
+          "y": 0,
+          "z": -0.000648
+        },
+        "velocityA": {
+          "x": 0,
+          "y": 1.5200000000000005,
+          "z": 0.24
+        },
+        "velocityB": {
+          "x": 0,
+          "y": 1.5200000000000005,
+          "z": -0.24
+        },
+        "omegaA": {
+          "x": 11.999999999999996,
+          "y": 0,
+          "z": 0
+        },
+        "omegaB": {
+          "x": -11.999999999999996,
+          "y": 0,
+          "z": 0
+        }
+      }
+    },
+    {
+      "id": "SIGN-003",
+      "status": "pass",
+      "description": "pure z-axis omega: sign flip on z flips tangent response on x, preserves y normal impulse, preserves energy",
+      "details": {
+        "tangentImpulseA": {
+          "x": -0.000648,
+          "y": 0,
+          "z": 0
+        },
+        "tangentImpulseB": {
+          "x": 0.000648,
+          "y": 0,
+          "z": 0
+        },
+        "velocityA": {
+          "x": -0.24,
+          "y": 1.5200000000000005,
+          "z": 0
+        },
+        "velocityB": {
+          "x": 0.24,
+          "y": 1.5200000000000005,
+          "z": 0
+        },
+        "omegaA": {
+          "x": 0,
+          "y": 0,
+          "z": 11.999999999999996
+        },
+        "omegaB": {
+          "x": 0,
+          "y": 0,
+          "z": -11.999999999999996
+        }
+      }
+    },
+    {
+      "id": "SIGN-004",
+      "status": "pass",
+      "description": "mixed omega under 180deg rotation around x: contact response transforms with R",
+      "details": {
+        "velocityA": {
+          "x": 0.5633520458110965,
+          "y": 1.425477818027118,
+          "z": 0.272228908586539
+        },
+        "velocityB": {
+          "x": 0.5633520458110965,
+          "y": -1.425477818027118,
+          "z": -0.272228908586539
+        },
+        "omegaA": {
+          "x": 16.797237952872706,
+          "y": -22.661152534701404,
+          "z": -7.4576487826119475
+        },
+        "omegaB": {
+          "x": 16.797237952872706,
+          "y": 22.661152534701404,
+          "z": 7.4576487826119475
+        }
+      }
+    },
+    {
+      "id": "SIGN-005",
+      "status": "pass",
+      "description": "mixed omega under 180deg rotation around y: contact response transforms with R",
+      "details": {
+        "velocityA": {
+          "x": 0.5633520458110965,
+          "y": 1.425477818027118,
+          "z": 0.272228908586539
+        },
+        "velocityB": {
+          "x": -0.5633520458110965,
+          "y": 1.425477818027118,
+          "z": -0.272228908586539
+        },
+        "omegaA": {
+          "x": 16.797237952872706,
+          "y": -22.661152534701404,
+          "z": -7.4576487826119475
+        },
+        "omegaB": {
+          "x": -16.797237952872706,
+          "y": -22.661152534701404,
+          "z": 7.4576487826119475
+        }
+      }
+    },
+    {
+      "id": "SIGN-006",
+      "status": "pass",
+      "description": "mixed omega under 180deg rotation around z: contact response transforms with R",
+      "details": {
+        "velocityA": {
+          "x": 0.5633520458110965,
+          "y": 1.425477818027118,
+          "z": 0.272228908586539
+        },
+        "velocityB": {
+          "x": -0.5633520458110965,
+          "y": -1.425477818027118,
+          "z": 0.272228908586539
+        },
+        "omegaA": {
+          "x": 16.797237952872706,
+          "y": -22.661152534701404,
+          "z": -7.4576487826119475
+        },
+        "omegaB": {
+          "x": -16.797237952872706,
+          "y": 22.661152534701404,
+          "z": -7.4576487826119475
+        }
+      }
+    },
+    {
+      "id": "SIGN-007",
+      "status": "pass",
+      "description": "full omega negation via 180deg rotation: response omega negates, energy preserved",
+      "details": {
+        "omegaA": {
+          "x": 9.000000000000002,
+          "y": 0,
+          "z": 11.999999999999986
+        },
+        "omegaB": {
+          "x": 9.000000000000002,
+          "y": 0,
+          "z": -11.999999999999986
+        },
+        "energyA": 0.0033215400000000017,
+        "energyB": 0.0033215400000000017
+      }
+    },
+    {
+      "id": "SIGN-008",
+      "status": "pass",
+      "description": "no-label-dependence: identical vector state always produces identical contact response",
+      "details": {
+        "note": "two identical BallStates produce identical responses"
+      }
+    },
+    {
+      "id": "SIGN-009",
+      "status": "pass",
+      "description": "zero omega with pure vertical approach: response has zero tangent impulse and zero output omega",
+      "details": {
+        "velocity": {
+          "x": 0,
+          "y": 1.5200000000000005,
+          "z": 0
+        },
+        "omega": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "tangentImpulse": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        }
+      }
+    },
+    {
+      "id": "SIGN-010",
+      "status": "pass",
+      "description": "zero omega with tangential approach: friction generates omega with expected sign",
+      "details": {
+        "omegaForward": {
+          "x": 0,
+          "y": 0,
+          "z": -15.000000000000002
+        },
+        "omegaMirror": {
+          "x": 0,
+          "y": 0,
+          "z": 15.000000000000002
+        }
+      }
+    }
+  ]
+}

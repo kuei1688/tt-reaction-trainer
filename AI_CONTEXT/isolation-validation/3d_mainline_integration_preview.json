@@ -1,0 +1,180 @@
+{
+  "status": "pass",
+  "date": "2026-07-16T13:01:07.750Z",
+  "scope": "isolated mainline-v2 3D integration: product phase, real-scale BallState/omega, table contact, racket contact, and return",
+  "acceptance": "engineering flow and qualitative representability only; no formal page mutation, material calibration, or external numeric fitting",
+  "timeDilation": 1.528304382547628,
+  "scenarios": [
+    {
+      "id": "zero",
+      "label": "zero spin",
+      "status": "pass",
+      "steps": 157,
+      "physicalTimeSec": 1.308333,
+      "finalPhase": "result",
+      "finalSubphase": "success",
+      "physicsPhase": "result",
+      "flightLeg": "return",
+      "contactCount": 2,
+      "finalBall": {
+        "position": {
+          "x": 0,
+          "y": 0.6522764794686491,
+          "z": 1.1504689510645725
+        },
+        "velocity": {
+          "x": 0,
+          "y": -3.7579249423050993,
+          "z": 0.5171325805346311
+        },
+        "omega": {
+          "x": -2.314633147148072,
+          "y": 0,
+          "z": 0
+        },
+        "mass": 0.0027,
+        "inertia": 7.2e-7
+      },
+      "events": [
+        "round-start",
+        "phase-change",
+        "phase-change",
+        "video-handoff",
+        "camera-change",
+        "swing-start",
+        "camera-change",
+        "table-bounce",
+        "swing-ready",
+        "camera-change",
+        "racket-contact",
+        "return-start",
+        "phase-change",
+        "camera-change",
+        "landing-marker",
+        "phase-change",
+        "result"
+      ],
+      "checks": {
+        "resultSuccess": true,
+        "requiredEvents": true,
+        "twoContacts": true,
+        "finiteBallState": true,
+        "canonicalOmegaY": true
+      }
+    },
+    {
+      "id": "side",
+      "label": "omega.y + side spin",
+      "status": "pass",
+      "steps": 154,
+      "physicalTimeSec": 1.283333,
+      "finalPhase": "result",
+      "finalSubphase": "success",
+      "physicsPhase": "result",
+      "flightLeg": "return",
+      "contactCount": 2,
+      "finalBall": {
+        "position": {
+          "x": 0.5267728741535916,
+          "y": 0.6687443264220093,
+          "z": 1.2112865003932163
+        },
+        "velocity": {
+          "x": 0.24284436450535637,
+          "y": -3.7310412993690734,
+          "z": 0.6547770170677145
+        },
+        "omega": {
+          "x": 2.5356551697403376,
+          "y": 70,
+          "z": 4.631151789700727
+        },
+        "mass": 0.0027,
+        "inertia": 7.2e-7
+      },
+      "events": [
+        "round-start",
+        "phase-change",
+        "phase-change",
+        "video-handoff",
+        "camera-change",
+        "swing-start",
+        "camera-change",
+        "table-bounce",
+        "swing-ready",
+        "camera-change",
+        "racket-contact",
+        "return-start",
+        "phase-change",
+        "camera-change",
+        "landing-marker",
+        "phase-change",
+        "result"
+      ],
+      "checks": {
+        "resultSuccess": true,
+        "requiredEvents": true,
+        "twoContacts": true,
+        "finiteBallState": true,
+        "canonicalOmegaY": true
+      }
+    },
+    {
+      "id": "mixed",
+      "label": "mixed omega",
+      "status": "pass",
+      "steps": 153,
+      "physicalTimeSec": 1.275,
+      "finalPhase": "result",
+      "finalSubphase": "success",
+      "physicsPhase": "result",
+      "flightLeg": "return",
+      "contactCount": 2,
+      "finalBall": {
+        "position": {
+          "x": 0.6089718298334726,
+          "y": 0.6419072536869235,
+          "z": 1.316830640354635
+        },
+        "velocity": {
+          "x": 0.36549654506683443,
+          "y": -3.7653445371271945,
+          "z": 0.8441121921821131
+        },
+        "omega": {
+          "x": 12.364262646532978,
+          "y": 70,
+          "z": 1.2137229944331338
+        },
+        "mass": 0.0027,
+        "inertia": 7.2e-7
+      },
+      "events": [
+        "round-start",
+        "phase-change",
+        "phase-change",
+        "video-handoff",
+        "camera-change",
+        "swing-start",
+        "camera-change",
+        "table-bounce",
+        "swing-ready",
+        "camera-change",
+        "racket-contact",
+        "return-start",
+        "phase-change",
+        "camera-change",
+        "landing-marker",
+        "phase-change",
+        "result"
+      ],
+      "checks": {
+        "resultSuccess": true,
+        "requiredEvents": true,
+        "twoContacts": true,
+        "finiteBallState": true,
+        "canonicalOmegaY": true
+      }
+    }
+  ]
+}

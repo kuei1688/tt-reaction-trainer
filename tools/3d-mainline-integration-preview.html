@@ -1,0 +1,445 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>3D mainline integration preview</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #091120;
+      --panel: #101d32;
+      --line: #294263;
+      --text: #edf4ff;
+      --muted: #9eb2cd;
+      --serve: #64b5ff;
+      --post: #ffb86b;
+      --return: #6ee7a8;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-width: 320px;
+      background: var(--bg);
+      color: var(--text);
+      font: 15px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif;
+    }
+    main { width: min(980px, calc(100% - 28px)); margin: 0 auto; padding: 24px 0 36px; }
+    h1 { margin: 0 0 6px; font-size: 1.35rem; font-weight: 500; }
+    .subtitle { margin: 0 0 16px; color: var(--muted); }
+    .controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: end; margin-bottom: 12px; }
+    label { display: grid; gap: 5px; color: var(--muted); font-size: .8rem; }
+    select, button {
+      min-height: 38px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #162640;
+      color: var(--text);
+      padding: 8px 12px;
+      font: inherit;
+    }
+    select { min-width: 220px; }
+    button { cursor: pointer; }
+    button:hover, button:focus-visible, select:focus-visible { outline: 2px solid #8ac8ff; outline-offset: 2px; }
+    button.primary { background: #24578b; }
+    .stage-wrap { border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: #08101d; }
+    canvas { display: block; width: 100%; height: auto; aspect-ratio: 900 / 540; }
+    .legend { display: flex; flex-wrap: wrap; gap: 14px; padding: 9px 12px; color: var(--muted); font-size: .8rem; }
+    .legend span { display: inline-flex; align-items: center; gap: 6px; }
+    .swatch { width: 18px; height: 3px; border-radius: 3px; display: inline-block; }
+    .readout { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin-top: 12px; }
+    .readout div { min-width: 0; padding: 9px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); }
+    dt { color: var(--muted); font-size: .75rem; }
+    dd { margin: 2px 0 0; overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
+    .event-line { margin: 12px 0 0; color: var(--muted); font-size: .84rem; }
+    .boundary { margin: 10px 0 0; color: var(--muted); font-size: .8rem; }
+    @media (max-width: 680px) {
+      main { width: min(100% - 18px, 980px); padding-top: 14px; }
+      .controls > * { flex: 1 1 140px; }
+      label, select { width: 100%; }
+      .readout { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+  </style>
+</head>
+<body>
+  <main id="integrationPreview">
+    <h1>3D mainline integration preview</h1>
+    <p class="subtitle">將 canonical BallState／omega 串過 serve、飛行、桌面接觸、球拍接觸與 return。</p>
+    <div class="controls" aria-label="整合預覽控制">
+      <label>情境
+        <select id="scenarioSelect">
+          <option value="zero">零旋轉</option>
+          <option value="side" selected>omega.y +（側旋）</option>
+          <option value="mixed">混合旋轉</option>
+        </select>
+      </label>
+      <button id="startButton" class="primary" type="button">開始流程</button>
+      <button id="playButton" type="button">播放</button>
+      <button id="stepButton" type="button">前進一步</button>
+      <button id="resetButton" type="button">重設</button>
+    </div>
+    <div class="stage-wrap">
+      <canvas id="stage" width="900" height="540" role="img" aria-label="3D mainline integration trajectory and contact preview"></canvas>
+      <div class="legend" aria-label="球路圖例">
+        <span><i class="swatch" style="background:var(--serve)"></i>serve flight</span>
+        <span><i class="swatch" style="background:var(--post)"></i>post-table flight</span>
+        <span><i class="swatch" style="background:var(--return)"></i>return flight</span>
+      </div>
+    </div>
+    <dl class="readout">
+      <div><dt>產品 phase</dt><dd id="phase">idle / ready</dd></div>
+      <div><dt>物理 phase</dt><dd id="physicsPhase">—</dd></div>
+      <div><dt>physical time</dt><dd id="time">0.000 s</dd></div>
+      <div><dt>camera</dt><dd id="camera">home → table</dd></div>
+      <div><dt>BallState position</dt><dd id="position">—</dd></div>
+      <div><dt>BallState velocity</dt><dd id="velocity">—</dd></div>
+      <div><dt>omega (rad/s)</dt><dd id="omega">—</dd></div>
+      <div><dt>contact</dt><dd id="contact">—</dd></div>
+    </dl>
+    <p id="eventLine" class="event-line">事件：尚未開始</p>
+    <p class="boundary">隔離整合預覽：讀取既有 shared core／mainline-v2 API；不代表材質校準、外部實驗精確重現或正式頁面升格。</p>
+  </main>
+
+  <script src="../shared-physics-core.js"></script>
+  <script src="../mainline-v2/trainer-state.js"></script>
+  <script src="../mainline-v2/physics-adapter.js"></script>
+  <script src="../mainline-v2/serve-data.js"></script>
+  <script src="../mainline-v2/contact-policy.js"></script>
+  <script src="../mainline-v2/trajectory-diagnostics.js"></script>
+  <script src="../mainline-v2/table-geometry.js"></script>
+  <script src="../mainline-v2/runtime.js"></script>
+  <script src="../mainline-v2/game5-product.js"></script>
+  <script>
+    (function () {
+      "use strict";
+
+      const root = document.getElementById("integrationPreview");
+      const canvas = root.querySelector("#stage");
+      const ctx = canvas.getContext("2d");
+      const scenarioSelect = root.querySelector("#scenarioSelect");
+      const startButton = root.querySelector("#startButton");
+      const playButton = root.querySelector("#playButton");
+      const stepButton = root.querySelector("#stepButton");
+      const resetButton = root.querySelector("#resetButton");
+      const phaseEl = root.querySelector("#phase");
+      const physicsPhaseEl = root.querySelector("#physicsPhase");
+      const timeEl = root.querySelector("#time");
+      const cameraEl = root.querySelector("#camera");
+      const positionEl = root.querySelector("#position");
+      const velocityEl = root.querySelector("#velocity");
+      const omegaEl = root.querySelector("#omega");
+      const contactEl = root.querySelector("#contact");
+      const eventLineEl = root.querySelector("#eventLine");
+      const TIME_DILATION = Math.sqrt(9.81 / 4.2);
+      const REAL_STEP = 1 / 120;
+      const VIDEO_HOLD_MS = 320;
+      const BALL_RADIUS = 0.02;
+      const TABLE = {width: 1.525, length: 2.74, top: 0.781};
+      const COLORS = {serve: "#64b5ff", post: "#ffb86b", return: "#6ee7a8"};
+
+      const scenarios = {
+        zero: {label: "零旋轉", omega: {x: 0, y: 0, z: 0}, velocity: {x: 0, y: 3.8, z: 2.2}},
+        side: {label: "omega.y +（側旋）", omega: {x: 42, y: 70, z: -15}, velocity: {x: 0.25, y: 3.8, z: 2.2}},
+        mixed: {label: "混合旋轉", omega: {x: 70, y: 70, z: -35}, velocity: {x: 0.25, y: 3.8, z: 2.2}},
+      };
+
+      let controller = null;
+      let state = {phase: "idle", subphase: "ready", camera: {mode: "home", target: "table"}, physics: null, events: []};
+      let clockMs = 0;
+      let trace = [];
+      let eventMarkers = [];
+      let running = false;
+      let animationId = 0;
+      let lastTimestamp = null;
+
+      function vector(value, fallback) {
+        const source = value || fallback || {x: 0, y: 0, z: 0};
+        return {x: Number(source.x) || 0, y: Number(source.y) || 0, z: Number(source.z) || 0};
+      }
+      function formatVector(value, digits) {
+        if (!value) return "—";
+        return `(${value.x.toFixed(digits)}, ${value.y.toFixed(digits)}, ${value.z.toFixed(digits)})`;
+      }
+      function cloneStateSnapshot(value) {
+        const physics = value && value.physics;
+        return {
+          phase: value && value.phase || "idle",
+          subphase: value && value.subphase || "ready",
+          camera: value && value.camera ? {...value.camera} : {mode: "home", target: "table"},
+          pendingSwing: value && value.pendingSwing ? {...value.pendingSwing} : null,
+          racketInterceptPoint: value && value.racketInterceptPoint ? {...value.racketInterceptPoint} : null,
+          physics: physics ? {
+            phase: physics.phase,
+            flightLeg: physics.flightLeg,
+            lastContact: physics.lastContact,
+            contactCount: physics.contactCount,
+            ball: {
+              position: vector(physics.ball && physics.ball.position),
+              velocity: vector(physics.ball && physics.ball.velocity),
+              omega: vector(physics.ball && physics.ball.omega),
+            },
+          } : null,
+        };
+      }
+      function createPreset(config) {
+        return {
+          schema: 2,
+          id: `isolated-${scenarioSelect.value}`,
+          type: "serve",
+          start: {x: 0, y: 1, z: -1.1},
+          firstBounce: {x: 0, y: TABLE.top, z: -0.1},
+          secondBounce: {x: 0, y: TABLE.top, z: 0.8},
+          variation: {
+            velocity: vector(config.velocity),
+            spin3d: {schema: 2, omega: vector(config.omega)},
+          },
+          solve: {gravity: -4.2, timeToFirst: 0.74},
+          tags: {source: "isolated-mainline-integration-preview", scenario: scenarioSelect.value},
+        };
+      }
+      function createRuntime(preset) {
+        const core = MainlineV2Physics.resolveSharedCore(window);
+        const scaleAdapter = MainlineV2Physics.createScaleAdapter({
+          core,
+          timeDilation: TIME_DILATION,
+          simulationGravity: -4.2,
+        });
+        return MainlineV2Runtime.createRuntime({
+          core,
+          preset,
+          scaleAdapter,
+          contactPolicy: MainlineV2Contact.createContactPolicy(),
+          contactApi: MainlineV2Contact,
+          stateApi: MainlineV2State,
+          serveData: MainlineV2ServeData,
+          trajectoryDiagnostics: MainlineV2TrajectoryDiagnostics,
+          tableGeometry: MainlineV2TableGeometry.PHYSICAL_TABLE_REFERENCE,
+        });
+      }
+      function recordSnapshot(value) {
+        const snapshot = cloneStateSnapshot(value);
+        state = value;
+        if (!snapshot.physics) return;
+        trace.push({time: clockMs / 1000, ...snapshot});
+      }
+      function onEvent(event, snapshot) {
+        state = snapshot;
+        if (event.type === "table-bounce" || event.type === "racket-contact" || event.type === "return-start") {
+          const point = event.point || event.interceptPoint || (snapshot.physics && snapshot.physics.ball && snapshot.physics.ball.position);
+          if (point) eventMarkers.push({type: event.type, point: vector(point), time: clockMs / 1000});
+        }
+      }
+      function buildController() {
+        const config = scenarios[scenarioSelect.value];
+        const preset = createPreset(config);
+        const round = {preset, video: {id: "isolated-video", src: "isolated://mainline-v2", contactTimeSec: 0.32}};
+        return MainlineV2Game5Product.createController({
+          round,
+          runtimeFactory: createRuntime,
+          now: () => clockMs,
+          swingDelayMs: 140,
+          dtSimulation: 1 / 120,
+          racketInterceptDurationSimulation: 0.3,
+          returnDurationSimulation: 0.42,
+          trajectoryDiagnostics: MainlineV2TrajectoryDiagnostics,
+          tableGeometry: MainlineV2TableGeometry.PHYSICAL_TABLE_REFERENCE,
+          onEvent,
+        });
+      }
+      function reset() {
+        running = false;
+        lastTimestamp = null;
+        clockMs = 0;
+        trace = [];
+        eventMarkers = [];
+        controller = null;
+        state = {phase: "idle", subphase: "ready", camera: {mode: "home", target: "table"}, physics: null, events: []};
+        playButton.textContent = "播放";
+        render();
+      }
+      function startRound() {
+        reset();
+        controller = buildController();
+        recordSnapshot(controller.startRound());
+        render();
+      }
+      function chooseDefaultReturn() {
+        if (!controller || state.phase !== "serve" || state.pendingSwing) return;
+        recordSnapshot(controller.chooseReturn({technique: "push", side: "backhand", direction: "right"}));
+      }
+      function manualStep() {
+        if (!controller) return;
+        if (state.phase === "video") {
+          recordSnapshot(controller.handoff("manual-preview"));
+          chooseDefaultReturn();
+        } else if (state.phase === "serve" && !state.pendingSwing) {
+          chooseDefaultReturn();
+        } else if (state.phase === "serve" || state.phase === "return") {
+          clockMs += REAL_STEP * 1000;
+          recordSnapshot(controller.step(TIME_DILATION * REAL_STEP));
+        }
+        render();
+      }
+      function advanceFrame(wallDelta) {
+        if (!controller || !state) return;
+        clockMs += wallDelta * 1000;
+        if (state.phase === "video" && clockMs >= VIDEO_HOLD_MS) {
+          recordSnapshot(controller.handoff("timed-preview"));
+          chooseDefaultReturn();
+        }
+        if (state.phase === "serve" || state.phase === "return") {
+          recordSnapshot(controller.step(TIME_DILATION * wallDelta));
+        }
+        if (state.phase === "result") running = false;
+      }
+      function tick(timestamp) {
+        if (running) {
+          if (lastTimestamp === null) lastTimestamp = timestamp;
+          else {
+            const wallDelta = Math.min(0.05, Math.max(0, (timestamp - lastTimestamp) / 1000));
+            lastTimestamp = timestamp;
+            advanceFrame(wallDelta);
+          }
+        } else {
+          lastTimestamp = null;
+        }
+        playButton.textContent = running ? "暫停" : "播放";
+        render();
+        animationId = requestAnimationFrame(tick);
+      }
+      function project(point) {
+        const scale = 150;
+        return {
+          x: canvas.width * 0.5 + (point.x - point.z * 0.32) * scale,
+          y: canvas.height * 0.79 - (point.y - TABLE.top) * scale - point.z * 0.14 * scale,
+        };
+      }
+      function drawTable() {
+        const corners = [
+          {x: -TABLE.width / 2, y: TABLE.top, z: -TABLE.length / 2},
+          {x: TABLE.width / 2, y: TABLE.top, z: -TABLE.length / 2},
+          {x: TABLE.width / 2, y: TABLE.top, z: TABLE.length / 2},
+          {x: -TABLE.width / 2, y: TABLE.top, z: TABLE.length / 2},
+        ].map(project);
+        ctx.beginPath();
+        ctx.moveTo(corners[0].x, corners[0].y);
+        corners.slice(1).forEach((point) => ctx.lineTo(point.x, point.y));
+        ctx.closePath();
+        ctx.fillStyle = "rgba(255, 184, 107, .14)";
+        ctx.fill();
+        ctx.strokeStyle = "#ffb86b";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        const netA = project({x: -TABLE.width / 2, y: TABLE.top, z: 0});
+        const netB = project({x: TABLE.width / 2, y: TABLE.top, z: 0});
+        ctx.beginPath();
+        ctx.moveTo(netA.x, netA.y);
+        ctx.lineTo(netB.x, netB.y);
+        ctx.strokeStyle = "rgba(255, 255, 255, .55)";
+        ctx.setLineDash([6, 5]);
+        ctx.stroke();
+        ctx.setLineDash([]);
+      }
+      function traceColor(item) {
+        if (item.physics && item.physics.flightLeg === "return") return COLORS.return;
+        if (item.physics && (item.physics.flightLeg === "post-table" || item.physics.lastContact === "table")) return COLORS.post;
+        return COLORS.serve;
+      }
+      function drawTrace() {
+        for (let index = 1; index < trace.length; index += 1) {
+          const before = trace[index - 1];
+          const current = trace[index];
+          if (!before.physics || !current.physics) continue;
+          const a = project(before.physics.ball.position);
+          const b = project(current.physics.ball.position);
+          ctx.beginPath();
+          ctx.moveTo(a.x, a.y);
+          ctx.lineTo(b.x, b.y);
+          ctx.strokeStyle = traceColor(current);
+          ctx.lineWidth = 3;
+          ctx.stroke();
+        }
+      }
+      function drawMarkers() {
+        eventMarkers.forEach((marker) => {
+          const point = project(marker.point);
+          ctx.beginPath();
+          ctx.arc(point.x, point.y, marker.type === "racket-contact" ? 8 : 6, 0, Math.PI * 2);
+          ctx.strokeStyle = marker.type === "racket-contact" ? COLORS.return : COLORS.post;
+          ctx.lineWidth = 2;
+          ctx.stroke();
+        });
+        if (state && state.racketInterceptPoint) {
+          const point = project(state.racketInterceptPoint);
+          ctx.save();
+          ctx.translate(point.x + 18, point.y);
+          ctx.rotate(-0.28);
+          ctx.strokeStyle = "rgba(255, 120, 120, .9)";
+          ctx.lineWidth = 4;
+          ctx.strokeRect(-14, -28, 28, 56);
+          ctx.restore();
+        }
+      }
+      function drawBall() {
+        const ball = state && state.physics && state.physics.ball;
+        if (!ball) return;
+        const point = project(ball.position);
+        ctx.beginPath();
+        ctx.arc(point.x, point.y, 8, 0, Math.PI * 2);
+        ctx.fillStyle = "#ffffff";
+        ctx.fill();
+        ctx.strokeStyle = traceColor({physics: state.physics});
+        ctx.lineWidth = 3;
+        ctx.stroke();
+        const tip = project({x: ball.position.x + ball.velocity.x * 0.08, y: ball.position.y + ball.velocity.y * 0.08, z: ball.position.z + ball.velocity.z * 0.08});
+        ctx.beginPath();
+        ctx.moveTo(point.x, point.y);
+        ctx.lineTo(tip.x, tip.y);
+        ctx.strokeStyle = "rgba(255,255,255,.72)";
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      }
+      function render() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+        gradient.addColorStop(0, "#0c1930");
+        gradient.addColorStop(1, "#08101d");
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        drawTable();
+        drawTrace();
+        drawMarkers();
+        drawBall();
+
+        const physics = state && state.physics;
+        const ball = physics && physics.ball;
+        phaseEl.textContent = `${state.phase || "idle"} / ${state.subphase || "ready"}`;
+        physicsPhaseEl.textContent = physics ? `${physics.phase} / ${physics.flightLeg || "—"}` : "—";
+        timeEl.textContent = `${(clockMs / 1000).toFixed(3)} s`;
+        cameraEl.textContent = state.camera ? `${state.camera.mode} → ${state.camera.target}` : "—";
+        positionEl.textContent = ball ? formatVector(ball.position, 2) : "—";
+        velocityEl.textContent = ball ? formatVector(ball.velocity, 2) : "—";
+        omegaEl.textContent = ball ? `${formatVector(ball.omega, 1)} rad/s` : "—";
+        contactEl.textContent = physics ? `${physics.lastContact || "尚未接觸"} / ${physics.contactCount || 0}` : "—";
+        const recentEvents = state && Array.isArray(state.events) ? state.events.slice(-4).map((event) => event.type).join(" → ") : "尚未開始";
+        eventLineEl.textContent = `事件：${recentEvents}`;
+        playButton.textContent = running ? "暫停" : "播放";
+      }
+
+      scenarioSelect.addEventListener("change", reset);
+      startButton.addEventListener("click", startRound);
+      playButton.addEventListener("click", () => {
+        if (!controller) startRound();
+        running = !running;
+        lastTimestamp = null;
+        render();
+      });
+      stepButton.addEventListener("click", manualStep);
+      resetButton.addEventListener("click", reset);
+      reset();
+      animationId = requestAnimationFrame(tick);
+      window.addEventListener("beforeunload", () => cancelAnimationFrame(animationId), {once: true});
+    }());
+  </script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+{
+  "phase": "Phase 0",
+  "source": "current dirty worktree",
+  "tests": {
+    "node tools/physics-3d-spin.test.js": "pass",
+    "node tools/serve-generator-contract.test.js": "pass: 47 approved videos",
+    "node tools/load-game4-physics.js": "pass: readiness output produced",
+    "node tools/load-return-studio-physics.js": "pass: readiness output produced",
+    "inlineJavaScriptSyntax": "pass: game4, game5, return-studio, physics-studio, serve-generator"
+  },
+  "architectureObservations": [
+    "SPIN3D_SCHEMA_VERSION is 1, not the planned schema 2.",
+    "physics3dResolveOmega re-injects axialSpin from current velocity during force/contact evaluation.",
+    "bounceWithSpinPhysical3D maps omega.x and omega.z into the legacy table bounce kernel.",
+    "page files duplicate contact and scale conversion logic.",
+    "physics-studio.html still uses the legacy table bounce call for its non-3D branch.",
+    "No real-world trajectory or direct rotation measurement is present in this baseline."
+  ],
+  "notRun": [
+    "tools/serve-batch-validation.test.js was not rerun because it writes the tracked AI_CONTEXT/test_output.txt report; an existing 2026-07-15 report remains preserved."
+  ]
+}

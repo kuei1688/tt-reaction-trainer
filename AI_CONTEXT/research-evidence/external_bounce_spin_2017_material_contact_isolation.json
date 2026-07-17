@@ -1,0 +1,144 @@
+{
+  "status": "pass",
+  "benchmark": "Isolated material/contact-law experiment",
+  "calibrationStatus": "not-calibrated",
+  "scope": "effective ball/table contact proxies only; no formal model mutation",
+  "source": {
+    "sourceId": "JSME-2017-G0500606",
+    "csv": "AI_CONTEXT/external_bounce_spin_2017_figure_digitization.csv",
+    "pdf": "C:\\Users\\Kevin\\Downloads\\2017_G0500606.pdf",
+    "rowsRead": 24,
+    "dataQuality": "figure_digitized_approx",
+    "semanticContract": "table-plane angle, scalar speed, rotation magnitude, omega.x sign candidates",
+    "pairingCaveat": "2017 data are level ranges without per-ball before/after pairing"
+  },
+  "physicalStateContract": {
+    "schema": 2,
+    "tableNormal": {"x": 0, "y": 1, "z": 0},
+    "ballRadiusM": 0.02,
+    "ballMassKg": 0.0027,
+    "ballInertiaModel": "thin-shell I=(2/3)mr^2",
+    "inputVelocity": "{x:0, y:-speed*sin(angle), z:speed*cos(angle)}",
+    "inputOmega": "{x:sign*2π*rps, y:0, z:0}",
+    "outputBoundary": "raw table contact response before post-table flight integration"
+  },
+  "materialProxyGrid": {
+    "interpretation": "diagnostic brackets around the current effective policy; not extracted material constants or standards",
+    "springNPerM": [3000, 6000, 12000],
+    "dampingNsPerM": [2, 4, 8],
+    "frictionCoefficient": [0.08, 0.13, 0.25],
+    "contactDurationS": [0.002, 0.003, 0.0045],
+    "contactDtS": 0.00025,
+    "contactSteps": [8, 12, 18],
+    "variantCount": 81,
+    "currentPolicy": {
+      "springNPerM": 6000,
+      "dampingNsPerM": 4,
+      "frictionCoefficient": 0.13,
+      "contactDurationS": 0.003
+    }
+  },
+  "normalImpactExperiment": {
+    "input": {
+      "type": "pure normal impact",
+      "tablePlaneIncidentAngleDeg": 90,
+      "speedSweepMps": [4, 6, 8, 10],
+      "rotationRps": 0,
+      "note": "diagnostic speed sweep; not a direct measurement from the 2017 paper"
+    },
+    "materialVariantCount": 81,
+    "effectiveRestitutionEnvelopeAcrossGrid": [0.339754, 2.196858],
+    "energyRatioEnvelopeAcrossGrid": [0.115433, 4.826186],
+    "energyIncreaseSamples": 108,
+    "totalSamples": 324,
+    "currentPolicyBySpeed": [
+      {"speedMps": 4, "effectiveRestitution": 0.863639, "energyRatio": 0.745872, "outgoingNormalVelocityMps": 3.454554},
+      {"speedMps": 6, "effectiveRestitution": 0.863639, "energyRatio": 0.745872, "outgoingNormalVelocityMps": 5.181832},
+      {"speedMps": 8, "effectiveRestitution": 0.863639, "energyRatio": 0.745872, "outgoingNormalVelocityMps": 6.909109},
+      {"speedMps": 10, "effectiveRestitution": 0.863639, "energyRatio": 0.745872, "outgoingNormalVelocityMps": 8.636386}
+    ],
+    "frictionRegimes": {"rolling": 324}
+  },
+  "obliqueSpinExperiment": {
+    "method": {
+      "inputRanges": "full-factorial 9-point grid inside each 2017 before range",
+      "omegaSigns": [-1, 1],
+      "materialVariants": 81,
+      "totalSamples": 262440,
+      "parameterFitting": false
+    },
+    "levels": [
+      {
+        "lowerDiskLevel": 0,
+        "globalAcrossMaterialEnvelope": {"angleDeg": [6.713, 54.680], "rotationRps": [70.589, 116.479], "speedMps": [6.705, 12.618]},
+        "externalAfter": {"angleDeg": [14.2, 14.6], "rotationRps": [81.9, 95.7], "speedMps": [10.5, 16.0]},
+        "globalEnvelopeIntersects": {"angleDeg": true, "rotationRps": true, "speedMps": true},
+        "globalSampleHits": {"angleDeg": 279, "rotationRps": 3466, "speedMps": 612, "jointAllThree": 0},
+        "globalEnergyIncreaseCount": 994,
+        "globalFrictionRegimes": {"sliding": 13051, "rolling": 71},
+        "materialVariantsWithAllThreeEnvelopeIntersection": 0,
+        "materialVariantsWithJointSampleMatch": 0,
+        "maxScalarMetricsIntersectingForOneVariant": 2,
+        "currentPolicy": {"envelopeIntersects": {"angleDeg": false, "rotationRps": true, "speedMps": false}, "jointAllThree": 0, "energyIncreaseCount": 0}
+      },
+      {
+        "lowerDiskLevel": 2,
+        "globalAcrossMaterialEnvelope": {"angleDeg": [5.934, 54.680], "rotationRps": [6.479, 64.496], "speedMps": [7.583, 12.113]},
+        "externalAfter": {"angleDeg": [18.2, 19.9], "rotationRps": [65.1, 65.1], "speedMps": [9.0, 9.0]},
+        "globalEnvelopeIntersects": {"angleDeg": true, "rotationRps": false, "speedMps": true},
+        "globalSampleHits": {"angleDeg": 744, "rotationRps": 0, "speedMps": 0, "jointAllThree": 0},
+        "globalEnergyIncreaseCount": 1831,
+        "globalFrictionRegimes": {"sliding": 11929, "rolling": 1193},
+        "materialVariantsWithAllThreeEnvelopeIntersection": 0,
+        "materialVariantsWithJointSampleMatch": 0,
+        "maxScalarMetricsIntersectingForOneVariant": 2,
+        "currentPolicy": {"envelopeIntersects": {"angleDeg": true, "rotationRps": false, "speedMps": true}, "jointAllThree": 0, "energyIncreaseCount": 0}
+      },
+      {
+        "lowerDiskLevel": 4,
+        "globalAcrossMaterialEnvelope": {"angleDeg": [5.817, 40.924], "rotationRps": [0.001, 67.260], "speedMps": [8.939, 11.626]},
+        "externalAfter": {"angleDeg": [17.8, 19.1], "rotationRps": [49.8, 49.8], "speedMps": [8.2, 9.3]},
+        "globalEnvelopeIntersects": {"angleDeg": true, "rotationRps": true, "speedMps": true},
+        "globalSampleHits": {"angleDeg": 5994, "rotationRps": 0, "speedMps": 32809, "jointAllThree": 0},
+        "globalEnergyIncreaseCount": 10840,
+        "globalFrictionRegimes": {"sliding": 117057, "rolling": 1041},
+        "materialVariantsWithAllThreeEnvelopeIntersection": 1,
+        "materialVariantsWithJointSampleMatch": 0,
+        "maxScalarMetricsIntersectingForOneVariant": 3,
+        "closestMaterialVariants": [
+          {"spring": 6000, "damping": 4, "friction": 0.25, "contactDuration": 0.0045, "jointAllThree": 0, "energyIncreaseCount": 0}
+        ],
+        "currentPolicy": {"envelopeIntersects": {"angleDeg": false, "rotationRps": true, "speedMps": false}, "jointAllThree": 0, "energyIncreaseCount": 0}
+      },
+      {
+        "lowerDiskLevel": 6,
+        "globalAcrossMaterialEnvelope": {"angleDeg": [5.088, 36.835], "rotationRps": [2.734, 56.666], "speedMps": [8.918, 11.495]},
+        "externalAfter": {"angleDeg": [17.7, 19.4], "rotationRps": [46.3, 52.5], "speedMps": [8.8, 9.2]},
+        "globalEnvelopeIntersects": {"angleDeg": true, "rotationRps": true, "speedMps": true},
+        "globalSampleHits": {"angleDeg": 6480, "rotationRps": 4686, "speedMps": 14652, "jointAllThree": 54},
+        "globalEnergyIncreaseCount": 7971,
+        "globalFrictionRegimes": {"sliding": 118098},
+        "materialVariantsWithAllThreeEnvelopeIntersection": 2,
+        "materialVariantsWithJointSampleMatch": 2,
+        "maxScalarMetricsIntersectingForOneVariant": 3,
+        "jointMatchMaterialVariants": [
+          {"spring": 3000, "damping": 2, "friction": 0.25, "contactDuration": 0.0045, "jointAllThree": 23, "energyIncreaseCount": 0},
+          {"spring": 12000, "damping": 4, "friction": 0.25, "contactDuration": 0.002, "jointAllThree": 31, "energyIncreaseCount": 0}
+        ],
+        "currentPolicy": {"envelopeIntersects": {"angleDeg": false, "rotationRps": false, "speedMps": false}, "jointAllThree": 0, "energyIncreaseCount": 0}
+      }
+    ]
+  },
+  "warnings": [
+    "The broad proxy grid contains nonphysical energy-increasing cases; effective restitution above 1 is a rejection diagnostic, not a candidate material result.",
+    "The level-6 joint matches use independent before-range combinations and do not reconstruct a measured ball.",
+    "No real material standard or contact measurement was directly applied in this experiment."
+  ],
+  "decision": {
+    "parameterTuningAuthorized": false,
+    "formalPromotionAuthorized": false,
+    "materialSpecsDirectlyApplied": false,
+    "interpretation": "Contact-law parameters can plausibly move the mismatch, especially at levels 4 and 6, but the current sweep is only a sensitivity screen and is too broad to identify real material properties.",
+    "nextGate": "Use measured normal and oblique contact data to constrain effective restitution, dwell, damping, and friction before any R1 proposal."
+  }
+}

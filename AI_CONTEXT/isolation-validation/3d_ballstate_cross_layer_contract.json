@@ -1,0 +1,362 @@
+{
+  "status": "pass",
+  "date": "2026-07-17T06:26:02.825Z",
+  "scope": "3D physics scope reset acceptance #5: same BallState read consistently across layers; display layer must not write back",
+  "acceptance": "qualitative representability only; no 2017 benchmark fitting, material identification, or parameter tuning",
+  "passCount": 10,
+  "failCount": 0,
+  "checks": [
+    {
+      "id": "CROSS-001",
+      "status": "pass",
+      "description": "physics3dAdvanceVelocity: input BallState object unchanged after call",
+      "details": {
+        "snapshot": {
+          "position": {
+            "x": 0.1,
+            "y": 0.8,
+            "z": -0.4
+          },
+          "velocity": {
+            "x": 1.1,
+            "y": -2.2,
+            "z": 0.3
+          },
+          "omega": {
+            "x": 14,
+            "y": -9,
+            "z": 22
+          },
+          "mass": 0.0027,
+          "inertia": 7.2e-7
+        },
+        "after": {
+          "position": {
+            "x": 0.1,
+            "y": 0.8,
+            "z": -0.4
+          },
+          "velocity": {
+            "x": 1.1,
+            "y": -2.2,
+            "z": 0.3
+          },
+          "omega": {
+            "x": 14,
+            "y": -9,
+            "z": 22
+          },
+          "mass": 0.0027,
+          "inertia": 7.2e-7
+        }
+      }
+    },
+    {
+      "id": "CROSS-002",
+      "status": "pass",
+      "description": "physics3dSolvePlaneContact: input BallState object unchanged after contact solve",
+      "details": {
+        "snapshot": {
+          "position": {
+            "x": 0.1,
+            "y": 0.05,
+            "z": -0.2
+          },
+          "velocity": {
+            "x": 0.4,
+            "y": -2,
+            "z": 0.7
+          },
+          "omega": {
+            "x": 25,
+            "y": -18,
+            "z": 33
+          },
+          "mass": 0.0027,
+          "inertia": 7.2e-7
+        },
+        "after": {
+          "position": {
+            "x": 0.1,
+            "y": 0.05,
+            "z": -0.2
+          },
+          "velocity": {
+            "x": 0.4,
+            "y": -2,
+            "z": 0.7
+          },
+          "omega": {
+            "x": 25,
+            "y": -18,
+            "z": 33
+          },
+          "mass": 0.0027,
+          "inertia": 7.2e-7
+        }
+      }
+    },
+    {
+      "id": "CROSS-003",
+      "status": "pass",
+      "description": "contactApi.solveTableContact: input BallState object unchanged after table contact",
+      "details": {
+        "snapshot": {
+          "position": {
+            "x": 0.1,
+            "y": 0.05,
+            "z": -0.2
+          },
+          "velocity": {
+            "x": 0.4,
+            "y": -2,
+            "z": 0.7
+          },
+          "omega": {
+            "x": 25,
+            "y": -18,
+            "z": 33
+          },
+          "mass": 0.0027,
+          "inertia": 7.2e-7
+        },
+        "after": {
+          "position": {
+            "x": 0.1,
+            "y": 0.05,
+            "z": -0.2
+          },
+          "velocity": {
+            "x": 0.4,
+            "y": -2,
+            "z": 0.7
+          },
+          "omega": {
+            "x": 25,
+            "y": -18,
+            "z": 33
+          },
+          "mass": 0.0027,
+          "inertia": 7.2e-7
+        }
+      }
+    },
+    {
+      "id": "CROSS-004",
+      "status": "pass",
+      "description": "contactApi.solveGame5RacketContact: input BallState object unchanged after racket contact",
+      "details": {
+        "snapshot": {
+          "position": {
+            "x": 0,
+            "y": 0.5,
+            "z": 0.5
+          },
+          "velocity": {
+            "x": 0,
+            "y": 1.5,
+            "z": 1.2
+          },
+          "omega": {
+            "x": 20,
+            "y": 5,
+            "z": -10
+          },
+          "mass": 0.0027,
+          "inertia": 7.2e-7
+        },
+        "after": {
+          "position": {
+            "x": 0,
+            "y": 0.5,
+            "z": 0.5
+          },
+          "velocity": {
+            "x": 0,
+            "y": 1.5,
+            "z": 1.2
+          },
+          "omega": {
+            "x": 20,
+            "y": 5,
+            "z": -10
+          },
+          "mass": 0.0027,
+          "inertia": 7.2e-7
+        }
+      }
+    },
+    {
+      "id": "CROSS-005",
+      "status": "pass",
+      "description": "scaleAdapter.advanceSimulationState: input BallState object unchanged after flight integration step",
+      "details": {
+        "snapshot": {
+          "position": {
+            "x": 0,
+            "y": 1,
+            "z": -1.1
+          },
+          "velocity": {
+            "x": 0.1,
+            "y": 3.8,
+            "z": 0.95
+          },
+          "omega": {
+            "x": 42,
+            "y": 70,
+            "z": -15
+          },
+          "mass": 0.0027,
+          "inertia": 7.2e-7
+        },
+        "after": {
+          "position": {
+            "x": 0,
+            "y": 1,
+            "z": -1.1
+          },
+          "velocity": {
+            "x": 0.1,
+            "y": 3.8,
+            "z": 0.95
+          },
+          "omega": {
+            "x": 42,
+            "y": 70,
+            "z": -15
+          },
+          "mass": 0.0027,
+          "inertia": 7.2e-7
+        }
+      }
+    },
+    {
+      "id": "CROSS-006",
+      "status": "pass",
+      "description": "contact response state has schema-2 omega vector (no label reinterpretation)",
+      "details": {
+        "omega": {
+          "x": 31,
+          "y": -18,
+          "z": 1.1999999999999957
+        },
+        "fields": [
+          "position",
+          "velocity",
+          "omega",
+          "mass",
+          "inertia"
+        ]
+      }
+    },
+    {
+      "id": "CROSS-007",
+      "status": "pass",
+      "description": "cloneBallState: mutating the clone does not affect the original",
+      "details": {
+        "originalSnapshot": {
+          "position": {
+            "x": 0.1,
+            "y": 0.05,
+            "z": -0.2
+          },
+          "velocity": {
+            "x": 0.4,
+            "y": -2,
+            "z": 0.7
+          },
+          "omega": {
+            "x": 25,
+            "y": -18,
+            "z": 33
+          },
+          "mass": 0.0027,
+          "inertia": 7.2e-7
+        },
+        "cloneAfterMutation": {
+          "position": {
+            "x": 99,
+            "y": 0.05,
+            "z": -0.2
+          },
+          "velocity": {
+            "x": 0.4,
+            "y": -99,
+            "z": 0.7
+          },
+          "omega": {
+            "x": 25,
+            "y": -18,
+            "z": 99
+          },
+          "mass": 0.999,
+          "inertia": 7.2e-7
+        }
+      }
+    },
+    {
+      "id": "CROSS-008",
+      "status": "pass",
+      "description": "legacy adapter returns schema-2 spin3d with omega vector; rejects invalid input",
+      "details": {
+        "schema": 2,
+        "omega": {
+          "x": 25,
+          "y": 0,
+          "z": 10
+        },
+        "rejectedNull": true,
+        "rejectedMixed": true
+      }
+    },
+    {
+      "id": "CROSS-009",
+      "status": "pass",
+      "description": "display-layer read pass: reading ball.position/velocity/omega does not modify physics state",
+      "details": {
+        "renderInfo": {
+          "posX": 0.1,
+          "posY": 0.8,
+          "posZ": -0.4,
+          "velX": 1.1,
+          "velY": -2.2,
+          "velZ": 0.3,
+          "omegaX": 14,
+          "omegaY": -9,
+          "omegaZ": 22,
+          "speed": 2.4779023386727737,
+          "omegaNorm": 27.586228448267445
+        },
+        "after": {
+          "position": {
+            "x": 0.1,
+            "y": 0.8,
+            "z": -0.4
+          },
+          "velocity": {
+            "x": 1.1,
+            "y": -2.2,
+            "z": 0.3
+          },
+          "omega": {
+            "x": 14,
+            "y": -9,
+            "z": 22
+          },
+          "mass": 0.0027,
+          "inertia": 7.2e-7
+        }
+      }
+    },
+    {
+      "id": "CROSS-010",
+      "status": "pass",
+      "description": "mainline-v2 runtime/view/product: no BallState write-back outside state construction and contact response",
+      "details": {
+        "filesChecked": 9,
+        "violations": []
+      }
+    }
+  ]
+}

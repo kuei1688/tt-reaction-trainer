@@ -1,0 +1,518 @@
+{
+  "batch_date": "2026-07-15T04:00:36.280Z",
+  "model": "kimi-k2.7-code:cloud",
+  "total_videos": 48,
+  "results": [
+    {
+      "source_video": "contact_backspin_001.mp4",
+      "status": "skipped",
+      "draft_path": "C:\\Users\\Kevin\\Documents\\Codex\\2026-06-16\\files-mentioned-by-the-user-tt\\outputs\\tt-reaction-trainer-pages\\prototypes\\video-physics-timeline\\tools\\auto-contact-tagger\\batch-out\\contact_backspin_001.draft.json",
+      "contact_time_sec": 4.25,
+      "fps": 60,
+      "truth_sec": 4.3,
+      "error_frames": 3
+    },
+    {
+      "source_video": "contact_backspin_002.mp4",
+      "status": "skipped",
+      "draft_path": "C:\\Users\\Kevin\\Documents\\Codex\\2026-06-16\\files-mentioned-by-the-user-tt\\outputs\\tt-reaction-trainer-pages\\prototypes\\video-physics-timeline\\tools\\auto-contact-tagger\\batch-out\\contact_backspin_002.draft.json",
+      "contact_time_sec": 0.55,
+      "fps": 60
+    },
+    {
+      "source_video": "contact_backspin_003.mp4",
+      "status": "skipped",
+      "draft_path": "C:\\Users\\Kevin\\Documents\\Codex\\2026-06-16\\files-mentioned-by-the-user-tt\\outputs\\tt-reaction-trainer-pages\\prototypes\\video-physics-timeline\\tools\\auto-contact-tagger\\batch-out\\contact_backspin_003.draft.json",
+      "contact_time_sec": 1.1333333333333333,
+      "fps": 60
+    },
+    {
+      "source_video": "contact_backspin_004.mp4",
+      "status": "skipped",
+      "draft_path": "C:\\Users\\Kevin\\Documents\\Codex\\2026-06-16\\files-mentioned-by-the-user-tt\\outputs\\tt-reaction-trainer-pages\\prototypes\\video-physics-timeline\\tools\\auto-contact-tagger\\batch-out\\contact_backspin_004.draft.json",
+      "contact_time_sec": 1,
+      "fps": 60
+    },
+    {
+      "source_video": "contact_backspin_005.mp4",
+      "status": "skipped",
+      "draft_path": "C:\\Users\\Kevin\\Documents\\Codex\\2026-06-16\\files-mentioned-by-the-user-tt\\outputs\\tt-reaction-trainer-pages\\prototypes\\video-physics-timeline\\tools\\auto-contact-tagger\\batch-out\\contact_backspin_005.draft.json",
+      "contact_time_sec": 1.05,
+      "fps": 60
+    },
+    {
+      "source_video": "contact_backspin_006.mp4",
+      "status": "skipped",
+      "draft_path": "C:\\Users\\Kevin\\Documents\\Codex\\2026-06-16\\files-mentioned-by-the-user-tt\\outputs\\tt-reaction-trainer-pages\\prototypes\\video-physics-timeline\\tools\\auto-contact-tagger\\batch-out\\contact_backspin_006.draft.json",
+      "contact_time_sec": 0.6333333333333333,
+      "fps": 30
+    },
+    {
+      "source_video": "contact_backspin_007.mp4",
+      "status": "skipped",
+      "draft_path": "C:\\Users\\Kevin\\Documents\\Codex\\2026-06-16\\files-mentioned-by-the-user-tt\\outputs\\tt-reaction-trainer-pages\\prototypes\\video-physics-timeline\\tools\\auto-contact-tagger\\batch-out\\contact_backspin_007.draft.json",
+      "contact_time_sec": 1,
+      "fps": 30
+    },
+    {
+      "source_video": "contact_backspin_008.mp4",
+      "status": "skipped",
+      "draft_path": "C:\\Users\\Kevin\\Documents\\Codex\\2026-06-16\\files-mentioned-by-the-user-tt\\outputs\\tt-reaction-trainer-pages\\prototypes\\video-physics-timeline\\tools\\auto-contact-tagger\\batch-out\\contact_backspin_008.draft.json",
+      "contact_time_sec": 1,
+      "fps": 30
+    },
+    {
+      "source_video": "contact_backspin_009.mp4",
+      "status": "skipped",
+      "draft_path": "C:\\Users\\Kevin\\Documents\\Codex\\2026-06-16\\files-mentioned-by-the-user-tt\\outputs\\tt-reaction-trainer-pages\\prototypes\\video-physics-timeline\\tools\\auto-contact-tagger\\batch-out\\contact_backspin_009.draft.json",
+      "contact_time_sec": 1.0333333333333334,
+      "fps": 30
+    },
+    {
+      "source_video": "contact_backspin_010.mp4",
+      "status": "skipped",
+      "draft_path": "C:\\Users\\Kevin\\Documents\\Codex\\2026-06-16\\files-mentioned-by-the-user-tt\\outputs\\tt-reaction-trainer-pages\\prototypes\\video-physics-timeline\\tools\\auto-contact-tagger\\batch-out\\contact_backspin_010.draft.json",
+      "contact_time_sec": 0.6666666666666666,
+      "fps": 30
+    },
+    {
+      "source_video": "contact_nospin_001.mp4",
+      "status": "skipped",
+      "draft_path": "C:\\Users\\Kevin\\Documents\\Codex\\2026-06-16\\files-mentioned-by-the-user-tt\\outputs\\tt-reaction-trainer-pages\\prototypes\\video-physics-timeline\\tools\\auto-contact-tagger\\batch-out\\contact_nospin_001.draft.json",
+      "contact_time_sec": 1.2,
+      "fps": 60
+    },
+    {
+      "source_video": "contact_nospin_002.mp4",
+      "status": "skipped",
+      "draft_path": "C:\\Users\\Kevin\\Documents\\Codex\\2026-06-16\\files-mentioned-by-the-user-tt\\outputs\\tt-reaction-trainer-pages\\prototypes\\video-physics-timeline\\tools\\auto-contact-tagger\\batch-out\\contact_nospin_002.draft.json",
+      "contact_time_sec": 1.1,
+      "fps": 30
+    },
+    {
+      "source_video": "contact_nospin_003.mp4",
+      "status": "skipped",
+      "draft_path": "C:\\Users\\Kevin\\Documents\\Codex\\2026-06-16\\files-mentioned-by-the-user-tt\\outputs\\tt-reaction-trainer-pages\\prototypes\\video-physics-timeline\\tools\\auto-contact-tagger\\batch-out\\contact_nospin_003.draft.json",
+      "contact_time_sec": 0.8333333333333334,
+      "fps": 30
+    },
+    {
+      "source_video": "contact_sidebackspin_003.mp4",
+      "status": "skipped",
+      "draft_path": "C:\\Users\\Kevin\\Documents\\Codex\\2026-06-16\\files-mentioned-by-the-user-tt\\outputs\\tt-reaction-trainer-pages\\prototypes\\video-physics-timeline\\tools\\auto-contact-tagger\\batch-out\\contact_sidebackspin_003.draft.json",
+      "contact_time_sec": 0.5166666666666667,
+      "fps": 60
+    },
+    {
+      "source_video": "contact_sidebackspin_004.mp4",
+      "status": "skipped",
+      "draft_path": "C:\\Users\\Kevin\\Documents\\Codex\\2026-06-16\\files-mentioned-by-the-user-tt\\outputs\\tt-reaction-trainer-pages\\prototypes\\video-physics-timeline\\tools\\auto-contact-tagger\\batch-out\\contact_sidebackspin_004.draft.json",
+      "contact_time_sec": 1.15,
+      "fps": 60
+    },
+    {
+      "source_video": "contact_sidebackspin_005.mp4",
+      "status": "skipped",
+      "draft_path": "C:\\Users\\Kevin\\Documents\\Codex\\2026-06-16\\files-mentioned-by-the-user-tt\\outputs\\tt-reaction-trainer-pages\\prototypes\\video-physics-timeline\\tools\\auto-contact-tagger\\batch-out\\contact_sidebackspin_005.draft.json",
+      "contact_time_sec": 0.5,
+      "fps": 30
+    },
+    {
+      "source_video": "contact_sidebackspin_010.mp4",
+      "status": "skipped",
+      "draft_path": "C:\\Users\\Kevin\\Documents\\Codex\\2026-06-16\\files-mentioned-by-the-user-tt\\outputs\\tt-reaction-trainer-pages\\prototypes\\video-physics-timeline\\tools\\auto-contact-tagger\\batch-out\\contact_sidebackspin_010.draft.json",
+      "contact_time_sec": 0.9,
+      "fps": 30
+    },
+    {
+      "source_video": "contact_sidebackspin_011.mp4",
+      "status": "skipped",
+      "draft_path": "C:\\Users\\Kevin\\Documents\\Codex\\2026-06-16\\files-mentioned-by-the-user-tt\\outputs\\tt-reaction-trainer-pages\\prototypes\\video-physics-timeline\\tools\\auto-contact-tagger\\batch-out\\contact_sidebackspin_011.draft.json",
+      "contact_time_sec": 0.8666666666666667,
+      "fps": 30
+    },
+    {
+      "source_video": "contact_sidebackspin_012.mp4",
+      "status": "skipped",
+      "draft_path": "C:\\Users\\Kevin\\Documents\\Codex\\2026-06-16\\files-mentioned-by-the-user-tt\\outputs\\tt-reaction-trainer-pages\\prototypes\\video-physics-timeline\\tools\\auto-contact-tagger\\batch-out\\contact_sidebackspin_012.draft.json",
+      "contact_time_sec": 1.0333333333333334,
+      "fps": 30
+    },
+    {
+      "source_video": "contact_sidebackspin_001.mp4",
+      "status": "skipped",
+      "draft_path": "C:\\Users\\Kevin\\Documents\\Codex\\2026-06-16\\files-mentioned-by-the-user-tt\\outputs\\tt-reaction-trainer-pages\\prototypes\\video-physics-timeline\\tools\\auto-contact-tagger\\batch-out\\contact_sidebackspin_001.draft.json",
+      "contact_time_sec": 1.2333333333333334,
+      "fps": 60
+    },
+    {
+      "source_video": "contact_sidebackspin_002.mp4",
+      "status": "skipped",
+      "draft_path": "C:\\Users\\Kevin\\Documents\\Codex\\2026-06-16\\files-mentioned-by-the-user-tt\\outputs\\tt-reaction-trainer-pages\\prototypes\\video-physics-timeline\\tools\\auto-contact-tagger\\batch-out\\contact_sidebackspin_002.draft.json",
+      "contact_time_sec": 1.1666666666666667,
+      "fps": 60
+    },
+    {
+      "source_video": "contact_sidebackspin_006.mp4",
+      "status": "skipped",
+      "draft_path": "C:\\Users\\Kevin\\Documents\\Codex\\2026-06-16\\files-mentioned-by-the-user-tt\\outputs\\tt-reaction-trainer-pages\\prototypes\\video-physics-timeline\\tools\\auto-contact-tagger\\batch-out\\contact_sidebackspin_006.draft.json",
+      "contact_time_sec": 1.5,
+      "fps": 30
+    },
+    {
+      "source_video": "contact_sidebackspin_007.mp4",
+      "status": "skipped",
+      "draft_path": "C:\\Users\\Kevin\\Documents\\Codex\\2026-06-16\\files-mentioned-by-the-user-tt\\outputs\\tt-reaction-trainer-pages\\prototypes\\video-physics-timeline\\tools\\auto-contact-tagger\\batch-out\\contact_sidebackspin_007.draft.json",
+      "contact_time_sec": 1.3666666666666667,
+      "fps": 30
+    },
+    {
+      "source_video": "contact_sidebackspin_008.mp4",
+      "status": "skipped",
+      "draft_path": "C:\\Users\\Kevin\\Documents\\Codex\\2026-06-16\\files-mentioned-by-the-user-tt\\outputs\\tt-reaction-trainer-pages\\prototypes\\video-physics-timeline\\tools\\auto-contact-tagger\\batch-out\\contact_sidebackspin_008.draft.json",
+      "contact_time_sec": 0.5666666666666667,
+      "fps": 30
+    },
+    {
+      "source_video": "contact_sidebackspin_009.mp4",
+      "status": "skipped",
+      "draft_path": "C:\\Users\\Kevin\\Documents\\Codex\\2026-06-16\\files-mentioned-by-the-user-tt\\outputs\\tt-reaction-trainer-pages\\prototypes\\video-physics-timeline\\tools\\auto-contact-tagger\\batch-out\\contact_sidebackspin_009.draft.json",
+      "contact_time_sec": 0.5,
+      "fps": 30
+    },
+    {
+      "source_video": "contact_sidespin_001.mp4",
+      "status": "ok",
+      "contact_time_sec": 0.5,
+      "confidence": 0.85,
+      "stage": "fine",
+      "via": "contact",
+      "warnings": [],
+      "api_calls": 64,
+      "elapsed_ms": 217221,
+      "fps": 60,
+      "nb_frames": 69,
+      "draft_path": "C:\\Users\\Kevin\\Documents\\Codex\\2026-06-16\\files-mentioned-by-the-user-tt\\outputs\\tt-reaction-trainer-pages\\prototypes\\video-physics-timeline\\tools\\auto-contact-tagger\\batch-out\\contact_sidespin_001.draft.json"
+    },
+    {
+      "source_video": "contact_sidespin_002.mp4",
+      "status": "ok",
+      "contact_time_sec": 0.5,
+      "confidence": 0.3,
+      "stage": "fine",
+      "via": "before-only",
+      "warnings": [
+        "low fine-scan confidence (0.30, via before-only)"
+      ],
+      "api_calls": 34,
+      "elapsed_ms": 129796,
+      "fps": 60,
+      "nb_frames": 75,
+      "draft_path": "C:\\Users\\Kevin\\Documents\\Codex\\2026-06-16\\files-mentioned-by-the-user-tt\\outputs\\tt-reaction-trainer-pages\\prototypes\\video-physics-timeline\\tools\\auto-contact-tagger\\batch-out\\contact_sidespin_002.draft.json"
+    },
+    {
+      "source_video": "contact_sidespin_003.mp4",
+      "status": "ok",
+      "contact_time_sec": 0.65,
+      "confidence": 0.85,
+      "stage": "fine",
+      "via": "contact",
+      "warnings": [
+        "coarse boundary ambiguous (low confidence)"
+      ],
+      "api_calls": 44,
+      "elapsed_ms": 145170,
+      "fps": 60,
+      "nb_frames": 71,
+      "draft_path": "C:\\Users\\Kevin\\Documents\\Codex\\2026-06-16\\files-mentioned-by-the-user-tt\\outputs\\tt-reaction-trainer-pages\\prototypes\\video-physics-timeline\\tools\\auto-contact-tagger\\batch-out\\contact_sidespin_003.draft.json"
+    },
+    {
+      "source_video": "contact_sidespin_004.mp4",
+      "status": "ok",
+      "contact_time_sec": 0.05,
+      "confidence": 0.85,
+      "stage": "fine",
+      "via": "contact",
+      "warnings": [],
+      "api_calls": 64,
+      "elapsed_ms": 317990,
+      "fps": 60,
+      "nb_frames": 76,
+      "draft_path": "C:\\Users\\Kevin\\Documents\\Codex\\2026-06-16\\files-mentioned-by-the-user-tt\\outputs\\tt-reaction-trainer-pages\\prototypes\\video-physics-timeline\\tools\\auto-contact-tagger\\batch-out\\contact_sidespin_004.draft.json"
+    },
+    {
+      "source_video": "contact_sidespin_005.mp4",
+      "status": "ok",
+      "contact_time_sec": 0.45,
+      "confidence": 0.85,
+      "stage": "fine",
+      "via": "contact",
+      "warnings": [],
+      "api_calls": 64,
+      "elapsed_ms": 299605,
+      "fps": 60,
+      "nb_frames": 68,
+      "draft_path": "C:\\Users\\Kevin\\Documents\\Codex\\2026-06-16\\files-mentioned-by-the-user-tt\\outputs\\tt-reaction-trainer-pages\\prototypes\\video-physics-timeline\\tools\\auto-contact-tagger\\batch-out\\contact_sidespin_005.draft.json"
+    },
+    {
+      "source_video": "contact_sidespin_006.mp4",
+      "status": "ok",
+      "contact_time_sec": 0.6666666666666666,
+      "confidence": 0.85,
+      "stage": "fine",
+      "via": "contact",
+      "warnings": [],
+      "api_calls": 62,
+      "elapsed_ms": 288546,
+      "fps": 60,
+      "nb_frames": 89,
+      "draft_path": "C:\\Users\\Kevin\\Documents\\Codex\\2026-06-16\\files-mentioned-by-the-user-tt\\outputs\\tt-reaction-trainer-pages\\prototypes\\video-physics-timeline\\tools\\auto-contact-tagger\\batch-out\\contact_sidespin_006.draft.json"
+    },
+    {
+      "source_video": "contact_sidespin_007.mp4",
+      "status": "ok",
+      "contact_time_sec": 0.8333333333333334,
+      "confidence": 0.85,
+      "stage": "fine",
+      "via": "contact",
+      "warnings": [],
+      "api_calls": 66,
+      "elapsed_ms": 572812,
+      "fps": 60,
+      "nb_frames": 121,
+      "draft_path": "C:\\Users\\Kevin\\Documents\\Codex\\2026-06-16\\files-mentioned-by-the-user-tt\\outputs\\tt-reaction-trainer-pages\\prototypes\\video-physics-timeline\\tools\\auto-contact-tagger\\batch-out\\contact_sidespin_007.draft.json"
+    },
+    {
+      "source_video": "contact_sidespin_008.mp4",
+      "status": "ok",
+      "contact_time_sec": 0.9333333333333333,
+      "confidence": 0.85,
+      "stage": "fine",
+      "via": "contact",
+      "warnings": [],
+      "api_calls": 65,
+      "elapsed_ms": 380785,
+      "fps": 60,
+      "nb_frames": 98,
+      "draft_path": "C:\\Users\\Kevin\\Documents\\Codex\\2026-06-16\\files-mentioned-by-the-user-tt\\outputs\\tt-reaction-trainer-pages\\prototypes\\video-physics-timeline\\tools\\auto-contact-tagger\\batch-out\\contact_sidespin_008.draft.json"
+    },
+    {
+      "source_video": "contact_sidespin_009.mp4",
+      "status": "ok",
+      "contact_time_sec": 1.0666666666666667,
+      "confidence": 0.85,
+      "stage": "fine",
+      "via": "contact",
+      "warnings": [
+        "coarse boundary ambiguous (low confidence)"
+      ],
+      "api_calls": 33,
+      "elapsed_ms": 248182,
+      "fps": 30,
+      "nb_frames": 59,
+      "draft_path": "C:\\Users\\Kevin\\Documents\\Codex\\2026-06-16\\files-mentioned-by-the-user-tt\\outputs\\tt-reaction-trainer-pages\\prototypes\\video-physics-timeline\\tools\\auto-contact-tagger\\batch-out\\contact_sidespin_009.draft.json"
+    },
+    {
+      "source_video": "contact_sidespin_010.mp4",
+      "status": "ok",
+      "contact_time_sec": 1.0333333333333334,
+      "confidence": 0.85,
+      "stage": "fine",
+      "via": "contact",
+      "warnings": [],
+      "api_calls": 35,
+      "elapsed_ms": 141178,
+      "fps": 30,
+      "nb_frames": 55,
+      "draft_path": "C:\\Users\\Kevin\\Documents\\Codex\\2026-06-16\\files-mentioned-by-the-user-tt\\outputs\\tt-reaction-trainer-pages\\prototypes\\video-physics-timeline\\tools\\auto-contact-tagger\\batch-out\\contact_sidespin_010.draft.json"
+    },
+    {
+      "source_video": "contact_sidespin_012.mp4",
+      "status": "ok",
+      "contact_time_sec": 0.7666666666666667,
+      "confidence": 0.85,
+      "stage": "fine",
+      "via": "contact",
+      "warnings": [
+        "coarse boundary ambiguous (low confidence)"
+      ],
+      "api_calls": 33,
+      "elapsed_ms": 112499,
+      "fps": 30,
+      "nb_frames": 45,
+      "draft_path": "C:\\Users\\Kevin\\Documents\\Codex\\2026-06-16\\files-mentioned-by-the-user-tt\\outputs\\tt-reaction-trainer-pages\\prototypes\\video-physics-timeline\\tools\\auto-contact-tagger\\batch-out\\contact_sidespin_012.draft.json"
+    },
+    {
+      "source_video": "contact_sidespin_013.mp4",
+      "status": "ok",
+      "contact_time_sec": 1.1666666666666667,
+      "confidence": 0.85,
+      "stage": "fine",
+      "via": "contact",
+      "warnings": [
+        "coarse boundary ambiguous (low confidence)"
+      ],
+      "api_calls": 22,
+      "elapsed_ms": 80693,
+      "fps": 30,
+      "nb_frames": 48,
+      "draft_path": "C:\\Users\\Kevin\\Documents\\Codex\\2026-06-16\\files-mentioned-by-the-user-tt\\outputs\\tt-reaction-trainer-pages\\prototypes\\video-physics-timeline\\tools\\auto-contact-tagger\\batch-out\\contact_sidespin_013.draft.json"
+    },
+    {
+      "source_video": "contact_sidespin_014.mp4",
+      "status": "ok",
+      "contact_time_sec": 0.9,
+      "confidence": 0.85,
+      "stage": "fine",
+      "via": "contact",
+      "warnings": [],
+      "api_calls": 35,
+      "elapsed_ms": 167968,
+      "fps": 30,
+      "nb_frames": 53,
+      "draft_path": "C:\\Users\\Kevin\\Documents\\Codex\\2026-06-16\\files-mentioned-by-the-user-tt\\outputs\\tt-reaction-trainer-pages\\prototypes\\video-physics-timeline\\tools\\auto-contact-tagger\\batch-out\\contact_sidespin_014.draft.json"
+    },
+    {
+      "source_video": "contact_sidespin_015.mp4",
+      "status": "ok",
+      "contact_time_sec": 1.2,
+      "confidence": 0.85,
+      "stage": "fine",
+      "via": "contact",
+      "warnings": [],
+      "api_calls": 36,
+      "elapsed_ms": 188391,
+      "fps": 30,
+      "nb_frames": 61,
+      "draft_path": "C:\\Users\\Kevin\\Documents\\Codex\\2026-06-16\\files-mentioned-by-the-user-tt\\outputs\\tt-reaction-trainer-pages\\prototypes\\video-physics-timeline\\tools\\auto-contact-tagger\\batch-out\\contact_sidespin_015.draft.json"
+    },
+    {
+      "source_video": "contact_sidespin_016.mp4",
+      "status": "ok",
+      "contact_time_sec": 0.6333333333333333,
+      "confidence": 0.85,
+      "stage": "fine",
+      "via": "contact",
+      "warnings": [],
+      "api_calls": 35,
+      "elapsed_ms": 125653,
+      "fps": 30,
+      "nb_frames": 51,
+      "draft_path": "C:\\Users\\Kevin\\Documents\\Codex\\2026-06-16\\files-mentioned-by-the-user-tt\\outputs\\tt-reaction-trainer-pages\\prototypes\\video-physics-timeline\\tools\\auto-contact-tagger\\batch-out\\contact_sidespin_016.draft.json"
+    },
+    {
+      "source_video": "contact_sidespin_017.mp4",
+      "status": "ok",
+      "contact_time_sec": 0.5333333333333333,
+      "confidence": 0.85,
+      "stage": "fine",
+      "via": "contact",
+      "warnings": [],
+      "api_calls": 34,
+      "elapsed_ms": 122324,
+      "fps": 30,
+      "nb_frames": 32,
+      "draft_path": "C:\\Users\\Kevin\\Documents\\Codex\\2026-06-16\\files-mentioned-by-the-user-tt\\outputs\\tt-reaction-trainer-pages\\prototypes\\video-physics-timeline\\tools\\auto-contact-tagger\\batch-out\\contact_sidespin_017.draft.json"
+    },
+    {
+      "source_video": "contact_sidespin_018.mp4",
+      "status": "ok",
+      "contact_time_sec": 1.0666666666666667,
+      "confidence": 0.85,
+      "stage": "fine",
+      "via": "contact",
+      "warnings": [
+        "coarse boundary ambiguous (low confidence)"
+      ],
+      "api_calls": 29,
+      "elapsed_ms": 130391,
+      "fps": 30,
+      "nb_frames": 55,
+      "draft_path": "C:\\Users\\Kevin\\Documents\\Codex\\2026-06-16\\files-mentioned-by-the-user-tt\\outputs\\tt-reaction-trainer-pages\\prototypes\\video-physics-timeline\\tools\\auto-contact-tagger\\batch-out\\contact_sidespin_018.draft.json"
+    },
+    {
+      "source_video": "contact_sidespin_022.mp4",
+      "status": "ok",
+      "contact_time_sec": 2,
+      "confidence": 0.5,
+      "stage": "fine",
+      "via": "boundary",
+      "warnings": [],
+      "api_calls": 21,
+      "elapsed_ms": 75146,
+      "fps": 30,
+      "nb_frames": 61,
+      "draft_path": "C:\\Users\\Kevin\\Documents\\Codex\\2026-06-16\\files-mentioned-by-the-user-tt\\outputs\\tt-reaction-trainer-pages\\prototypes\\video-physics-timeline\\tools\\auto-contact-tagger\\batch-out\\contact_sidespin_022.draft.json"
+    },
+    {
+      "source_video": "contact_sidespin_011.mp4",
+      "status": "ok",
+      "contact_time_sec": 0.9666666666666667,
+      "confidence": 0.5,
+      "stage": "fine",
+      "via": "boundary",
+      "warnings": [],
+      "api_calls": 35,
+      "elapsed_ms": 157108,
+      "fps": 30,
+      "nb_frames": 59,
+      "draft_path": "C:\\Users\\Kevin\\Documents\\Codex\\2026-06-16\\files-mentioned-by-the-user-tt\\outputs\\tt-reaction-trainer-pages\\prototypes\\video-physics-timeline\\tools\\auto-contact-tagger\\batch-out\\contact_sidespin_011.draft.json"
+    },
+    {
+      "source_video": "contact_sidespin_019.mp4",
+      "status": "ok",
+      "contact_time_sec": 0.7666666666666667,
+      "confidence": 0.85,
+      "stage": "fine",
+      "via": "contact",
+      "warnings": [],
+      "api_calls": 39,
+      "elapsed_ms": 211583,
+      "fps": 30,
+      "nb_frames": 114,
+      "draft_path": "C:\\Users\\Kevin\\Documents\\Codex\\2026-06-16\\files-mentioned-by-the-user-tt\\outputs\\tt-reaction-trainer-pages\\prototypes\\video-physics-timeline\\tools\\auto-contact-tagger\\batch-out\\contact_sidespin_019.draft.json"
+    },
+    {
+      "source_video": "contact_sidespin_020.mp4",
+      "status": "ok",
+      "contact_time_sec": 0.5,
+      "confidence": 0.5,
+      "stage": "fine",
+      "via": "boundary",
+      "warnings": [],
+      "api_calls": 27,
+      "elapsed_ms": 222327,
+      "fps": 30,
+      "nb_frames": 151,
+      "draft_path": "C:\\Users\\Kevin\\Documents\\Codex\\2026-06-16\\files-mentioned-by-the-user-tt\\outputs\\tt-reaction-trainer-pages\\prototypes\\video-physics-timeline\\tools\\auto-contact-tagger\\batch-out\\contact_sidespin_020.draft.json"
+    },
+    {
+      "source_video": "contact_sidespin_021.mp4",
+      "status": "ok",
+      "contact_time_sec": 0.6333333333333333,
+      "confidence": 0.85,
+      "stage": "fine",
+      "via": "contact",
+      "warnings": [],
+      "api_calls": 34,
+      "elapsed_ms": 186269,
+      "fps": 30,
+      "nb_frames": 40,
+      "draft_path": "C:\\Users\\Kevin\\Documents\\Codex\\2026-06-16\\files-mentioned-by-the-user-tt\\outputs\\tt-reaction-trainer-pages\\prototypes\\video-physics-timeline\\tools\\auto-contact-tagger\\batch-out\\contact_sidespin_021.draft.json"
+    },
+    {
+      "source_video": "contact_sidespin_023.mp4",
+      "status": "ok",
+      "contact_time_sec": 1.7666666666666666,
+      "confidence": 0.85,
+      "stage": "fine",
+      "via": "contact",
+      "warnings": [],
+      "api_calls": 33,
+      "elapsed_ms": 189354,
+      "fps": 30,
+      "nb_frames": 73,
+      "draft_path": "C:\\Users\\Kevin\\Documents\\Codex\\2026-06-16\\files-mentioned-by-the-user-tt\\outputs\\tt-reaction-trainer-pages\\prototypes\\video-physics-timeline\\tools\\auto-contact-tagger\\batch-out\\contact_sidespin_023.draft.json"
+    }
+  ]
+}

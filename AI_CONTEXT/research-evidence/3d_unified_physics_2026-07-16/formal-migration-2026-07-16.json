@@ -1,0 +1,44 @@
+{
+  "generatedAt": "2026-07-16",
+  "phase": "Phase 1/2/3 first formal integration checkpoint",
+  "status": "engineering-pass-with-calibration-pending",
+  "interpretation": "Shared-core and page integration evidence only; not physical truth or Trainer readiness.",
+  "authorization": "User explicitly authorized execution of the migration plan and red-line changes.",
+  "implemented": [
+    "schema-2 world-space omega with one-time legacy boundary conversion",
+    "real-scale flight bridge for page simulation time dilation",
+    "arbitrary-plane 3D contact point velocity and impulse solver",
+    "shared generic spring-damper compliant contact mode",
+    "2D Coulomb friction with rolling/sliding response",
+    "schema-2 table-bounce path for spin3d states",
+    "game4/game5/return-studio/physics-studio adapters",
+    "serve-generator and physics-presets schema contract"
+  ],
+  "tests": {
+    "physics-contact-3d.test.js": "pass",
+    "physics-flight-3d.test.js": "pass",
+    "physics-3d-spin.test.js": "pass",
+    "physics-3d-unified-prototype.test.js": "pass",
+    "serve-generator-contract.test.js": "pass; 47 approved videos",
+    "load-game4-physics.js": "pass; missing=0; unresolved=0",
+    "load-return-studio-physics.js": "pass; missing=0; unresolved=0",
+    "game5-mvp-validation.test.js": "automated pass; PHYS-02 remains warning for attack approximation",
+    "inline-page-javascript": "pass; 5 pages parsed",
+    "git-diff-check": "pass; only line-ending normalization warnings"
+  },
+  "serveBatchValidation": {
+    "game4LegalGate": "47/47",
+    "physicsStudioLegalGate": "47/47",
+    "crossCheck": "47/47",
+    "individualDiagnostics": "91 passed / 50 target-precision failures",
+    "exitCode": 0,
+    "interpretation": "The failures are recorded as expected forward-model target-precision differences; the common legal-serve gate and cross-check passed."
+  },
+  "remaining": [
+    "fully route duplicated substepped compliance through the shared compliant solver",
+    "measured Magnus/restitution/friction calibration and holdout evaluation",
+    "preset re-solve after the model change",
+    "Game 5 manual visual, spin-feel, and left/right input review",
+    "Phase 8 page/UI synchronization"
+  ]
+}

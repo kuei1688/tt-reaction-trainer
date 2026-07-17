@@ -1,0 +1,475 @@
+{
+  "g2": [
+    {
+      "presetId": "serve_contact_sidebackspin_004",
+      "omegaY": -157.075,
+      "deltaXAtNet": -0.06878488841198671,
+      "deltaXAtFirstBounce": -0.013657964032519676
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_004",
+      "omegaY": -125.66,
+      "deltaXAtNet": -0.055040788631569526,
+      "deltaXAtFirstBounce": -0.010924851899552668
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_004",
+      "omegaY": -62.83,
+      "deltaXAtNet": -0.027549869656444625,
+      "deltaXAtFirstBounce": -0.005460731125890572
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_004",
+      "omegaY": 0,
+      "deltaXAtNet": 0,
+      "deltaXAtFirstBounce": 0
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_004",
+      "omegaY": 62.83,
+      "deltaXAtNet": 0.027675713403447322,
+      "deltaXAtFirstBounce": 0.005456640131370427
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_004",
+      "omegaY": 125.66,
+      "deltaXAtNet": 0.0555454556406661,
+      "deltaXAtFirstBounce": 0.010908488786251447
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_004",
+      "omegaY": 157.075,
+      "deltaXAtNet": 0.0695749512803211,
+      "deltaXAtFirstBounce": 0.013632397681327402
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_003",
+      "omegaY": -157.075,
+      "deltaXAtNet": -0.2322642817658469,
+      "deltaXAtFirstBounce": -0.08639414145803104
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_003",
+      "omegaY": -125.66,
+      "deltaXAtNet": -0.18047692798041315,
+      "deltaXAtFirstBounce": -0.06955871597999608
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_003",
+      "omegaY": -62.83,
+      "deltaXAtNet": -0.08559137730349187,
+      "deltaXAtFirstBounce": -0.035203682467868536
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_003",
+      "omegaY": 0,
+      "deltaXAtNet": 0,
+      "deltaXAtFirstBounce": 0
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_003",
+      "omegaY": 62.83,
+      "deltaXAtNet": 0.07029436499062769,
+      "deltaXAtFirstBounce": 0.03597628059493696
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_003",
+      "omegaY": 125.66,
+      "deltaXAtNet": 0.13372595172269558,
+      "deltaXAtFirstBounce": 0.07264540311633716
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_003",
+      "omegaY": 157.075,
+      "deltaXAtNet": 0.16445903890610236,
+      "deltaXAtFirstBounce": 0.09121392602452738
+    },
+    {
+      "presetId": "serve_contact_sidespin_002",
+      "omegaY": -157.075,
+      "deltaXAtNet": -0.0674430617836616,
+      "deltaXAtFirstBounce": -0.013489004538907168
+    },
+    {
+      "presetId": "serve_contact_sidespin_002",
+      "omegaY": -125.66,
+      "deltaXAtNet": -0.05396794165916313,
+      "deltaXAtFirstBounce": -0.010789900232129335
+    },
+    {
+      "presetId": "serve_contact_sidespin_002",
+      "omegaY": -62.83,
+      "deltaXAtNet": -0.027013021304084173,
+      "deltaXAtFirstBounce": -0.005393498177053424
+    },
+    {
+      "presetId": "serve_contact_sidespin_002",
+      "omegaY": 0,
+      "deltaXAtNet": 0,
+      "deltaXAtFirstBounce": 0
+    },
+    {
+      "presetId": "serve_contact_sidespin_002",
+      "omegaY": 62.83,
+      "deltaXAtNet": 0.027133830654250846,
+      "deltaXAtFirstBounce": 0.005390000440760323
+    },
+    {
+      "presetId": "serve_contact_sidespin_002",
+      "omegaY": 125.66,
+      "deltaXAtNet": 0.05445236112504187,
+      "deltaXAtFirstBounce": 0.010775909691363106
+    },
+    {
+      "presetId": "serve_contact_sidespin_002",
+      "omegaY": 157.075,
+      "deltaXAtNet": 0.06820135817692241,
+      "deltaXAtFirstBounce": 0.013467144792867758
+    },
+    {
+      "presetId": "serve_contact_sidespin_020",
+      "omegaY": -157.075,
+      "deltaXAtNet": -0.21562817811992518,
+      "deltaXAtFirstBounce": -0.0764879402420029
+    },
+    {
+      "presetId": "serve_contact_sidespin_020",
+      "omegaY": -125.66,
+      "deltaXAtNet": -0.1678829500828266,
+      "deltaXAtFirstBounce": -0.06146853954734577
+    },
+    {
+      "presetId": "serve_contact_sidespin_020",
+      "omegaY": -62.83,
+      "deltaXAtNet": -0.08007895627203121,
+      "deltaXAtFirstBounce": -0.031000526844901455
+    },
+    {
+      "presetId": "serve_contact_sidespin_020",
+      "omegaY": 0,
+      "deltaXAtNet": 0,
+      "deltaXAtFirstBounce": 0
+    },
+    {
+      "presetId": "serve_contact_sidespin_020",
+      "omegaY": 62.83,
+      "deltaXAtNet": 0.06733675630402058,
+      "deltaXAtFirstBounce": 0.031484475065789164
+    },
+    {
+      "presetId": "serve_contact_sidespin_020",
+      "omegaY": 125.66,
+      "deltaXAtNet": 0.12641850387205816,
+      "deltaXAtFirstBounce": 0.06340345234665956
+    },
+    {
+      "presetId": "serve_contact_sidespin_020",
+      "omegaY": 157.075,
+      "deltaXAtNet": 0.1550669965593104,
+      "deltaXAtFirstBounce": 0.07951021050628843
+    },
+    {
+      "presetId": "serve_contact_backspin_005",
+      "omegaY": -157.075,
+      "deltaXAtNet": -0.24423150057361875,
+      "deltaXAtFirstBounce": -0.08709345363206739
+    },
+    {
+      "presetId": "serve_contact_backspin_005",
+      "omegaY": -125.66,
+      "deltaXAtNet": -0.18894559556352974,
+      "deltaXAtFirstBounce": -0.07013345852691727
+    },
+    {
+      "presetId": "serve_contact_backspin_005",
+      "omegaY": -62.83,
+      "deltaXAtNet": -0.08902804105105755,
+      "deltaXAtFirstBounce": -0.03550610678857513
+    },
+    {
+      "presetId": "serve_contact_backspin_005",
+      "omegaY": 0,
+      "deltaXAtNet": 0,
+      "deltaXAtFirstBounce": 0
+    },
+    {
+      "presetId": "serve_contact_backspin_005",
+      "omegaY": 62.83,
+      "deltaXAtNet": 0.07019539893900884,
+      "deltaXAtFirstBounce": 0.03631149135701167
+    },
+    {
+      "presetId": "serve_contact_backspin_005",
+      "omegaY": 125.66,
+      "deltaXAtNet": 0.1365248737219696,
+      "deltaXAtFirstBounce": 0.07333434432983932
+    },
+    {
+      "presetId": "serve_contact_backspin_005",
+      "omegaY": 157.075,
+      "deltaXAtNet": 0.1686046451783933,
+      "deltaXAtFirstBounce": 0.09208503264522805
+    },
+    {
+      "presetId": "serve_contact_nospin_004",
+      "omegaY": -157.075,
+      "deltaXAtNet": -0.0668807872829501,
+      "deltaXAtFirstBounce": -0.013583153553079652
+    },
+    {
+      "presetId": "serve_contact_nospin_004",
+      "omegaY": -125.66,
+      "deltaXAtNet": -0.0535182383886153,
+      "deltaXAtFirstBounce": -0.010865210584810991
+    },
+    {
+      "presetId": "serve_contact_nospin_004",
+      "omegaY": -62.83,
+      "deltaXAtNet": -0.026787549395278942,
+      "deltaXAtFirstBounce": -0.005431143552748263
+    },
+    {
+      "presetId": "serve_contact_nospin_004",
+      "omegaY": 0,
+      "deltaXAtNet": 0,
+      "deltaXAtFirstBounce": 0
+    },
+    {
+      "presetId": "serve_contact_nospin_004",
+      "omegaY": 62.83,
+      "deltaXAtNet": 0.02690624016524862,
+      "deltaXAtFirstBounce": 0.005427622449024727
+    },
+    {
+      "presetId": "serve_contact_nospin_004",
+      "omegaY": 125.66,
+      "deltaXAtNet": 0.053995753794676915,
+      "deltaXAtFirstBounce": 0.010851126576732428
+    },
+    {
+      "presetId": "serve_contact_nospin_004",
+      "omegaY": 157.075,
+      "deltaXAtNet": 0.0676294572078101,
+      "deltaXAtFirstBounce": 0.01356114776718681
+    }
+  ],
+  "g3": [
+    {
+      "presetId": "serve_contact_sidebackspin_004",
+      "magnusCoefficient": 0,
+      "deltaXAtNet": 0.07588134102720384,
+      "netClearance": 0.00452263436178002
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_003",
+      "magnusCoefficient": 0,
+      "deltaXAtNet": -0.5668594446815471,
+      "netClearance": -0.0022050278888489094
+    },
+    {
+      "presetId": "serve_contact_sidespin_002",
+      "magnusCoefficient": 0,
+      "deltaXAtNet": 0.07668879748949453,
+      "netClearance": 0.016931436079807072
+    },
+    {
+      "presetId": "serve_contact_sidespin_020",
+      "magnusCoefficient": 0,
+      "deltaXAtNet": -0.5764854532283511,
+      "netClearance": 0.018834092180978756
+    },
+    {
+      "presetId": "serve_contact_backspin_005",
+      "magnusCoefficient": 0,
+      "deltaXAtNet": -0.5665929353603376,
+      "netClearance": -0.0010722338673426757
+    },
+    {
+      "presetId": "serve_contact_nospin_004",
+      "magnusCoefficient": 0,
+      "deltaXAtNet": 0.07676515946390094,
+      "netClearance": 0.016130496754169
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_004",
+      "magnusCoefficient": 0.0014,
+      "deltaXAtNet": 0.10334793759662902,
+      "netClearance": -0.00029930138360290126
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_003",
+      "magnusCoefficient": 0.0014,
+      "deltaXAtNet": -0.6769767286855821,
+      "netClearance": 0.0014216373693523021
+    },
+    {
+      "presetId": "serve_contact_sidespin_002",
+      "magnusCoefficient": 0.0014,
+      "deltaXAtNet": 0.10369090969011524,
+      "netClearance": 0.013383569257985783
+    },
+    {
+      "presetId": "serve_contact_sidespin_020",
+      "magnusCoefficient": 0.0014,
+      "deltaXAtNet": -0.6727782813344285,
+      "netClearance": 0.018284151172965002
+    },
+    {
+      "presetId": "serve_contact_backspin_005",
+      "magnusCoefficient": 0.0014,
+      "deltaXAtNet": -0.49877578478581625,
+      "netClearance": 0.01017319065213329
+    },
+    {
+      "presetId": "serve_contact_nospin_004",
+      "magnusCoefficient": 0.0014,
+      "deltaXAtNet": 0.10354221136934366,
+      "netClearance": 0.01264737735089927
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_004",
+      "magnusCoefficient": 0.0021,
+      "deltaXAtNet": 0.11769712568760793,
+      "netClearance": 0.002736320929610847
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_003",
+      "magnusCoefficient": 0.0021,
+      "deltaXAtNet": -0.7366457826047903,
+      "netClearance": -0.0015966164401134408
+    },
+    {
+      "presetId": "serve_contact_sidespin_002",
+      "magnusCoefficient": 0.0021,
+      "deltaXAtNet": 0.11719327236039362,
+      "netClearance": 0.011656200728223598
+    },
+    {
+      "presetId": "serve_contact_sidespin_020",
+      "magnusCoefficient": 0.0021,
+      "deltaXAtNet": -0.7249233672350606,
+      "netClearance": 0.017326938991989782
+    },
+    {
+      "presetId": "serve_contact_backspin_005",
+      "magnusCoefficient": 0.0021,
+      "deltaXAtNet": -0.4672105930399548,
+      "netClearance": 0.006954166311817778
+    },
+    {
+      "presetId": "serve_contact_nospin_004",
+      "magnusCoefficient": 0.0021,
+      "deltaXAtNet": 0.11693249443671433,
+      "netClearance": 0.010951343471456432
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_004",
+      "magnusCoefficient": 0.0028,
+      "deltaXAtNet": 0.13117277834787178,
+      "netClearance": -0.000024312256265091037
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_003",
+      "magnusCoefficient": 0.0028,
+      "deltaXAtNet": -0.7999857000225106,
+      "netClearance": 0.002428547179629814
+    },
+    {
+      "presetId": "serve_contact_sidespin_002",
+      "magnusCoefficient": 0.0028,
+      "deltaXAtNet": 0.13070775057603962,
+      "netClearance": 0.009964320500221557
+    },
+    {
+      "presetId": "serve_contact_sidespin_020",
+      "magnusCoefficient": 0.0028,
+      "deltaXAtNet": -0.7805520187421475,
+      "netClearance": 0.015564645321976323
+    },
+    {
+      "presetId": "serve_contact_backspin_005",
+      "magnusCoefficient": 0.0028,
+      "deltaXAtNet": -0.4366584807625906,
+      "netClearance": 0.0075169732892140795
+    },
+    {
+      "presetId": "serve_contact_nospin_004",
+      "magnusCoefficient": 0.0028,
+      "deltaXAtNet": 0.1303350450233025,
+      "netClearance": 0.009290025257576495
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_004",
+      "magnusCoefficient": 0.0035,
+      "deltaXAtNet": 0.14442791197616106,
+      "netClearance": -0.002698046716639646
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_003",
+      "magnusCoefficient": 0.0035,
+      "deltaXAtNet": -0.8679595579282103,
+      "netClearance": -0.001642839443499522
+    },
+    {
+      "presetId": "serve_contact_sidespin_002",
+      "magnusCoefficient": 0.0035,
+      "deltaXAtNet": 0.14424275508695167,
+      "netClearance": 0.008311406768431562
+    },
+    {
+      "presetId": "serve_contact_sidespin_020",
+      "magnusCoefficient": 0.0035,
+      "deltaXAtNet": -0.8405170174302019,
+      "netClearance": 0.012662628432190237
+    },
+    {
+      "presetId": "serve_contact_backspin_005",
+      "magnusCoefficient": 0.0035,
+      "deltaXAtNet": -0.4075060165656731,
+      "netClearance": -0.0007192108385067897
+    },
+    {
+      "presetId": "serve_contact_nospin_004",
+      "magnusCoefficient": 0.0035,
+      "deltaXAtNet": 0.14375816526707746,
+      "netClearance": 0.007666840644830364
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_004",
+      "magnusCoefficient": 0.0042,
+      "deltaXAtNet": 0.15748521932571657,
+      "netClearance": -0.005360940447674101
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_003",
+      "magnusCoefficient": 0.0042,
+      "deltaXAtNet": -0.9432890929992674,
+      "netClearance": 0.0008148383351154198
+    },
+    {
+      "presetId": "serve_contact_sidespin_002",
+      "magnusCoefficient": 0.0042,
+      "deltaXAtNet": 0.15780670034962463,
+      "netClearance": 0.006701075303630621
+    },
+    {
+      "presetId": "serve_contact_sidespin_020",
+      "magnusCoefficient": 0.0042,
+      "deltaXAtNet": -0.9059948790859019,
+      "netClearance": 0.008061971413321989
+    },
+    {
+      "presetId": "serve_contact_backspin_005",
+      "magnusCoefficient": 0.0042,
+      "deltaXAtNet": -0.37854041077914075,
+      "netClearance": -0.006083790472794726
+    },
+    {
+      "presetId": "serve_contact_nospin_004",
+      "magnusCoefficient": 0.0042,
+      "deltaXAtNet": 0.1572101629358214,
+      "netClearance": 0.006085344824910632
+    }
+  ],
+  "g5": []
+}

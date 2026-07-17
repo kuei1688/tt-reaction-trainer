@@ -1,0 +1,51 @@
+## main...origin/main
+ M AI_CONTEXT/00_READ_ME_FIRST.md
+ M AI_CONTEXT/OPEN_ITEMS.md
+ M AI_CONTEXT/STATUS.md
+ M AI_CONTEXT/test_output.txt
+ M AI_CONTEXT/val005_return_studio_test_output.txt
+ M README.md
+ M docs/BATCH_VALIDATION_SPEC.md
+ M docs/CORE_FILE_SYNC_STATUS.md
+ M docs/DEVELOPMENT_MATRIX.md
+ M docs/MODEL_DECISIONS.md
+ M docs/MVP_MAINLINE_SPEC.md
+ M docs/PHYSICS_MODEL_SPEC.md
+ M docs/VALIDATION_PLAN.md
+ M game4.html
+ M game5.html
+ M physics-presets.json
+ M physics-studio.html
+ M return-studio.html
+ M serve-generator.html
+ M shared-physics-core.js
+ M tools/load-game4-physics.js
+ M tools/serve-batch-validation.test.js
+?? AI_CONTEXT/3d_baseline_2026-07-15/
+?? AI_CONTEXT/3d_diagnostic_2026-07-15/
+?? AI_CONTEXT/game5_47_serve_calibration_2026-07-15/
+?? AI_CONTEXT/game5_47_serve_calibration_2026-07-15_baseline/
+?? AI_CONTEXT/game5_47_serve_calibration_2026-07-15_coarse/
+?? AI_CONTEXT/game5_47_serve_calibration_2026-07-15_holdout_top/
+?? AI_CONTEXT/game5_47_serve_calibration_2026-07-15_smoke/
+?? AI_CONTEXT/game5_47_serve_calibration_2026-07-15_timing/
+?? AI_CONTEXT/game5_attack_narrow_calibration_2026-07-16/
+?? AI_CONTEXT/game5_mvp_validation_2026-07-15/
+?? AI_CONTEXT/game5_mvp_validation_2026-07-16/
+?? AI_CONTEXT/game5_side_spin_calibration_2026-07-15/
+?? docs/3D_PHYSICS_DIAGNOSTIC_PLAN.md
+?? docs/3D_PHYSICS_MIGRATION_PLAN.md
+?? docs/3D_PHYSICS_TEST_PLAN.md
+?? docs/3D_SIDE_SPIN_CALIBRATION_EXECUTION_PLAN.md
+?? docs/GAME5_MVP_READINESS_PLAN.md
+?? docs/SPIN_DIRECTION_CONTRACT.md
+?? prototypes/3d-physics-test-plan/
+?? prototypes/game5-47-serve-calibration/
+?? prototypes/game5-side-spin-calibration/
+?? prototypes/video-physics-timeline/tools/auto-contact-tagger/batch-out/run.err.log
+?? prototypes/video-physics-timeline/tools/auto-contact-tagger/batch-out/run.log
+?? tools/game5-mvp-validation.test.js
+?? tools/migrate-physics-presets-to-3d.js
+?? tools/physics-3d-spin.test.js
+?? tools/serve-generator-contract.test.js
+?? tools/serve-success-gate.js

@@ -65,7 +65,7 @@ h1{font-size:22px;font-weight:900;margin-bottom:4px}
 <h1>發球產生器</h1>
 <div class="subtitle">
   讀取 videos.json 的影片分類，自動產生對應的發球 preset。<br>
-  旋轉強弱參考現有 physics-presets.json 的設定，發球位置依旋轉方向決定。<br>
+  旋轉強弱參考現有 physics-presets.json 的設定；左／右側旋與球路彎曲方向分開標示。<br>
   產出的 JSON 直接覆蓋 physics-presets.json 即可在 Game 5 使用。
 </div>
 <div class="layout">
@@ -98,41 +98,61 @@ h1{font-size:22px;font-weight:900;margin-bottom:4px}
 // ═══ 旋轉強弱參考值（從現有 physics-presets.json 提取）═══
 const SPIN_REF = {
   backspin: -125.66,
-  sidespin: -125.66,
-  sidespinStrong: -150.8
+  sidespinMagnitude: 125.66,
+  sidespinStrongMagnitude: 150.8
 };
 
+function makeCanonicalSpin3D(rule, sidespin){
+  const sideMagnitude = Math.abs(sidespin || 0);
+  const omegaY = rule.sideName === "left" ? sideMagnitude :
+    rule.sideName === "right" ? -sideMagnitude : 0;
+  return {
+    schema: 2,
+    omega: {x: rule.topspin || 0, y: omegaY, z: 0}
+  };
+}
+
 // ═══ 影片分類 → 發球規則 ═══
-// 負 sidespin = 向右彎，正 sidespin = 向左彎
+// 重要：左／右側旋是「旋轉名稱」，不是球路彎曲方向。
+// 依常見教學定義，左側旋會讓球往右彎，右側旋會讓球往左彎。
+// 這裡的 signed sidespin 是目前引擎沿用的 legacy x-kick 符號：
+//   negative -> 向右彎、positive -> 向左彎
+// 因此：left spin = negative、right spin = positive。
+// 影片資料夾的 _left/_right 保留 server/camera 視角的旋轉名稱，
+// 不再用 sidespin 正負去推導「要不要把整條路徑鏡像」。
 const CATEGORY_RULES = {
   contact_nospin: {
     spinType: "no_spin", label: "不轉", color: "#3fb950",
-    topspin: 0, sidespin: 0,
+    topspin: 0, sidespin: 0, sideName: null, curveDirection: "none",
     positions: ["forehand", "backhand"], lengths: ["long", "short"]
   },
   contact_backspin: {
     spinType: "backspin", label: "下旋", color: "#58a6ff",
-    topspin: SPIN_REF.backspin, sidespin: 0,
+    topspin: SPIN_REF.backspin, sidespin: 0, sideName: null, curveDirection: "none",
     positions: ["forehand", "backhand"], lengths: ["long", "short"]
   },
   contact_sidebackspin_right: {
     spinType: "sidebackspin", label: "右側下旋", color: "#d29922",
-    topspin: SPIN_REF.backspin, sidespin: SPIN_REF.sidespin,
+    topspin: SPIN_REF.backspin, sidespin: SPIN_REF.sidespinMagnitude,
+    sideName: "right", curveDirection: "left",
     positions: ["backhand"], lengths: ["long", "short"]
   },
   contact_sidebackspin_left: {
     spinType: "sidebackspin", label: "左側下旋", color: "#d29922",
-    topspin: SPIN_REF.backspin, sidespin: -SPIN_REF.sidespin,
+    topspin: SPIN_REF.backspin, sidespin: -SPIN_REF.sidespinMagnitude,
+    sideName: "left", curveDirection: "right",
     positions: ["forehand"], lengths: ["long", "short"]
   },
   contact_sidespin_right: {
     spinType: "sidespin", label: "右側旋", color: "#bc8cff",
-    topspin: 0, sidespin: SPIN_REF.sidespin,
+    topspin: 0, sidespin: SPIN_REF.sidespinMagnitude,
+    sideName: "right", curveDirection: "left",
     positions: ["backhand"], lengths: ["long", "short"]
   },
   contact_sidespin_left: {
     spinType: "sidespin", label: "左側旋", color: "#bc8cff",
-    topspin: 0, sidespin: -SPIN_REF.sidespin,
+    topspin: 0, sidespin: -SPIN_REF.sidespinMagnitude,
+    sideName: "left", curveDirection: "right",
     positions: ["forehand"], lengths: ["long", "short"]
   }
 };
@@ -145,9 +165,11 @@ const POSITION_TEMPLATES = {
     secondBounce: {x:  0.55, y: 0.78, z:  1.17}
   },
   long_backhand: {
-    start:        {x:  0.57, y: 0.91, z: -1.52},
-    firstBounce:  {x:  0.62, y: 0.78, z: -1.19},
-    secondBounce: {x: -0.65, y: 0.78, z:  1.25}
+    // 目前 legacy solver 的安全長球共用軌跡。保留 backhand tag
+    // 作為訓練分類；這裡的幾何優先保證一跳本方、二跳對方。
+    start:        {x:  0.32, y: 0.95, z: -1.52},
+    firstBounce:  {x:  0.36, y: 0.78, z: -0.89},
+    secondBounce: {x:  0.55, y: 0.78, z:  1.17}
   },
   short_forehand: {
     start:        {x:  0.17, y: 0.95, z: -1.52},
@@ -156,7 +178,7 @@ const POSITION_TEMPLATES = {
   },
   short_backhand: {
     start:        {x:  0.58, y: 0.95, z: -1.52},
-    firstBounce:  {x:  0.14, y: 0.78, z: -0.60},
+    firstBounce:  {x:  0.14, y: 0.78, z: -0.45},
     secondBounce: {x: -0.40, y: 0.78, z:  0.54}
   }
 };
@@ -224,18 +246,12 @@ function generateServe(video, rule, indexInCategory){
   }
   const tplInfo = templates[indexInCategory % templates.length];
   const template = POSITION_TEMPLATES[tplInfo.key];
-  const isLeftCurving = rule.sidespin > 0;
   const start = {x: template.start.x, y: template.start.y, z: template.start.z};
   const firstBounce = {x: template.firstBounce.x, y: template.firstBounce.y, z: template.firstBounce.z};
   const secondBounce = {x: template.secondBounce.x, y: template.secondBounce.y, z: template.secondBounce.z};
-  if(isLeftCurving){
-    start.x = -start.x;
-    firstBounce.x = -firstBounce.x;
-    secondBounce.x = -secondBounce.x;
-  }
   let sidespin = rule.sidespin;
   if(tplInfo.length === "short" && rule.spinType.includes("side")){
-    sidespin = Math.sign(sidespin) * Math.abs(SPIN_REF.sidespinStrong);
+    sidespin = Math.sign(sidespin) * SPIN_REF.sidespinStrongMagnitude;
   }
   const id = "serve_" + video.id;
   const lengthLabel = {long: "長", short: "短", half_long: "半長"}[tplInfo.length] || tplInfo.length;
@@ -244,6 +260,7 @@ function generateServe(video, rule, indexInCategory){
   return {
     id, label, type: "serve", mode: "cheat_solve",
     tags: {spinType: rule.spinType, length: tplInfo.length, placement: tplInfo.placement,
+           sideName: rule.sideName, curveDirection: rule.curveDirection,
            videoCategory: video.spinType, videoId: video.id},
     tagLabels: {spinType: rule.label, length: lengthLabel, placement: placementLabel},
     start,
@@ -252,7 +269,14 @@ function generateServe(video, rule, indexInCategory){
     target: {x: secondBounce.x, y: secondBounce.y, z: secondBounce.z},
     solve: {targetMode: "serve_bounces", flightTime: 0.74, secondLegTime: 0.74,
             netClearance: 0.03, gravity: -4.2, timeToFirst: 0.74},
-    variation: {velocity: {x:0, y:0, z:0}, spin: {topspin: rule.topspin, sidespin}, bounce: 0.88}
+    variation: {
+      velocity: {x:0, y:0, z:0},
+      // Keep legacy spin for old pages; canonical 3D spin is authoritative in
+      // migrated pages.  `omega.y` follows sideName, never legacy sign.
+      spin: {topspin: rule.topspin, sidespin},
+      spin3d: makeCanonicalSpin3D(rule, sidespin),
+      bounce: 0.88
+    }
   };
 }
 
@@ -278,7 +302,8 @@ function guessVideoCategory(preset){
   const spin = (preset.tags && preset.tags.spinType) || preset.spinType || "";
   if(spin === "no_spin" || id.startsWith("no_spin_")) return "contact_nospin";
   if(spin === "backspin" || id.startsWith("backspin_")) return "contact_backspin";
-  if(spin === "sidebackspin" || id.startsWith("sidebackspin_")) return "contact_sidebackspin_right";
+  // 舊版只有 sidebackspin、沒有 left/right 資訊，不能安全猜方向；保留原 preset。
+  if(spin === "sidebackspin" || id.startsWith("sidebackspin_")) return null;
   return null;
 }
 // ═══ 渲染 ═══
@@ -342,7 +367,8 @@ function renderServeCard(serve, rule){
     + renderTableSVG(serve)
     + '<div class="serve-detail">'
     + '<span class="spin-badge" style="background:' + rule.color + "22;color:" + rule.color + '">' + rule.label + "</span>"
-    + "<b>topspin</b>=" + serve.variation.spin.topspin + " <b>sidespin</b>=" + serve.variation.spin.sidespin + "<br>"
+    + "<b>topspin</b>=" + serve.variation.spin.topspin + " <b>sidespin</b>=" + serve.variation.spin.sidespin
+    + " <b>球路</b>=" + (serve.tags.curveDirection || "none") + "<br>"
     + "<b>起點</b> x=" + serve.start.x.toFixed(2) + " z=" + serve.start.z + "<br>"
     + "<b>第一跳</b> x=" + serve.firstBounce.x.toFixed(2) + " z=" + serve.firstBounce.z + "<br>"
     + "<b>第二跳</b> x=" + serve.secondBounce.x.toFixed(2) + " z=" + serve.secondBounce.z
@@ -363,6 +389,7 @@ function renderSingleServe(serve, rule){
     + "<b>length</b>: " + serve.tags.length + " / <b>placement</b>: " + serve.tags.placement + "<br>"
     + "<b>topspin</b>: " + serve.variation.spin.topspin + " rad/s<br>"
     + "<b>sidespin</b>: " + serve.variation.spin.sidespin + " rad/s<br>"
+    + "<b>球路方向</b>: " + (serve.tags.curveDirection || "none") + "<br>"
     + "<b>起點</b>: x=" + serve.start.x.toFixed(3) + " y=" + serve.start.y + " z=" + serve.start.z + "<br>"
     + "<b>第一跳</b>: x=" + serve.firstBounce.x.toFixed(2) + " z=" + serve.firstBounce.z + "<br>"
     + "<b>第二跳</b>: x=" + serve.secondBounce.x.toFixed(2) + " z=" + serve.secondBounce.z + "<br>"
@@ -390,8 +417,10 @@ function renderTableSVG(serve, large){
   const netY = tz(0);
   const rule = CATEGORY_RULES[serve.tags.videoCategory];
   const spinColor = rule ? rule.color : "#58a6ff";
-  const arrowDir = serve.variation.spin.sidespin > 0 ? "left" :
-                   serve.variation.spin.sidespin < 0 ? "right" : "none";
+  // 這是球路方向，不是 sidespin 名稱；兩者在左右側旋時相反。
+  const arrowDir = serve.tags.curveDirection ||
+                   (serve.variation.spin.sidespin > 0 ? "left" :
+                    serve.variation.spin.sidespin < 0 ? "right" : "none");
   const midX = tx((serve.firstBounce.x + serve.secondBounce.x) / 2);
   const midZ = tz((serve.firstBounce.z + serve.secondBounce.z) / 2);
   let arrowSvg = "";

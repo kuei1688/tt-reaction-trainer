@@ -1,0 +1,9 @@
+metric,value,classification,notes
+git_head,4f5b8770d42cee5b78d93681da0f1a6b1340784b,baseline,dirty worktree
+dirty_status_entries,52,baseline,tracked and untracked status entries
+preset_serves,47,data,physics-presets.json serves array
+approved_video_entries,47,data,videos.json kind=video and reviewStatus=approved
+spin_core_test,pass,mathematical/prototype,existing schema-1 test
+serve_contract_test,47/47,contract,does not prove physical truth
+inline_js_syntax,5/5,syntax,all relevant pages
+real_world_calibration,not_available,physical-calibration,no world-coordinate trajectory or direct spin measurements

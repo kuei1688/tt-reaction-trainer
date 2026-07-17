@@ -350,6 +350,7 @@ const TRACKER_KEY = 'tt-physics-studio-tracker-v1';
 const SPIN_UNIT_KEY = 'tt-physics-studio-spin-unit-v1';
 const RAD_PER_RPS = Math.PI * 2;
 const PLAY_MIN_DURATION_MS = 3000;
+const SIM_TIME_DILATION = Math.sqrt(9.8 / 4.2);
 // ── 物理引擎 v2：真實觸桌接觸力學（docs/physics-engine-v2-plan.md Phase 1-4）──
 // 逐字對齊 game4.html / return-studio.html，取代舊的 BOUNCE_PHYSICS/applyBounceSpin
 // 簡化模型——那一版是專案還沒換算成真實 rad/s 之前校準的，跟正式引擎不同步，
@@ -933,6 +934,12 @@ function simulate(state, variant){
 function simulateWithBaseVelocity(state, baseVel, variant){
   const velocity = addVec(baseVel, variant || {x:0,y:0,z:0});
   let spin = {topspin:state.variation.spin.topspin || 0, sidespin:state.variation.spin.sidespin || 0};
+  const D = Math.sqrt(9.8 / 4.2);
+  const spinInput = state.variation.spin3d || state.variation.spin;
+  let spin3d = spinInput
+    ? physics3dScaleSpin(physics3dPhysicalSpinFromInput(spinInput, velocity), 1 / D)
+    : null;
+  const exposedSpin = () => spin3d ? physics3dExposeSpin(spin3d, spin) : {...spin};
   const gravity = state.solve.gravity;
   const pos = cloneVec(state.start);
   const vel = cloneVec(velocity);
@@ -947,7 +954,12 @@ function simulateWithBaseVelocity(state, baseVel, variant){
   for(let i=0;i<520;i++){
     const t = (i + 1) * DT_SIM;
     const prev = cloneVec(pos);
-    vel.y += gravity * DT_SIM;
+    if(spin3d){
+      const airVelocity = physics3dAdvanceSimulationVelocity(vel, spin3d, gravity, DT_SIM, D);
+      vel.x = airVelocity.x; vel.y = airVelocity.y; vel.z = airVelocity.z;
+    } else {
+      vel.y += gravity * DT_SIM;
+    }
     pos.x += vel.x * DT_SIM;
     pos.y += vel.y * DT_SIM;
     pos.z += vel.z * DT_SIM;
@@ -987,9 +999,21 @@ function simulateWithBaseVelocity(state, baseVel, variant){
         if(bounces.length > MAX_TABLE_BOUNCES){
           break;
         }
-        const bounced = bounceWithSpinPhysical(vel, spin, CONTACT_FRICTION_MU);
+        const bounced = spin3d
+          ? bounceWithSpinPhysical3D(
+              {x:vel.x * D, y:vel.y * D, z:vel.z * D},
+              physics3dScaleSpin(spin3d, D),
+              CONTACT_FRICTION_MU
+            )
+          : bounceWithSpinPhysical(vel, spin, CONTACT_FRICTION_MU);
         vel.x = bounced.vel.x; vel.y = bounced.vel.y; vel.z = bounced.vel.z;
-        spin = bounced.spin;
+        if(spin3d){
+          vel.x /= D; vel.y /= D; vel.z /= D;
+          spin3d = physics3dScaleSpin(bounced.spin3d, 1 / D);
+          spin = physics3dExposeSpin(spin3d, spin);
+        } else {
+          spin = bounced.spin;
+        }
       }
     }
     if(pos.y <= BALL_RADIUS && prev.y > BALL_RADIUS){

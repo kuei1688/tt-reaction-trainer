@@ -1,0 +1,380 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>3D Physics Behavior Preview</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --background: #0e1726;
+      --surface: #152238;
+      --surface-2: #1d2d48;
+      --foreground: #edf4ff;
+      --muted: #a8b8d0;
+      --border: #304563;
+      --accent: #64b5ff;
+      --accent-2: #ffb86b;
+      --danger: #ff8e8e;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-width: 320px;
+      background: var(--background);
+      color: var(--foreground);
+      font: 15px/1.45 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    main {
+      width: min(100% - 28px, 980px);
+      margin: 18px auto 28px;
+    }
+    h1 { margin: 0 0 12px; font-size: 1.25rem; font-weight: 500; }
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: end;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    label { display: grid; gap: 4px; color: var(--muted); font-size: .82rem; }
+    select, button {
+      min-height: 38px;
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      background: var(--surface);
+      color: var(--foreground);
+      padding: 7px 10px;
+      font: inherit;
+    }
+    select { min-width: 230px; }
+    button { cursor: pointer; }
+    button:hover, button:focus-visible, select:focus-visible { border-color: var(--accent); outline: 2px solid color-mix(in srgb, var(--accent) 35%, transparent); }
+    button.primary { background: var(--accent); border-color: var(--accent); color: #07111f; }
+    .stage-wrap { position: relative; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; background: #0a1220; }
+    canvas { display: block; width: 100%; height: auto; aspect-ratio: 900 / 560; }
+    .legend { display: flex; flex-wrap: wrap; gap: 12px; padding: 8px 10px; color: var(--muted); font-size: .82rem; }
+    .legend span { display: inline-flex; align-items: center; gap: 5px; }
+    .swatch { width: 15px; height: 3px; border-radius: 3px; display: inline-block; }
+    .path { background: var(--accent); }
+    .table { background: var(--accent-2); }
+    .ball { width: 9px; height: 9px; border-radius: 50%; background: #fff; }
+    .readout {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px 16px;
+      margin-top: 12px;
+      padding: 10px 12px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+    .readout div { min-width: 0; }
+    .readout dt { color: var(--muted); font-size: .78rem; }
+    .readout dd { margin: 2px 0 0; overflow-wrap: anywhere; }
+    .note { margin: 10px 0 0; color: var(--muted); font-size: .82rem; }
+    @media (max-width: 600px) {
+      main { width: min(100% - 18px, 980px); margin-top: 12px; }
+      .readout { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      select { width: 100%; }
+      label { flex: 1 1 100%; }
+      .toolbar button { flex: 1 1 0; }
+    }
+  </style>
+</head>
+<body>
+  <main id="behaviorPreview">
+    <h1>3D physics behavior preview</h1>
+    <div class="toolbar" aria-label="Preview controls">
+      <label>情境
+        <select id="scenarioSelect">
+          <option value="zero">零旋轉</option>
+          <option value="omega-x-positive">omega.x +（上旋樣式）</option>
+          <option value="omega-x-negative">omega.x −（下旋樣式）</option>
+          <option value="omega-y-positive">omega.y +（側旋）</option>
+          <option value="omega-y-negative">omega.y −（側旋）</option>
+          <option value="mixed">混合旋轉</option>
+          <option value="tilted-table">混合旋轉＋傾斜桌面</option>
+        </select>
+      </label>
+      <button class="primary" id="playButton" type="button">播放</button>
+      <button id="stepButton" type="button">前進一步</button>
+      <button id="resetButton" type="button">重設</button>
+    </div>
+    <div class="stage-wrap">
+      <canvas id="stage" width="900" height="560" role="img" aria-label="3D ball trajectory and table contact preview"></canvas>
+      <div class="legend" aria-hidden="true">
+        <span><i class="swatch path"></i>球路</span>
+        <span><i class="swatch table"></i>桌面</span>
+        <span><i class="swatch ball"></i>目前球位置</span>
+      </div>
+    </div>
+    <dl class="readout" aria-live="polite">
+      <div><dt>狀態</dt><dd id="phase">—</dd></div>
+      <div><dt>omega (rad/s)</dt><dd id="omega">—</dd></div>
+      <div><dt>位置 (m)</dt><dd id="position">—</dd></div>
+      <div><dt>側向位移 x (m)</dt><dd id="lateral">—</dd></div>
+      <div><dt>桌面法線</dt><dd id="normal">—</dd></div>
+      <div><dt>桌面接觸</dt><dd id="contact">—</dd></div>
+    </dl>
+    <p class="note">這是隔離的定性預覽；它用來看 3D 語義與效果，不代表材質校準或外部實驗精確重現。</p>
+  </main>
+
+  <script src="../shared-physics-core.js"></script>
+  <script src="../mainline-v2/trainer-state.js"></script>
+  <script>
+    (function () {
+      "use strict";
+
+      const root = document.getElementById("behaviorPreview");
+      const canvas = root.querySelector("#stage");
+      const ctx = canvas.getContext("2d");
+      const select = root.querySelector("#scenarioSelect");
+      const playButton = root.querySelector("#playButton");
+      const stepButton = root.querySelector("#stepButton");
+      const resetButton = root.querySelector("#resetButton");
+      const phaseEl = root.querySelector("#phase");
+      const omegaEl = root.querySelector("#omega");
+      const positionEl = root.querySelector("#position");
+      const lateralEl = root.querySelector("#lateral");
+      const normalEl = root.querySelector("#normal");
+      const contactEl = root.querySelector("#contact");
+      const DT = 1 / 240;
+      const PLAYBACK_RATE = 1;
+      const BALL_RADIUS = 0.02;
+
+      const scenarios = {
+        "zero": {label: "零旋轉", omega: {x: 0, y: 0, z: 0}, normal: {x: 0, y: 1, z: 0}},
+        "omega-x-positive": {label: "omega.x +（上旋樣式）", omega: {x: 70, y: 0, z: 0}, normal: {x: 0, y: 1, z: 0}},
+        "omega-x-negative": {label: "omega.x −（下旋樣式）", omega: {x: -70, y: 0, z: 0}, normal: {x: 0, y: 1, z: 0}},
+        "omega-y-positive": {label: "omega.y +（側旋）", omega: {x: 0, y: 70, z: 0}, normal: {x: 0, y: 1, z: 0}},
+        "omega-y-negative": {label: "omega.y −（側旋）", omega: {x: 0, y: -70, z: 0}, normal: {x: 0, y: 1, z: 0}},
+        "mixed": {label: "混合旋轉", omega: {x: 70, y: 70, z: -35}, normal: {x: 0, y: 1, z: 0}},
+        "tilted-table": {label: "混合旋轉＋傾斜桌面", omega: {x: 70, y: 70, z: -35}, normal: {x: 0.25, y: 0.95, z: -0.18}},
+      };
+
+      function add(a, b) { return {x: a.x + b.x, y: a.y + b.y, z: a.z + b.z}; }
+      function sub(a, b) { return {x: a.x - b.x, y: a.y - b.y, z: a.z - b.z}; }
+      function scale(a, factor) { return {x: a.x * factor, y: a.y * factor, z: a.z * factor}; }
+      function dot(a, b) { return a.x * b.x + a.y * b.y + a.z * b.z; }
+      function cross(a, b) {
+        return {x: a.y * b.z - a.z * b.y, y: a.z * b.x - a.x * b.z, z: a.x * b.y - a.y * b.x};
+      }
+      function magnitude(a) { return Math.hypot(a.x, a.y, a.z); }
+      function normalize(a) { return scale(a, 1 / magnitude(a)); }
+      function formatVector(value, digits) {
+        return `(${value.x.toFixed(digits)}, ${value.y.toFixed(digits)}, ${value.z.toFixed(digits)})`;
+      }
+      function copyState(state) {
+        return MainlineV2State.createBallState({
+          position: {...state.position},
+          velocity: {...state.velocity},
+          spin3d: {schema: 2, omega: {...state.omega}},
+          mass: state.mass,
+          inertia: state.inertia,
+        });
+      }
+      function tableBasis(normal) {
+        const n = normalize(normal);
+        const helper = Math.abs(n.x) < 0.7 ? {x: 1, y: 0, z: 0} : {x: 0, y: 0, z: 1};
+        const t1 = normalize(cross(helper, n));
+        const t2 = normalize(cross(n, t1));
+        return {n, t1, t2};
+      }
+      function project(point) {
+        const scaleFactor = 118;
+        return {
+          x: canvas.width * 0.5 + (point.x - point.z * 0.33) * scaleFactor,
+          y: canvas.height * 0.78 - point.y * scaleFactor - point.z * 0.16 * scaleFactor,
+        };
+      }
+      function scenarioRun(config) {
+        const basis = tableBasis(config.normal);
+        let ball = MainlineV2State.createBallState({
+          position: {x: 0, y: 1.0, z: -1.1},
+          velocity: {x: 0, y: 3.8, z: 2.2},
+          spin3d: {schema: 2, omega: config.omega},
+        });
+        const samples = [];
+        const bounces = [];
+        for (let index = 0; index < 620; index += 1) {
+          samples.push({position: {...ball.position}, velocity: {...ball.velocity}, omega: {...ball.omega}});
+          const nextVelocity = physics3dAdvanceVelocity(
+            ball.velocity,
+            {schema: 2, omega: ball.omega},
+            -9.81,
+            DT
+          );
+          const nextPosition = add(ball.position, scale(add(ball.velocity, nextVelocity), DT * 0.5));
+          const beforeDistance = dot(ball.position, basis.n);
+          const afterDistance = dot(nextPosition, basis.n);
+          if (beforeDistance > BALL_RADIUS && afterDistance <= BALL_RADIUS && dot(nextVelocity, basis.n) < 0) {
+            const contactPosition = scale(basis.n, BALL_RADIUS);
+            const contactState = copyState({
+              ...ball,
+              position: contactPosition,
+              velocity: nextVelocity,
+            });
+            const response = physics3dSolvePlaneContact(contactState, {
+              normal: basis.n,
+              surfaceVelocity: {x: 0, y: 0, z: 0},
+              restitution: 0.76,
+              friction: 0.13,
+              radius: BALL_RADIUS,
+            });
+            ball = copyState(response.state);
+            ball.position = contactPosition;
+            bounces.push({index, position: {...contactPosition}, response});
+          } else {
+            ball = copyState({...ball, position: nextPosition, velocity: nextVelocity});
+          }
+        }
+        samples.push({position: {...ball.position}, velocity: {...ball.velocity}, omega: {...ball.omega}});
+        return {config, basis, samples, bounces};
+      }
+
+      let model = null;
+      let frame = 0;
+      let playing = false;
+      let animationId = 0;
+      let playbackTime = 0;
+      let lastTimestamp = null;
+
+      function reset() {
+        model = scenarioRun(scenarios[select.value]);
+        frame = 0;
+        playing = false;
+        playbackTime = 0;
+        lastTimestamp = null;
+        playButton.textContent = "播放";
+        draw();
+      }
+      function step() {
+        if (!model) reset();
+        frame = Math.min(model.samples.length - 1, frame + 3);
+        playbackTime = frame * DT;
+        lastTimestamp = null;
+        draw();
+      }
+      function tick(timestamp) {
+        if (playing) {
+          if (lastTimestamp === null) {
+            lastTimestamp = timestamp;
+          } else {
+            const wallDelta = Math.min(0.1, Math.max(0, (timestamp - lastTimestamp) / 1000));
+            const duration = model.samples.length * DT;
+            playbackTime = (playbackTime + wallDelta * PLAYBACK_RATE) % duration;
+            frame = Math.min(model.samples.length - 1, Math.floor(playbackTime / DT));
+            lastTimestamp = timestamp;
+          }
+        }
+        draw();
+        animationId = requestAnimationFrame(tick);
+      }
+      function drawTable() {
+        const corners = [
+          add(scale(model.basis.t1, -1.25), scale(model.basis.t2, -0.7)),
+          add(scale(model.basis.t1, 1.25), scale(model.basis.t2, -0.7)),
+          add(scale(model.basis.t1, 1.25), scale(model.basis.t2, 0.7)),
+          add(scale(model.basis.t1, -1.25), scale(model.basis.t2, 0.7)),
+        ].map(project);
+        ctx.beginPath();
+        ctx.moveTo(corners[0].x, corners[0].y);
+        corners.slice(1).forEach((corner) => ctx.lineTo(corner.x, corner.y));
+        ctx.closePath();
+        ctx.fillStyle = "rgba(255, 184, 107, .14)";
+        ctx.fill();
+        ctx.strokeStyle = "#ffb86b";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        ctx.setLineDash([5, 5]);
+        const centerA = project(scale(model.basis.t1, -1.25));
+        const centerB = project(scale(model.basis.t1, 1.25));
+        ctx.beginPath();
+        ctx.moveTo(centerA.x, centerA.y);
+        ctx.lineTo(centerB.x, centerB.y);
+        ctx.strokeStyle = "rgba(255, 184, 107, .6)";
+        ctx.stroke();
+        ctx.setLineDash([]);
+      }
+      function draw() {
+        if (!model) return;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+        gradient.addColorStop(0, "#0c1930");
+        gradient.addColorStop(1, "#08101d");
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        drawTable();
+        const planned = model.samples.map((sample) => project(sample.position));
+        if (planned.length > 1) {
+          ctx.beginPath();
+          ctx.moveTo(planned[0].x, planned[0].y);
+          planned.slice(1).forEach((point) => ctx.lineTo(point.x, point.y));
+          ctx.strokeStyle = "rgba(100, 181, 255, .25)";
+          ctx.lineWidth = 2;
+          ctx.setLineDash([5, 7]);
+          ctx.stroke();
+          ctx.setLineDash([]);
+        }
+        const visible = model.samples.slice(0, frame + 1).map((sample) => project(sample.position));
+        if (visible.length > 1) {
+          ctx.beginPath();
+          ctx.moveTo(visible[0].x, visible[0].y);
+          visible.slice(1).forEach((point) => ctx.lineTo(point.x, point.y));
+          ctx.strokeStyle = "#64b5ff";
+          ctx.lineWidth = 3;
+          ctx.stroke();
+        }
+        model.bounces.forEach((bounce) => {
+          if (bounce.index <= frame) {
+            const point = project(bounce.position);
+            ctx.beginPath();
+            ctx.arc(point.x, point.y, 7, 0, Math.PI * 2);
+            ctx.strokeStyle = "#ffb86b";
+            ctx.lineWidth = 2;
+            ctx.stroke();
+          }
+        });
+        const sample = model.samples[frame];
+        const point = project(sample.position);
+        ctx.beginPath();
+        ctx.arc(point.x, point.y, 8, 0, Math.PI * 2);
+        ctx.fillStyle = "#ffffff";
+        ctx.fill();
+        ctx.strokeStyle = "#64b5ff";
+        ctx.lineWidth = 3;
+        ctx.stroke();
+        const velocityTip = project(add(sample.position, scale(sample.velocity, 0.08)));
+        ctx.beginPath();
+        ctx.moveTo(point.x, point.y);
+        ctx.lineTo(velocityTip.x, velocityTip.y);
+        ctx.strokeStyle = "rgba(255, 255, 255, .7)";
+        ctx.lineWidth = 1;
+        ctx.stroke();
+        const bounce = model.bounces.find((item) => item.index <= frame);
+        const phase = bounce ? "桌面接觸後" : "飛行中";
+        phaseEl.textContent = `${model.config.label}／${phase}`;
+        omegaEl.textContent = formatVector(sample.omega, 1);
+        positionEl.textContent = formatVector(sample.position, 2);
+        lateralEl.textContent = sample.position.x.toFixed(3);
+        normalEl.textContent = formatVector(model.basis.n, 2);
+        contactEl.textContent = bounce
+          ? `已接觸（共 ${model.bounces.length} 次）`
+          : (model.bounces.length ? `尚未接觸（預計 ${model.bounces.length} 次）` : "無");
+      }
+      select.addEventListener("change", reset);
+      resetButton.addEventListener("click", reset);
+      stepButton.addEventListener("click", step);
+      playButton.addEventListener("click", () => {
+        playing = !playing;
+        lastTimestamp = null;
+        playButton.textContent = playing ? "暫停" : "播放";
+      });
+      reset();
+      animationId = requestAnimationFrame(tick);
+      window.addEventListener("beforeunload", () => cancelAnimationFrame(animationId), {once: true});
+    }());
+  </script>
+</body>
+</html>

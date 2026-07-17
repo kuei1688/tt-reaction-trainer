@@ -1,0 +1,309 @@
+{
+  "status": "pass",
+  "date": "2026-07-17T06:23:36.530Z",
+  "scope": "isolated semantics-aware 3D table-tennis rally: server table bounce, receiver table bounce, receiver racket contact, server table return",
+  "acceptance": "basic rally semantics and canonical BallState/omega flow only; no material calibration, formal page mutation, or external numeric fitting",
+  "coordinateContract": "world-space z<0 is server half; z>0 is receiver half",
+  "previewDelivery": "self-contained HTML with an inline isolated physics bundle for file:/// loading",
+  "playbackClock": "fixed 60 Hz UI timer with two 1/120 simulation steps per tick",
+  "timeDilation": 1.528304382547628,
+  "scenarios": [
+    {
+      "id": "zero",
+      "label": "zero spin",
+      "status": "pass",
+      "steps": 268,
+      "physicalTimeSec": 2.233333,
+      "phase": "complete",
+      "contacts": [
+        {
+          "kind": "table",
+          "label": "serve-first-bounce",
+          "side": "server",
+          "point": {
+            "x": 0,
+            "y": 0.781,
+            "z": -0.31284500908487856
+          },
+          "omega": {
+            "x": 28.499999999999996,
+            "y": 0,
+            "z": 0
+          }
+        },
+        {
+          "kind": "table",
+          "label": "serve-second-bounce",
+          "side": "receiver",
+          "point": {
+            "x": 0,
+            "y": 0.781,
+            "z": 0.15449734096702789
+          },
+          "omega": {
+            "x": 28.57400843091019,
+            "y": 0,
+            "z": 0
+          }
+        },
+        {
+          "kind": "racket",
+          "label": "receiver-return",
+          "side": "receiver",
+          "point": {
+            "x": 0,
+            "y": 1.2367407229334009,
+            "z": 0.27302065642489265
+          },
+          "omega": {
+            "x": 49.89762031821892,
+            "y": 0,
+            "z": 0
+          }
+        },
+        {
+          "kind": "table",
+          "label": "return-to-server-table",
+          "side": "server",
+          "point": {
+            "x": 0,
+            "y": 0.781,
+            "z": -0.5543770538253279
+          },
+          "omega": {
+            "x": -6.917617726094989,
+            "y": 0,
+            "z": 0
+          }
+        }
+      ],
+      "finalBall": {
+        "position": {
+          "x": 0,
+          "y": 0.781,
+          "z": -0.5543770538253279
+        },
+        "velocity": {
+          "x": 0,
+          "y": 2.700415336504178,
+          "z": -1.208332685026404
+        },
+        "omega": {
+          "x": -6.917617726094989,
+          "y": 0,
+          "z": 0
+        },
+        "mass": 0.0027,
+        "inertia": 7.2e-7
+      },
+      "checks": {
+        "semanticPass": true,
+        "fourPhysicalContacts": true,
+        "tableRallyOrder": true,
+        "racketAfterSecondBounce": true,
+        "requiredLabels": true,
+        "finiteBallState": true,
+        "canonicalOmegaY": true
+      },
+      "failure": null
+    },
+    {
+      "id": "side",
+      "label": "omega.y + side spin",
+      "status": "pass",
+      "steps": 270,
+      "physicalTimeSec": 2.25,
+      "phase": "complete",
+      "contacts": [
+        {
+          "kind": "table",
+          "label": "serve-first-bounce",
+          "side": "server",
+          "point": {
+            "x": 0.16325818461817038,
+            "y": 0.781,
+            "z": -0.2889913022813158
+          },
+          "omega": {
+            "x": 43.59171999377893,
+            "y": 70,
+            "z": -13.525626073789418
+          }
+        },
+        {
+          "kind": "table",
+          "label": "serve-second-bounce",
+          "side": "receiver",
+          "point": {
+            "x": 0.4367471853932229,
+            "y": 0.781,
+            "z": 0.4047953715736182
+          },
+          "omega": {
+            "x": 42.06854221141105,
+            "y": 70,
+            "z": -17.634395958463834
+          }
+        },
+        {
+          "kind": "racket",
+          "label": "receiver-return",
+          "side": "receiver",
+          "point": {
+            "x": 0.5132782900409534,
+            "y": 1.2421636722250948,
+            "z": 0.5779087283345473
+          },
+          "omega": {
+            "x": 55.99793153785484,
+            "y": 16.513227221802694,
+            "z": -17.634395958463834
+          }
+        },
+        {
+          "kind": "table",
+          "label": "return-to-server-table",
+          "side": "server",
+          "point": {
+            "x": 0.3647039837813591,
+            "y": 0.781,
+            "z": -0.36166335733729776
+          },
+          "omega": {
+            "x": -0.9975368924063106,
+            "y": 16.513227221802694,
+            "z": -4.972881708345277
+          }
+        }
+      ],
+      "finalBall": {
+        "position": {
+          "x": 0.3647039837813591,
+          "y": 0.781,
+          "z": -0.36166335733729776
+        },
+        "velocity": {
+          "x": -0.20123920004454407,
+          "y": 2.775021344517284,
+          "z": -1.3735295107202317
+        },
+        "omega": {
+          "x": -0.9975368924063106,
+          "y": 16.513227221802694,
+          "z": -4.972881708345277
+        },
+        "mass": 0.0027,
+        "inertia": 7.2e-7
+      },
+      "checks": {
+        "semanticPass": true,
+        "fourPhysicalContacts": true,
+        "tableRallyOrder": true,
+        "racketAfterSecondBounce": true,
+        "requiredLabels": true,
+        "finiteBallState": true,
+        "canonicalOmegaY": true
+      },
+      "failure": null
+    },
+    {
+      "id": "mixed",
+      "label": "mixed omega",
+      "status": "pass",
+      "steps": 269,
+      "physicalTimeSec": 2.241667,
+      "phase": "complete",
+      "contacts": [
+        {
+          "kind": "table",
+          "label": "serve-first-bounce",
+          "side": "server",
+          "point": {
+            "x": 0.18410985685005982,
+            "y": 0.781,
+            "z": -0.2694658817690714
+          },
+          "omega": {
+            "x": 54.19576153277795,
+            "y": 70,
+            "z": -21.291708907428035
+          }
+        },
+        {
+          "kind": "table",
+          "label": "serve-second-bounce",
+          "side": "receiver",
+          "point": {
+            "x": 0.5928111901723512,
+            "y": 0.781,
+            "z": 0.5801981694897498
+          },
+          "omega": {
+            "x": 51.936471822529136,
+            "y": 70,
+            "z": -26.334417276746052
+          }
+        },
+        {
+          "kind": "racket",
+          "label": "receiver-return",
+          "side": "receiver",
+          "point": {
+            "x": 0.7061919935326341,
+            "y": 1.2370004684121612,
+            "z": 0.7934862347885924
+          },
+          "omega": {
+            "x": 59.04331391867817,
+            "y": 10.812121131257804,
+            "z": -26.334417276746052
+          }
+        },
+        {
+          "kind": "table",
+          "label": "return-to-server-table",
+          "side": "server",
+          "point": {
+            "x": 0.6114094068141215,
+            "y": 0.781,
+            "z": -0.2190057569423925
+          },
+          "omega": {
+            "x": 2.0192099760816817,
+            "y": 10.812121131257804,
+            "z": -13.45181670893138
+          }
+        }
+      ],
+      "finalBall": {
+        "position": {
+          "x": 0.6114094068141215,
+          "y": 0.781,
+          "z": -0.2190057569423925
+        },
+        "velocity": {
+          "x": -0.07942556601197592,
+          "y": 2.7786466891790305,
+          "z": -1.5020627242887519
+        },
+        "omega": {
+          "x": 2.0192099760816817,
+          "y": 10.812121131257804,
+          "z": -13.45181670893138
+        },
+        "mass": 0.0027,
+        "inertia": 7.2e-7
+      },
+      "checks": {
+        "semanticPass": true,
+        "fourPhysicalContacts": true,
+        "tableRallyOrder": true,
+        "racketAfterSecondBounce": true,
+        "requiredLabels": true,
+        "finiteBallState": true,
+        "canonicalOmegaY": true
+      },
+      "failure": null
+    }
+  ]
+}

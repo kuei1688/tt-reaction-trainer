@@ -1,0 +1,2132 @@
+{
+  "g2": [
+    {
+      "presetId": "serve_contact_sidebackspin_004",
+      "omegaY": -157.075,
+      "deltaXAtNet": -0.06878488841198671,
+      "deltaXAtFirstBounce": -0.013657964032519676
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_004",
+      "omegaY": -125.66,
+      "deltaXAtNet": -0.055040788631569526,
+      "deltaXAtFirstBounce": -0.010924851899552668
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_004",
+      "omegaY": -62.83,
+      "deltaXAtNet": -0.027549869656444625,
+      "deltaXAtFirstBounce": -0.005460731125890572
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_004",
+      "omegaY": 0,
+      "deltaXAtNet": 0,
+      "deltaXAtFirstBounce": 0
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_004",
+      "omegaY": 62.83,
+      "deltaXAtNet": 0.027675713403447322,
+      "deltaXAtFirstBounce": 0.005456640131370427
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_004",
+      "omegaY": 125.66,
+      "deltaXAtNet": 0.0555454556406661,
+      "deltaXAtFirstBounce": 0.010908488786251447
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_004",
+      "omegaY": 157.075,
+      "deltaXAtNet": 0.0695749512803211,
+      "deltaXAtFirstBounce": 0.013632397681327402
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_003",
+      "omegaY": -157.075,
+      "deltaXAtNet": -0.2322642817658469,
+      "deltaXAtFirstBounce": -0.08639414145803104
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_003",
+      "omegaY": -125.66,
+      "deltaXAtNet": -0.18047692798041315,
+      "deltaXAtFirstBounce": -0.06955871597999608
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_003",
+      "omegaY": -62.83,
+      "deltaXAtNet": -0.08559137730349187,
+      "deltaXAtFirstBounce": -0.035203682467868536
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_003",
+      "omegaY": 0,
+      "deltaXAtNet": 0,
+      "deltaXAtFirstBounce": 0
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_003",
+      "omegaY": 62.83,
+      "deltaXAtNet": 0.07029436499062769,
+      "deltaXAtFirstBounce": 0.03597628059493696
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_003",
+      "omegaY": 125.66,
+      "deltaXAtNet": 0.13372595172269558,
+      "deltaXAtFirstBounce": 0.07264540311633716
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_003",
+      "omegaY": 157.075,
+      "deltaXAtNet": 0.16445903890610236,
+      "deltaXAtFirstBounce": 0.09121392602452738
+    },
+    {
+      "presetId": "serve_contact_sidespin_002",
+      "omegaY": -157.075,
+      "deltaXAtNet": -0.0674430617836616,
+      "deltaXAtFirstBounce": -0.013489004538907168
+    },
+    {
+      "presetId": "serve_contact_sidespin_002",
+      "omegaY": -125.66,
+      "deltaXAtNet": -0.05396794165916313,
+      "deltaXAtFirstBounce": -0.010789900232129335
+    },
+    {
+      "presetId": "serve_contact_sidespin_002",
+      "omegaY": -62.83,
+      "deltaXAtNet": -0.027013021304084173,
+      "deltaXAtFirstBounce": -0.005393498177053424
+    },
+    {
+      "presetId": "serve_contact_sidespin_002",
+      "omegaY": 0,
+      "deltaXAtNet": 0,
+      "deltaXAtFirstBounce": 0
+    },
+    {
+      "presetId": "serve_contact_sidespin_002",
+      "omegaY": 62.83,
+      "deltaXAtNet": 0.027133830654250846,
+      "deltaXAtFirstBounce": 0.005390000440760323
+    },
+    {
+      "presetId": "serve_contact_sidespin_002",
+      "omegaY": 125.66,
+      "deltaXAtNet": 0.05445236112504187,
+      "deltaXAtFirstBounce": 0.010775909691363106
+    },
+    {
+      "presetId": "serve_contact_sidespin_002",
+      "omegaY": 157.075,
+      "deltaXAtNet": 0.06820135817692241,
+      "deltaXAtFirstBounce": 0.013467144792867758
+    },
+    {
+      "presetId": "serve_contact_sidespin_020",
+      "omegaY": -157.075,
+      "deltaXAtNet": -0.21562817811992518,
+      "deltaXAtFirstBounce": -0.0764879402420029
+    },
+    {
+      "presetId": "serve_contact_sidespin_020",
+      "omegaY": -125.66,
+      "deltaXAtNet": -0.1678829500828266,
+      "deltaXAtFirstBounce": -0.06146853954734577
+    },
+    {
+      "presetId": "serve_contact_sidespin_020",
+      "omegaY": -62.83,
+      "deltaXAtNet": -0.08007895627203121,
+      "deltaXAtFirstBounce": -0.031000526844901455
+    },
+    {
+      "presetId": "serve_contact_sidespin_020",
+      "omegaY": 0,
+      "deltaXAtNet": 0,
+      "deltaXAtFirstBounce": 0
+    },
+    {
+      "presetId": "serve_contact_sidespin_020",
+      "omegaY": 62.83,
+      "deltaXAtNet": 0.06733675630402058,
+      "deltaXAtFirstBounce": 0.031484475065789164
+    },
+    {
+      "presetId": "serve_contact_sidespin_020",
+      "omegaY": 125.66,
+      "deltaXAtNet": 0.12641850387205816,
+      "deltaXAtFirstBounce": 0.06340345234665956
+    },
+    {
+      "presetId": "serve_contact_sidespin_020",
+      "omegaY": 157.075,
+      "deltaXAtNet": 0.1550669965593104,
+      "deltaXAtFirstBounce": 0.07951021050628843
+    },
+    {
+      "presetId": "serve_contact_backspin_005",
+      "omegaY": -157.075,
+      "deltaXAtNet": -0.24423150057361875,
+      "deltaXAtFirstBounce": -0.08709345363206739
+    },
+    {
+      "presetId": "serve_contact_backspin_005",
+      "omegaY": -125.66,
+      "deltaXAtNet": -0.18894559556352974,
+      "deltaXAtFirstBounce": -0.07013345852691727
+    },
+    {
+      "presetId": "serve_contact_backspin_005",
+      "omegaY": -62.83,
+      "deltaXAtNet": -0.08902804105105755,
+      "deltaXAtFirstBounce": -0.03550610678857513
+    },
+    {
+      "presetId": "serve_contact_backspin_005",
+      "omegaY": 0,
+      "deltaXAtNet": 0,
+      "deltaXAtFirstBounce": 0
+    },
+    {
+      "presetId": "serve_contact_backspin_005",
+      "omegaY": 62.83,
+      "deltaXAtNet": 0.07019539893900884,
+      "deltaXAtFirstBounce": 0.03631149135701167
+    },
+    {
+      "presetId": "serve_contact_backspin_005",
+      "omegaY": 125.66,
+      "deltaXAtNet": 0.1365248737219696,
+      "deltaXAtFirstBounce": 0.07333434432983932
+    },
+    {
+      "presetId": "serve_contact_backspin_005",
+      "omegaY": 157.075,
+      "deltaXAtNet": 0.1686046451783933,
+      "deltaXAtFirstBounce": 0.09208503264522805
+    },
+    {
+      "presetId": "serve_contact_nospin_004",
+      "omegaY": -157.075,
+      "deltaXAtNet": -0.0668807872829501,
+      "deltaXAtFirstBounce": -0.013583153553079652
+    },
+    {
+      "presetId": "serve_contact_nospin_004",
+      "omegaY": -125.66,
+      "deltaXAtNet": -0.0535182383886153,
+      "deltaXAtFirstBounce": -0.010865210584810991
+    },
+    {
+      "presetId": "serve_contact_nospin_004",
+      "omegaY": -62.83,
+      "deltaXAtNet": -0.026787549395278942,
+      "deltaXAtFirstBounce": -0.005431143552748263
+    },
+    {
+      "presetId": "serve_contact_nospin_004",
+      "omegaY": 0,
+      "deltaXAtNet": 0,
+      "deltaXAtFirstBounce": 0
+    },
+    {
+      "presetId": "serve_contact_nospin_004",
+      "omegaY": 62.83,
+      "deltaXAtNet": 0.02690624016524862,
+      "deltaXAtFirstBounce": 0.005427622449024727
+    },
+    {
+      "presetId": "serve_contact_nospin_004",
+      "omegaY": 125.66,
+      "deltaXAtNet": 0.053995753794676915,
+      "deltaXAtFirstBounce": 0.010851126576732428
+    },
+    {
+      "presetId": "serve_contact_nospin_004",
+      "omegaY": 157.075,
+      "deltaXAtNet": 0.0676294572078101,
+      "deltaXAtFirstBounce": 0.01356114776718681
+    }
+  ],
+  "g3": [
+    {
+      "presetId": "serve_contact_sidebackspin_004",
+      "magnusCoefficient": 0,
+      "deltaXAtNet": 0.07588134102720384,
+      "netClearance": 0.00452263436178002
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_003",
+      "magnusCoefficient": 0,
+      "deltaXAtNet": -0.5668594446815471,
+      "netClearance": -0.0022050278888489094
+    },
+    {
+      "presetId": "serve_contact_sidespin_002",
+      "magnusCoefficient": 0,
+      "deltaXAtNet": 0.07668879748949453,
+      "netClearance": 0.016931436079807072
+    },
+    {
+      "presetId": "serve_contact_sidespin_020",
+      "magnusCoefficient": 0,
+      "deltaXAtNet": -0.5764854532283511,
+      "netClearance": 0.018834092180978756
+    },
+    {
+      "presetId": "serve_contact_backspin_005",
+      "magnusCoefficient": 0,
+      "deltaXAtNet": -0.5665929353603376,
+      "netClearance": -0.0010722338673426757
+    },
+    {
+      "presetId": "serve_contact_nospin_004",
+      "magnusCoefficient": 0,
+      "deltaXAtNet": 0.07676515946390094,
+      "netClearance": 0.016130496754169
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_004",
+      "magnusCoefficient": 0.0014,
+      "deltaXAtNet": 0.10334793759662902,
+      "netClearance": -0.00029930138360290126
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_003",
+      "magnusCoefficient": 0.0014,
+      "deltaXAtNet": -0.6769767286855821,
+      "netClearance": 0.0014216373693523021
+    },
+    {
+      "presetId": "serve_contact_sidespin_002",
+      "magnusCoefficient": 0.0014,
+      "deltaXAtNet": 0.10369090969011524,
+      "netClearance": 0.013383569257985783
+    },
+    {
+      "presetId": "serve_contact_sidespin_020",
+      "magnusCoefficient": 0.0014,
+      "deltaXAtNet": -0.6727782813344285,
+      "netClearance": 0.018284151172965002
+    },
+    {
+      "presetId": "serve_contact_backspin_005",
+      "magnusCoefficient": 0.0014,
+      "deltaXAtNet": -0.49877578478581625,
+      "netClearance": 0.01017319065213329
+    },
+    {
+      "presetId": "serve_contact_nospin_004",
+      "magnusCoefficient": 0.0014,
+      "deltaXAtNet": 0.10354221136934366,
+      "netClearance": 0.01264737735089927
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_004",
+      "magnusCoefficient": 0.0021,
+      "deltaXAtNet": 0.11769712568760793,
+      "netClearance": 0.002736320929610847
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_003",
+      "magnusCoefficient": 0.0021,
+      "deltaXAtNet": -0.7366457826047903,
+      "netClearance": -0.0015966164401134408
+    },
+    {
+      "presetId": "serve_contact_sidespin_002",
+      "magnusCoefficient": 0.0021,
+      "deltaXAtNet": 0.11719327236039362,
+      "netClearance": 0.011656200728223598
+    },
+    {
+      "presetId": "serve_contact_sidespin_020",
+      "magnusCoefficient": 0.0021,
+      "deltaXAtNet": -0.7249233672350606,
+      "netClearance": 0.017326938991989782
+    },
+    {
+      "presetId": "serve_contact_backspin_005",
+      "magnusCoefficient": 0.0021,
+      "deltaXAtNet": -0.4672105930399548,
+      "netClearance": 0.006954166311817778
+    },
+    {
+      "presetId": "serve_contact_nospin_004",
+      "magnusCoefficient": 0.0021,
+      "deltaXAtNet": 0.11693249443671433,
+      "netClearance": 0.010951343471456432
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_004",
+      "magnusCoefficient": 0.002793690356025591,
+      "deltaXAtNet": 0.13105229001534896,
+      "netClearance": 1.6724357265740508e-7
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_003",
+      "magnusCoefficient": 0.002793690356025591,
+      "deltaXAtNet": -0.7993969682104135,
+      "netClearance": 0.0025309657040069045
+    },
+    {
+      "presetId": "serve_contact_sidespin_002",
+      "magnusCoefficient": 0.002793690356025591,
+      "deltaXAtNet": 0.1305858550376679,
+      "netClearance": 0.009979402018926997
+    },
+    {
+      "presetId": "serve_contact_sidespin_020",
+      "magnusCoefficient": 0.002793690356025591,
+      "deltaXAtNet": -0.7800327385922664,
+      "netClearance": 0.01558475164504547
+    },
+    {
+      "presetId": "serve_contact_backspin_005",
+      "magnusCoefficient": 0.002793690356025591,
+      "deltaXAtNet": -0.4369228889691131,
+      "netClearance": 0.007639070001953963
+    },
+    {
+      "presetId": "serve_contact_nospin_004",
+      "magnusCoefficient": 0.002793690356025591,
+      "deltaXAtNet": 0.13021415802030362,
+      "netClearance": 0.009304834926287087
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_004",
+      "magnusCoefficient": 0.0028,
+      "deltaXAtNet": 0.13117277834787178,
+      "netClearance": -0.000024312256265091037
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_003",
+      "magnusCoefficient": 0.0028,
+      "deltaXAtNet": -0.7999857000225106,
+      "netClearance": 0.002428547179629814
+    },
+    {
+      "presetId": "serve_contact_sidespin_002",
+      "magnusCoefficient": 0.0028,
+      "deltaXAtNet": 0.13070775057603962,
+      "netClearance": 0.009964320500221557
+    },
+    {
+      "presetId": "serve_contact_sidespin_020",
+      "magnusCoefficient": 0.0028,
+      "deltaXAtNet": -0.7805520187421475,
+      "netClearance": 0.015564645321976323
+    },
+    {
+      "presetId": "serve_contact_backspin_005",
+      "magnusCoefficient": 0.0028,
+      "deltaXAtNet": -0.4366584807625906,
+      "netClearance": 0.0075169732892140795
+    },
+    {
+      "presetId": "serve_contact_nospin_004",
+      "magnusCoefficient": 0.0028,
+      "deltaXAtNet": 0.1303350450233025,
+      "netClearance": 0.009290025257576495
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_004",
+      "magnusCoefficient": 0.0035,
+      "deltaXAtNet": 0.14442791197616106,
+      "netClearance": -0.002698046716639646
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_003",
+      "magnusCoefficient": 0.0035,
+      "deltaXAtNet": -0.8679595579282103,
+      "netClearance": -0.001642839443499522
+    },
+    {
+      "presetId": "serve_contact_sidespin_002",
+      "magnusCoefficient": 0.0035,
+      "deltaXAtNet": 0.14424275508695167,
+      "netClearance": 0.008311406768431562
+    },
+    {
+      "presetId": "serve_contact_sidespin_020",
+      "magnusCoefficient": 0.0035,
+      "deltaXAtNet": -0.8405170174302019,
+      "netClearance": 0.012662628432190237
+    },
+    {
+      "presetId": "serve_contact_backspin_005",
+      "magnusCoefficient": 0.0035,
+      "deltaXAtNet": -0.4075060165656731,
+      "netClearance": -0.0007192108385067897
+    },
+    {
+      "presetId": "serve_contact_nospin_004",
+      "magnusCoefficient": 0.0035,
+      "deltaXAtNet": 0.14375816526707746,
+      "netClearance": 0.007666840644830364
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_004",
+      "magnusCoefficient": 0.0042,
+      "deltaXAtNet": 0.15748521932571657,
+      "netClearance": -0.005360940447674101
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_003",
+      "magnusCoefficient": 0.0042,
+      "deltaXAtNet": -0.9432890929992674,
+      "netClearance": 0.0008148383351154198
+    },
+    {
+      "presetId": "serve_contact_sidespin_002",
+      "magnusCoefficient": 0.0042,
+      "deltaXAtNet": 0.15780670034962463,
+      "netClearance": 0.006701075303630621
+    },
+    {
+      "presetId": "serve_contact_sidespin_020",
+      "magnusCoefficient": 0.0042,
+      "deltaXAtNet": -0.9059948790859019,
+      "netClearance": 0.008061971413321989
+    },
+    {
+      "presetId": "serve_contact_backspin_005",
+      "magnusCoefficient": 0.0042,
+      "deltaXAtNet": -0.37854041077914075,
+      "netClearance": -0.006083790472794726
+    },
+    {
+      "presetId": "serve_contact_nospin_004",
+      "magnusCoefficient": 0.0042,
+      "deltaXAtNet": 0.1572101629358214,
+      "netClearance": 0.006085344824910632
+    }
+  ],
+  "g5": [
+    {
+      "presetId": "serve_contact_sidebackspin_004",
+      "omegaY": -125.66,
+      "tiltX": -0.25,
+      "planeVelX": -2.9,
+      "landingX": 0.274204441265789,
+      "outOmegaY": -163.34807639312618,
+      "netClearance": null,
+      "outcome": "success"
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_004",
+      "omegaY": -125.66,
+      "tiltX": -0.25,
+      "planeVelX": 0,
+      "landingX": 0.3446202197812983,
+      "outOmegaY": -122.07088898599814,
+      "netClearance": null,
+      "outcome": "success"
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_004",
+      "omegaY": -125.66,
+      "tiltX": -0.25,
+      "planeVelX": 2.9,
+      "landingX": 0.4532218861897322,
+      "outOmegaY": null,
+      "netClearance": null,
+      "outcome": "success"
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_004",
+      "omegaY": -125.66,
+      "tiltX": 0,
+      "planeVelX": -2.9,
+      "landingX": 0.3246028691559885,
+      "outOmegaY": -130.15098567956696,
+      "netClearance": null,
+      "outcome": "success"
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_004",
+      "omegaY": -125.66,
+      "tiltX": 0,
+      "planeVelX": 0,
+      "landingX": 0.35179417387368195,
+      "outOmegaY": -121.97867045789957,
+      "netClearance": null,
+      "outcome": "success"
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_004",
+      "omegaY": -125.66,
+      "tiltX": 0,
+      "planeVelX": 2.9,
+      "landingX": 0.3571281431200328,
+      "outOmegaY": -120.70504459827012,
+      "netClearance": null,
+      "outcome": "success"
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_004",
+      "omegaY": -125.66,
+      "tiltX": 0.25,
+      "planeVelX": -2.9,
+      "landingX": 0.21689924644323036,
+      "outOmegaY": null,
+      "netClearance": null,
+      "outcome": "success"
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_004",
+      "omegaY": -125.66,
+      "tiltX": 0.25,
+      "planeVelX": 0,
+      "landingX": 0.3582613702412229,
+      "outOmegaY": -121.7149820102353,
+      "netClearance": null,
+      "outcome": "success"
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_004",
+      "omegaY": -125.66,
+      "tiltX": 0.25,
+      "planeVelX": 2.9,
+      "landingX": 0.3882813377620362,
+      "outOmegaY": -88.13270013468887,
+      "netClearance": null,
+      "outcome": "success"
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_004",
+      "omegaY": 0,
+      "tiltX": -0.25,
+      "planeVelX": -2.9,
+      "landingX": 0.3804340824941205,
+      "outOmegaY": -38.68255786598202,
+      "netClearance": null,
+      "outcome": "success"
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_004",
+      "omegaY": 0,
+      "tiltX": -0.25,
+      "planeVelX": 0,
+      "landingX": 0.44562185391065384,
+      "outOmegaY": -1.5432700273320437,
+      "netClearance": null,
+      "outcome": "success"
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_004",
+      "omegaY": 0,
+      "tiltX": -0.25,
+      "planeVelX": 2.9,
+      "landingX": 0.5860260295391416,
+      "outOmegaY": null,
+      "netClearance": null,
+      "outcome": "success"
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_004",
+      "omegaY": 0,
+      "tiltX": 0,
+      "planeVelX": -2.9,
+      "landingX": 0.4419418230830846,
+      "outOmegaY": -4.842033832420231,
+      "netClearance": null,
+      "outcome": "success"
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_004",
+      "omegaY": 0,
+      "tiltX": 0,
+      "planeVelX": 0,
+      "landingX": 0.45684038262420784,
+      "outOmegaY": -0.14010040470299323,
+      "netClearance": null,
+      "outcome": "success"
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_004",
+      "omegaY": 0,
+      "tiltX": 0,
+      "planeVelX": 2.9,
+      "landingX": 0.4748185428128421,
+      "outOmegaY": 4.832166600960023,
+      "netClearance": null,
+      "outcome": "success"
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_004",
+      "omegaY": 0,
+      "tiltX": 0.25,
+      "planeVelX": -2.9,
+      "landingX": 0.3565128323859999,
+      "outOmegaY": null,
+      "netClearance": null,
+      "outcome": "success"
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_004",
+      "omegaY": 0,
+      "tiltX": 0.25,
+      "planeVelX": 0,
+      "landingX": 0.46501417137079276,
+      "outOmegaY": 0.7355104170961031,
+      "netClearance": null,
+      "outcome": "success"
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_004",
+      "omegaY": 0,
+      "tiltX": 0.25,
+      "planeVelX": 2.9,
+      "landingX": 0.4957137518835436,
+      "outOmegaY": 36.07850095726317,
+      "netClearance": null,
+      "outcome": "success"
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_004",
+      "omegaY": 125.66,
+      "tiltX": -0.25,
+      "planeVelX": -2.9,
+      "landingX": -0.1622981152933602,
+      "outOmegaY": -95.91430976660004,
+      "netClearance": 0.1672658053320929,
+      "outcome": "success"
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_004",
+      "omegaY": 125.66,
+      "tiltX": -0.25,
+      "planeVelX": 0,
+      "landingX": 0.5256917951327922,
+      "outOmegaY": 22.536375413572184,
+      "netClearance": 0.1165744277650741,
+      "outcome": "success"
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_004",
+      "omegaY": 125.66,
+      "tiltX": -0.25,
+      "planeVelX": 2.9,
+      "landingX": null,
+      "outOmegaY": 144.71454256973266,
+      "netClearance": 0.13377956248407885,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_004",
+      "omegaY": 125.66,
+      "tiltX": 0,
+      "planeVelX": -2.9,
+      "landingX": -0.13459206440914992,
+      "outOmegaY": -96.68728623507899,
+      "netClearance": 0.15920255985178378,
+      "outcome": "success"
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_004",
+      "omegaY": 125.66,
+      "tiltX": 0,
+      "planeVelX": 0,
+      "landingX": 0.550636916373499,
+      "outOmegaY": 21.62184646154234,
+      "netClearance": 0.11752655744443141,
+      "outcome": "success"
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_004",
+      "omegaY": 125.66,
+      "tiltX": 0,
+      "planeVelX": 2.9,
+      "landingX": null,
+      "outOmegaY": 143.76180864670107,
+      "netClearance": 0.1443087848773753,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_004",
+      "omegaY": 125.66,
+      "tiltX": 0.25,
+      "planeVelX": -2.9,
+      "landingX": -0.1046075012150061,
+      "outOmegaY": -97.56586788879231,
+      "netClearance": 0.1473948144185856,
+      "outcome": "success"
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_004",
+      "omegaY": 125.66,
+      "tiltX": 0.25,
+      "planeVelX": 0,
+      "landingX": 0.576529555055212,
+      "outOmegaY": 20.655043611858854,
+      "netClearance": 0.11515694078148819,
+      "outcome": "success"
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_004",
+      "omegaY": 125.66,
+      "tiltX": 0.25,
+      "planeVelX": 2.9,
+      "landingX": null,
+      "outOmegaY": 142.81143823680776,
+      "netClearance": 0.15129967292113278,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_003",
+      "omegaY": -125.66,
+      "tiltX": -0.25,
+      "planeVelX": -2.9,
+      "landingX": null,
+      "outOmegaY": -133.54447507214837,
+      "netClearance": 0.06366670336611147,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_003",
+      "omegaY": -125.66,
+      "tiltX": -0.25,
+      "planeVelX": 0,
+      "landingX": -0.5156061325643025,
+      "outOmegaY": -18.185504710119865,
+      "netClearance": 0.03804147102509614,
+      "outcome": "success"
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_003",
+      "omegaY": -125.66,
+      "tiltX": -0.25,
+      "planeVelX": 2.9,
+      "landingX": -0.38231138798333086,
+      "outOmegaY": 8.311149259470843,
+      "netClearance": 0.04942821431773037,
+      "outcome": "success"
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_003",
+      "omegaY": -125.66,
+      "tiltX": 0,
+      "planeVelX": -2.9,
+      "landingX": null,
+      "outOmegaY": -137.1666163760795,
+      "netClearance": 0.047682491742817024,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_003",
+      "omegaY": -125.66,
+      "tiltX": 0,
+      "planeVelX": 0,
+      "landingX": -0.4584602823977307,
+      "outOmegaY": -21.67756152740721,
+      "netClearance": 0.044385149476368735,
+      "outcome": "success"
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_003",
+      "omegaY": -125.66,
+      "tiltX": 0,
+      "planeVelX": 2.9,
+      "landingX": -0.2522825971822854,
+      "outOmegaY": 17.34816115777283,
+      "netClearance": 0.08364069787157602,
+      "outcome": "success"
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_003",
+      "omegaY": -125.66,
+      "tiltX": 0.25,
+      "planeVelX": -2.9,
+      "landingX": null,
+      "outOmegaY": -140.7063393288455,
+      "netClearance": 0.021256770004791536,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_003",
+      "omegaY": -125.66,
+      "tiltX": 0.25,
+      "planeVelX": 0,
+      "landingX": -0.4023651572083643,
+      "outOmegaY": -24.750171819878304,
+      "netClearance": 0.0434740346555208,
+      "outcome": "success"
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_003",
+      "omegaY": -125.66,
+      "tiltX": 0.25,
+      "planeVelX": 2.9,
+      "landingX": -0.10901713048632633,
+      "outOmegaY": 27.081006715411732,
+      "netClearance": 0.10086587938559999,
+      "outcome": "success"
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_003",
+      "omegaY": 0,
+      "tiltX": -0.25,
+      "planeVelX": -2.9,
+      "landingX": null,
+      "outOmegaY": -85.87493311023817,
+      "netClearance": 0.08902995934023361,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_003",
+      "omegaY": 0,
+      "tiltX": -0.25,
+      "planeVelX": 0,
+      "landingX": -0.4540139716243114,
+      "outOmegaY": 32.15099147910222,
+      "netClearance": 0.04715255318113931,
+      "outcome": "success"
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_003",
+      "omegaY": 0,
+      "tiltX": -0.25,
+      "planeVelX": 2.9,
+      "landingX": 0.06759510618472532,
+      "outOmegaY": 143.98267219891764,
+      "netClearance": 0.023207062446014226,
+      "outcome": "success"
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_003",
+      "omegaY": 0,
+      "tiltX": 0,
+      "planeVelX": -2.9,
+      "landingX": null,
+      "outOmegaY": -89.38986764841367,
+      "netClearance": 0.06875905119688952,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_003",
+      "omegaY": 0,
+      "tiltX": 0,
+      "planeVelX": 0,
+      "landingX": -0.3909529035849498,
+      "outOmegaY": 28.273188787434524,
+      "netClearance": 0.054522186209880696,
+      "outcome": "success"
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_003",
+      "omegaY": 0,
+      "tiltX": 0,
+      "planeVelX": 2.9,
+      "landingX": 0.14808936583689833,
+      "outOmegaY": 141.89535115350077,
+      "netClearance": 0.06325867208451386,
+      "outcome": "success"
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_003",
+      "omegaY": 0,
+      "tiltX": 0.25,
+      "planeVelX": -2.9,
+      "landingX": null,
+      "outOmegaY": -93.30112548778949,
+      "netClearance": 0.03546570093585122,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_003",
+      "omegaY": 0,
+      "tiltX": 0.25,
+      "planeVelX": 0,
+      "landingX": -0.32419298243235306,
+      "outOmegaY": 24.30793541561745,
+      "netClearance": 0.052431466091433454,
+      "outcome": "success"
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_003",
+      "omegaY": 0,
+      "tiltX": 0.25,
+      "planeVelX": 2.9,
+      "landingX": 0.23110000401934336,
+      "outOmegaY": 139.32784996199092,
+      "netClearance": 0.08735182272678688,
+      "outcome": "success"
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_003",
+      "omegaY": 125.66,
+      "tiltX": -0.25,
+      "planeVelX": -2.9,
+      "landingX": null,
+      "outOmegaY": -41.99662429255766,
+      "netClearance": null,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_003",
+      "omegaY": 125.66,
+      "tiltX": -0.25,
+      "planeVelX": 0,
+      "landingX": -0.3406946909072081,
+      "outOmegaY": 76.89422230280951,
+      "netClearance": null,
+      "outcome": "success"
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_003",
+      "omegaY": 125.66,
+      "tiltX": -0.25,
+      "planeVelX": 2.9,
+      "landingX": 0.17877420179755082,
+      "outOmegaY": 201.62874952992516,
+      "netClearance": null,
+      "outcome": "success"
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_003",
+      "omegaY": 125.66,
+      "tiltX": 0,
+      "planeVelX": -2.9,
+      "landingX": null,
+      "outOmegaY": -43.228898769719265,
+      "netClearance": null,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_003",
+      "omegaY": 125.66,
+      "tiltX": 0,
+      "planeVelX": 0,
+      "landingX": null,
+      "outOmegaY": 72.82803184210873,
+      "netClearance": null,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_003",
+      "omegaY": 125.66,
+      "tiltX": 0,
+      "planeVelX": 2.9,
+      "landingX": null,
+      "outOmegaY": 197.56951117525307,
+      "netClearance": null,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_003",
+      "omegaY": 125.66,
+      "tiltX": 0.25,
+      "planeVelX": -2.9,
+      "landingX": null,
+      "outOmegaY": -39.81670077911047,
+      "netClearance": null,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_003",
+      "omegaY": 125.66,
+      "tiltX": 0.25,
+      "planeVelX": 0,
+      "landingX": null,
+      "outOmegaY": 68.27404158385343,
+      "netClearance": null,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_sidebackspin_003",
+      "omegaY": 125.66,
+      "tiltX": 0.25,
+      "planeVelX": 2.9,
+      "landingX": null,
+      "outOmegaY": 193.18682109477706,
+      "netClearance": null,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_sidespin_002",
+      "omegaY": -125.66,
+      "tiltX": -0.25,
+      "planeVelX": -2.9,
+      "landingX": null,
+      "outOmegaY": -163.53285690019658,
+      "netClearance": 0.6649163346109451,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_sidespin_002",
+      "omegaY": -125.66,
+      "tiltX": -0.25,
+      "planeVelX": 0,
+      "landingX": null,
+      "outOmegaY": -40.64942870700153,
+      "netClearance": 0.6553226236584954,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_sidespin_002",
+      "omegaY": -125.66,
+      "tiltX": -0.25,
+      "planeVelX": 2.9,
+      "landingX": null,
+      "outOmegaY": 79.47749277874473,
+      "netClearance": 0.6893654175174605,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_sidespin_002",
+      "omegaY": -125.66,
+      "tiltX": 0,
+      "planeVelX": -2.9,
+      "landingX": null,
+      "outOmegaY": -163.83107689716968,
+      "netClearance": 0.6634408893483187,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_sidespin_002",
+      "omegaY": -125.66,
+      "tiltX": 0,
+      "planeVelX": 0,
+      "landingX": null,
+      "outOmegaY": -40.95518565919623,
+      "netClearance": 0.6560752540328533,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_sidespin_002",
+      "omegaY": -125.66,
+      "tiltX": 0,
+      "planeVelX": 2.9,
+      "landingX": null,
+      "outOmegaY": 79.1841228073837,
+      "netClearance": 0.6922929850712171,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_sidespin_002",
+      "omegaY": -125.66,
+      "tiltX": 0.25,
+      "planeVelX": -2.9,
+      "landingX": null,
+      "outOmegaY": -164.12812123619182,
+      "netClearance": 0.6606327695195938,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_sidespin_002",
+      "omegaY": -125.66,
+      "tiltX": 0.25,
+      "planeVelX": 0,
+      "landingX": null,
+      "outOmegaY": -41.240476825755955,
+      "netClearance": 0.6555377951545917,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_sidespin_002",
+      "omegaY": -125.66,
+      "tiltX": 0.25,
+      "planeVelX": 2.9,
+      "landingX": null,
+      "outOmegaY": 78.93049386166886,
+      "netClearance": 0.6938458998116132,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_sidespin_002",
+      "omegaY": 0,
+      "tiltX": -0.25,
+      "planeVelX": -2.9,
+      "landingX": null,
+      "outOmegaY": -131.59314283941026,
+      "netClearance": 0.678973170535284,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_sidespin_002",
+      "omegaY": 0,
+      "tiltX": -0.25,
+      "planeVelX": 0,
+      "landingX": null,
+      "outOmegaY": -9.369409873742448,
+      "netClearance": 0.6604731813765058,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_sidespin_002",
+      "omegaY": 0,
+      "tiltX": -0.25,
+      "planeVelX": 2.9,
+      "landingX": null,
+      "outOmegaY": 113.17385127250789,
+      "netClearance": 0.6855644457483824,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_sidespin_002",
+      "omegaY": 0,
+      "tiltX": 0,
+      "planeVelX": -2.9,
+      "landingX": null,
+      "outOmegaY": -131.8188462521708,
+      "netClearance": 0.6777558357265899,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_sidespin_002",
+      "omegaY": 0,
+      "tiltX": 0,
+      "planeVelX": 0,
+      "landingX": null,
+      "outOmegaY": -9.609114172897492,
+      "netClearance": 0.6609589578596123,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_sidespin_002",
+      "omegaY": 0,
+      "tiltX": 0,
+      "planeVelX": 2.9,
+      "landingX": null,
+      "outOmegaY": 112.9310432260466,
+      "netClearance": 0.6877737814383503,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_sidespin_002",
+      "omegaY": 0,
+      "tiltX": 0.25,
+      "planeVelX": -2.9,
+      "landingX": null,
+      "outOmegaY": -132.05887159076138,
+      "netClearance": 0.6754816701500469,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_sidespin_002",
+      "omegaY": 0,
+      "tiltX": 0.25,
+      "planeVelX": 0,
+      "landingX": null,
+      "outOmegaY": -9.847796718612614,
+      "netClearance": 0.660424323090323,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_sidespin_002",
+      "omegaY": 0,
+      "tiltX": 0.25,
+      "planeVelX": 2.9,
+      "landingX": null,
+      "outOmegaY": 112.70471082886911,
+      "netClearance": 0.6889208271406978,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_sidespin_002",
+      "omegaY": 125.66,
+      "tiltX": -0.25,
+      "planeVelX": -2.9,
+      "landingX": null,
+      "outOmegaY": -96.43830402107606,
+      "netClearance": 0.6606855823803658,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_sidespin_002",
+      "omegaY": 125.66,
+      "tiltX": -0.25,
+      "planeVelX": 0,
+      "landingX": null,
+      "outOmegaY": 22.727993849385296,
+      "netClearance": 0.6308545725804425,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_sidespin_002",
+      "omegaY": 125.66,
+      "tiltX": -0.25,
+      "planeVelX": 2.9,
+      "landingX": null,
+      "outOmegaY": 145.36234611656198,
+      "netClearance": 0.6453817587467762,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_sidespin_002",
+      "omegaY": 125.66,
+      "tiltX": 0,
+      "planeVelX": -2.9,
+      "landingX": null,
+      "outOmegaY": -96.78490117921355,
+      "netClearance": 0.6581847082567532,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_sidespin_002",
+      "omegaY": 125.66,
+      "tiltX": 0,
+      "planeVelX": 0,
+      "landingX": null,
+      "outOmegaY": 22.321413473084423,
+      "netClearance": 0.6315140274844043,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_sidespin_002",
+      "omegaY": 125.66,
+      "tiltX": 0,
+      "planeVelX": 2.9,
+      "landingX": null,
+      "outOmegaY": 144.93575615527476,
+      "netClearance": 0.6493637985747899,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_sidespin_002",
+      "omegaY": 125.66,
+      "tiltX": 0.25,
+      "planeVelX": -2.9,
+      "landingX": null,
+      "outOmegaY": -97.1858613689585,
+      "netClearance": 0.653734260695391,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_sidespin_002",
+      "omegaY": 125.66,
+      "tiltX": 0.25,
+      "planeVelX": 0,
+      "landingX": null,
+      "outOmegaY": 21.888558802242994,
+      "netClearance": 0.6303476831572471,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_sidespin_002",
+      "omegaY": 125.66,
+      "tiltX": 0.25,
+      "planeVelX": 2.9,
+      "landingX": null,
+      "outOmegaY": 144.5108788758169,
+      "netClearance": 0.6514778222823124,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_sidespin_020",
+      "omegaY": -125.66,
+      "tiltX": -0.25,
+      "planeVelX": -2.9,
+      "landingX": null,
+      "outOmegaY": -131.85851850029923,
+      "netClearance": 0.28831572240012016,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_sidespin_020",
+      "omegaY": -125.66,
+      "tiltX": -0.25,
+      "planeVelX": 0,
+      "landingX": -0.5086624515276653,
+      "outOmegaY": -15.725958828998419,
+      "netClearance": 0.26113681360701724,
+      "outcome": "success"
+    },
+    {
+      "presetId": "serve_contact_sidespin_020",
+      "omegaY": -125.66,
+      "tiltX": -0.25,
+      "planeVelX": 2.9,
+      "landingX": -0.30966576239692967,
+      "outOmegaY": 16.266844797524165,
+      "netClearance": 0.20716284609611313,
+      "outcome": "success"
+    },
+    {
+      "presetId": "serve_contact_sidespin_020",
+      "omegaY": -125.66,
+      "tiltX": 0,
+      "planeVelX": -2.9,
+      "landingX": null,
+      "outOmegaY": -134.36304814105836,
+      "netClearance": 0.27622948954259574,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_sidespin_020",
+      "omegaY": -125.66,
+      "tiltX": 0,
+      "planeVelX": 0,
+      "landingX": -0.41558448969082556,
+      "outOmegaY": -18.15588284826101,
+      "netClearance": 0.26867291809845295,
+      "outcome": "success"
+    },
+    {
+      "presetId": "serve_contact_sidespin_020",
+      "omegaY": -125.66,
+      "tiltX": 0,
+      "planeVelX": 2.9,
+      "landingX": -0.1237024165970294,
+      "outOmegaY": 26.290823994988052,
+      "netClearance": 0.25204922932978946,
+      "outcome": "success"
+    },
+    {
+      "presetId": "serve_contact_sidespin_020",
+      "omegaY": -125.66,
+      "tiltX": 0.25,
+      "planeVelX": -2.9,
+      "landingX": null,
+      "outOmegaY": -136.79698902707278,
+      "netClearance": 0.2508863310033066,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_sidespin_020",
+      "omegaY": -125.66,
+      "tiltX": 0.25,
+      "planeVelX": 0,
+      "landingX": -0.32278806703346574,
+      "outOmegaY": -20.191334632474017,
+      "netClearance": 0.2670416113826012,
+      "outcome": "success"
+    },
+    {
+      "presetId": "serve_contact_sidespin_020",
+      "omegaY": -125.66,
+      "tiltX": 0.25,
+      "planeVelX": 2.9,
+      "landingX": 0.08361202331157264,
+      "outOmegaY": 37.04743135833574,
+      "netClearance": 0.27563588128433747,
+      "outcome": "success"
+    },
+    {
+      "presetId": "serve_contact_sidespin_020",
+      "omegaY": 0,
+      "tiltX": -0.25,
+      "planeVelX": -2.9,
+      "landingX": null,
+      "outOmegaY": -85.16769656233565,
+      "netClearance": 0.3506027774331274,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_sidespin_020",
+      "omegaY": 0,
+      "tiltX": -0.25,
+      "planeVelX": 0,
+      "landingX": -0.6199043915840811,
+      "outOmegaY": 33.39131498406107,
+      "netClearance": 0.3115084169717318,
+      "outcome": "success"
+    },
+    {
+      "presetId": "serve_contact_sidespin_020",
+      "omegaY": 0,
+      "tiltX": -0.25,
+      "planeVelX": 2.9,
+      "landingX": 0.16964621777563196,
+      "outOmegaY": 147.00912922962746,
+      "netClearance": 0.28087577340617476,
+      "outcome": "success"
+    },
+    {
+      "presetId": "serve_contact_sidespin_020",
+      "omegaY": 0,
+      "tiltX": 0,
+      "planeVelX": -2.9,
+      "landingX": null,
+      "outOmegaY": -87.67763673941658,
+      "netClearance": 0.3346368890731274,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_sidespin_020",
+      "omegaY": 0,
+      "tiltX": 0,
+      "planeVelX": 0,
+      "landingX": -0.5157764085348586,
+      "outOmegaY": 30.60226744108487,
+      "netClearance": 0.3189500125933554,
+      "outcome": "success"
+    },
+    {
+      "presetId": "serve_contact_sidespin_020",
+      "omegaY": 0,
+      "tiltX": 0,
+      "planeVelX": 2.9,
+      "landingX": 0.27539727591296326,
+      "outOmegaY": 145.30184638806327,
+      "netClearance": 0.32008830151641676,
+      "outcome": "success"
+    },
+    {
+      "presetId": "serve_contact_sidespin_020",
+      "omegaY": 0,
+      "tiltX": 0.25,
+      "planeVelX": -2.9,
+      "landingX": null,
+      "outOmegaY": -90.59721730357136,
+      "netClearance": 0.30282432930341574,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_sidespin_020",
+      "omegaY": 0,
+      "tiltX": 0.25,
+      "planeVelX": 0,
+      "landingX": -0.4072996801692633,
+      "outOmegaY": 27.714885645593476,
+      "netClearance": 0.3150052898093826,
+      "outcome": "success"
+    },
+    {
+      "presetId": "serve_contact_sidespin_020",
+      "omegaY": 0,
+      "tiltX": 0.25,
+      "planeVelX": 2.9,
+      "landingX": 0.3888573113443736,
+      "outOmegaY": 143.46442909387926,
+      "netClearance": 0.33912598588505494,
+      "outcome": "success"
+    },
+    {
+      "presetId": "serve_contact_sidespin_020",
+      "omegaY": 125.66,
+      "tiltX": -0.25,
+      "planeVelX": -2.9,
+      "landingX": null,
+      "outOmegaY": -37.97969965824419,
+      "netClearance": 0.38086826891705006,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_sidespin_020",
+      "omegaY": 125.66,
+      "tiltX": -0.25,
+      "planeVelX": 0,
+      "landingX": null,
+      "outOmegaY": 76.63738837037508,
+      "netClearance": 0.3322335115246692,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_sidespin_020",
+      "omegaY": 125.66,
+      "tiltX": -0.25,
+      "planeVelX": 2.9,
+      "landingX": 0.07977955486302533,
+      "outOmegaY": 195.91290297430155,
+      "netClearance": 0.2938459800987677,
+      "outcome": "success"
+    },
+    {
+      "presetId": "serve_contact_sidespin_020",
+      "omegaY": 125.66,
+      "tiltX": 0,
+      "planeVelX": -2.9,
+      "landingX": null,
+      "outOmegaY": -39.38027276654563,
+      "netClearance": 0.3615906391200173,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_sidespin_020",
+      "omegaY": 125.66,
+      "tiltX": 0,
+      "planeVelX": 0,
+      "landingX": -0.6752907658360493,
+      "outOmegaY": 73.90762018432731,
+      "netClearance": 0.3389660440291492,
+      "outcome": "success"
+    },
+    {
+      "presetId": "serve_contact_sidespin_020",
+      "omegaY": 125.66,
+      "tiltX": 0,
+      "planeVelX": 2.9,
+      "landingX": 0.15511921837239928,
+      "outOmegaY": 193.0780129177249,
+      "netClearance": 0.33529145218697176,
+      "outcome": "success"
+    },
+    {
+      "presetId": "serve_contact_sidespin_020",
+      "omegaY": 125.66,
+      "tiltX": 0.25,
+      "planeVelX": -2.9,
+      "landingX": null,
+      "outOmegaY": -41.01436263606266,
+      "netClearance": 0.32428344903005424,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_sidespin_020",
+      "omegaY": 125.66,
+      "tiltX": 0.25,
+      "planeVelX": 0,
+      "landingX": -0.556234905486053,
+      "outOmegaY": 70.60654956359517,
+      "netClearance": 0.33304659810371573,
+      "outcome": "success"
+    },
+    {
+      "presetId": "serve_contact_sidespin_020",
+      "omegaY": 125.66,
+      "tiltX": 0.25,
+      "planeVelX": 2.9,
+      "landingX": 0.24436031540558553,
+      "outOmegaY": 189.9881833836359,
+      "netClearance": 0.35497651131083996,
+      "outcome": "success"
+    },
+    {
+      "presetId": "serve_contact_backspin_005",
+      "omegaY": -125.66,
+      "tiltX": -0.25,
+      "planeVelX": -2.9,
+      "landingX": null,
+      "outOmegaY": -140.40927765763718,
+      "netClearance": null,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_backspin_005",
+      "omegaY": -125.66,
+      "tiltX": -0.25,
+      "planeVelX": 0,
+      "landingX": -0.01213810243474151,
+      "outOmegaY": -16.800323018614264,
+      "netClearance": null,
+      "outcome": "success"
+    },
+    {
+      "presetId": "serve_contact_backspin_005",
+      "omegaY": -125.66,
+      "tiltX": -0.25,
+      "planeVelX": 2.9,
+      "landingX": 0.1601313482321485,
+      "outOmegaY": 21.210949316423033,
+      "netClearance": null,
+      "outcome": "success"
+    },
+    {
+      "presetId": "serve_contact_backspin_005",
+      "omegaY": -125.66,
+      "tiltX": 0,
+      "planeVelX": -2.9,
+      "landingX": -0.4214195035004925,
+      "outOmegaY": -144.40288948642902,
+      "netClearance": null,
+      "outcome": "success"
+    },
+    {
+      "presetId": "serve_contact_backspin_005",
+      "omegaY": -125.66,
+      "tiltX": 0,
+      "planeVelX": 0,
+      "landingX": 0.04191093226273197,
+      "outOmegaY": -20.599216804143104,
+      "netClearance": null,
+      "outcome": "success"
+    },
+    {
+      "presetId": "serve_contact_backspin_005",
+      "omegaY": -125.66,
+      "tiltX": 0,
+      "planeVelX": 2.9,
+      "landingX": null,
+      "outOmegaY": 30.570128574930973,
+      "netClearance": null,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_backspin_005",
+      "omegaY": -125.66,
+      "tiltX": 0.25,
+      "planeVelX": -2.9,
+      "landingX": -0.36408698193420713,
+      "outOmegaY": -148.3174469067818,
+      "netClearance": null,
+      "outcome": "success"
+    },
+    {
+      "presetId": "serve_contact_backspin_005",
+      "omegaY": -125.66,
+      "tiltX": 0.25,
+      "planeVelX": 0,
+      "landingX": 0.09462365878604172,
+      "outOmegaY": -24.167722299570045,
+      "netClearance": null,
+      "outcome": "success"
+    },
+    {
+      "presetId": "serve_contact_backspin_005",
+      "omegaY": -125.66,
+      "tiltX": 0.25,
+      "planeVelX": 2.9,
+      "landingX": null,
+      "outOmegaY": 40.63315759294888,
+      "netClearance": null,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_backspin_005",
+      "omegaY": 0,
+      "tiltX": -0.25,
+      "planeVelX": -2.9,
+      "landingX": null,
+      "outOmegaY": -86.94512624754718,
+      "netClearance": 0.08905672277247756,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_backspin_005",
+      "omegaY": 0,
+      "tiltX": -0.25,
+      "planeVelX": 0,
+      "landingX": -0.4172156342360951,
+      "outOmegaY": 30.836147200355082,
+      "netClearance": 0.05232971741740844,
+      "outcome": "success"
+    },
+    {
+      "presetId": "serve_contact_backspin_005",
+      "omegaY": 0,
+      "tiltX": -0.25,
+      "planeVelX": 2.9,
+      "landingX": 0.09432162606420372,
+      "outOmegaY": 141.4102641233939,
+      "netClearance": 0.031355475592806714,
+      "outcome": "success"
+    },
+    {
+      "presetId": "serve_contact_backspin_005",
+      "omegaY": 0,
+      "tiltX": 0,
+      "planeVelX": -2.9,
+      "landingX": null,
+      "outOmegaY": -90.35273078138275,
+      "netClearance": 0.07081184263175888,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_backspin_005",
+      "omegaY": 0,
+      "tiltX": 0,
+      "planeVelX": 0,
+      "landingX": -0.3563713151585637,
+      "outOmegaY": 27.035176023989244,
+      "netClearance": 0.05880488887466695,
+      "outcome": "success"
+    },
+    {
+      "presetId": "serve_contact_backspin_005",
+      "omegaY": 0,
+      "tiltX": 0,
+      "planeVelX": 2.9,
+      "landingX": 0.17598531152195135,
+      "outOmegaY": 140.0303940673217,
+      "netClearance": 0.06684080620986399,
+      "outcome": "success"
+    },
+    {
+      "presetId": "serve_contact_backspin_005",
+      "omegaY": 0,
+      "tiltX": 0.25,
+      "planeVelX": -2.9,
+      "landingX": null,
+      "outOmegaY": -94.14732064309477,
+      "netClearance": 0.040553803256028864,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_backspin_005",
+      "omegaY": 0,
+      "tiltX": 0.25,
+      "planeVelX": 0,
+      "landingX": -0.29208119866753507,
+      "outOmegaY": 23.149823190439058,
+      "netClearance": 0.0566503818808195,
+      "outcome": "success"
+    },
+    {
+      "presetId": "serve_contact_backspin_005",
+      "omegaY": 0,
+      "tiltX": 0.25,
+      "planeVelX": 2.9,
+      "landingX": 0.25854712845205735,
+      "outOmegaY": 137.7483962327795,
+      "netClearance": 0.0880107972274845,
+      "outcome": "success"
+    },
+    {
+      "presetId": "serve_contact_backspin_005",
+      "omegaY": 125.66,
+      "tiltX": -0.25,
+      "planeVelX": -2.9,
+      "landingX": null,
+      "outOmegaY": -35.89190845660036,
+      "netClearance": 0.10816107480916337,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_backspin_005",
+      "omegaY": 125.66,
+      "tiltX": -0.25,
+      "planeVelX": 0,
+      "landingX": -0.4100526272419898,
+      "outOmegaY": 75.72721927577967,
+      "netClearance": 0.055916274322736714,
+      "outcome": "success"
+    },
+    {
+      "presetId": "serve_contact_backspin_005",
+      "omegaY": 125.66,
+      "tiltX": -0.25,
+      "planeVelX": 2.9,
+      "landingX": 0.16596999045722458,
+      "outOmegaY": 194.22629269466265,
+      "netClearance": 0.020838190162205783,
+      "outcome": "success"
+    },
+    {
+      "presetId": "serve_contact_backspin_005",
+      "omegaY": 125.66,
+      "tiltX": 0,
+      "planeVelX": -2.9,
+      "landingX": null,
+      "outOmegaY": -35.140069807877815,
+      "netClearance": 0.08816513739281773,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_backspin_005",
+      "omegaY": 125.66,
+      "tiltX": 0,
+      "planeVelX": 0,
+      "landingX": -0.3457413536542535,
+      "outOmegaY": 72.06035161550602,
+      "netClearance": 0.06271502355361658,
+      "outcome": "success"
+    },
+    {
+      "presetId": "serve_contact_backspin_005",
+      "omegaY": 125.66,
+      "tiltX": 0,
+      "planeVelX": 2.9,
+      "landingX": 0.22100603685809056,
+      "outOmegaY": 190.44250715840593,
+      "netClearance": 0.06336085059940633,
+      "outcome": "success"
+    },
+    {
+      "presetId": "serve_contact_backspin_005",
+      "omegaY": 125.66,
+      "tiltX": 0.25,
+      "planeVelX": -2.9,
+      "landingX": -0.7568382810149875,
+      "outOmegaY": -28.91885437704801,
+      "netClearance": 0.05653747553655164,
+      "outcome": "success"
+    },
+    {
+      "presetId": "serve_contact_backspin_005",
+      "omegaY": 125.66,
+      "tiltX": 0.25,
+      "planeVelX": 0,
+      "landingX": -0.27260253858137184,
+      "outOmegaY": 67.80372739837327,
+      "netClearance": 0.059563880412494385,
+      "outcome": "success"
+    },
+    {
+      "presetId": "serve_contact_backspin_005",
+      "omegaY": 125.66,
+      "tiltX": 0.25,
+      "planeVelX": 2.9,
+      "landingX": 0.28536093537367596,
+      "outOmegaY": 186.40392221976057,
+      "netClearance": 0.08865492759702198,
+      "outcome": "success"
+    },
+    {
+      "presetId": "serve_contact_nospin_004",
+      "omegaY": -125.66,
+      "tiltX": -0.25,
+      "planeVelX": -2.9,
+      "landingX": null,
+      "outOmegaY": -163.56874467524074,
+      "netClearance": 0.6700344563573005,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_nospin_004",
+      "omegaY": -125.66,
+      "tiltX": -0.25,
+      "planeVelX": 0,
+      "landingX": null,
+      "outOmegaY": -40.66458272191258,
+      "netClearance": 0.661616587291484,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_nospin_004",
+      "omegaY": -125.66,
+      "tiltX": -0.25,
+      "planeVelX": 2.9,
+      "landingX": null,
+      "outOmegaY": 79.52640642161066,
+      "netClearance": 0.6978727567829978,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_nospin_004",
+      "omegaY": -125.66,
+      "tiltX": 0,
+      "planeVelX": -2.9,
+      "landingX": null,
+      "outOmegaY": -163.66526960814363,
+      "netClearance": 0.6695410635617135,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_nospin_004",
+      "omegaY": -125.66,
+      "tiltX": 0,
+      "planeVelX": 0,
+      "landingX": null,
+      "outOmegaY": -40.7635462148314,
+      "netClearance": 0.6618581583842226,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_nospin_004",
+      "omegaY": -125.66,
+      "tiltX": 0,
+      "planeVelX": 2.9,
+      "landingX": null,
+      "outOmegaY": 79.43121591296932,
+      "netClearance": 0.6988294697609935,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_nospin_004",
+      "omegaY": -125.66,
+      "tiltX": 0.25,
+      "planeVelX": -2.9,
+      "landingX": null,
+      "outOmegaY": -163.76150267930623,
+      "netClearance": 0.6686303284366825,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_nospin_004",
+      "omegaY": -125.66,
+      "tiltX": 0.25,
+      "planeVelX": 0,
+      "landingX": null,
+      "outOmegaY": -40.85594301083686,
+      "netClearance": 0.6616855164675971,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_nospin_004",
+      "omegaY": -125.66,
+      "tiltX": 0.25,
+      "planeVelX": 2.9,
+      "landingX": null,
+      "outOmegaY": 79.34884567605212,
+      "netClearance": 0.6993465496561714,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_nospin_004",
+      "omegaY": 0,
+      "tiltX": -0.25,
+      "planeVelX": -2.9,
+      "landingX": null,
+      "outOmegaY": -131.89008125102615,
+      "netClearance": 0.6843155386299232,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_nospin_004",
+      "omegaY": 0,
+      "tiltX": -0.25,
+      "planeVelX": 0,
+      "landingX": null,
+      "outOmegaY": -9.647423562982915,
+      "netClearance": 0.6668595059545875,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_nospin_004",
+      "omegaY": 0,
+      "tiltX": -0.25,
+      "planeVelX": 2.9,
+      "landingX": null,
+      "outOmegaY": 112.92367727443711,
+      "netClearance": 0.694112356803244,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_nospin_004",
+      "omegaY": 0,
+      "tiltX": 0,
+      "planeVelX": -2.9,
+      "landingX": null,
+      "outOmegaY": -131.92086468951436,
+      "netClearance": 0.6841464265232368,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_nospin_004",
+      "omegaY": 0,
+      "tiltX": 0,
+      "planeVelX": 0,
+      "landingX": null,
+      "outOmegaY": -9.680114308161498,
+      "netClearance": 0.6669260021747537,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_nospin_004",
+      "omegaY": 0,
+      "tiltX": 0,
+      "planeVelX": 2.9,
+      "landingX": null,
+      "outOmegaY": 112.89056105370747,
+      "netClearance": 0.6944152920849714,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_nospin_004",
+      "omegaY": 0,
+      "tiltX": 0.25,
+      "planeVelX": -2.9,
+      "landingX": null,
+      "outOmegaY": -131.95363145539994,
+      "netClearance": 0.6838330839859613,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_nospin_004",
+      "omegaY": 0,
+      "tiltX": 0.25,
+      "planeVelX": 0,
+      "landingX": null,
+      "outOmegaY": -9.71266891570756,
+      "netClearance": 0.6668531435561772,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_nospin_004",
+      "omegaY": 0,
+      "tiltX": 0.25,
+      "planeVelX": 2.9,
+      "landingX": null,
+      "outOmegaY": 112.85969031557084,
+      "netClearance": 0.6945709108031995,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_nospin_004",
+      "omegaY": 125.66,
+      "tiltX": -0.25,
+      "planeVelX": -2.9,
+      "landingX": null,
+      "outOmegaY": -96.98953793873261,
+      "netClearance": 0.6654796527168453,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_nospin_004",
+      "omegaY": 125.66,
+      "tiltX": -0.25,
+      "planeVelX": 0,
+      "landingX": null,
+      "outOmegaY": 22.214307698449705,
+      "netClearance": 0.6365170330857454,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_nospin_004",
+      "omegaY": 125.66,
+      "tiltX": -0.25,
+      "planeVelX": 2.9,
+      "landingX": null,
+      "outOmegaY": 144.8640215855126,
+      "netClearance": 0.6531002065606312,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_nospin_004",
+      "omegaY": 125.66,
+      "tiltX": 0,
+      "planeVelX": -2.9,
+      "landingX": null,
+      "outOmegaY": -97.18098795794019,
+      "netClearance": 0.6640735968089412,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_nospin_004",
+      "omegaY": 125.66,
+      "tiltX": 0,
+      "planeVelX": 0,
+      "landingX": null,
+      "outOmegaY": 21.990255532784566,
+      "netClearance": 0.6368738009969689,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_nospin_004",
+      "omegaY": 125.66,
+      "tiltX": 0,
+      "planeVelX": 2.9,
+      "landingX": null,
+      "outOmegaY": 144.62894056573333,
+      "netClearance": 0.6553159699734546,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_nospin_004",
+      "omegaY": 125.66,
+      "tiltX": 0.25,
+      "planeVelX": -2.9,
+      "landingX": null,
+      "outOmegaY": -97.40251144831899,
+      "netClearance": 0.661596419045067,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_nospin_004",
+      "omegaY": 125.66,
+      "tiltX": 0.25,
+      "planeVelX": 0,
+      "landingX": null,
+      "outOmegaY": 21.75188201295665,
+      "netClearance": 0.6362330860086626,
+      "outcome": "no_landing"
+    },
+    {
+      "presetId": "serve_contact_nospin_004",
+      "omegaY": 125.66,
+      "tiltX": 0.25,
+      "planeVelX": 2.9,
+      "landingX": null,
+      "outOmegaY": 144.3950113213943,
+      "netClearance": 0.656515528559633,
+      "outcome": "no_landing"
+    }
+  ]
+}

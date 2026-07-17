@@ -1,0 +1,1306 @@
+{
+  "generatedAt": "2026-07-15T23:59:34.714Z",
+  "date": "2026-07-15",
+  "source": "game5.html",
+  "buildVersion": "v9k02",
+  "scope": "Game 5 MVP readiness automated gate; read-only product inspection",
+  "checks": [
+    {
+      "id": "DATA-01",
+      "classification": "metadata-error",
+      "status": "pass",
+      "blocking": false,
+      "message": "47 approved videos map 1:1 to 47 presets",
+      "evidence": {
+        "approvedVideoCount": 47,
+        "presetCount": 47,
+        "missing": [],
+        "orphan": [],
+        "duplicatePresetVideoIds": [],
+        "duplicateVideos": [],
+        "missingFiles": [],
+        "tagMismatches": [],
+        "byCategory": {
+          "contact_sidebackspin_right": 6,
+          "contact_sidebackspin_left": 6,
+          "contact_backspin": 10,
+          "contact_sidespin_left": 18,
+          "contact_sidespin_right": 4,
+          "contact_nospin": 3
+        }
+      }
+    },
+    {
+      "id": "DATA-02",
+      "classification": "metadata-error",
+      "status": "pass",
+      "blocking": false,
+      "message": "47 approved videos have finite contact metadata",
+      "evidence": {
+        "approvedVideoCount": 47,
+        "invalid": [],
+        "missingSchema": []
+      }
+    },
+    {
+      "id": "DIR-01",
+      "classification": "direction-sign",
+      "status": "pass",
+      "blocking": false,
+      "message": "22 pure sidespin videos preserve the direction contract",
+      "evidence": {
+        "categoryCounts": {
+          "contact_sidebackspin_right": 6,
+          "contact_sidebackspin_left": 6,
+          "contact_backspin": 10,
+          "contact_sidespin_left": 18,
+          "contact_sidespin_right": 4,
+          "contact_nospin": 3
+        },
+        "pureSideCount": 22,
+        "errors": [],
+        "sourceContract": true
+      }
+    },
+    {
+      "id": "PHYS-01",
+      "classification": "canonical-physics",
+      "status": "pass",
+      "blocking": false,
+      "message": "47/47 serves are finite and legal; 6 representative replays are deterministic",
+      "evidence": {
+        "representativeIds": [
+          "contact_sidebackspin_004",
+          "contact_sidebackspin_002",
+          "contact_sidespin_002",
+          "contact_sidespin_012",
+          "contact_backspin_002",
+          "contact_nospin_002"
+        ],
+        "failures": [],
+        "serveResults": [
+          {
+            "id": "contact_sidebackspin_002",
+            "finite": true,
+            "legalServe": true,
+            "legalReasons": [],
+            "points": 176,
+            "bounceCount": 2,
+            "firstBounce": {
+              "x": 0.348237,
+              "y": 0.781,
+              "z": -0.900555,
+              "t": 0.144791
+            },
+            "secondBounce": {
+              "x": 0.246427,
+              "y": 0.781,
+              "z": 1.296115,
+              "t": 0.703646
+            },
+            "netClearance": 0,
+            "finiteIssues": [],
+            "deterministic": true
+          },
+          {
+            "id": "contact_sidebackspin_003",
+            "finite": true,
+            "legalServe": true,
+            "legalReasons": [],
+            "points": 237,
+            "bounceCount": 2,
+            "firstBounce": {
+              "x": 0.041034,
+              "y": 0.781,
+              "z": -0.456171,
+              "t": 0.558333
+            },
+            "secondBounce": {
+              "x": -0.43761,
+              "y": 0.781,
+              "z": 0.32484,
+              "t": 1.096793
+            },
+            "netClearance": 0.002531,
+            "finiteIssues": []
+          },
+          {
+            "id": "contact_sidebackspin_004",
+            "finite": true,
+            "legalServe": true,
+            "legalReasons": [],
+            "points": 178,
+            "bounceCount": 2,
+            "firstBounce": {
+              "x": 0.370107,
+              "y": 0.781,
+              "z": -0.900732,
+              "t": 0.145073
+            },
+            "secondBounce": {
+              "x": 0.648115,
+              "y": 0.781,
+              "z": 1.276567,
+              "t": 0.70417
+            },
+            "netClearance": 0,
+            "finiteIssues": [],
+            "deterministic": true
+          },
+          {
+            "id": "contact_sidebackspin_005",
+            "finite": true,
+            "legalServe": true,
+            "legalReasons": [],
+            "points": 306,
+            "bounceCount": 4,
+            "firstBounce": {
+              "x": 0.222244,
+              "y": 0.781,
+              "z": -0.447514,
+              "t": 0.55
+            },
+            "secondBounce": {
+              "x": 0.361307,
+              "y": 0.781,
+              "z": 0.408703,
+              "t": 1.081655
+            },
+            "netClearance": 0.002666,
+            "finiteIssues": []
+          },
+          {
+            "id": "contact_sidebackspin_006",
+            "finite": true,
+            "legalServe": true,
+            "legalReasons": [],
+            "points": 178,
+            "bounceCount": 2,
+            "firstBounce": {
+              "x": 0.370107,
+              "y": 0.781,
+              "z": -0.900732,
+              "t": 0.145073
+            },
+            "secondBounce": {
+              "x": 0.648115,
+              "y": 0.781,
+              "z": 1.276567,
+              "t": 0.70417
+            },
+            "netClearance": 0,
+            "finiteIssues": []
+          },
+          {
+            "id": "contact_sidebackspin_007",
+            "finite": true,
+            "legalServe": true,
+            "legalReasons": [],
+            "points": 176,
+            "bounceCount": 2,
+            "firstBounce": {
+              "x": 0.348237,
+              "y": 0.781,
+              "z": -0.900555,
+              "t": 0.144791
+            },
+            "secondBounce": {
+              "x": 0.246427,
+              "y": 0.781,
+              "z": 1.296115,
+              "t": 0.703646
+            },
+            "netClearance": 0,
+            "finiteIssues": []
+          },
+          {
+            "id": "contact_sidebackspin_008",
+            "finite": true,
+            "legalServe": true,
+            "legalReasons": [],
+            "points": 237,
+            "bounceCount": 2,
+            "firstBounce": {
+              "x": 0.041034,
+              "y": 0.781,
+              "z": -0.456171,
+              "t": 0.558333
+            },
+            "secondBounce": {
+              "x": -0.43761,
+              "y": 0.781,
+              "z": 0.32484,
+              "t": 1.096793
+            },
+            "netClearance": 0.002531,
+            "finiteIssues": []
+          },
+          {
+            "id": "contact_sidebackspin_009",
+            "finite": true,
+            "legalServe": true,
+            "legalReasons": [],
+            "points": 176,
+            "bounceCount": 2,
+            "firstBounce": {
+              "x": 0.348237,
+              "y": 0.781,
+              "z": -0.900555,
+              "t": 0.144791
+            },
+            "secondBounce": {
+              "x": 0.246427,
+              "y": 0.781,
+              "z": 1.296115,
+              "t": 0.703646
+            },
+            "netClearance": 0,
+            "finiteIssues": []
+          },
+          {
+            "id": "contact_sidebackspin_010",
+            "finite": true,
+            "legalServe": true,
+            "legalReasons": [],
+            "points": 237,
+            "bounceCount": 2,
+            "firstBounce": {
+              "x": 0.041034,
+              "y": 0.781,
+              "z": -0.456171,
+              "t": 0.558333
+            },
+            "secondBounce": {
+              "x": -0.43761,
+              "y": 0.781,
+              "z": 0.32484,
+              "t": 1.096793
+            },
+            "netClearance": 0.002531,
+            "finiteIssues": []
+          },
+          {
+            "id": "contact_sidebackspin_011",
+            "finite": true,
+            "legalServe": true,
+            "legalReasons": [],
+            "points": 306,
+            "bounceCount": 4,
+            "firstBounce": {
+              "x": 0.222244,
+              "y": 0.781,
+              "z": -0.447514,
+              "t": 0.55
+            },
+            "secondBounce": {
+              "x": 0.361307,
+              "y": 0.781,
+              "z": 0.408703,
+              "t": 1.081655
+            },
+            "netClearance": 0.002666,
+            "finiteIssues": []
+          },
+          {
+            "id": "contact_sidebackspin_012",
+            "finite": true,
+            "legalServe": true,
+            "legalReasons": [],
+            "points": 178,
+            "bounceCount": 2,
+            "firstBounce": {
+              "x": 0.370107,
+              "y": 0.781,
+              "z": -0.900732,
+              "t": 0.145073
+            },
+            "secondBounce": {
+              "x": 0.648115,
+              "y": 0.781,
+              "z": 1.276567,
+              "t": 0.70417
+            },
+            "netClearance": 0,
+            "finiteIssues": []
+          },
+          {
+            "id": "contact_sidebackspin_013",
+            "finite": true,
+            "legalServe": true,
+            "legalReasons": [],
+            "points": 306,
+            "bounceCount": 4,
+            "firstBounce": {
+              "x": 0.222244,
+              "y": 0.781,
+              "z": -0.447514,
+              "t": 0.55
+            },
+            "secondBounce": {
+              "x": 0.361307,
+              "y": 0.781,
+              "z": 0.408703,
+              "t": 1.081655
+            },
+            "netClearance": 0.002666,
+            "finiteIssues": []
+          },
+          {
+            "id": "contact_backspin_002",
+            "finite": true,
+            "legalServe": true,
+            "legalReasons": [],
+            "points": 174,
+            "bounceCount": 2,
+            "firstBounce": {
+              "x": 0.359145,
+              "y": 0.781,
+              "z": -0.900751,
+              "t": 0.144879
+            },
+            "secondBounce": {
+              "x": 0.447701,
+              "y": 0.781,
+              "z": 1.296592,
+              "t": 0.703917
+            },
+            "netClearance": 0,
+            "finiteIssues": [],
+            "deterministic": true
+          },
+          {
+            "id": "contact_backspin_003",
+            "finite": true,
+            "legalServe": true,
+            "legalReasons": [],
+            "points": 306,
+            "bounceCount": 4,
+            "firstBounce": {
+              "x": 0.139804,
+              "y": 0.781,
+              "z": -0.44524,
+              "t": 0.550002
+            },
+            "secondBounce": {
+              "x": 0.12281,
+              "y": 0.781,
+              "z": 0.427154,
+              "t": 1.081421
+            },
+            "netClearance": 0.002732,
+            "finiteIssues": []
+          },
+          {
+            "id": "contact_backspin_004",
+            "finite": true,
+            "legalServe": true,
+            "legalReasons": [],
+            "points": 174,
+            "bounceCount": 2,
+            "firstBounce": {
+              "x": 0.359145,
+              "y": 0.781,
+              "z": -0.900751,
+              "t": 0.144879
+            },
+            "secondBounce": {
+              "x": 0.447701,
+              "y": 0.781,
+              "z": 1.296592,
+              "t": 0.703917
+            },
+            "netClearance": 0,
+            "finiteIssues": []
+          },
+          {
+            "id": "contact_backspin_005",
+            "finite": true,
+            "legalServe": true,
+            "legalReasons": [],
+            "points": 312,
+            "bounceCount": 4,
+            "firstBounce": {
+              "x": 0.131853,
+              "y": 0.781,
+              "z": -0.433782,
+              "t": 0.575
+            },
+            "secondBounce": {
+              "x": -0.116764,
+              "y": 0.781,
+              "z": 0.426975,
+              "t": 1.122803
+            },
+            "netClearance": 0.010748,
+            "finiteIssues": []
+          },
+          {
+            "id": "contact_backspin_006",
+            "finite": true,
+            "legalServe": true,
+            "legalReasons": [],
+            "points": 174,
+            "bounceCount": 2,
+            "firstBounce": {
+              "x": 0.359145,
+              "y": 0.781,
+              "z": -0.900751,
+              "t": 0.144879
+            },
+            "secondBounce": {
+              "x": 0.447701,
+              "y": 0.781,
+              "z": 1.296592,
+              "t": 0.703917
+            },
+            "netClearance": 0,
+            "finiteIssues": []
+          },
+          {
+            "id": "contact_backspin_007",
+            "finite": true,
+            "legalServe": true,
+            "legalReasons": [],
+            "points": 306,
+            "bounceCount": 4,
+            "firstBounce": {
+              "x": 0.139804,
+              "y": 0.781,
+              "z": -0.44524,
+              "t": 0.550002
+            },
+            "secondBounce": {
+              "x": 0.12281,
+              "y": 0.781,
+              "z": 0.427154,
+              "t": 1.081421
+            },
+            "netClearance": 0.002732,
+            "finiteIssues": []
+          },
+          {
+            "id": "contact_backspin_008",
+            "finite": true,
+            "legalServe": true,
+            "legalReasons": [],
+            "points": 174,
+            "bounceCount": 2,
+            "firstBounce": {
+              "x": 0.359145,
+              "y": 0.781,
+              "z": -0.900751,
+              "t": 0.144879
+            },
+            "secondBounce": {
+              "x": 0.447701,
+              "y": 0.781,
+              "z": 1.296592,
+              "t": 0.703917
+            },
+            "netClearance": 0,
+            "finiteIssues": []
+          },
+          {
+            "id": "contact_backspin_009",
+            "finite": true,
+            "legalServe": true,
+            "legalReasons": [],
+            "points": 312,
+            "bounceCount": 4,
+            "firstBounce": {
+              "x": 0.131853,
+              "y": 0.781,
+              "z": -0.433782,
+              "t": 0.575
+            },
+            "secondBounce": {
+              "x": -0.116764,
+              "y": 0.781,
+              "z": 0.426975,
+              "t": 1.122803
+            },
+            "netClearance": 0.010748,
+            "finiteIssues": []
+          },
+          {
+            "id": "contact_backspin_010",
+            "finite": true,
+            "legalServe": true,
+            "legalReasons": [],
+            "points": 174,
+            "bounceCount": 2,
+            "firstBounce": {
+              "x": 0.359145,
+              "y": 0.781,
+              "z": -0.900751,
+              "t": 0.144879
+            },
+            "secondBounce": {
+              "x": 0.447701,
+              "y": 0.781,
+              "z": 1.296592,
+              "t": 0.703917
+            },
+            "netClearance": 0,
+            "finiteIssues": []
+          },
+          {
+            "id": "contact_backspin_011",
+            "finite": true,
+            "legalServe": true,
+            "legalReasons": [],
+            "points": 306,
+            "bounceCount": 4,
+            "firstBounce": {
+              "x": 0.139804,
+              "y": 0.781,
+              "z": -0.44524,
+              "t": 0.550002
+            },
+            "secondBounce": {
+              "x": 0.12281,
+              "y": 0.781,
+              "z": 0.427154,
+              "t": 1.081421
+            },
+            "netClearance": 0.002732,
+            "finiteIssues": []
+          },
+          {
+            "id": "contact_sidespin_002",
+            "finite": true,
+            "legalServe": true,
+            "legalReasons": [],
+            "points": 175,
+            "bounceCount": 2,
+            "firstBounce": {
+              "x": 0.370489,
+              "y": 0.781,
+              "z": -0.895319,
+              "t": 0.141702
+            },
+            "secondBounce": {
+              "x": 0.621729,
+              "y": 0.781,
+              "z": 1.153228,
+              "t": 0.657174
+            },
+            "netClearance": 0.009979,
+            "finiteIssues": [],
+            "deterministic": true
+          },
+          {
+            "id": "contact_sidespin_003",
+            "finite": true,
+            "legalServe": true,
+            "legalReasons": [],
+            "points": 260,
+            "bounceCount": 3,
+            "firstBounce": {
+              "x": 0.209898,
+              "y": 0.781,
+              "z": -0.455812,
+              "t": 0.466667
+            },
+            "secondBounce": {
+              "x": 0.348685,
+              "y": 0.781,
+              "z": 0.520142,
+              "t": 0.977574
+            },
+            "netClearance": 0.004391,
+            "finiteIssues": []
+          },
+          {
+            "id": "contact_sidespin_004",
+            "finite": true,
+            "legalServe": true,
+            "legalReasons": [],
+            "points": 175,
+            "bounceCount": 2,
+            "firstBounce": {
+              "x": 0.370489,
+              "y": 0.781,
+              "z": -0.895319,
+              "t": 0.141702
+            },
+            "secondBounce": {
+              "x": 0.621729,
+              "y": 0.781,
+              "z": 1.153228,
+              "t": 0.657174
+            },
+            "netClearance": 0.009979,
+            "finiteIssues": []
+          },
+          {
+            "id": "contact_sidespin_005",
+            "finite": true,
+            "legalServe": true,
+            "legalReasons": [],
+            "points": 260,
+            "bounceCount": 3,
+            "firstBounce": {
+              "x": 0.209898,
+              "y": 0.781,
+              "z": -0.455812,
+              "t": 0.466667
+            },
+            "secondBounce": {
+              "x": 0.348685,
+              "y": 0.781,
+              "z": 0.520142,
+              "t": 0.977574
+            },
+            "netClearance": 0.004391,
+            "finiteIssues": []
+          },
+          {
+            "id": "contact_sidespin_006",
+            "finite": true,
+            "legalServe": true,
+            "legalReasons": [],
+            "points": 175,
+            "bounceCount": 2,
+            "firstBounce": {
+              "x": 0.370489,
+              "y": 0.781,
+              "z": -0.895319,
+              "t": 0.141702
+            },
+            "secondBounce": {
+              "x": 0.621729,
+              "y": 0.781,
+              "z": 1.153228,
+              "t": 0.657174
+            },
+            "netClearance": 0.009979,
+            "finiteIssues": []
+          },
+          {
+            "id": "contact_sidespin_007",
+            "finite": true,
+            "legalServe": true,
+            "legalReasons": [],
+            "points": 260,
+            "bounceCount": 3,
+            "firstBounce": {
+              "x": 0.209898,
+              "y": 0.781,
+              "z": -0.455812,
+              "t": 0.466667
+            },
+            "secondBounce": {
+              "x": 0.348685,
+              "y": 0.781,
+              "z": 0.520142,
+              "t": 0.977574
+            },
+            "netClearance": 0.004391,
+            "finiteIssues": []
+          },
+          {
+            "id": "contact_sidespin_008",
+            "finite": true,
+            "legalServe": true,
+            "legalReasons": [],
+            "points": 175,
+            "bounceCount": 2,
+            "firstBounce": {
+              "x": 0.370489,
+              "y": 0.781,
+              "z": -0.895319,
+              "t": 0.141702
+            },
+            "secondBounce": {
+              "x": 0.621729,
+              "y": 0.781,
+              "z": 1.153228,
+              "t": 0.657174
+            },
+            "netClearance": 0.009979,
+            "finiteIssues": []
+          },
+          {
+            "id": "contact_sidespin_009",
+            "finite": true,
+            "legalServe": true,
+            "legalReasons": [],
+            "points": 260,
+            "bounceCount": 3,
+            "firstBounce": {
+              "x": 0.209898,
+              "y": 0.781,
+              "z": -0.455812,
+              "t": 0.466667
+            },
+            "secondBounce": {
+              "x": 0.348685,
+              "y": 0.781,
+              "z": 0.520142,
+              "t": 0.977574
+            },
+            "netClearance": 0.004391,
+            "finiteIssues": []
+          },
+          {
+            "id": "contact_sidespin_010",
+            "finite": true,
+            "legalServe": true,
+            "legalReasons": [],
+            "points": 175,
+            "bounceCount": 2,
+            "firstBounce": {
+              "x": 0.370489,
+              "y": 0.781,
+              "z": -0.895319,
+              "t": 0.141702
+            },
+            "secondBounce": {
+              "x": 0.621729,
+              "y": 0.781,
+              "z": 1.153228,
+              "t": 0.657174
+            },
+            "netClearance": 0.009979,
+            "finiteIssues": []
+          },
+          {
+            "id": "contact_sidespin_011",
+            "finite": true,
+            "legalServe": true,
+            "legalReasons": [],
+            "points": 260,
+            "bounceCount": 3,
+            "firstBounce": {
+              "x": 0.209898,
+              "y": 0.781,
+              "z": -0.455812,
+              "t": 0.466667
+            },
+            "secondBounce": {
+              "x": 0.348685,
+              "y": 0.781,
+              "z": 0.520142,
+              "t": 0.977574
+            },
+            "netClearance": 0.004391,
+            "finiteIssues": []
+          },
+          {
+            "id": "contact_sidespin_012",
+            "finite": true,
+            "legalServe": true,
+            "legalReasons": [],
+            "points": 173,
+            "bounceCount": 2,
+            "firstBounce": {
+              "x": 0.349043,
+              "y": 0.781,
+              "z": -0.890828,
+              "t": 0.142015
+            },
+            "secondBounce": {
+              "x": 0.26597,
+              "y": 0.781,
+              "z": 1.169329,
+              "t": 0.653565
+            },
+            "netClearance": 0.008429,
+            "finiteIssues": [],
+            "deterministic": true
+          },
+          {
+            "id": "contact_sidespin_013",
+            "finite": true,
+            "legalServe": true,
+            "legalReasons": [],
+            "points": 175,
+            "bounceCount": 2,
+            "firstBounce": {
+              "x": 0.370489,
+              "y": 0.781,
+              "z": -0.895319,
+              "t": 0.141702
+            },
+            "secondBounce": {
+              "x": 0.621729,
+              "y": 0.781,
+              "z": 1.153228,
+              "t": 0.657174
+            },
+            "netClearance": 0.009979,
+            "finiteIssues": []
+          },
+          {
+            "id": "contact_sidespin_014",
+            "finite": true,
+            "legalServe": true,
+            "legalReasons": [],
+            "points": 260,
+            "bounceCount": 3,
+            "firstBounce": {
+              "x": 0.209898,
+              "y": 0.781,
+              "z": -0.455812,
+              "t": 0.466667
+            },
+            "secondBounce": {
+              "x": 0.348685,
+              "y": 0.781,
+              "z": 0.520142,
+              "t": 0.977574
+            },
+            "netClearance": 0.004391,
+            "finiteIssues": []
+          },
+          {
+            "id": "contact_sidespin_015",
+            "finite": true,
+            "legalServe": true,
+            "legalReasons": [],
+            "points": 175,
+            "bounceCount": 2,
+            "firstBounce": {
+              "x": 0.370489,
+              "y": 0.781,
+              "z": -0.895319,
+              "t": 0.141702
+            },
+            "secondBounce": {
+              "x": 0.621729,
+              "y": 0.781,
+              "z": 1.153228,
+              "t": 0.657174
+            },
+            "netClearance": 0.009979,
+            "finiteIssues": []
+          },
+          {
+            "id": "contact_sidespin_016",
+            "finite": true,
+            "legalServe": true,
+            "legalReasons": [],
+            "points": 260,
+            "bounceCount": 3,
+            "firstBounce": {
+              "x": 0.209898,
+              "y": 0.781,
+              "z": -0.455812,
+              "t": 0.466667
+            },
+            "secondBounce": {
+              "x": 0.348685,
+              "y": 0.781,
+              "z": 0.520142,
+              "t": 0.977574
+            },
+            "netClearance": 0.004391,
+            "finiteIssues": []
+          },
+          {
+            "id": "contact_sidespin_017",
+            "finite": true,
+            "legalServe": true,
+            "legalReasons": [],
+            "points": 175,
+            "bounceCount": 2,
+            "firstBounce": {
+              "x": 0.370489,
+              "y": 0.781,
+              "z": -0.895319,
+              "t": 0.141702
+            },
+            "secondBounce": {
+              "x": 0.621729,
+              "y": 0.781,
+              "z": 1.153228,
+              "t": 0.657174
+            },
+            "netClearance": 0.009979,
+            "finiteIssues": []
+          },
+          {
+            "id": "contact_sidespin_018",
+            "finite": true,
+            "legalServe": true,
+            "legalReasons": [],
+            "points": 260,
+            "bounceCount": 3,
+            "firstBounce": {
+              "x": 0.209898,
+              "y": 0.781,
+              "z": -0.455812,
+              "t": 0.466667
+            },
+            "secondBounce": {
+              "x": 0.348685,
+              "y": 0.781,
+              "z": 0.520142,
+              "t": 0.977574
+            },
+            "netClearance": 0.004391,
+            "finiteIssues": []
+          },
+          {
+            "id": "contact_sidespin_019",
+            "finite": true,
+            "legalServe": true,
+            "legalReasons": [],
+            "points": 175,
+            "bounceCount": 2,
+            "firstBounce": {
+              "x": 0.370489,
+              "y": 0.781,
+              "z": -0.895319,
+              "t": 0.141702
+            },
+            "secondBounce": {
+              "x": 0.621729,
+              "y": 0.781,
+              "z": 1.153228,
+              "t": 0.657174
+            },
+            "netClearance": 0.009979,
+            "finiteIssues": []
+          },
+          {
+            "id": "contact_sidespin_020",
+            "finite": true,
+            "legalServe": true,
+            "legalReasons": [],
+            "points": 229,
+            "bounceCount": 2,
+            "firstBounce": {
+              "x": 0.0665,
+              "y": 0.781,
+              "z": -0.484184,
+              "t": 0.5
+            },
+            "secondBounce": {
+              "x": -0.43847,
+              "y": 0.781,
+              "z": 0.366578,
+              "t": 1.038458
+            },
+            "netClearance": 0.015585,
+            "finiteIssues": []
+          },
+          {
+            "id": "contact_sidespin_021",
+            "finite": true,
+            "legalServe": true,
+            "legalReasons": [],
+            "points": 173,
+            "bounceCount": 2,
+            "firstBounce": {
+              "x": 0.349043,
+              "y": 0.781,
+              "z": -0.890828,
+              "t": 0.142015
+            },
+            "secondBounce": {
+              "x": 0.26597,
+              "y": 0.781,
+              "z": 1.169329,
+              "t": 0.653565
+            },
+            "netClearance": 0.008429,
+            "finiteIssues": []
+          },
+          {
+            "id": "contact_sidespin_022",
+            "finite": true,
+            "legalServe": true,
+            "legalReasons": [],
+            "points": 229,
+            "bounceCount": 2,
+            "firstBounce": {
+              "x": 0.0665,
+              "y": 0.781,
+              "z": -0.484184,
+              "t": 0.5
+            },
+            "secondBounce": {
+              "x": -0.43847,
+              "y": 0.781,
+              "z": 0.366578,
+              "t": 1.038458
+            },
+            "netClearance": 0.015585,
+            "finiteIssues": []
+          },
+          {
+            "id": "contact_sidespin_023",
+            "finite": true,
+            "legalServe": true,
+            "legalReasons": [],
+            "points": 260,
+            "bounceCount": 3,
+            "firstBounce": {
+              "x": 0.209898,
+              "y": 0.781,
+              "z": -0.455812,
+              "t": 0.466667
+            },
+            "secondBounce": {
+              "x": 0.348685,
+              "y": 0.781,
+              "z": 0.520142,
+              "t": 0.977574
+            },
+            "netClearance": 0.004391,
+            "finiteIssues": []
+          },
+          {
+            "id": "contact_nospin_002",
+            "finite": true,
+            "legalServe": true,
+            "legalReasons": [],
+            "points": 171,
+            "bounceCount": 2,
+            "firstBounce": {
+              "x": 0.36,
+              "y": 0.781,
+              "z": -0.890001,
+              "t": 0.141667
+            },
+            "secondBounce": {
+              "x": 0.444299,
+              "y": 0.781,
+              "z": 1.184935,
+              "t": 0.655014
+            },
+            "netClearance": 0.008897,
+            "finiteIssues": [],
+            "deterministic": true
+          },
+          {
+            "id": "contact_nospin_003",
+            "finite": true,
+            "legalServe": true,
+            "legalReasons": [],
+            "points": 275,
+            "bounceCount": 3,
+            "firstBounce": {
+              "x": 0.139999,
+              "y": 0.781,
+              "z": -0.449977,
+              "t": 0.525
+            },
+            "secondBounce": {
+              "x": 0.121758,
+              "y": 0.781,
+              "z": 0.47179,
+              "t": 1.074057
+            },
+            "netClearance": 0.026347,
+            "finiteIssues": []
+          },
+          {
+            "id": "contact_nospin_004",
+            "finite": true,
+            "legalServe": true,
+            "legalReasons": [],
+            "points": 171,
+            "bounceCount": 2,
+            "firstBounce": {
+              "x": 0.36,
+              "y": 0.781,
+              "z": -0.890001,
+              "t": 0.141667
+            },
+            "secondBounce": {
+              "x": 0.444299,
+              "y": 0.781,
+              "z": 1.184935,
+              "t": 0.655014
+            },
+            "netClearance": 0.008897,
+            "finiteIssues": []
+          }
+        ]
+      }
+    },
+    {
+      "id": "PHYS-02",
+      "classification": "canonical-physics",
+      "status": "pass-with-warning",
+      "blocking": false,
+      "message": "push/chop uses the calibrated compensation path; attack remains explicitly marked as an approximation",
+      "evidence": {
+        "splitContract": true,
+        "currentCompensationC": 2.9,
+        "compensationIsPushOnly": true,
+        "attackWarning": true,
+        "contactFailures": [],
+        "contactEvidence": [
+          {
+            "videoId": "contact_sidebackspin_004",
+            "technique": "push",
+            "direction": "left",
+            "hitIndex": 114,
+            "finite": true,
+            "finiteIssues": []
+          },
+          {
+            "videoId": "contact_sidebackspin_004",
+            "technique": "attack",
+            "direction": "left",
+            "hitIndex": 111,
+            "finite": true,
+            "finiteIssues": []
+          },
+          {
+            "videoId": "contact_sidebackspin_002",
+            "technique": "push",
+            "direction": "right",
+            "hitIndex": 114,
+            "finite": true,
+            "finiteIssues": []
+          },
+          {
+            "videoId": "contact_sidebackspin_002",
+            "technique": "attack",
+            "direction": "right",
+            "hitIndex": 111,
+            "finite": true,
+            "finiteIssues": []
+          },
+          {
+            "videoId": "contact_sidespin_002",
+            "technique": "push",
+            "direction": "left",
+            "hitIndex": 106,
+            "finite": true,
+            "finiteIssues": []
+          },
+          {
+            "videoId": "contact_sidespin_002",
+            "technique": "attack",
+            "direction": "left",
+            "hitIndex": 104,
+            "finite": true,
+            "finiteIssues": []
+          },
+          {
+            "videoId": "contact_sidespin_012",
+            "technique": "push",
+            "direction": "right",
+            "hitIndex": 106,
+            "finite": true,
+            "finiteIssues": []
+          },
+          {
+            "videoId": "contact_sidespin_012",
+            "technique": "attack",
+            "direction": "right",
+            "hitIndex": 104,
+            "finite": true,
+            "finiteIssues": []
+          },
+          {
+            "videoId": "contact_backspin_002",
+            "technique": "push",
+            "direction": null,
+            "hitIndex": 114,
+            "finite": true,
+            "finiteIssues": []
+          },
+          {
+            "videoId": "contact_backspin_002",
+            "technique": "attack",
+            "direction": null,
+            "hitIndex": 111,
+            "finite": true,
+            "finiteIssues": []
+          },
+          {
+            "videoId": "contact_nospin_002",
+            "technique": "push",
+            "direction": null,
+            "hitIndex": 106,
+            "finite": true,
+            "finiteIssues": []
+          },
+          {
+            "videoId": "contact_nospin_002",
+            "technique": "attack",
+            "direction": null,
+            "hitIndex": 104,
+            "finite": true,
+            "finiteIssues": []
+          }
+        ],
+        "warning": "attack side-spin compensation has no dedicated calibration sweep"
+      }
+    },
+    {
+      "id": "TIME-01",
+      "classification": "timing",
+      "status": "pass",
+      "blocking": false,
+      "message": "100 ms swing delay is encoded with early/in-window/late branches",
+      "evidence": {
+        "delayMs": 100,
+        "missing": [],
+        "syntheticCases": [
+          {
+            "case": "early",
+            "fireAt": 100,
+            "contactAt": 0,
+            "outcome": "wait-or-whiff depending on difficulty"
+          },
+          {
+            "case": "in-window",
+            "fireAt": 100,
+            "contactAt": 100,
+            "outcome": "single contact"
+          },
+          {
+            "case": "late",
+            "fireAt": 100,
+            "contactAt": 101,
+            "outcome": "late/missed path"
+          }
+        ]
+      }
+    },
+    {
+      "id": "HANDOFF-01",
+      "classification": "handoff",
+      "status": "pass",
+      "blocking": false,
+      "message": "C3 handoff consumes contact_time_sec with explicit fallback and fades the video before removal",
+      "evidence": {
+        "missing": [],
+        "metadataIndex": 103215,
+        "fallbackIndex": 103306,
+        "fadeIndex": 103710,
+        "handoffIndex": 103824
+      }
+    },
+    {
+      "id": "SAFETY-01",
+      "classification": "finite-safety",
+      "status": "pass",
+      "blocking": false,
+      "message": "missing-load and finite-value safeguards are present; all replay outputs are finite",
+      "evidence": {
+        "missing": [],
+        "runtimeFailures": []
+      }
+    }
+  ],
+  "gate": {
+    "automatedPass": true,
+    "manualReviewRequired": true,
+    "decision": "pending-manual-browser-check"
+  },
+  "baseline": {
+    "serveGeneratorContract": "pass 47/47 (recorded before this validator)",
+    "serveLegalGate": "pass 47/47 in game4.html and physics-studio.html (individual target diagnostics separate)",
+    "physics3dSpin": "pass",
+    "batchValidation": "known expected-model-change at Stage4a snapshot; 13/14"
+  }
+}

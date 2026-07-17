@@ -1,0 +1,99 @@
+{
+  "status": "pass",
+  "benchmark": "V8 External Benchmark Alignment",
+  "calibrationStatus": "not-calibrated",
+  "source": {
+    "sourceId": "JSME-2017-G0500606",
+    "pdf": "C:\\Users\\Kevin\\Downloads\\2017_G0500606.pdf",
+    "digitizationCsv": "AI_CONTEXT/external_bounce_spin_2017_figure_digitization.csv",
+    "rowsRead": 24,
+    "dataQuality": "figure_digitized_approx"
+  },
+  "coordinateContract": {
+    "schema": 2,
+    "state": "mainline-v2 BallState",
+    "tableNormal": {"x": 0, "y": 1, "z": 0},
+    "incomingVelocity": "{x:0, y:-speed*sin(angle), z:speed*cos(angle)}",
+    "omegaAxis": "x",
+    "omegaUnit": "rad/s",
+    "rpsToRadPerSecond": 6.283185307179586,
+    "omegaY": 0,
+    "omegaZ": 0,
+    "workingOmegaSign": 1,
+    "workingSignIsSourceCoordinateClaim": false,
+    "scale": "real; no simulation time-dilation conversion"
+  },
+  "method": {
+    "levels": [0, 2, 4, 6],
+    "probes": 8,
+    "inputSelection": "midpoint of before-phase digitized ranges",
+    "outputBoundary": "raw table contact response before post-table flight integration",
+    "parameterFitting": false,
+    "formalFilesModified": false
+  },
+  "tablePolicyObserved": {
+    "friction": 0.13,
+    "restitution": 0.76,
+    "normalModel": "compliant",
+    "tangentModel": "coulomb",
+    "dwellTime": 0.003,
+    "dt": 0.00025,
+    "steps": 12,
+    "spring": 6000,
+    "damping": 4,
+    "contactModel": "mainline-v2-r1-compliant-3d-table"
+  },
+  "summary": {
+    "rpsRoundTripError": 0,
+    "allWorkingSignContacts": "sliding",
+    "workingSignDirectionMatches": {
+      "angleDeg": {"matched": 1, "mismatched": 2, "unconstrained": 1},
+      "rotationRps": {"matched": 4, "mismatched": 0, "unconstrained": 0},
+      "speedMps": {"matched": 4, "mismatched": 0, "unconstrained": 0}
+    },
+    "workingSignAfterRangeHits": {
+      "angleDeg": 1,
+      "rotationRps": 0,
+      "speedMps": 0
+    }
+  },
+  "workingSignProbes": [
+    {
+      "lowerDiskLevel": 0,
+      "regime": "high-spin / low-speed",
+      "input": {"angleDeg": 22.2, "rotationRps": 111.15, "omegaXRadPerSec": 698.376046893011},
+      "externalAfter": {"angleDeg": [14.2, 14.6], "rotationRps": [81.9, 95.7], "speedMps": [10.5, 16.0]},
+      "modelAfter": {"angleDeg": 17.782787896844514, "rotationRps": 101.97143959952426, "omegaXRadPerSec": 640.7054510436815, "speedMps": 8.9750725382769},
+      "directionMatch": {"angleDeg": true, "rotationRps": true, "speedMps": true},
+      "rangeHit": {"angleDeg": false, "rotationRps": false, "speedMps": false}
+    },
+    {
+      "lowerDiskLevel": 2,
+      "regime": "transitional",
+      "input": {"angleDeg": 19.75, "rotationRps": 44.5, "omegaXRadPerSec": 279.6017461694916},
+      "externalAfter": {"angleDeg": [18.2, 19.9], "rotationRps": [65.1, 65.1], "speedMps": [9.0, 9.0]},
+      "modelAfter": {"angleDeg": 18.758501042118603, "rotationRps": 54.125700754967276, "omegaXRadPerSec": 340.08180772440943, "speedMps": 8.93900096852696},
+      "directionMatch": {"angleDeg": null, "rotationRps": true, "speedMps": true},
+      "rangeHit": {"angleDeg": true, "rotationRps": false, "speedMps": false}
+    },
+    {
+      "lowerDiskLevel": 4,
+      "regime": "transitional bridge",
+      "input": {"angleDeg": 16.45, "rotationRps": 36.9, "omegaXRadPerSec": 231.84953783492674},
+      "externalAfter": {"angleDeg": [17.8, 19.1], "rotationRps": [49.8, 49.8], "speedMps": [8.2, 9.3]},
+      "modelAfter": {"angleDeg": 15.357537819557148, "rotationRps": 45.539710631385624, "omegaXRadPerSec": 286.13444073233217, "speedMps": 9.742236797921477},
+      "directionMatch": {"angleDeg": false, "rotationRps": true, "speedMps": true},
+      "rangeHit": {"angleDeg": false, "rotationRps": false, "speedMps": false}
+    },
+    {
+      "lowerDiskLevel": 6,
+      "regime": "low-spin / high-speed",
+      "input": {"angleDeg": 14.65, "rotationRps": 29.7, "omegaXRadPerSec": 186.61060362323371},
+      "externalAfter": {"angleDeg": [17.7, 19.4], "rotationRps": [46.3, 52.5], "speedMps": [8.8, 9.2]},
+      "modelAfter": {"angleDeg": 13.5515900967391, "rotationRps": 37.37976946411786, "omegaXRadPerSec": 234.86401828270547, "speedMps": 9.78775142962661},
+      "directionMatch": {"angleDeg": false, "rotationRps": true, "speedMps": true},
+      "rangeHit": {"angleDeg": false, "rotationRps": false, "speedMps": false}
+    }
+  ],
+  "interpretation": "Engineering trend/regime screening only; no physics parameter was fitted or changed."
+}

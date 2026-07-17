@@ -1,0 +1,51 @@
+{
+  "status": "review-complete",
+  "source": {
+    "sourceId": "JSME-2017-G0500606",
+    "pdf": "C:\\Users\\Kevin\\Downloads\\2017_G0500606.pdf",
+    "pagesVisuallyReviewed": [2, 3, 4, 5],
+    "figuresReviewed": [1, 2, 3, 4, 5, 6, 7],
+    "dataQuality": "figure_digitized_approx"
+  },
+  "measurements": {
+    "lowerDiskLevel": {"meaning": "apparatus control variable", "status": "confirmed"},
+    "translationSpeed": {"meaning": "scalar speed magnitude in m/s", "status": "confirmed"},
+    "trajectoryAngle": {"meaning": "unsigned angle relative to table plane", "status": "high-confidence inference; formula not explicit"},
+    "rotationRate": {"meaning": "spin-rate magnitude in rps", "status": "confirmed"},
+    "rotationAxis": {"meaning": "not reported in digitized figures", "status": "unknown"},
+    "rotationSign": {"meaning": "not reported", "status": "unknown"},
+    "beforeAfterMarkers": {"meaning": "red immediately before, green immediately after landing", "status": "confirmed"},
+    "justAfterShotCurve": {"meaning": "separate launch reference, not impact input", "status": "confirmed"}
+  },
+  "coordinateReview": {
+    "paperFrame": "table calibration frame shown in Fig. 1; no exported canonical 3D sign contract",
+    "mainlineProxy": {
+      "tableNormal": {"x": 0, "y": 1, "z": 0},
+      "velocity": "{x:0, y:-speed*sin(angle), z:speed*cos(angle)}",
+      "omega": "{x:sign*2π*rps, y:0, z:0}"
+    },
+    "proxyFields": ["velocity vector", "omega axis", "omega sign", "lateral velocity"],
+    "measuredScalarFields": ["speed magnitude", "unsigned trajectory angle", "rotation magnitude"]
+  },
+  "pairingReview": {
+    "trialPairingInCsv": false,
+    "rangeMidpointIsPerBallObservation": false,
+    "digitizationUncertaintyIsOriginalExperimentSd": false,
+    "status": "level_range_unpaired"
+  },
+  "contactRegimeReview": {
+    "externalRegime": "not_reported",
+    "externalForceHistory": "not_reported",
+    "externalDwellTime": "not_reported",
+    "externalSlipVelocity": "not_reported",
+    "externalFrictionCoefficient": "not_reported",
+    "modelRegimeMeaning": "mainline-v2 impulse diagnostic only",
+    "v9ModelRegimes": {"sliding": 3240, "rolling": 0},
+    "canClaimExternalRegimeMatch": false
+  },
+  "decision": {
+    "parameterTuningAuthorized": false,
+    "formalPromotionAuthorized": false,
+    "nextIsolatedGate": "semantics-aware representability screen"
+  }
+}

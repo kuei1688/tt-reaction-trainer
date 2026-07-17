@@ -1,0 +1,167 @@
+{
+  "status": "pass",
+  "benchmark": "Semantics-aware representability screen",
+  "calibrationStatus": "not-calibrated",
+  "source": {
+    "sourceId": "JSME-2017-G0500606",
+    "csv": "AI_CONTEXT/external_bounce_spin_2017_figure_digitization.csv",
+    "pdf": "C:\\Users\\Kevin\\Downloads\\2017_G0500606.pdf",
+    "rowsRead": 24,
+    "dataQuality": "figure_digitized_approx",
+    "sourceSemanticReview": "AI_CONTEXT/external_bounce_spin_2017_semantics_regime_review.json",
+    "pairing": "level ranges only; no per-ball before/after pairing recovered"
+  },
+  "fixedCoordinateContract": {
+    "schema": 2,
+    "tableNormal": {"x": 0, "y": 1, "z": 0},
+    "scalarSpeed": "input speed is preserved as magnitude",
+    "tablePlaneAngleFormula": "atan2(abs(v_normal), hypot(v_tangent))",
+    "tableNormalAngleFormula": "atan2(hypot(v_tangent), abs(v_normal))",
+    "rpsToRadPerSecond": 6.283185307179586,
+    "inputScale": "real-scale; no simulation time-dilation conversion"
+  },
+  "fixedTablePolicy": {
+    "friction": 0.13,
+    "restitution": 0.76,
+    "normalModel": "compliant",
+    "tangentModel": "coulomb",
+    "dwellTime": 0.003,
+    "contactDt": 0.00025,
+    "contactSteps": 12,
+    "spring": 6000,
+    "damping": 4,
+    "contactModel": "mainline-v2-r1-compliant-3d-table"
+  },
+  "method": {
+    "scalarGrid": "full-factorial inclusive endpoints inside each before range",
+    "pointsPerScalarAxis": 9,
+    "lateralHeadingBoundDeg": [-15, -7.5, 0, 7.5, 15],
+    "rotationAxisScreen": "principal axes only; not full 3D axis identification",
+    "outputBoundary": "raw table contact response before post-table flight integration",
+    "parameterFitting": false,
+    "formalFilesModified": false,
+    "totalSamples": 81000
+  },
+  "comparisonContract": {
+    "directlyUsableNow": [
+      "translation speed magnitude, as a scalar before/after range",
+      "rotation-rate magnitude, as a scalar before/after range",
+      "trajectory angle under the high-confidence table-plane interpretation, as a conditional scalar comparison"
+    ],
+    "sensitivityOnly": [
+      "bounded lateral velocity: paper does not report lateral component; ±15 degree heading is an explicit test bound",
+      "unknown rotation axis: paper does not report axis; ±X/±Y/±Z is a principal-axis sensitivity envelope",
+      "combined lateral-plus-axis envelope: feasibility bound, not a reconstructed trial"
+    ],
+    "notComparableNow": [
+      "full 3D velocity vector",
+      "omega axis or signed omega vector",
+      "per-ball coupled before/after output",
+      "external sliding-versus-rolling regime"
+    ],
+    "contactRegimeRule": "external regime remains not_reported; mainline frictionRegime is model diagnostic only"
+  },
+  "summary": {
+    "scenarioCount": 5,
+    "levelCount": 4,
+    "modelRegimesAcrossScreen": {"sliding": 81000},
+    "externalRegime": "not_reported",
+    "canClaimExternalRegimeMatch": false,
+    "envelopeIntersectionLevels": {
+      "baseline_table_plane_planar_omega_x": {"angleDeg": 1, "rotationRps": 2, "speedMps": 1, "jointAllThree": 0},
+      "alternative_table_normal_planar_omega_x": {"angleDeg": 0, "rotationRps": 2, "speedMps": 1, "jointAllThree": 0},
+      "sensitivity_bounded_lateral_heading": {"angleDeg": 1, "rotationRps": 2, "speedMps": 1, "jointAllThree": 0},
+      "sensitivity_unknown_principal_rotation_axis": {"angleDeg": 1, "rotationRps": 2, "speedMps": 1, "jointAllThree": 0},
+      "combined_unknown_axis_and_lateral": {"angleDeg": 1, "rotationRps": 2, "speedMps": 1, "jointAllThree": 0}
+    },
+    "interpretation": "A scalar envelope overlap means only that a semantic scenario can reach the numeric range; it does not validate the hidden vector state or contact regime."
+  },
+  "scenarios": [
+    {
+      "id": "baseline_table_plane_planar_omega_x",
+      "comparisonClass": "conditional-scalar-comparison",
+      "semantics": {
+        "angle": "model reports angle from table plane",
+        "lateralVelocity": "vx=0 planar proxy",
+        "rotationAxis": "omega axis x proxy",
+        "externalContactRegime": "not_reported"
+      },
+      "levelResults": [
+        {"lowerDiskLevel": 0, "sampleCount": 162, "outputEnvelope": {"angleDeg": [17.177, 22.226], "rotationRps": [92.408, 111.536], "speedMps": [7.494, 8.986]}, "envelopeIntersects": {"angleDeg": false, "rotationRps": true, "speedMps": false}, "sampleHits": {"angleDeg": 0, "rotationRps": 36, "speedMps": 0, "jointAllThree": 0}},
+        {"lowerDiskLevel": 2, "sampleCount": 162, "outputEnvelope": {"angleDeg": [15.408, 22.226], "rotationRps": [32.974, 56.026], "speedMps": [8.475, 9.417]}, "envelopeIntersects": {"angleDeg": true, "rotationRps": false, "speedMps": true}, "sampleHits": {"angleDeg": 36, "rotationRps": 0, "speedMps": 0, "jointAllThree": 0}},
+        {"lowerDiskLevel": 4, "sampleCount": 1458, "outputEnvelope": {"angleDeg": [15.105, 15.611], "rotationRps": [19.408, 54.392], "speedMps": [9.591, 9.894]}, "envelopeIntersects": {"angleDeg": false, "rotationRps": true, "speedMps": false}, "sampleHits": {"angleDeg": 0, "rotationRps": 0, "speedMps": 0, "jointAllThree": 0}},
+        {"lowerDiskLevel": 6, "sampleCount": 1458, "outputEnvelope": {"angleDeg": [13.204, 13.900], "rotationRps": [21.316, 38.084], "speedMps": [9.491, 10.086]}, "envelopeIntersects": {"angleDeg": false, "rotationRps": false, "speedMps": false}, "sampleHits": {"angleDeg": 0, "rotationRps": 0, "speedMps": 0, "jointAllThree": 0}}
+      ]
+    },
+    {
+      "id": "alternative_table_normal_planar_omega_x",
+      "comparisonClass": "alternative-semantics-only",
+      "semantics": {
+        "angle": "model reports angle from table normal",
+        "lateralVelocity": "vx=0 planar proxy",
+        "rotationAxis": "omega axis x proxy",
+        "externalContactRegime": "not_reported"
+      },
+      "levelResults": [
+        {"lowerDiskLevel": 0, "sampleCount": 162, "outputEnvelope": {"angleDeg": [67.774, 72.823], "rotationRps": [92.408, 111.536], "speedMps": [7.494, 8.986]}, "envelopeIntersects": {"angleDeg": false, "rotationRps": true, "speedMps": false}, "sampleHits": {"angleDeg": 0, "rotationRps": 36, "speedMps": 0, "jointAllThree": 0}},
+        {"lowerDiskLevel": 2, "sampleCount": 162, "outputEnvelope": {"angleDeg": [67.774, 74.592], "rotationRps": [32.974, 56.026], "speedMps": [8.475, 9.417]}, "envelopeIntersects": {"angleDeg": false, "rotationRps": false, "speedMps": true}, "sampleHits": {"angleDeg": 0, "rotationRps": 0, "speedMps": 0, "jointAllThree": 0}},
+        {"lowerDiskLevel": 4, "sampleCount": 1458, "outputEnvelope": {"angleDeg": [74.389, 74.895], "rotationRps": [19.408, 54.392], "speedMps": [9.591, 9.894]}, "envelopeIntersects": {"angleDeg": false, "rotationRps": true, "speedMps": false}, "sampleHits": {"angleDeg": 0, "rotationRps": 0, "speedMps": 0, "jointAllThree": 0}},
+        {"lowerDiskLevel": 6, "sampleCount": 1458, "outputEnvelope": {"angleDeg": [76.100, 76.796], "rotationRps": [21.316, 38.084], "speedMps": [9.491, 10.086]}, "envelopeIntersects": {"angleDeg": false, "rotationRps": false, "speedMps": false}, "sampleHits": {"angleDeg": 0, "rotationRps": 0, "speedMps": 0, "jointAllThree": 0}}
+      ]
+    },
+    {
+      "id": "sensitivity_bounded_lateral_heading",
+      "comparisonClass": "sensitivity-only",
+      "semantics": {
+        "angle": "model reports angle from table plane",
+        "lateralVelocity": "heading sampled at -15, -7.5, 0, 7.5, 15 degrees; not measured",
+        "rotationAxis": "omega axis x proxy",
+        "externalContactRegime": "not_reported"
+      },
+      "levelResults": [
+        {"lowerDiskLevel": 0, "sampleCount": 810, "outputEnvelope": {"angleDeg": [17.177, 22.226], "rotationRps": [92.408, 111.860], "speedMps": [7.494, 8.986]}, "envelopeIntersects": {"angleDeg": false, "rotationRps": true, "speedMps": false}, "sampleHits": {"angleDeg": 0, "rotationRps": 172, "speedMps": 0, "jointAllThree": 0}},
+        {"lowerDiskLevel": 2, "sampleCount": 810, "outputEnvelope": {"angleDeg": [15.325, 22.226], "rotationRps": [32.974, 56.026], "speedMps": [8.475, 9.453]}, "envelopeIntersects": {"angleDeg": true, "rotationRps": false, "speedMps": true}, "sampleHits": {"angleDeg": 180, "rotationRps": 0, "speedMps": 0, "jointAllThree": 0}},
+        {"lowerDiskLevel": 4, "sampleCount": 7290, "outputEnvelope": {"angleDeg": [15.045, 15.611], "rotationRps": [19.408, 54.392], "speedMps": [9.591, 9.928]}, "envelopeIntersects": {"angleDeg": false, "rotationRps": true, "speedMps": false}, "sampleHits": {"angleDeg": 0, "rotationRps": 0, "speedMps": 0, "jointAllThree": 0}},
+        {"lowerDiskLevel": 6, "sampleCount": 7290, "outputEnvelope": {"angleDeg": [13.194, 13.900], "rotationRps": [21.316, 38.084], "speedMps": [9.491, 10.092]}, "envelopeIntersects": {"angleDeg": false, "rotationRps": false, "speedMps": false}, "sampleHits": {"angleDeg": 0, "rotationRps": 0, "speedMps": 0, "jointAllThree": 0}}
+      ]
+    },
+    {
+      "id": "sensitivity_unknown_principal_rotation_axis",
+      "comparisonClass": "sensitivity-only",
+      "semantics": {
+        "angle": "model reports angle from table plane",
+        "lateralVelocity": "vx=0 planar proxy",
+        "rotationAxis": "principal axes x, y, z with both signs; not a full arbitrary-axis reconstruction",
+        "externalContactRegime": "not_reported"
+      },
+      "levelResults": [
+        {"lowerDiskLevel": 0, "sampleCount": 486, "outputEnvelope": {"angleDeg": [17.177, 22.226], "rotationRps": [92.408, 120.774], "speedMps": [7.494, 8.986]}, "envelopeIntersects": {"angleDeg": false, "rotationRps": true, "speedMps": false}, "sampleHits": {"angleDeg": 0, "rotationRps": 54, "speedMps": 0, "jointAllThree": 0}},
+        {"lowerDiskLevel": 2, "sampleCount": 486, "outputEnvelope": {"angleDeg": [15.231, 22.226], "rotationRps": [32.974, 56.026], "speedMps": [8.475, 9.512]}, "envelopeIntersects": {"angleDeg": true, "rotationRps": false, "speedMps": true}, "sampleHits": {"angleDeg": 108, "rotationRps": 0, "speedMps": 0, "jointAllThree": 0}},
+        {"lowerDiskLevel": 4, "sampleCount": 4374, "outputEnvelope": {"angleDeg": [14.952, 15.611], "rotationRps": [19.408, 54.392], "speedMps": [9.591, 9.988]}, "envelopeIntersects": {"angleDeg": false, "rotationRps": true, "speedMps": false}, "sampleHits": {"angleDeg": 0, "rotationRps": 0, "speedMps": 0, "jointAllThree": 0}},
+        {"lowerDiskLevel": 6, "sampleCount": 4374, "outputEnvelope": {"angleDeg": [13.146, 13.900], "rotationRps": [21.316, 38.084], "speedMps": [9.491, 10.125]}, "envelopeIntersects": {"angleDeg": false, "rotationRps": false, "speedMps": false}, "sampleHits": {"angleDeg": 0, "rotationRps": 0, "speedMps": 0, "jointAllThree": 0}}
+      ]
+    },
+    {
+      "id": "combined_unknown_axis_and_lateral",
+      "comparisonClass": "sensitivity-only",
+      "semantics": {
+        "angle": "model reports angle from table plane",
+        "lateralVelocity": "heading sampled at -15, -7.5, 0, 7.5, 15 degrees; not measured",
+        "rotationAxis": "principal axes x, y, z with both signs; not a full arbitrary-axis reconstruction",
+        "externalContactRegime": "not_reported"
+      },
+      "levelResults": [
+        {"lowerDiskLevel": 0, "sampleCount": 2430, "outputEnvelope": {"angleDeg": [17.177, 22.226], "rotationRps": [92.408, 120.774], "speedMps": [7.494, 8.986]}, "envelopeIntersects": {"angleDeg": false, "rotationRps": true, "speedMps": false}, "sampleHits": {"angleDeg": 0, "rotationRps": 262, "speedMps": 0, "jointAllThree": 0}},
+        {"lowerDiskLevel": 2, "sampleCount": 2430, "outputEnvelope": {"angleDeg": [15.190, 22.226], "rotationRps": [32.974, 56.026], "speedMps": [8.475, 9.533]}, "envelopeIntersects": {"angleDeg": true, "rotationRps": false, "speedMps": true}, "sampleHits": {"angleDeg": 540, "rotationRps": 0, "speedMps": 0, "jointAllThree": 0}},
+        {"lowerDiskLevel": 4, "sampleCount": 21870, "outputEnvelope": {"angleDeg": [14.919, 15.611], "rotationRps": [19.408, 54.392], "speedMps": [9.591, 10.008]}, "envelopeIntersects": {"angleDeg": false, "rotationRps": true, "speedMps": false}, "sampleHits": {"angleDeg": 0, "rotationRps": 0, "speedMps": 0, "jointAllThree": 0}},
+        {"lowerDiskLevel": 6, "sampleCount": 21870, "outputEnvelope": {"angleDeg": [13.138, 13.900], "rotationRps": [21.316, 38.084], "speedMps": [9.491, 10.130]}, "envelopeIntersects": {"angleDeg": false, "rotationRps": false, "speedMps": false}, "sampleHits": {"angleDeg": 0, "rotationRps": 0, "speedMps": 0, "jointAllThree": 0}}
+      ]
+    }
+  ],
+  "decision": {
+    "parameterTuningAuthorized": false,
+    "formalPromotionAuthorized": false,
+    "conclusion": "Changing angle convention, bounded lateral heading, or principal rotation axis does not produce a joint all-three range match in this fixed-policy screen. These hidden semantics remain underdetermined, but they do not yet explain the quantitative mismatch.",
+    "nextGate": "If a semantic scenario remains quantitatively mismatched, isolate the missing physical mechanism with new evidence or an explicitly authorized R1 proposal."
+  }
+}

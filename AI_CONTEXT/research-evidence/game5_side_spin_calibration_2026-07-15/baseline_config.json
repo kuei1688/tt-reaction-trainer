@@ -1,0 +1,22 @@
+{
+  "generatedAt": "2026-07-15T23:31:41.916Z",
+  "sourceSha256": {
+    "C:\\Users\\Kevin\\Documents\\Codex\\2026-06-16\\files-mentioned-by-the-user-tt\\outputs\\tt-reaction-trainer-pages\\game5.html": "186f10b78513564d6ef5f6f524d44cc420bdea348ee30cf9074c2f95b9bcb2e8",
+    "C:\\Users\\Kevin\\Documents\\Codex\\2026-06-16\\files-mentioned-by-the-user-tt\\outputs\\tt-reaction-trainer-pages\\shared-physics-core.js": "3d3927028a3cf92d808cbc9c19ba9d8adddf9b8ef924035ace07e9cb9f2d253d",
+    "C:\\Users\\Kevin\\Documents\\Codex\\2026-06-16\\files-mentioned-by-the-user-tt\\outputs\\tt-reaction-trainer-pages\\physics-presets.json": "d172a5b7315ef2182a676a5e43538e5882725dd67a3483c3cc74718c4b8ebc9c"
+  },
+  "physics": {
+    "gravity": -4.2,
+    "dt": 0.008333333333333333,
+    "simTimeDilation": 1.5275252316519468,
+    "magnusCoefficient": null,
+    "magnusLiftSlope": null,
+    "contactFrictionMu": null
+  },
+  "deployedCandidates": {
+    "pushCompensationC": 2.9,
+    "swingDelayMs": 100
+  },
+  "redLineFilesModified": false,
+  "physicalTruthClaim": false
+}

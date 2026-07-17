@@ -1,0 +1,22 @@
+{
+  "generatedAt": "2026-07-16",
+  "phase": "Phase 0",
+  "plan": "docs/3D_PHYSICS_UNIFIED_MIGRATION_PLAN.md",
+  "purpose": "Immutable engineering baseline for the unified 3D physics migration.",
+  "interpretation": "This is prototype evidence, not a claim of physical truth or Trainer readiness.",
+  "gitHead": "4f5b8770d42cee5b78d93681da0f1a6b1340784b",
+  "dirtyWorktree": true,
+  "dirtyStatusEntryCount": 52,
+  "sourceFiles": [
+    "shared-physics-core.js",
+    "game4.html",
+    "game5.html",
+    "return-studio.html",
+    "physics-studio.html",
+    "serve-generator.html",
+    "physics-presets.json",
+    "videos.json"
+  ],
+  "nonDestructive": true,
+  "createdBy": "Codex"
+}

@@ -1,0 +1,36 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Game 5 calibration variant loader</title>
+<p>Loading calibration variant…</p>
+<script>
+  (async () => {
+    const variant = new URLSearchParams(location.search).get("variant") || "baseline";
+    const sourceResponse = await fetch(`/game5.html?calibration-source=${encodeURIComponent(variant)}`, {cache: "no-store"});
+    if (!sourceResponse.ok) throw new Error(`Could not load game5.html (${sourceResponse.status})`);
+    let source = await sourceResponse.text();
+    const replaceOnce = (pattern, replacement, label) => {
+      if (!pattern.test(source)) throw new Error(`Could not override ${label}`);
+      source = source.replace(pattern, replacement);
+    };
+    if (variant === "attack-y-0.15-delay-60") {
+      replaceOnce(/techniqueVel:\{x:0, y:-0\.234, z:-1\}/g, "techniqueVel:{x:0, y:0.15, z:-1}", "attack y");
+      replaceOnce(/const SWING_DELAY_MS = [^;]+;/, "const SWING_DELAY_MS = 60;", "swing delay");
+    } else if (variant === "attack-y-0-delay-40") {
+      replaceOnce(/techniqueVel:\{x:0, y:-0\.234, z:-1\}/g, "techniqueVel:{x:0, y:0, z:-1}", "attack y");
+      replaceOnce(/const SWING_DELAY_MS = [^;]+;/, "const SWING_DELAY_MS = 40;", "swing delay");
+    } else if (variant === "attack-y-0.45-delay-100") {
+      replaceOnce(/techniqueVel:\{x:0, y:-0\.234, z:-1\}/g, "techniqueVel:{x:0, y:0.45, z:-1}", "attack y");
+      replaceOnce(/const SWING_DELAY_MS = [^;]+;/, "const SWING_DELAY_MS = 100;", "swing delay");
+    } else if (variant === "push-c-2.9") {
+      replaceOnce(/const SIDESPIN_COMPENSATION_C = [^;]+;/, "const SIDESPIN_COMPENSATION_C = 2.9;", "push compensation C");
+    } else if (variant !== "baseline") {
+      throw new Error(`Unknown variant: ${variant}`);
+    }
+    source = source.replace("<head>", "<head><base href=\"/\">");
+    document.open();
+    document.write(source);
+    document.close();
+  })().catch((error) => {
+    document.body.textContent = error.stack || error.message;
+  });
+</script>

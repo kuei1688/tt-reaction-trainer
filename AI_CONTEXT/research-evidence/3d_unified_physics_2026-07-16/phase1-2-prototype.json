@@ -1,0 +1,28 @@
+{
+  "generatedAt": "2026-07-16",
+  "phase": ["Phase 1", "Phase 2"],
+  "runner": "node tools/physics-3d-unified-prototype.test.js",
+  "result": "pass",
+  "scope": "isolated prototype only",
+  "checks": {
+    "schema2WorldSpaceOmega": "pass",
+    "oneTimeAxialConversion": "pass",
+    "legacyBoundaryAdapter": "pass",
+    "magnusCrossProductDirection": "pass",
+    "arbitraryPlaneImpulse": "pass",
+    "twoDimensionalCoulombFriction": "pass",
+    "rollingCondition": "pass",
+    "fixedPlaneEnergyNonIncrease": "pass",
+    "rotationFrameInvariance": "pass",
+    "sharedCompliantContactPath": "pass",
+    "realScaleFlightStep": "pass"
+  },
+  "prototypeFiles": [
+    "prototypes/3d-unified-physics/canonical-spin.js",
+    "prototypes/3d-unified-physics/contact-solver.js",
+    "prototypes/3d-unified-physics/flight-kernel.js",
+    "tools/physics-3d-unified-prototype.test.js"
+  ],
+  "interpretation": "Mathematical and prototype stability evidence only; no video calibration or physical-truth claim.",
+  "redLineFilesChanged": false
+}
